@@ -37,7 +37,6 @@ class AdminAuthController extends Controller
         return redirect()->back()->withInput();
     }
 
-    // Handle logout
     public function logout()
     {
         Auth::guard('admin')->logout();
