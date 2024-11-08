@@ -21,7 +21,6 @@ class AdminAuthController extends Controller
         return view('admin.auth.login'); // Create this view file
     }
 
-    // Handle the login request
     public function login(Request $request)
     {
         $request->validate([
