@@ -25,7 +25,7 @@
 	// ---------------------------
 	// Login & Logout
 	// ---------------------------
-	Route::post('login', [LoginController::class, 'login']);
+	Route::post('login', [LoginController::class, 'login']); 
 	Route::post('logout', [LoginController::class, 'logout'])->middleware(['auth:api', 'ensure.token']);
 	
 	// ---------------------------
@@ -64,8 +64,9 @@
 	// ---------------------------
 	// Protected Routes (Require Authentication)
 	// ---------------------------
-	Route::middleware(['auth:api', 'ensure.token'])->group(function () {
-		
+	Route::middleware(['auth:api', 'ensure.token'])->group(function () 
+	{
+		Route::post('user-details', [LoginController::class, 'userDetails']);
 		Route::post('user-profile', [RegisterController::class, 'updateProfile']);
 		
 		// ---------------------------

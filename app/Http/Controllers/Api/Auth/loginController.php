@@ -5,7 +5,7 @@
 	use App\Http\Controllers\Controller;
 	use Illuminate\Http\Request;
 	use Illuminate\Support\Facades\{
-		Hash, Validator, DB, App, Mail
+		Hash, Validator, DB, App, Mail, Auth
 	};
 	use Laravel\Passport\HasApiTokens;
 	use App\Http\Traits\ApiResponseTrait;
@@ -17,7 +17,7 @@
 	use App\Mail\{
 		PasswordResetOtp, PasswordResetSuccess
 	}; 
- 
+	
 	class LoginController extends Controller
 	{
 		use HasApiTokens, ApiResponseTrait;
@@ -71,11 +71,36 @@
 				return $this->errorResponse($e->getMessage());
 			}
 		}
-		
+		 
+
+		public function userDetails(Request $request)
+		{
+			try {
+				// Retrieve the Bearer token from the Authorization header
+				$token = $request->bearerToken();  // This will get the token from Authorization header
+				 
+				// Get the authenticated user
+				$user = Auth::user();
+
+				// Load additional relationships, if needed
+				$user->load('companyDetail');
+
+				// You can attach the token to the user data (if you need to pass it to the response)
+				$user->token = $token;
+
+				// Return success response with user details
+				return $this->successResponse('User details fetched successfully', 'user', $user);
+			} catch (\Throwable $e) {
+				// Handle exceptions and return error
+				return $this->errorResponse($e->getMessage());
+			}
+		}
+ 
 		public function logout(Request $request)
 		{
+			Helper::loginLog('logout', $request->user());	
 			$token = $request->user()->token(); 
-			$token->revoke(); 
+			$token->revoke();  
 			return $this->successResponse('User logout successfully');
 		}
 		
