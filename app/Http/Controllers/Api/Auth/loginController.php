@@ -71,14 +71,13 @@
 				return $this->errorResponse($e->getMessage());
 			}
 		}
-		 
 
 		public function userDetails(Request $request)
 		{
 			try {
 				// Retrieve the Bearer token from the Authorization header
 				$token = $request->bearerToken();  // This will get the token from Authorization header
-				 
+			 
 				// Get the authenticated user
 				$user = Auth::user();
 
