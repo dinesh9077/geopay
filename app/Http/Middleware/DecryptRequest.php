@@ -18,8 +18,13 @@
 		{ 
 			try { 
 				// Check if the request has the encrypted fields
-				if ($request->isMethod('post') && $request->has('encrypted_data')) 
+				if ($request->isMethod('post')) 
 				{ 
+					if(!$request->has('encrypted_data'))
+					{
+						return response()->json(['status' => 'error', 'message' => 'encrypted data is invalid.']); 
+					}
+					
 					$secretKey = env('ENCRYPTION_SECRET_KEY'); 
 					// Decrypt the encrypted_data field 
 					$decryptedData = openssl_decrypt(
@@ -34,7 +39,7 @@
 					 
 					// Check if the decryption was successful and merge the decrypted array 
 					if ($decryptedArray === null || !is_array($decryptedArray)) { 
-						return response()->json(['error' => false, 'message' => 'encrypted data is invalid.'], Response::HTTP_BAD_REQUEST); 
+						return response()->json(['success' => false, 'message' => 'encrypted data is invalid.']); 
 					}
 					
 					$request->merge($decryptedArray);
@@ -45,7 +50,7 @@
 			} catch (\Throwable $e) {
 				// Log any decryption errors
 				Log::error('Decryption failed: ' . $e->getMessage());
-				return response()->json(['error' => false, 'message' => $e->getMessage()], Response::HTTP_BAD_REQUEST); 
+				return response()->json(['success' => false, 'message' => $e->getMessage()]); 
 			}
 			return $next($request);
 		} 

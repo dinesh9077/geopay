@@ -62,7 +62,7 @@
 				$user->load('companyDetail');
 				$user->token = $token;
 				 
-				Helper::loginLog('login', $user);
+				Helper::loginLog('login', $user, 'App');
 				
 				return $this->successResponse('User login successfully', 'user', $user);
 			}
@@ -97,7 +97,7 @@
  
 		public function logout(Request $request)
 		{
-			Helper::loginLog('logout', $request->user());	
+			Helper::loginLog('logout', $request->user(), 'App');	
 			$token = $request->user()->token(); 
 			$token->revoke();  
 			return $this->successResponse('User logout successfully');
@@ -196,8 +196,7 @@
 		}
  
 		public function resetPassword(Request $request)
-		{
-		 
+		{ 
 			$validator = Validator::make($request->all(), [
 				'email' => 'required|email',
 				'password' => [
@@ -221,12 +220,7 @@
 					},
 				],
 			]);
-
-			if ($validator->fails()) {
-				return response()->json(['errors' => $validator->errors()], 422);
-			}
-
-
+ 
 			if ($validator->fails()) {
 				return $this->validateResponse($validator->errors());
 			} 
@@ -269,9 +263,7 @@
 			{
 				DB::rollBack();
 				return $this->errorResponse($e->getMessage());
-			}
-				
-		}
-		 
+			} 
+		} 
 
 	}
