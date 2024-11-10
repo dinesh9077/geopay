@@ -95,7 +95,7 @@
 		}
  
 		public function logout(Request $request)
-		{
+		{ 
 			Helper::loginLog('logout', $request->user(), 'App');	
 			$token = $request->user()->token(); 
 			$token->revoke();  
