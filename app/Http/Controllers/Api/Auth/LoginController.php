@@ -30,7 +30,12 @@
 		*/
 		
 		public function login(Request $request)
+<<<<<<< HEAD
 		{   
+=======
+		{  
+			  
+>>>>>>> ba53a6007b75c0cf105b52ed0d46cde4c5c83169
 			$validator = Validator::make($request->all(), [
 				'email' => 'required|string|email|max:255',
 				'password' => 'required|string',
@@ -61,7 +66,7 @@
 				$user->load('companyDetail');
 				$user->token = $token;
 				 
-				Helper::loginLog('login', $user);
+				Helper::loginLog('login', $user, 'App');
 				
 				return $this->successResponse('User login successfully', 'user', $user);
 			}
@@ -70,13 +75,17 @@
 				return $this->errorResponse($e->getMessage());
 			}
 		}
+<<<<<<< HEAD
 		  
+=======
+
+>>>>>>> ba53a6007b75c0cf105b52ed0d46cde4c5c83169
 		public function userDetails(Request $request)
 		{
 			try {
 				// Retrieve the Bearer token from the Authorization header
 				$token = $request->bearerToken();  // This will get the token from Authorization header
-				 
+			 
 				// Get the authenticated user
 				$user = Auth::user();
 
@@ -96,7 +105,7 @@
  
 		public function logout(Request $request)
 		{
-			Helper::loginLog('logout', $request->user());	
+			Helper::loginLog('logout', $request->user(), 'App');	
 			$token = $request->user()->token(); 
 			$token->revoke();  
 			return $this->successResponse('User logout successfully');
@@ -195,8 +204,7 @@
 		}
  
 		public function resetPassword(Request $request)
-		{
-		 
+		{ 
 			$validator = Validator::make($request->all(), [
 				'email' => 'required|email',
 				'password' => [
@@ -220,12 +228,7 @@
 					},
 				],
 			]);
-
-			if ($validator->fails()) {
-				return response()->json(['errors' => $validator->errors()], 422);
-			}
-
-
+ 
 			if ($validator->fails()) {
 				return $this->validateResponse($validator->errors());
 			} 
@@ -268,9 +271,7 @@
 			{
 				DB::rollBack();
 				return $this->errorResponse($e->getMessage());
-			}
-				
-		}
-		 
+			} 
+		} 
 
 	}
