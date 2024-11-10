@@ -65,7 +65,7 @@
 	// Protected Routes (Require Authentication)
 	// ---------------------------
 	Route::middleware(['auth:api', 'ensure.token'])->group(function () 
-	{
+	{ 
 		Route::post('user-details', [LoginController::class, 'userDetails']);
 		Route::post('user-profile', [RegisterController::class, 'updateProfile']);
 		

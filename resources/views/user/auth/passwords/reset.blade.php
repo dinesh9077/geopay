@@ -67,7 +67,7 @@
 	<script> 
 	
 		let timer;
-		let countdown = 10; // Set the countdown duration in seconds
+		let countdown = 60; // Set the countdown duration in seconds
 
 		$('#resetFormMail').submit(function(event) 
 		{
@@ -186,7 +186,7 @@
 				});
 
 				// Reset countdown for the next attempt
-				countdown = 10;
+				countdown = 60;
 
 				// Stop the timer
 				clearInterval(timer);
