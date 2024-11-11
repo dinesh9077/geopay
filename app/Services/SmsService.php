@@ -198,7 +198,7 @@ class SmsService
 			{ 
                 $otpRecord->delete();   
 				
-				$formatted_number = '+' . ltrim($request->mobile, '+');	 
+				$formatted_number = '+' . ltrim($mobile, '+');	 
 				$user = User::where('formatted_number', $formatted_number)->first();
 				if($user)
 				{

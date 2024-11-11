@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\HomeController;
 /*
@@ -25,7 +26,11 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit')->middleware('webdecrypt.request'); 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::middleware(['webdecrypt.request'])->group(function () 
+
+Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register')->middleware('webdecrypt.request');
+Route::post('individual/register', [RegisterController::class, 'individualRegister'])->name('register.submit');
+
+Route::middleware(['webdecrypt.request'])->group(function ()
 {  
 	// Reset Password
 	Route::get('/password/reset', [ResetPasswordController::class, 'showOtpRequestForm'])->name('password.request');  

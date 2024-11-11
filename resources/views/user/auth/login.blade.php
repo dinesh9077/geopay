@@ -105,7 +105,7 @@
 									
 									<hr class="flex-grow-1 hr-line text-secondary">
 								</div>
-								<a href="register.html" class="btn btn-secondary w-100">Sign up</a>
+								<a href="{{ route('register') }}" class="btn btn-secondary w-100">Sign up</a>
 							</form>
 						</div>
 					</div>
