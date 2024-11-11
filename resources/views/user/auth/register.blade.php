@@ -116,7 +116,7 @@
 											
 											<div class="col-md-6 mb-3">
 												<label for="confirmPassword" class="required font-md">Confirm Password <span class="text-danger">*</span></label>
-												<input id="confirmation_password" name="confirmation_password" type="password"
+												<input id="password_confirmation" name="password_confirmation" type="password"
                                                 class="form-control bg-light border-light" /> 
 											</div>
 											<div class="col-md-6 mb-3">
@@ -189,7 +189,7 @@
 												</div> 
 												<div class="col-md-6 mb-3">
 													<label for="confirmPassword" class="required font-md">Confirm Password <span class="text-danger">*</span></label>
-													<input id="confirmation_password" name="confirmation_password" type="password"
+													<input id="password_confirmation" name="password_confirmation" type="password"
 													class="form-control bg-light border-light" /> 
 												</div> 
 											</div>
