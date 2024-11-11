@@ -32,6 +32,7 @@
 	// Forgot Password
 	// ---------------------------
 	Route::post('forgot-password', [LoginController::class, 'forgotPassword']);
+	Route::post('forgot-resend-otp', [LoginController::class, 'forgotResendOtp']);
 	Route::post('verify-email-otp', [LoginController::class, 'verifyEmailOtp']);
 	Route::post('reset-password', [LoginController::class, 'resetPassword']);
 	 

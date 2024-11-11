@@ -63,7 +63,7 @@
 				 
 				Helper::loginLog('login', $user, 'App');
 				
-				return $this->successResponse('User login successfully', 'user', $user);
+				return $this->successResponse('User login successfully', $user);
 			}
 			catch (\Throwable $e)
 			{
@@ -87,7 +87,7 @@
 				$user->token = $token;
 
 				// Return success response with user details
-				return $this->successResponse('User details fetched successfully', 'user', $user);
+				return $this->successResponse('User details fetched successfully', $user);
 			} catch (\Throwable $e) {
 				// Handle exceptions and return error
 				return $this->errorResponse($e->getMessage());
@@ -160,6 +160,64 @@
 			}
 		} 
 		
+		public function forgotResendOtp(Request $request)
+		{
+			$validator = Validator::make($request->all(), [
+				'email' => 'required|string|email', 
+			]);
+
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors());
+			}
+			
+			try {
+				
+				$email = $request->input('email');
+
+				// Check if the user exists with the provided email
+				$user = User::where('email', $email)->exists();
+				
+				if (!$user) {
+					return $this->errorResponse('Your email is not registered with us!');
+				}
+				
+				// Generate a random 6-digit OTP
+				$otpCode = mt_rand(100000, 999999);
+
+				// Rate limit check (optional)
+				$existingOtp = Otp::where('email_mobile', $email)
+								  ->where('created_at', '>', now()->subMinute())
+								  ->first();
+								  
+				if ($existingOtp) {
+					return $this->errorResponse('OTP was recently sent. Please try again after some time.');
+				}
+				
+				// Begin transaction
+				return DB::transaction(function () use ($email, $otpCode) {
+					// Send the OTP via Laravel Mail
+					try {
+						Mail::to($email)->send(new PasswordResetOtp($otpCode));
+					} catch (\Exception $e) {
+						return $this->errorResponse('Failed to send email. Please try again later.');
+					}
+
+					// Store or update the OTP in the database
+					Otp::updateOrCreate(
+						['email_mobile' => $email],
+						['otp' => $otpCode, 'expires_at' => now()->addMinutes(10), 'created_at' => now()] // 10-minute expiration
+					);
+					 
+					return $this->successResponse('A new OTP has been sent to your email.');
+				}, 2); // Retry transaction 3 times if it fails
+			} 
+			catch (\Throwable $e) 
+			{
+				DB::rollBack();
+				return $this->errorResponse($e->getMessage());
+			}
+		}
+	
 		public function verifyEmailOtp(Request $request)
 		{  
 			$validator = Validator::make($request->all(), [

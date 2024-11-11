@@ -26,6 +26,6 @@ class CountryController extends Controller
             return $country;
         });
 		
-        return $this->successResponse("you've successfully fetched the country data!", "countries", $countriesWithFlags); 
+        return $this->successResponse("you've successfully fetched the country data!", $countriesWithFlags); 
     }
 }

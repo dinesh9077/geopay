@@ -123,7 +123,7 @@ class RegisterController extends Controller
 			$user->load('companyDetail');
 			
             DB::commit();  
-            return $this->successResponse('User registered successfully.', 'user', $user); 
+            return $this->successResponse('User registered successfully.', $user); 
         } 
 		catch (\Throwable $e)
 		{ 
@@ -307,7 +307,7 @@ class RegisterController extends Controller
             // Commit the transaction
             DB::commit();
  
-			return $this->successResponse("User data saved successfully!", 'user', $user);
+			return $this->successResponse("User data saved successfully!", $user);
 
         } catch (\Throwable $e) {
             // Rollback the transaction if something failed

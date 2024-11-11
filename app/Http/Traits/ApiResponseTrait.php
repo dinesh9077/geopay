@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Crypt;
 
 trait ApiResponseTrait
 {
-    protected function successResponse($message = 'success', $slug = 'data',  $data = [], $statusCode = 200)
+    protected function successResponse($message = 'success',  $data = [], $statusCode = 200)
     {
         // Initialize the response structure
         $response = [
@@ -15,7 +15,10 @@ trait ApiResponseTrait
         ];
 
         // Encrypt the data if it's not empty
-        $response['response'] = $this->encryptData($data);
+		if($data)
+		{
+			$response['response'] = $this->encryptData($data);
+		}
 
         return response()->json($response, $statusCode);
     }

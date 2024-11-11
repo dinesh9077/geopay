@@ -27,19 +27,19 @@ class UserController extends Controller
 	public function userRoles()
     {
         $roles = $this->masterService->getUserRoles(1);
-        return $this->successResponse('User role data fetched successfully.', 'user_roles', $roles);
+        return $this->successResponse('User role data fetched successfully.', $roles);
     }
 
 	public function companyList()
     {
         $user = $this->masterService->getCompanies();
-        return $this->successResponse('user company details fetch successfully', 'company_details', $user);
+        return $this->successResponse('user company details fetch successfully', $user);
     }
 
 	public function userList()
     {
         $user = $this->masterService->getUsers();
-        return $this->successResponse('User List fetch successfully', 'users', $user);
+        return $this->successResponse('User List fetch successfully', $user);
     }
 
 	public function userData()
@@ -82,7 +82,7 @@ class UserController extends Controller
 					'transaction_limit' => $formattedLimits,
 				]
 			];
-			return $this->successResponse('User transaction limit fetched successfully.', 'user', $responseData);
+			return $this->successResponse('User transaction limit fetched successfully.', $responseData);
 		} catch (\Throwable $e) {
 			// Handle exceptions
 			return $this->errorResponse('An error occurred while fetching user data: ' . $e->getMessage());
