@@ -222,6 +222,6 @@ class RegisterController extends Controller
 			return $this->validateResponse($validator->errors());
 		}
 		
-		return $this->smsService->verifyOtp($request->mobile, $request->otp, true);
+		return $this->smsService->verifyOtp($request->mobile_number, $request->otp, true);
 	}
 }
