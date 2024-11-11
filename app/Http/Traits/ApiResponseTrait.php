@@ -48,6 +48,26 @@ trait ApiResponseTrait
 
         return base64_encode($encrypted);
     }
+	
+	// WEB
+	protected function webSuccessResponse($message = 'success', $data = [])
+    {
+        // Initialize the response structure
+        $response = [
+            'status' => 'success',
+            'message' => $message,
+        ];
+
+        // Encrypt the data if it's not empty
+        $response['response'] = $this->encryptData($data);
+
+        return response()->json($response);
+    }
+
+    protected function webErrorResponse($message)
+    {
+        return response()->json(['status' => 'error', 'message' => $message]);
+    }
 }
 ?>
 

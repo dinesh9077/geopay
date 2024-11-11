@@ -22,7 +22,7 @@ class EmailService
 	* @return \Illuminate\Http\JsonResponse
 	*/
 	 
-    public function resendOtp($email)
+    public function resendOtp($email, $isWeb = false)
     {
         try {
             // Check if an OTP already exists for the mobile number
@@ -48,11 +48,13 @@ class EmailService
             }
 
             // Send the OTP to the user
-            return $this->sendOtp($email, $otp, $isSend = true);
-        } catch (\Throwable $e) {
+            return $this->sendOtp($email, $otp, $isSend = true, $isWeb);
+        } catch (\Throwable $e) 
+		{
             // Log error and return response
             Log::error('Resend OTP failed: ' . $e->getMessage()); 
-            return $this->errorResponse('Resend OTP failed: ' . $e->getMessage());
+			$responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
+            return $this->{$responseType}('Resend OTP failed: ' . $e->getMessage());
         }
     }
 	
@@ -63,9 +65,10 @@ class EmailService
      * @param string $otp
      * @return \Illuminate\Http\JsonResponse
      */
-    public function sendOtp($email, $otp, $isSend = false)
+    public function sendOtp($email, $otp, $isSend = false, $isWeb = false)
     {  
 		// Send the verification email 
+		 
 		try {
 			Mail::to($email)->send(new OtpEmail($otp));
 			
@@ -78,15 +81,15 @@ class EmailService
 					'created_at' => now()
 				]);
 			}
-			  
-			return $this->successResponse('OTP sent to your email.');
+			$responseType =  $isWeb ? 'webSuccessResponse' : 'successResponse';  
+			return $this->{$responseType}('OTP sent to your email.');
 		} 
 		catch (\Exception $e)
 		{
 			// Log exception
             Log::error('email sending failed due to exception: ' . $e->getMessage());
- 
-			return $this->errorResponse('Failed to send email. Please try again later.');
+			$responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
+			return $this->{$responseType}('Failed to send email. Please try again later.');
 		}   
     } 
 	
@@ -97,7 +100,7 @@ class EmailService
     * @param string $otp
     * @return \Illuminate\Http\JsonResponse
     */
-    public function verifyOtp($email, $otp)
+    public function verifyOtp($email, $otp, $isWeb = false)
     {
         try {
             // Fetch the OTP record for the given mobile number
@@ -109,14 +112,17 @@ class EmailService
             if ($otpRecord && $otpRecord->expires_at > Carbon::now())
 			{ 
                 $otpRecord->delete();   
-                return $this->successResponse('OTP verified successfully.'); 
+				$responseType =  $isWeb ? 'webSuccessResponse' : 'successResponse';  	
+                return $this->{$responseType}('OTP verified successfully.'); 
             } else {
-                return $this->errorResponse('Invalid or expired OTP.');
+                $responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
+				return $this->{$responseType}('Invalid or expired OTP.');
             }
         } catch (\Throwable $e) {
             // Log error and return response
             Log::error('OTP verification failed: ' . $e->getMessage());
-            return $this->errorResponse('OTP verification failed: ' . $e->getMessage());
+			$responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
+			return $this->{$responseType}('OTP verification failed: ' . $e->getMessage());
         }
     }
 }

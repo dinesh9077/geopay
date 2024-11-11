@@ -25,10 +25,18 @@ Route::get('/', function () {
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit')->middleware('webdecrypt.request'); 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+ 
+Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('individual/register', [RegisterController::class, 'individualRegister'])->name('register.individual')->middleware('webdecrypt.request');
+Route::post('company/register', [RegisterController::class, 'companyRegister'])->name('register.company')->middleware('webdecrypt.request');
 
-
-Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register')->middleware('webdecrypt.request');
-Route::post('individual/register', [RegisterController::class, 'individualRegister'])->name('register.submit');
+Route::post('email/send', [RegisterController::class, 'sendEmailOtp'])->name('email.send')->middleware('webdecrypt.request');
+Route::post('/email/resend', [RegisterController::class, 'resendEmailOtp'])->name('email.resend')->middleware('webdecrypt.request');
+Route::post('/verify/email-otp', [RegisterController::class, 'verifyEmailOtp'])->name('verify.email-otp')->middleware('webdecrypt.request');
+ 
+Route::post('/mobile/send', [RegisterController::class, 'sendMobileOtp'])->name('mobile.send')->middleware('webdecrypt.request');
+Route::post('/mobile/resend', [RegisterController::class, 'resendMobileOtp'])->name('mobile.resend')->middleware('webdecrypt.request');
+Route::post('/verify/mobile-otp', [RegisterController::class, 'verifyMobileOtp'])->name('verify.mobile-otp')->middleware('webdecrypt.request');
 
 Route::middleware(['webdecrypt.request'])->group(function ()
 {  

@@ -9,9 +9,27 @@
 		<link rel="stylesheet" href="{{ asset('assets/css/animate.min.css') }}" /> 
 		<link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+		<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
+		<link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css" />
-	</head>
-	
+		<style>
+			.select2-container .select2-selection--single .select2-selection__rendered {
+				display: flex;
+				align-items: center;
+			}
+			
+			.select2-container .select2-selection--single .select2-selection__rendered img {
+				margin-right: 8px;
+			} 
+			
+			.select2-container .select2-selection--single {
+				height: 35px !important;
+			}
+			.select2-container--default .select2-selection--single .select2-selection__rendered { 
+				line-height: 35px !important;
+			}
+		</style>
+	</head> 
 	<body>
 		<div class="container-fluid">
 			<div class="row min-vh-100">
@@ -67,7 +85,7 @@
 							<div class="tab-content" id="pills-tabContent">
 								<div class="tab-pane fade show active" id="register-individual" role="tabpanel"
                                 aria-labelledby="register-individual-tab"> 
-									<form id="individualRegisterForm" action="{{ route('register.submit') }}" method="post">
+									<form id="individualRegisterForm" action="{{ route('register.individual') }}" method="post">
 										<div class="row">
 											<div class="col-md-6 mb-3">
 												<label for="first_name" class="required font-md">First Name <span class="text-danger">*</span></label>
@@ -83,32 +101,27 @@
 											<div class="col-md-6 mb-3">
 												<label for="email" class="required font-md">Email <span class="text-danger">*</span></label>
 												<div class="input-group">
-													<input id="email" name="email" type="email" class="form-control bg-light border-light" />
-													<a class="input-group-text bg-light border-2 verify-text" data-bs-toggle="modal" data-bs-target="#myModal">Verify</a>
+													<input id="email" name="email" type="email" class="form-control bg-light border-light" autocomplete="off"/>
+													<input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control bg-light border-light" value="0" >
+													<button class="input-group-text bg-light border-2 verify-text" id="emailVerifyText" onclick="verifyOtp('email', event, 'individualRegisterForm')">Verify</button>
 												</div> 
 											</div>
+											
 											<div class="col-md-6 mb-3">
 												<label for="password" class="required font-md">Password <span class="text-danger">*</span></label>
-												<input id="password" name="password" type="password"
-                                                class="form-control bg-light border-light" />
-												<div class="text-danger" id="password_error"></div>
+												<input id="password" name="password" type="password" autocomplete="off" class="form-control bg-light border-light" /> 
 											</div> 
 										</div>
 										<div class="row">
 											
 											<div class="col-md-6 mb-3">
 												<label for="confirmPassword" class="required font-md">Confirm Password <span class="text-danger">*</span></label>
-												<input id="confirmPasswordIndividual" name="confirmPasswordIndividual" type="password"
-                                                class="form-control bg-light border-light" />
-												<div class="text-danger" id="confirmPassword_error"></div>
+												<input id="confirmation_password" name="confirmation_password" type="password"
+                                                class="form-control bg-light border-light" /> 
 											</div>
 											<div class="col-md-6 mb-3">
 												<label for="country" class="required font-md">Country <span class="text-danger">*</span></label>
-												<select id="country" name="country_id" class="form-control bg-light border-light">
-													<option value="">Select Country</option>
-													<option value="1">United States</option>
-													<option value="2">Canada</option>
-													<option value="3">United Kingdom</option>
+												<select id="country_id" name="country_id" class="form-control bg-light border-light"> 
 												</select>
 											</div>
 										</div>
@@ -116,9 +129,11 @@
 										<div class="row">
 											<div class="col-md-6 mb-3">
 												<label for="mobile_number" class="required font-md">Mobile Number <span class="text-danger">*</span></label>
-												<input id="mobile_number" name="mobile_number" type="tel"
-                                                class="form-control bg-light border-light" pattern="[0-9]*" inputmode="numeric" />
-												<div class="text-danger" id="mobile_number_error"></div>
+												<div class="input-group">
+													<input id="mobile_number" name="mobile_number" type="text" class="form-control bg-light border-light" autocomplete="off"/>
+													<input id="is_mobile_verify" name="is_mobile_verify" type="hidden" class="form-control bg-light border-light" value="0" >
+													<button class="input-group-text bg-light border-2 verify-text" id="mobileVerifyText" onclick="verifyOtp('mobile_number', event, 'individualRegisterForm')">Verify</button>
+												</div>  
 											</div>
 											
 											<div class="col-md-6 mb-3">
@@ -128,8 +143,8 @@
 										</div> 
 										<div class="mb-3">
 											<div class="d-flex">
-												<input type="checkbox" id="terms" name="terms" required class="me-2 font-md" />
-												<label for="terms" class="d-flex text-secondary font-md"> I have read the User agreement and I accept it</label>
+												<input type="checkbox" id="terms" name="terms" class="me-2 font-md" />
+												<label for="terms" value="1" class="d-flex text-secondary font-md"> I have read the User agreement and I accept it</label>
 											</div> 
 										</div> 
 										<div class="text-center">
@@ -138,65 +153,70 @@
 									</form>
 								</div>
 								<div class="tab-pane fade" id="register-company" role="tabpanel" aria-labelledby="register-company-tab">
-									<form class="mt-4">
+									<form class="mt-4" id="companyRegisterForm" action="{{ route('register.company') }}" method="post">
 										<!-- Company Form 1 -->
 										<div class="step step-1">
-											<div class="row mb-3">
-												<div class="col-md-6">
-													<label for="firstName">First Name</label>
-													<input type="text" id="firstName" name="firstName"
-                                                    class="form-control bg-light border-light">
-													<div class="text-danger" id="firstName-error"></div>
+											<div class="row">
+												<div class="col-md-6 mb-3">
+													<label for="first_name" class="required font-md">First Name <span class="text-danger">*</span></label>
+													<input id="first_name" name="first_name" type="text" class="form-control bg-light border-light"/>
 												</div>
-												<div class="col-md-6">
-													<label for="lastName">Last Name</label>
-													<input type="text" id="lastName" name="lastName"
-                                                    class="form-control bg-light border-light">
-													<div class="text-danger" id="lastName-error"></div>
+												<div class="col-md-6 mb-3">
+													<label for="last_name" class="required font-md">Last Name <span class="text-danger">*</span></label>
+													<input id="last_name" name="last_name" type="text" class="form-control bg-light border-light"/> 
 												</div>
 											</div>
-											<div class="row mb-3">
-												<div class="col-md-6">
-													<label for="mobile">Mobile Number</label>
-													<div class="d-flex">
-														<div class="col-4">
-															<select class="form-control bg-light border-light">
-																<option>+1</option>
-															</select>
-														</div>
-														<div class="col-8 d-flex">
-															<input type="text" id="mobile" name="mobile"
-                                                            class="form-control bg-light border-light ms-2">
-														</div>
-													</div>
-													<div class="text-danger" id="mobile-error"></div>
-												</div>
-												<div class="col-md-6">
-													<label for="companyEmail" class="required font-md">Email</label>
+										
+											<div class="row">
+												<div class="col-md-6 mb-3">
+													<label for="email" class="required font-md">Email <span class="text-danger">*</span></label>
 													<div class="input-group">
-														<input id="companyEmail" name="companyEmail" type="email"
-                                                        class="form-control bg-light border-light" />
-														<!-- <a class="input-group-text bg-light border-0" data-bs-toggle="modal" data-bs-target="#myModal">&#9993;</a> -->
-													</div>
-													<div class="text-danger" id="email_error"></div>
+														<input id="email" name="email" type="email" class="form-control bg-light border-light" autocomplete="off"/>
+														<input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control bg-light border-light" value="0" >
+														<button class="input-group-text bg-light border-2 verify-text" id="emailVerifyText" onclick="verifyOtp('email', event, 'companyRegisterForm')">Verify</button>
+													</div> 
 												</div>
+												
+												<div class="col-md-6 mb-3">
+													<label for="company_name" class="required font-md">Company Name <span class="text-danger">*</span></label>
+													<input id="company_name" name="company_name" type="text" class="form-control bg-light border-light"/> 
+												</div>  
 											</div>
-											<div class="row mb-4">
-												<div class="col-md-6">
-													<label for="password">Password</label>
-													<input type="password" id="companyPassword" name="companyPassword"
-                                                    class="form-control bg-light border-light">
-													<div class="text-danger" id="password-error"></div>
-												</div>
-												<div class="col-md-6">
-													<label for="confirmPassword">Confirm Password</label>
-													<input type="password" id="confirmPassword" name="confirmPassword"
-                                                    class="form-control bg-light border-light">
-													<div class="text-danger" id="confirmPassword-error"></div>
-												</div>
+											<div class="row">
+												<div class="col-md-6 mb-3">
+													<label for="password" class="required font-md">Password <span class="text-danger">*</span></label>
+													<input id="password" name="password" type="password" autocomplete="off" class="form-control bg-light border-light" /> 
+												</div> 
+												<div class="col-md-6 mb-3">
+													<label for="confirmPassword" class="required font-md">Confirm Password <span class="text-danger">*</span></label>
+													<input id="confirmation_password" name="confirmation_password" type="password"
+													class="form-control bg-light border-light" /> 
+												</div> 
 											</div>
+											
+											<div class="row">
+												<div class="col-md-6 mb-3">
+													<label for="country" class="required font-md">Country <span class="text-danger">*</span></label>
+													<select id="country_id1" name="country_id" class="form-control bg-light border-light"> 
+													</select>
+												</div>
+												<div class="col-md-6 mb-3">
+													<label for="mobile_number" class="required font-md">Mobile Number <span class="text-danger">*</span></label>
+													<div class="input-group">
+														<input id="mobile_number" name="mobile_number" type="text" class="form-control bg-light border-light" autocomplete="off"/>
+														<input id="is_mobile_verify" name="is_mobile_verify" type="hidden" class="form-control bg-light border-light" value="0" >
+														<button class="input-group-text bg-light border-2 verify-text" id="mobileVerifyText" onclick="verifyOtp('mobile_number', event, 'companyRegisterForm')">Verify</button>
+													</div>  
+												</div> 
+											</div> 
+											<div class="mb-3">
+												<div class="d-flex">
+													<input type="checkbox" id="terms" name="terms" class="me-2 font-md" />
+													<label for="terms" value="1" class="d-flex text-secondary font-md"> I have read the User agreement and I accept it</label>
+												</div> 
+											</div> 
 											<div class="text-center">
-												<button type="button" class="btn btn-primary w-100 font-md">Register</button>
+												<button type="submit" class="btn btn-primary w-100 font-md">Register</button>
 											</div>
 										</div>
 									</form>
@@ -209,29 +229,396 @@
 		</div>
 		
 		<!-- Email Verification Modal -->
-		<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel"
-        aria-hidden="true">
+		<div class="modal fade" id="verifyemailmodal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="d-flex justify-content-center align-items-center">
-						<img src="favicon.png" width="50" class="modal-logo">
+						<img src="{{ asset('assets/favicon.png') }}" width="50" class="modal-logo p-1">
 					</div>
-					<div class="modal-body p-4 mt-4">
-						<form>
-							<div class="mb-4">
-								<b class="text-center d-block mb-3">Verify the OTP</b>
-								<input type="text" class="form-control" id="otp" name="otp"
-                                placeholder="Enter OTP">
+					 <!-- Modal Header -->
+					<div class="text-end m-2">
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body p-4">
+						<form id="verifyOtpEmailForm" action="{{ route('verify.email-otp') }}" method="post">
+							<b class="text-center d-block mb-4">Verify The Email Otp</b>
+							<div class="mb-4"> 
+								<input type="text" class="form-control" id="email" name="email" placeholder="Enter Email">
 							</div>
+							<div class="mb-4"> 
+								<input type="text" class="form-control" id="otp" name="otp" placeholder="Enter OTP">
+							</div>
+							<span id="resendemailotp"></span>
 							<div class="text-center">
-								<button type="submit" class="btn btn-primary w-100">Verify</button>
+								<button type="submit" class="btn btn-primary w-100">Verify Otp</button>
 							</div>
 						</form>
 					</div>                                                    
 				</div>
 			</div>
 		</div>  
+		
+		<div class="modal fade" id="verifymobile_numbermodal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="d-flex justify-content-center align-items-center">
+						<img src="{{ asset('assets/favicon.png') }}" width="50" class="modal-logo p-1">
+					</div>
+					 <!-- Modal Header -->
+					<div class="text-end m-2">
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+					</div>
+					<div class="modal-body p-4">
+						<form id="verifyOtpMobileForm" action="{{ route('verify.mobile-otp') }}" method="post">
+							<b class="text-center d-block mb-4">Verify The Mobile Otp</b>
+							<div class="mb-4"> 
+								<input type="text" class="form-control" id="mobile" name="mobile" placeholder="Enter Mobile">
+							</div>
+							<div class="mb-4"> 
+								<input type="text" class="form-control" id="otp" name="otp" placeholder="Enter OTP">
+							</div>
+							<span id="resendmobile_numberotp"></span>
+							<div class="text-center">
+								<button type="submit" class="btn btn-primary w-100">Verify Otp</button>
+							</div>
+						</form>
+					</div>                                                    
+				</div>
+			</div>
+		</div>  
+		
 		<script src="https://kit.fontawesome.com/ae360af17e.js" ></script>
 		<script src="{{ asset('assets/js/bootstrap/js/bootstrap.bundle.min.js') }}"></script>   
+		<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script>
+		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
+		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
+		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
+		@include('components.scripts')
+		<script>  
+			let timer;
+			let countdown = 60; // Set the countdown duration in seconds
+			var $individualForm = $('#individualRegisterForm'); 
+			var $companyForm = $('#companyRegisterForm'); 
+
+			const countries = @json($countriesWithFlags);
+
+			$(document).ready(function() {
+				// Initialize Select2 for the individual form
+				$individualForm.find('#country_id').select2({
+					data: countries.map(country => ({
+						id: country.id,
+						text: country.name,
+						flag: country.country_flag // Add custom data for the flag
+					})),
+					templateResult: formatCountry,
+					templateSelection: formatCountrySelection,
+					width: "100%"
+				});
+				
+				// Initialize Select2 for the company form
+				$companyForm.find('#country_id1').select2({
+					data: countries.map(country => ({
+						id: country.id,
+						text: country.name,
+						flag: country.country_flag
+					})),
+					templateResult: formatCountry,
+					templateSelection: formatCountrySelection,
+					width: "100%"
+				});
+				
+				// Template for the dropdown items
+				function formatCountry(country) {
+					if (!country.id) {
+						return country.text; // Default text if no id (for the placeholder option)
+					}
+					const flagImg = '<img src="'+country.flag+'" style="width: 20px; height: 20px; margin-right: 4px; margin-bottom: 4px;" />';
+					return $('<span>'+flagImg+' '+country.text+'</span>');
+				}
+
+				// Template for the selected item
+				function formatCountrySelection(country) {
+					if (!country.id) {
+						return country.text;
+					}
+					const flagImg = '<img src="'+country.flag+'" style="width: 20px; height: 20px; margin-right: 4px; margin-bottom: 4px;" />';
+					return $('<span>'+flagImg+' '+country.text+'</span>');
+				}
+			
+				// You can set a default value for both forms (e.g., country with ID 98)
+				$individualForm.find('#country_id').val('98').trigger('change'); 
+				$companyForm.find('#country_id1').val('98').trigger('change');
+			});
+
+			
+			 
+			// Attach the submit event handler
+			$individualForm.submit(function(event) 
+			{
+				event.preventDefault();   
+				
+				$(this).find('button').prop('disabled',true);   
+				// Create a JSON object from form data
+				var formData = {};
+				$(this).find('input,select').each(function() {
+					var inputName = $(this).attr('name');
+					var inputValue = $(this).val();
+					formData[inputName] = inputValue; 
+				}); 
+				
+				// Encrypt data before sending
+				const encrypted_data = encryptData(JSON.stringify(formData));
+				
+				$.ajax({
+					async: true,
+					type: $(this).attr('method'),
+					url: $(this).attr('action'),
+					data: { encrypted_data: encrypted_data, '_token': "{{ csrf_token() }}" },
+					cache: false, 
+					dataType: 'Json', 
+					success: function (res) 
+					{ 
+						$('#individualRegisterForm').find('button').prop('disabled',false);	 
+						$('.error_msg').remove(); 
+						if(res.status === "error")
+						{ 
+							toastrMsg(res.status, res.message);
+						}
+						else if(res.status == "validation")
+						{  
+							$.each(res.errors, function(key, value) {
+								var inputField = $('#' + key);
+								var errorSpan = $('<span>')
+								.addClass('error_msg text-danger') 
+								.attr('id', key + 'Error')
+								.text(value[0]);  
+								if(key == "email" || key == "terms")
+								{
+									inputField.parent().parent().append(errorSpan);
+								}
+								else
+								{
+									inputField.parent().append(errorSpan);
+								}
+								
+							});
+						}
+						else
+						{ 
+							toastrMsg(res.status, res.message); 
+							window.location.href = "{{ route('home') }}";
+						}
+					} 
+				});
+			});
+			 
+			$('#verifyOtpEmailForm, #verifyOtpMobileForm').submit(function(event) {
+				event.preventDefault();
+
+				const $form = $(this); // Cache the current form being submitted
+				$form.find('button').prop('disabled', true); // Disable submit button
+
+				// Create a JSON object from form data
+				let formData = {};
+				$form.find('input').each(function() {
+					const inputName = $(this).attr('name');
+					const inputValue = $(this).val();
+					formData[inputName] = inputValue;
+				});
+				 
+				// Encrypt data before sending
+				const encrypted_data = encryptData(JSON.stringify(formData));
+
+				$.ajax({
+					async: true,
+					type: $form.attr('method'),
+					url: $form.attr('action'),
+					data: { encrypted_data: encrypted_data, '_token': "{{ csrf_token() }}" },
+					cache: false,
+					dataType: 'json',
+					success: function(res) {
+						$form.find('button').prop('disabled', false); // Enable the submit button
+						$form.find('.error_msg').remove(); // Remove any previous error messages
+
+						if (res.status === "error") {
+							toastrMsg(res.status, res.message);
+						} else if (res.status === "validation") {
+							$.each(res.errors, function(key, value) {
+								const inputField = $form.find('#' + key);
+								const errorSpan = $('<span>')
+									.addClass('error_msg text-danger')
+									.attr('id', key + 'Error')
+									.text(value[0]);
+								inputField.parent().append(errorSpan);
+							});
+						} else {
+							toastrMsg(res.status, res.message);
+							
+							if ($form.attr('id') === 'verifyOtpEmailForm') 
+							{ 	
+								if($('#register-individual-tab').hasClass('active')) {
+									$individualForm.find('#is_email_verify').val(1);
+									$individualForm.find('#email').attr('readonly', true);
+									$individualForm.find('#emailVerifyText').addClass('text-success').text('verified').attr('disabled', true);
+								} else {
+									$companyForm.find('#is_email_verify').val(1);
+									$companyForm.find('#email').attr('readonly', true);
+									$companyForm.find('#emailVerifyText').addClass('text-success').text('verified').attr('disabled', true);
+								}
+ 
+								$form.find('input').val('');
+								$('#verifyemailmodal').modal('hide'); 
+							}
+							else
+							{
+								if($('#register-individual-tab').hasClass('active')) {
+									$individualForm.find('#is_mobile_verify').val(1);
+									$individualForm.find('#mobile_number').attr('readonly', true);
+									$individualForm.find('#mobileVerifyText').addClass('text-success').text('verified').attr('disabled', true);
+								} else {
+									$companyForm.find('#is_mobile_verify').val(1);
+									$companyForm.find('#mobile_number').attr('readonly', true);
+									$companyForm.find('#mobileVerifyText').addClass('text-success').text('verified').attr('disabled', true);
+								} 
+								
+								$form.find('input').val('');
+								$('#verifymobile_numbermodal').modal('hide'); 
+							}
+						}
+					} 
+				});
+			});
+ 
+			function verifyOtp(keyId, event, formId)
+			{
+				event.preventDefault();   
+				 
+				// Create a JSON object from form data
+				var formData = {};
+				var inputName = $('#'+ formId).find('#'+ keyId).attr('name');
+				var inputValue = $('#'+ formId).find('#'+ keyId).val();
+				formData[inputName] = inputValue;  
+		 
+				// Encrypt data before sending
+				const encrypted_data = encryptData(JSON.stringify(formData));
+				
+				const sendRoutes = {
+					email: "{{ route('email.send') }}",
+					mobile_number: "{{ route('mobile.send') }}",
+					// Add more routes as needed
+				};
+ 
+				$.ajax({
+					async: true,
+					type: "POST",
+					url: sendRoutes[keyId],
+					data: { encrypted_data: encrypted_data, '_token': "{{ csrf_token() }}" },
+					cache: false, 
+					dataType: 'Json', 
+					success: function (res) 
+					{   
+						$('.error_msg').remove(); 
+						if(res.status === "error")
+						{ 
+							toastrMsg(res.status, res.message);
+						}
+						else if(res.status == "validation")
+						{  
+							$.each(res.errors, function(key, value) {
+								var inputField = $('#'+ formId).find('#'+ key);
+								var errorSpan = $('<span>')
+								.addClass('error_msg text-danger') 
+								.attr('id', key + 'Error')
+								.text(value[0]);  
+								inputField.parent().parent().append(errorSpan); 
+							});
+						}
+						else
+						{    
+							$('#verify'+keyId+'modal').modal('show'); 
+							
+							const resendRoutes = {
+								email: "{{ route('email.resend') }}",
+								mobile_number: "{{ route('mobile.resend') }}", 
+							};
+							
+							$('#verify'+keyId+'modal').find('form').find('#email').val(inputValue);
+							const resendUrl = resendRoutes[keyId];
+							timer = setInterval(function() {
+								updateTimer(keyId, 'resend'+keyId+'otp', resendUrl, $('#'+ formId));
+							}, 1000); 
+						}
+					} 
+				});
+			}
+			
+			function resendOtp(keyId, resendId, resendUrl, commonForm) {
+				// Ensure event.preventDefault() works
+				event.preventDefault();
+
+				// Clear any existing timer to avoid multiple timers running
+				clearInterval(timer);
+
+				let formData = {};
+				const inputName = commonForm.find('#' + keyId).attr('name');
+				const inputValue = commonForm.find('#' + keyId).val();
+				formData[inputName] = inputValue;
+
+				// Encrypt data before sending
+				const encrypted_data = encryptData(JSON.stringify(formData));
+
+				$.ajax({
+					async: true,
+					type: "POST",
+					url: resendUrl, // Using the dynamic URL passed to the function
+					data: { encrypted_data: encrypted_data, '_token': "{{ csrf_token() }}" },
+					cache: false,
+					dataType: 'json',
+					success: function(res) {
+						$('.error_msg').remove();
+						if (res.status === "error") {
+							toastrMsg(res.status, res.message);
+						} 
+						else if (res.status == "validation") 
+						{
+							$.each(res.errors, function(key, value) {
+								const inputField = commonForm.find('#' + key);
+								const errorSpan = $('<span>')
+									.addClass('error_msg text-danger')
+									.attr('id', key + 'Error')
+									.text(value[0]);
+								inputField.parent().parent().append(errorSpan);
+							});
+						} else {
+							toastrMsg(res.status, res.message);
+							countdown = 60; // Reset countdown after successful OTP resend
+							timer = setInterval(function() {
+								updateTimer(keyId, resendId, resendUrl, commonForm);
+							}, 1000);
+						}
+					}
+				});
+			}
+
+			function updateTimer(keyId, resendId, resendUrl, commonForm) {
+				const timerElement = document.getElementById(resendId);
+
+				if (countdown > 0) {
+					timerElement.textContent = `Resend in ${countdown} seconds`;
+					countdown--;
+				} else {
+					// Enable the resend link once countdown reaches zero
+					timerElement.innerHTML = '<a href="javascript:;" id="resendLink">Resend OTP</a>';
+
+					// Attach event listener to trigger OTP resend functionality
+					document.getElementById('resendLink').addEventListener('click', function(event) {
+						resendOtp(keyId, resendId, resendUrl, commonForm); // Call the function to resend OTP
+					});
+
+					// Stop the timer
+					clearInterval(timer);
+				}
+			}
+		</script> 
 	</body> 
 </html>

@@ -34,7 +34,7 @@ class SmsService
 	* @return \Illuminate\Http\JsonResponse
 	*/
 	 
-    public function resendOtp($destination)
+    public function resendOtp($destination, $isWeb = false)
     {
         try {
             // Check if an OTP already exists for the mobile number
@@ -60,11 +60,12 @@ class SmsService
             }
 
             // Send the OTP to the user
-            return $this->sendOtp($destination, $otp, $isSend = true);
+            return $this->sendOtp($destination, $otp, $isSend = true, $isWeb);
         } catch (\Throwable $e) {
             // Log error and return response
             Log::error('Resend OTP failed: ' . $e->getMessage()); 
-            return $this->errorResponse('Resend OTP failed: ' . $e->getMessage());
+            $responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
+			return $this->{$responseType}('Resend OTP failed: ' . $e->getMessage());
         }
     }
 	
@@ -75,7 +76,7 @@ class SmsService
      * @param string $otp
      * @return \Illuminate\Http\JsonResponse
      */
-    public function sendOtp($destination, $otp, $isSend = false)
+    public function sendOtp($destination, $otp, $isSend = false, $isWeb = false)
     { 
         try {
             // Construct the message
@@ -110,8 +111,8 @@ class SmsService
 							'created_at' => now()
 						]);
 					}
-                      
-                    return $this->successResponse('OTP sent to your mobile number.');
+                    $responseType =  $isWeb ? 'webSuccessResponse' : 'successResponse'; 
+					return $this->{$responseType}('OTP sent to your mobile number.');
                 }
                 else
                 {
@@ -124,7 +125,8 @@ class SmsService
                     ]);
                     
                     // Return the API error message
-                    return $this->errorResponse('Something went wrong!');
+                    $responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
+					return $this->{$responseType}('Something went wrong!');
                 }
             } 
             else 
@@ -137,16 +139,15 @@ class SmsService
                     'otp' => $otp,
                 ]);
                 
-                return $this->errorResponse('SMS sending failed with status: '.$response->status());
+				$responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
+				return $this->{$responseType}('SMS sending failed with status: '.$response->status());
             }
         } 
         catch (\Exception $e)
-        {
-            // Log exception
+        { 
             Log::error('SMS sending failed due to exception: ' . $e->getMessage());
-
-            // Handle exception
-            return $this->errorResponse('SMS sending failed: ' . $e->getMessage());
+			$responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
+			return $this->{$responseType}('SMS sending failed: ' . $e->getMessage());
         }
     }
 	 
@@ -185,7 +186,7 @@ class SmsService
     * @param string $otp
     * @return \Illuminate\Http\JsonResponse
     */
-    public function verifyOtp($mobile, $otp)
+    public function verifyOtp($mobile, $otp, $isWeb = false)
     {
         try {
             // Fetch the OTP record for the given mobile number
@@ -204,14 +205,17 @@ class SmsService
 				{
 					$user->update(['is_mobile_verify' => 1]);
 				}
-                return $this->successResponse('OTP verified successfully.'); 
+				$responseType =  $isWeb ? 'webSuccessResponse' : 'successResponse';  	
+                return $this->{$responseType}('OTP verified successfully.'); 
             } else {
-                return $this->errorResponse('Invalid or expired OTP.');
+                $responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
+				return $this->{$responseType}('Invalid or expired OTP.');
             }
         } catch (\Throwable $e) {
             // Log error and return response
             Log::error('OTP verification failed: ' . $e->getMessage());
-            return $this->errorResponse('OTP verification failed: ' . $e->getMessage());
+            $responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
+			return $this->{$responseType}('OTP verification failed: ' . $e->getMessage());
         }
     }
 }
