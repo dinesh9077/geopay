@@ -36,7 +36,11 @@
 				'message' => 'URL not found. Please check the endpoint and try again.',
 				], 404);
 			}
-			 
+			
+			// Handle AuthenticationException for API requests
+			if ($exception instanceof AuthenticationException) {
+				return $this->unauthenticated($request, $exception);
+			}
 			
 			// Use parent render method for all other exceptions
 			return parent::render($request, $exception);
