@@ -9,7 +9,7 @@
 	use Illuminate\Support\Facades\Http;
 	use Illuminate\Support\Facades\Storage;
 	use App\Http\Traits\ApiResponseTrait; 
-	use Validator, DB;
+	use Validator, DB, Log;
 	
 	class UserKycController extends Controller
 	{ 
@@ -65,12 +65,13 @@
 			}
 		} 
 		 
-		public function getKYCVerification()
-		{
+		public function getKYCVerification(Request $request)
+		{  
+				
 			// Obtain the access token
 			$authResponse = Http::withOptions(['verify' => false])->withHeaders([
 				'Content-Type' => 'application/x-www-form-urlencoded',
-				'Authorization' => 'Basic NjUyZDkzMjI3MGE5MDQwMDFjZGYwNGM5OlY0SldTUlJCRVZFSUpKVEdaTFBQU05FVFRDMzJUVjVZ'
+				'Authorization' => 'Basic '.env('META_BEARER')
 			])->asForm()->post('https://api.getmati.com/oauth', [
 				'grant_type' => 'client_credentials'
 			]);
@@ -98,7 +99,7 @@
 					}
 
 					$response = $verificationResponse->json();
-
+					dd($response);
 					// Process and store the video
 					$storedVideoUrl = null;
 					if (isset($response['steps'][0]['data']['videoUrl'])) {
