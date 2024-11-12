@@ -23,12 +23,14 @@
 		
 		public function render($request, Throwable $exception)
 		{
-			// If the request is not an API request, abort with a 404 response
-			if (!$request->expectsJson()) {
-				abort(404);
-			}
+		
+		 
 			// Handle NotFoundHttpException for API requests
 			if ($exception instanceof NotFoundHttpException) {
+			    // If the request is not an API request, abort with a 404 response
+			    if (!$request->expectsJson()) { 
+    				abort(404);
+    			}
 				return response()->json([
 				'success' => false,
 				'message' => 'URL not found. Please check the endpoint and try again.',
