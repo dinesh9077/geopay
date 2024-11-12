@@ -48,9 +48,7 @@
 		
 		protected function unauthenticated($request, AuthenticationException $exception)
 		{
-			if (!$request->expectsJson()) {
-				return redirect()->route('login');
-			}
+			 
 			// Return JSON response for unauthenticated requests
 			return response()->json([
 				'success' => false,
