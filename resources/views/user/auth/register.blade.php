@@ -128,7 +128,7 @@
 										
 										<div class="row">
 											<div class="col-md-6 mb-3">
-												<label for="mobile_number" class="required font-md">Mobile Number <span class="text-danger">*</span></label>
+												<label for="mobile_number" class="required font-md">Mobile Number (Without country code) <span class="text-danger">*</span></label>
 												<div class="input-group">
 													<input id="mobile_number" name="mobile_number" type="text" class="form-control bg-light border-light" autocomplete="off"/>
 													<input id="is_mobile_verify" name="is_mobile_verify" type="hidden" class="form-control bg-light border-light" value="0" >
@@ -143,8 +143,8 @@
 										</div> 
 										<div class="mb-3">
 											<div class="d-flex">
-												<input type="checkbox" id="terms" name="terms" class="me-2 font-md" />
-												<label for="terms" value="1" class="d-flex text-secondary font-md"> I have read the User agreement and I accept it</label>
+												<input type="checkbox" id="terms" name="terms" class="me-2 font-md" value="1" />
+												<label for="terms" class="d-flex text-secondary font-md"> I have read the User agreement and I accept it</label>
 											</div> 
 										</div> 
 										<div class="text-center">
@@ -152,73 +152,70 @@
 										</div>
 									</form>
 								</div>
-								<div class="tab-pane fade" id="register-company" role="tabpanel" aria-labelledby="register-company-tab">
+								<div class="tab-pane fade" id="register-company" role="tabpanel" aria-labelledby="register-company-tab"> 
 									<form class="mt-4" id="companyRegisterForm" action="{{ route('register.company') }}" method="post">
-										<!-- Company Form 1 -->
-										<div class="step step-1">
-											<div class="row">
-												<div class="col-md-6 mb-3">
-													<label for="first_name" class="required font-md">First Name <span class="text-danger">*</span></label>
-													<input id="first_name" name="first_name" type="text" class="form-control bg-light border-light"/>
-												</div>
-												<div class="col-md-6 mb-3">
-													<label for="last_name" class="required font-md">Last Name <span class="text-danger">*</span></label>
-													<input id="last_name" name="last_name" type="text" class="form-control bg-light border-light"/> 
-												</div>
+										<div class="row">
+											<div class="col-md-6 mb-3">
+												<label for="first_name" class="required font-md">First Name <span class="text-danger">*</span></label>
+												<input id="first_name" name="first_name" type="text" class="form-control bg-light border-light"/>
 											</div>
-										
-											<div class="row">
-												<div class="col-md-6 mb-3">
-													<label for="email" class="required font-md">Email <span class="text-danger">*</span></label>
-													<div class="input-group">
-														<input id="email" name="email" type="email" class="form-control bg-light border-light" autocomplete="off"/>
-														<input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control bg-light border-light" value="0" >
-														<button class="input-group-text bg-light border-2 verify-text" id="emailVerifyText" onclick="verifyOtp('email', event, 'companyRegisterForm')">Verify</button>
-													</div> 
-												</div>
-												
-												<div class="col-md-6 mb-3">
-													<label for="company_name" class="required font-md">Company Name <span class="text-danger">*</span></label>
-													<input id="company_name" name="company_name" type="text" class="form-control bg-light border-light"/> 
-												</div>  
+											<div class="col-md-6 mb-3">
+												<label for="last_name" class="required font-md">Last Name <span class="text-danger">*</span></label>
+												<input id="last_name" name="last_name" type="text" class="form-control bg-light border-light"/> 
 											</div>
-											<div class="row">
-												<div class="col-md-6 mb-3">
-													<label for="password" class="required font-md">Password <span class="text-danger">*</span></label>
-													<input id="password" name="password" type="password" autocomplete="off" class="form-control bg-light border-light" /> 
-												</div> 
-												<div class="col-md-6 mb-3">
-													<label for="confirmPassword" class="required font-md">Confirm Password <span class="text-danger">*</span></label>
-													<input id="password_confirmation" name="password_confirmation" type="password"
-													class="form-control bg-light border-light" /> 
+										</div>
+									
+										<div class="row">
+											<div class="col-md-6 mb-3">
+												<label for="email" class="required font-md">Email <span class="text-danger">*</span></label>
+												<div class="input-group">
+													<input id="email" name="email" type="email" class="form-control bg-light border-light" autocomplete="off"/>
+													<input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control bg-light border-light" value="0" >
+													<button class="input-group-text bg-light border-2 verify-text" id="emailVerifyText" onclick="verifyOtp('email', event, 'companyRegisterForm')">Verify</button>
 												</div> 
 											</div>
 											
-											<div class="row">
-												<div class="col-md-6 mb-3">
-													<label for="country" class="required font-md">Country <span class="text-danger">*</span></label>
-													<select id="country_id1" name="country_id" class="form-control bg-light border-light"> 
-													</select>
-												</div>
-												<div class="col-md-6 mb-3">
-													<label for="mobile_number" class="required font-md">Mobile Number <span class="text-danger">*</span></label>
-													<div class="input-group">
-														<input id="mobile_number" name="mobile_number" type="text" class="form-control bg-light border-light" autocomplete="off"/>
-														<input id="is_mobile_verify" name="is_mobile_verify" type="hidden" class="form-control bg-light border-light" value="0" >
-														<button class="input-group-text bg-light border-2 verify-text" id="mobileVerifyText" onclick="verifyOtp('mobile_number', event, 'companyRegisterForm')">Verify</button>
-													</div>  
-												</div> 
-											</div> 
-											<div class="mb-3">
-												<div class="d-flex">
-													<input type="checkbox" id="terms" name="terms" class="me-2 font-md" />
-													<label for="terms" value="1" class="d-flex text-secondary font-md"> I have read the User agreement and I accept it</label>
-												</div> 
-											</div> 
-											<div class="text-center">
-												<button type="submit" class="btn btn-primary w-100 font-md">Register</button>
-											</div>
+											<div class="col-md-6 mb-3">
+												<label for="company_name" class="required font-md">Company Name <span class="text-danger">*</span></label>
+												<input id="company_name" name="company_name" type="text" class="form-control bg-light border-light"/> 
+											</div>  
 										</div>
+										<div class="row">
+											<div class="col-md-6 mb-3">
+												<label for="password" class="required font-md">Password <span class="text-danger">*</span></label>
+												<input id="password" name="password" type="password" autocomplete="off" class="form-control bg-light border-light" /> 
+											</div> 
+											<div class="col-md-6 mb-3">
+												<label for="confirmPassword" class="required font-md">Confirm Password <span class="text-danger">*</span></label>
+												<input id="password_confirmation" name="password_confirmation" type="password"
+												class="form-control bg-light border-light" /> 
+											</div> 
+										</div>
+										
+										<div class="row">
+											<div class="col-md-6 mb-3">
+												<label for="country" class="required font-md">Country <span class="text-danger">*</span></label>
+												<select id="country_id1" name="country_id" class="form-control bg-light border-light"> 
+												</select>
+											</div>
+											<div class="col-md-6 mb-3">
+												<label for="mobile_number" class="required font-md">Mobile Number (Without country code)  <span class="text-danger">*</span></label>
+												<div class="input-group">
+													<input id="mobile_number" name="mobile_number" type="text" class="form-control bg-light border-light" autocomplete="off"/>
+													<input id="is_mobile_verify" name="is_mobile_verify" type="hidden" class="form-control bg-light border-light" value="0" >
+													<button class="input-group-text bg-light border-2 verify-text" id="mobileVerifyText" onclick="verifyOtp('mobile_number', event, 'companyRegisterForm')">Verify</button>
+												</div>  
+											</div> 
+										</div> 
+										<div class="mb-3">
+											<div class="d-flex">
+												<input type="checkbox" id="terms" name="terms" class="me-2 font-md" value="1"/>
+												<label for="terms" class="d-flex text-secondary font-md"> I have read the User agreement and I accept it</label>
+											</div> 
+										</div> 
+										<div class="text-center">
+											<button type="submit" class="btn btn-primary w-100 font-md">Register</button>
+										</div> 
 									</form>
 								</div>
 							</div>
@@ -272,7 +269,7 @@
 						<form id="verifyOtpMobileForm" action="{{ route('verify.mobile-otp') }}" method="post">
 							<b class="text-center d-block mb-4">Verify The Mobile Otp</b>
 							<div class="mb-4"> 
-								<input type="text" class="form-control" id="mobile" name="mobile" placeholder="Enter Mobile">
+								<input type="text" class="form-control" id="mobile_number" name="mobile_number" placeholder="Enter Mobile">
 							</div>
 							<div class="mb-4"> 
 								<input type="text" class="form-control" id="otp" name="otp" placeholder="Enter OTP">
@@ -298,8 +295,8 @@
 			let timer;
 			let countdown = 60; // Set the countdown duration in seconds
 			var $individualForm = $('#individualRegisterForm'); 
-			var $companyForm = $('#companyRegisterForm'); 
-
+			var $companyForm = $('#companyRegisterForm');  
+			 
 			const countries = @json($countriesWithFlags);
 
 			$(document).ready(function() {
@@ -358,16 +355,22 @@
 				event.preventDefault();   
 				
 				$(this).find('button').prop('disabled',true);   
-				// Create a JSON object from form data
 				var formData = {};
-				$(this).find('input,select').each(function() {
+				$(this).find('input, select, checkbox').each(function() {
 					var inputName = $(this).attr('name');
-					var inputValue = $(this).val();
-					formData[inputName] = inputValue; 
-				}); 
-				
+
+					if ($(this).is(':checkbox')) {
+						// For checkboxes, store whether it is checked (true or false)
+						formData[inputName] = $(this).is(':checked');
+					} else {
+						// For other inputs, use the value
+						formData[inputName] = $(this).val();
+					}
+				});
+
 				// Encrypt data before sending
 				const encrypted_data = encryptData(JSON.stringify(formData));
+
 				
 				$.ajax({
 					async: true,
@@ -406,7 +409,7 @@
 						else
 						{ 
 							toastrMsg(res.status, res.message); 
-							window.location.href = "{{ route('home') }}";
+							window.location.href = "{{ route('metamap.kyc') }}";
 						}
 					} 
 				});
@@ -496,16 +499,20 @@
 				// Create a JSON object from form data
 				var formData = {};
 				var inputName = $('#'+ formId).find('#'+ keyId).attr('name');
-				var inputValue = $('#'+ formId).find('#'+ keyId).val();
+				var inputValue = $('#'+ formId).find('#'+ keyId).val(); 
 				formData[inputName] = inputValue;  
-		 
+				 
+				var countryInputName = $('#' + formId).find('#country_id, #country_id1').attr('name');  
+				var countryInputValue = $('#' + formId).find('#country_id, #country_id1').val(); 
+				 
+				formData[countryInputName] = countryInputValue;
+ 
 				// Encrypt data before sending
 				const encrypted_data = encryptData(JSON.stringify(formData));
 				
 				const sendRoutes = {
 					email: "{{ route('email.send') }}",
-					mobile_number: "{{ route('mobile.send') }}",
-					// Add more routes as needed
+					mobile_number: "{{ route('mobile.send') }}", 
 				};
  
 				$.ajax({
@@ -525,7 +532,7 @@
 						else if(res.status == "validation")
 						{  
 							$.each(res.errors, function(key, value) {
-								var inputField = $('#'+ formId).find('#'+ key);
+								var inputField = $('#'+ formId).find('input[name="'+key+'"]');
 								var errorSpan = $('<span>')
 								.addClass('error_msg text-danger') 
 								.attr('id', key + 'Error')
@@ -535,14 +542,28 @@
 						}
 						else
 						{    
-							$('#verify'+keyId+'modal').modal('show'); 
-							
+							$('#verify'+keyId+'modal').modal('show');
+							$('#verify' + keyId + 'modal').find('input').val('');
+							$('#verify' + keyId + 'modal').find('#'+ 'resend'+keyId+'otp').text('');
+							if(res.response)
+							{
+								const result = decryptData(res.response); 
+								if (result[keyId]) {
+									// Fill both #email and #mobile_number fields with `result[keyId]` 
+									$('#verify' + keyId + 'modal').find('form #email, form #mobile_number').val(result[keyId]);
+								}
+							}
+							else
+							{
+								$('#verify' + keyId + 'modal').find('form #email, form #mobile_number').val(inputValue); 
+							}
 							const resendRoutes = {
 								email: "{{ route('email.resend') }}",
 								mobile_number: "{{ route('mobile.resend') }}", 
 							};
 							
-							$('#verify'+keyId+'modal').find('form').find('#email').val(inputValue);
+							countdown = 60;
+							clearInterval(timer);
 							const resendUrl = resendRoutes[keyId];
 							timer = setInterval(function() {
 								updateTimer(keyId, 'resend'+keyId+'otp', resendUrl, $('#'+ formId));
@@ -592,6 +613,7 @@
 						} else {
 							toastrMsg(res.status, res.message);
 							countdown = 60; // Reset countdown after successful OTP resend
+							clearInterval(timer);
 							timer = setInterval(function() {
 								updateTimer(keyId, resendId, resendUrl, commonForm);
 							}, 1000);

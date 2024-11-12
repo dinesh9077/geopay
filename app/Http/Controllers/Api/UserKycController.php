@@ -27,7 +27,7 @@
 			 
 			// Check for validation failures
 			if ($validator->fails()) {
-				return $this->errorResponse($validator->errors());
+				return $this->validateResponse($validator->errors());
 			}
 
 			// Start database transaction
@@ -57,11 +57,10 @@
 				// Commit the transaction
 				DB::commit();
 
-				return $this->successResponse('KYC verification successful.', 'user_meta_kyc', $userKyc);
+				return $this->successResponse('KYC verification successful.', $userKyc);
 			} catch (\Throwable $e) {
 				// Rollback the transaction in case of error
-				DB::rollBack();
-  
+				DB::rollBack(); 
 				return $this->errorResponse('Something went wrong while processing your request. Please try again later.');
 			}
 		} 

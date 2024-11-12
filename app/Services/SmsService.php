@@ -112,7 +112,7 @@ class SmsService
 						]);
 					}
                     $responseType =  $isWeb ? 'webSuccessResponse' : 'successResponse'; 
-					return $this->{$responseType}('OTP sent to your mobile number.');
+					return $this->{$responseType}('OTP sent to your mobile number.', ['mobile_number' => $destination]);
                 }
                 else
                 {

@@ -82,7 +82,7 @@ class EmailService
 				]);
 			}
 			$responseType =  $isWeb ? 'webSuccessResponse' : 'successResponse';  
-			return $this->{$responseType}('OTP sent to your email.');
+			return $this->{$responseType}('OTP sent to your email.', ['email' => $email]);
 		} 
 		catch (\Exception $e)
 		{

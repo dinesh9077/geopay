@@ -28,6 +28,7 @@ class User extends Authenticatable
         'mobile_number',
         'formatted_number',
         'referalcode',
+        'company_name',
         'fcm_token',
         'is_email_verify',
         'is_company',
@@ -36,6 +37,8 @@ class User extends Authenticatable
         'status',
         'profile_image',
         'role',
+        'xps',
+        'terms',
     ];
 
     /**

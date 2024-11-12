@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\User\KycController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -46,6 +47,12 @@ Route::middleware(['webdecrypt.request'])->group(function ()
 	Route::post('/password/resend-otp', [ResetPasswordController::class, 'resendOtp'])->name('password.resendOtp');
 	Route::post('/password/verify-otp', [ResetPasswordController::class, 'verifyEmailOtp'])->name('password.verifyOtp');  
 	Route::post('/password/reset', [ResetPasswordController::class, 'resetPassword'])->name('password.reset'); 
+	
+	
+	Route::get('/home', [HomeController::class, 'index'])->name('home');
+	
+	Route::get('/metamap/kyc', [KycController::class, 'metaMapKyc'])->name('metamap.kyc');
+	Route::post('/metamap/kyc-finished', [KycController::class, 'metaMapKycFinished'])->name('metamap.kyc-finished');
+	
 });
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
