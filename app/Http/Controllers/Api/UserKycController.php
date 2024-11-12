@@ -99,7 +99,8 @@
 					}
 
 					$response = $verificationResponse->json();
-					dd($response);
+					Log::error($response);
+					die;
 					// Process and store the video
 					$storedVideoUrl = null;
 					if (isset($response['steps'][0]['data']['videoUrl'])) {
