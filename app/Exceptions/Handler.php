@@ -29,7 +29,7 @@
 			if ($exception instanceof NotFoundHttpException) {
 			    // If the request is not an API request, abort with a 404 response
 			    if (!$request->expectsJson()) { 
-    				abort(404);
+    				return abort(404);
     			}
 				return response()->json([
 				'success' => false,
