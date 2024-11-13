@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route; 
  
 // Admin authentication routes
 Route::get('login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
