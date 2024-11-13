@@ -69,9 +69,12 @@
 		{  
 			$data = $request->all();
 			Log::error($data);
-			
+			if (empty($data['flowId']) || $data['flowId'] != env('META_VERIFICATION_FLOW_ID')) {
+				return; // Exit if flowId is missing or does not match
+			}
+
 			// Ensure event type is correct before proceeding
-			if (!in_array($data['eventName'], ['verification_updated'])) {
+			if (!in_array($data['eventName'], ['verification_updated', 'verification_completed'])) {
 				return;
 			}
 
@@ -146,8 +149,11 @@
 						'meta_response' => json_encode($data)
 					]);
 					
-				$is_kyc_verify = $response['identity']['status'] == "verified" ? 1 : 0;
-				User::whereId($userId)->update(['is_kyc_verify' => $is_kyc_verify]);
+				// Determine KYC verification status
+				$isKycVerified = $response['identity']['status'] == "verified" ? 1 : 0;
+
+				// Update the user record with KYC verification status
+				User::whereId($userId)->update(['is_kyc_verify' => $isKycVerified]);
 			});
 
 			return;
