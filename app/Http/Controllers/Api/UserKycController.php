@@ -119,7 +119,7 @@
 			$documentImages = $this->storeKYCImages($response, $userId);
 
 			// Update the KYC record in the database
-			DB::transaction(function () use ($response, $documentImages, $storedVideoUrl) {
+			DB::transaction(function () use ($response, $documentImages, $storedVideoUrl, $data) {
 				UserKyc::where('verification_id', $response['id'])
 					->where('identification_id', $response['identity']['id'])
 					->update([
