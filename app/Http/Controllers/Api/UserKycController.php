@@ -68,7 +68,7 @@
 		public function getKYCVerification(Request $request)
 		{  
 			$data = $request->all();
-			
+			Log::error($data);
 			// Ensure event type is correct before proceeding
 			if ($data['eventName'] !== 'verification_updated') {
 				return;

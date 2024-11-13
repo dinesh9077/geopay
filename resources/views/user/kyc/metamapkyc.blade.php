@@ -76,7 +76,7 @@
 				// Set the necessary attributes for the button
 				metamapButton.setAttribute('clientid', metaClientId);
 				metamapButton.setAttribute('flowId', metaFlowId);
-				metamapButton.setAttribute('metadata', '{"key": "value"}');  // You can pass other metadata here
+				metamapButton.setAttribute('metadata', '{"user_id": "{{ $user->id }}"}');  // You can pass other metadata here
 				
 				// Append the MetaMap button to the container
 				metamapButtonContainer.appendChild(metamapButton);

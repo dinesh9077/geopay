@@ -35,7 +35,7 @@ class KycController extends Controller
 		
 		$userKyc = UserKyc::where('user_id', $user->id)->first();
 		 
-		return view('user.kyc.metamapkyc', compact('encryptedData', 'userKyc'));
+		return view('user.kyc.metamapkyc', compact('encryptedData', 'userKyc', 'user'));
 	}
 	
 	public function metaMapKycFinished(Request $request)
