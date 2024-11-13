@@ -79,7 +79,8 @@ class LoginController extends Controller
 			if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) 
 			{ 
 				Helper::loginLog('login', $user);
-				return $this->successResponse('user logged in successfully.');
+				$url = $user->is_kyc_verify == 0 ? route('metamap.kyc') : route('home');
+				return $this->successResponse('user logged in successfully.', ['url' => $url]);
 			}
 			
 			return $this->errorResponse('Invalid credentials.');

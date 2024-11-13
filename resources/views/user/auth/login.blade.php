@@ -164,7 +164,8 @@
 					else
 					{ 
 						toastrMsg(res.status,res.message); 
-						window.location.href = "{{ route('home') }}";
+						const decryptRes = decryptData(res.response);
+						window.location.href = decryptRes.url;
 					}
 				} 
 			});
