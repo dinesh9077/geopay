@@ -71,7 +71,7 @@
 			Log::error($data);
 			
 			// Ensure event type is correct before proceeding
-			if (!in_array($data['eventName'], ['verification_updated', 'verification_completed'])) {
+			if (!in_array($data['eventName'], ['verification_updated'])) {
 				return;
 			}
 
