@@ -69,10 +69,12 @@
 		{  
 			$data = $request->all();
 			Log::error($data);
+			
 			// Ensure event type is correct before proceeding
-			if ($data['eventName'] !== 'verification_updated') {
+			if (!in_array($data['eventName'], ['verification_updated', 'verification_completed'])) {
 				return;
 			}
+
 
 			// Get verification ID from resource URL
 			$verificationId = basename($data['resource']);
@@ -118,8 +120,12 @@
 				$this->deleteKYCFiles($userId);
 				
 				// Delete the KYC record from the database
-				$metaKycDetail->delete();
+				$metaKycDetail->update(['verification_status' => $response['identity']['status']]);
 				
+				if($response['identity']['status'] == "deleted")
+				{
+					$metaKycDetail->delete();
+				}
 				return;
 			}
 	
