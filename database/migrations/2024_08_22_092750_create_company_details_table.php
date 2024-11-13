@@ -13,18 +13,17 @@ return new class extends Migration
     { 
 		Schema::create('company_details', function (Blueprint $table) {
 			$table->id();
-			$table->unsignedBigInteger('user_id')->index(); // Indexing user_id for performance
-			$table->string('company_name');
-			$table->string('business_licence'); // Changed to string for shorter length
-			$table->string('tin'); // Changed to string for shorter length
-			$table->string('vat'); // Changed to string for shorter length
-			$table->text('company_address');
-			$table->string('postcode'); // Changed to string for shorter length
-			$table->string('bank_name'); // Changed to string for shorter length
-			$table->string('account_number'); // Changed to string for shorter length
-			$table->string('bank_code'); // Changed to string for shorter length
-			$table->timestamps();
-
+			$table->unsignedBigInteger('user_id')->index(); 
+			$table->string('business_licence'); 
+			$table->string('tin')->nullable(); 
+			$table->string('vat')->nullable(); 
+			$table->text('company_address')->nullable();
+			$table->string('postcode'); 
+			$table->string('bank_name')->nullable(); 
+			$table->string('account_number')->nullable();
+			$table->string('bank_code')->nullable();
+			$table->integer('step_number')->default(0);
+			$table->timestamps(); 
 			// Add foreign key constraint
 			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 		});

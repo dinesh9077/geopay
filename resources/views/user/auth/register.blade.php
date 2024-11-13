@@ -78,7 +78,7 @@
 								<li class="nav-item" role="presentation">
 									<button class="nav-link px-5" id="register-company-tab" data-bs-toggle="pill"
                                     data-bs-target="#register-company" type="button" role="tab" aria-controls="register-company"
-                                    aria-selected="false">Company</button>
+                                    aria-selected="false">Corporate/Company</button>
 								</li>
 							</ul>
 							
@@ -347,7 +347,6 @@
 				$companyForm.find('#country_id1').val('98').trigger('change');
 			});
 
-			
 			 
 			// Attach the submit event handler
 			$individualForm.submit(function(event) 
@@ -370,8 +369,7 @@
 
 				// Encrypt data before sending
 				const encrypted_data = encryptData(JSON.stringify(formData));
-
-				
+ 
 				$.ajax({
 					async: true,
 					type: $(this).attr('method'),
@@ -381,7 +379,7 @@
 					dataType: 'Json', 
 					success: function (res) 
 					{ 
-						$('#individualRegisterForm').find('button').prop('disabled',false);	 
+						$individualForm.find('button').prop('disabled',false);	 
 						$('.error_msg').remove(); 
 						if(res.status === "error")
 						{ 
@@ -390,7 +388,7 @@
 						else if(res.status == "validation")
 						{  
 							$.each(res.errors, function(key, value) {
-								var inputField = $('#' + key);
+								var inputField = $individualForm.find('#' + key);
 								var errorSpan = $('<span>')
 								.addClass('error_msg text-danger') 
 								.attr('id', key + 'Error')
@@ -410,6 +408,71 @@
 						{ 
 							toastrMsg(res.status, res.message); 
 							window.location.href = "{{ route('metamap.kyc') }}";
+						}
+					} 
+				});
+			});
+			
+			// Attach the submit event handler
+			$companyForm.submit(function(event) 
+			{
+				event.preventDefault();   
+				
+				$(this).find('button').prop('disabled',true);   
+				var formData = {};
+				$(this).find('input, select, checkbox').each(function() {
+					var inputName = $(this).attr('name');
+
+					if ($(this).is(':checkbox')) {
+						// For checkboxes, store whether it is checked (true or false)
+						formData[inputName] = $(this).is(':checked');
+					} else {
+						// For other inputs, use the value
+						formData[inputName] = $(this).val();
+					}
+				});
+
+				// Encrypt data before sending
+				const encrypted_data = encryptData(JSON.stringify(formData));
+ 
+				$.ajax({
+					async: true,
+					type: $(this).attr('method'),
+					url: $(this).attr('action'),
+					data: { encrypted_data: encrypted_data, '_token': "{{ csrf_token() }}" },
+					cache: false, 
+					dataType: 'Json', 
+					success: function (res) 
+					{ 
+						$companyForm.find('button').prop('disabled',false);	 
+						$('.error_msg').remove(); 
+						if(res.status === "error")
+						{ 
+							toastrMsg(res.status, res.message);
+						}
+						else if(res.status == "validation")
+						{  
+							$.each(res.errors, function(key, value) {
+								var inputField = $companyForm.find('#' + key);
+								var errorSpan = $('<span>')
+								.addClass('error_msg text-danger') 
+								.attr('id', key + 'Error')
+								.text(value[0]);  
+								if(key == "email" || key == "terms")
+								{
+									inputField.parent().parent().append(errorSpan);
+								}
+								else
+								{
+									inputField.parent().append(errorSpan);
+								}
+								
+							});
+						}
+						else
+						{ 
+							toastrMsg(res.status, res.message); 
+							window.location.href = "{{ route('corporate.kyc') }}";
 						}
 					} 
 				});

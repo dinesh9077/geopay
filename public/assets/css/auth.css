@@ -100,9 +100,11 @@ h1, p {
     font-size: 0.8rem;
     margin-bottom: 0px;
 }
-/* Login page style */
+
 .auth-container{
     max-width: 500px;
+    margin-top: 10%;
+    margin-bottom: 10%;
 }
 
 #sidebar-toggle{
@@ -245,5 +247,27 @@ main.content::-webkit-scrollbar-thumb:hover {
     }
     .service-box{
         margin: 0;
+    }
+}
+
+
+/* KYC Documents Page Style */
+.kyc-container{
+    background-color: yellowgreen;
+    max-width: 700px;
+}
+.caption{
+    padding: 0px 1.5rem;
+}
+@media(min-width: 770px) and (max-width: 900px){
+    .caption{
+        /* background-color: yellowgreen; */
+        padding: 0 5rem;
+    }
+}
+@media(min-width: 400px) and (max-width: 600px){
+    .stepper-container{
+        /* background-color: yellowgreen; */
+        /* width: 100%; */
     }
 }

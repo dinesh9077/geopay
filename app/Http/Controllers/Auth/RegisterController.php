@@ -71,8 +71,7 @@ class RegisterController extends Controller
 	}
 	
 	public function individualRegister(Request $request)
-	{ 
-		
+	{  
 		$validator = Validator::make($request->all(), [
 			'first_name' => 'required|string|max:255',
 			'last_name' => 'required|string|max:255',
@@ -132,6 +131,8 @@ class RegisterController extends Controller
 			$userData['xps'] = base64_encode($request->password);
 			$userData['formatted_number'] = $formattedNumber;
 			$userData['role'] = 'user';  
+			$userData['is_company'] = 0; 
+			$userData['is_kyc_verify'] = 0; 
 			$userData['verification_token'] = Str::random(64);
 		
             $user = User::create($userData);
@@ -178,7 +179,7 @@ class RegisterController extends Controller
 			'country_id' => 'required|integer',
 			'terms' => 'required|integer|in:1',
 			'mobile_number' => 'required|integer',  
-			'company_name' => 'required|integer',  
+			'company_name' => 'required|string',  
 		]);
 		
 		$validator->after(function ($validator) use ($request) {
@@ -208,17 +209,17 @@ class RegisterController extends Controller
 			$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
             $userData = $request->only('first_name', 'last_name', 'email', 'country_id', 'mobile_number', 'company_name', 'is_email_verify', 'is_mobile_verify', 'terms');
 			$userData['password'] = Hash::make($request->password);
-			$userData['xps'] = base64_decode($request->password);
+			$userData['xps'] = base64_encode($request->password);
 			$userData['formatted_number'] = $formattedNumber;
-			$userData['role'] = 'user'; 
-           
+			$userData['role'] = 'user';  
+			$userData['is_company'] = 1; 
+			$userData['is_kyc_verify'] = 0; 
+			$userData['verification_token'] = Str::random(64);
+		
             $user = User::create($userData);
-			
-			// Generate a verification token
-			$verificationToken = Str::random(64);
-			// Save the token in the user's record (or a separate table)
-			$user->verification_token = $verificationToken;
-			$user->save();
+				 
+			// Log the user in
+			Auth::login($user);
  
             DB::commit();  
             return $this->successResponse('User registered successfully.', $user); 

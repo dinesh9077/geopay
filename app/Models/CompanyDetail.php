@@ -14,16 +14,16 @@ class CompanyDetail extends Model
     protected $table = 'company_details';
 
     protected $fillable = [
-        'user_id',
-        'company_name',
-        'business_licence',
-        'tin',
-        'vat',
-        'company_address',
-        'postcode',
-        'bank_name',
-        'account_number',
+        'user_id', 
+        'business_licence', 
+        'tin', 
+        'vat', 
+        'company_address', 
+        'postcode', 
+        'bank_name', 
+        'account_number', 
         'bank_code',
+        'step_number'
     ];
 	
 	protected static $recordEvents = ['created', 'deleted', 'updated'];

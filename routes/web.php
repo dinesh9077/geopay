@@ -47,13 +47,18 @@ Route::middleware(['webdecrypt.request'])->group(function ()
 	Route::post('/password/resend-otp', [ResetPasswordController::class, 'resendOtp'])->name('password.resendOtp');
 	Route::post('/password/verify-otp', [ResetPasswordController::class, 'verifyEmailOtp'])->name('password.verifyOtp');  
 	Route::post('/password/reset', [ResetPasswordController::class, 'resetPassword'])->name('password.reset'); 
-	
-	
-	Route::get('/home', [HomeController::class, 'index'])->name('home');
-	
+	 
+	// Meta Kyc
 	Route::get('/metamap/kyc', [KycController::class, 'metaMapKyc'])->name('metamap.kyc');
-	Route::post('/metamap/kyc-finished', [KycController::class, 'metaMapKycFinished'])->name('metamap.kyc-finished');
 	Route::get('/metamap/kyc-check-status', [KycController::class, 'metaMapKycStatus'])->name('metamap.kyc-check-status');
+	Route::post('/metamap/kyc-finished', [KycController::class, 'metaMapKycFinished'])->name('metamap.kyc-finished');
+	
+	// Company/Corporate Kyc
+	Route::get('/corporate/kyc', [KycController::class, 'corporateKyc'])->name('corporate.kyc'); 
+	Route::post('corporate/kyc/step/{step}', [KycController::class, 'corporateKycStep'])->name('corporate.kyc.submit-step');
+	Route::post('corporate/kyc/final', [KycController::class, 'corporateKycFinal'])->name('corporate.kyc.submit-final');
+
+	Route::get('/home', [HomeController::class, 'index'])->name('home');
 	
 });
 

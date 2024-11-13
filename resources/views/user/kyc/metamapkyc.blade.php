@@ -25,7 +25,7 @@
 						<div class="bg_overlay_4"></div>
 						<div class="w-100 px-4 register-form-container z-2 kyc-container" id="kyc_response_html">
 							@if(!$userKyc)
-								<h6 class="fw-semibold text-black text-center mb-4">KYC Verification</h6>
+								<h6 class="fw-semibold text-black text-center mb-4">Meta KYC Verification</h6>
 								<p class="caption text-center">Our partner, MetaMap, provides a seamless and secure verification process, ensuring that your data is handled with the utmost care. Simply follow the steps below:</p>
 
 								<ul class="caption text-center" style="color: gray; font-size: 0.8rem;">
@@ -40,7 +40,7 @@
 								</div> 
 							@else
 								@if($userKyc->status == "verified")
-									<h6 class="fw-semibold text-black text-center mb-4">Your KYC Is Completed.</h6>
+									<h6 class="fw-semibold text-black text-center mb-4">Your Meta KYC Is Completed.</h6>
 									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
 										Thank you for completing your KYC submission! Your documents have been reviewed and approved.
 										You can now continue using our services.
@@ -49,7 +49,7 @@
 										<a href="{{ route('home') }}" class="btn btn-primary btn-sm">Continue to use</a>
 									</div> 
 								@elseif($userKyc->status == "rejected")
-									<h6 class="fw-semibold text-black text-center mb-4">Your verification was rejected.</h6>
+									<h6 class="fw-semibold text-black text-center mb-4">Your Meta verification was rejected.</h6>
 									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
 										Your verification has been rejected. Please follow the instructions below to reverify.
 									</p>
@@ -62,7 +62,7 @@
 										<div id="metamap-button-container"></div>
 									</div> 
 								@else
-									<h6 class="fw-semibold text-black text-center mb-4">Thank you for KYC</h6>
+									<h6 class="fw-semibold text-black text-center mb-4">Thank you for Meta KYC</h6>
 									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
 										Your documents are under review to ensure they meet our verification requirements. We will notify you once the process is complete.
 									</p>
@@ -173,7 +173,7 @@
 					});
 				}, 2000); // 2000 ms (2 seconds)
  
-			@endif
+			@endif  
 		</script>
 	</body>
 </html>														

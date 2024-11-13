@@ -142,8 +142,9 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
 }
 
 .register-form-container{
-  margin-top: 10%;
-  margin-bottom: 10%;
+  /* margin-top: 10%;
+  margin-bottom: 10%; */
+  /* background-color: yellowgreen; */
 }
 @media (min-width: 700px) and (max-width: 900px) {
   .register-form-container {
