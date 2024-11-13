@@ -120,15 +120,9 @@
 			// Check if the status is 'rejected' or 'deleted'
 			if (in_array($response['identity']['status'], ['rejected', 'deleted'])) {
 				// Delete stored files (videos and documents)
-				$this->deleteKYCFiles($userId);
-				
-				// Delete the KYC record from the database
-				$metaKycDetail->update(['verification_status' => $response['identity']['status']]);
-				
-				if($response['identity']['status'] == "deleted")
-				{
-					$metaKycDetail->delete();
-				}
+				$this->deleteKYCFiles($userId); 
+				User::whereId($userId)->update(['is_kyc_verify' => 0]);
+				$metaKycDetail->delete();
 				return;
 			}
 	
