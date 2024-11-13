@@ -136,7 +136,7 @@
 			$documentImages = $this->storeKYCImages($response, $userId);
 
 			// Update the KYC record in the database
-			DB::transaction(function () use ($response, $documentImages, $storedVideoUrl, $data) {
+			DB::transaction(function () use ($response, $documentImages, $storedVideoUrl, $data, $userId) {
 				UserKyc::where('verification_id', $response['id'])
 					->where('identification_id', $response['identity']['id'])
 					->update([
@@ -145,6 +145,9 @@
 						'video' => $storedVideoUrl,
 						'meta_response' => json_encode($data)
 					]);
+					
+				$is_kyc_verify = $response['identity']['status'] == "verified" ? 1 : 0;
+				User::whereId($userId)->update(['is_kyc_verify' => $is_kyc_verify]);
 			});
 
 			return;
