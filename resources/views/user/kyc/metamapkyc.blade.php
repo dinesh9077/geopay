@@ -26,27 +26,48 @@
 						<div class="w-100 px-4 register-form-container z-2 kyc-container">
 							@if(!$userKyc)
 								<h6 class="fw-semibold text-black text-center mb-4">KYC Verification</h6>
-								<p style="color: gray; font-size: 0.8rem;text-align: center;" class="caption">Our partner, MetaMap, provides a seamless and secure verification process, ensuring that your data is handled with the utmost care. Simply follow the steps below:</p> 
-								<ul>
-									<li style="color: gray; font-size: 0.8rem;text-align: center;" class="caption"><b>Upload Documents:</b> Choose and upload clear images of your government-issued ID, such as a passport or driver's license.</li>
-									<li style="color: gray; font-size: 0.8rem;text-align: center;" class="caption"><b>Selfie Capture:</b> Take a quick selfie to match your ID photo for further verification.</li>
-									<li style="color: gray; font-size: 0.8rem;text-align: center;" class="caption"><b>Quick Processing:</b> Once your documents are submitted, MetaMap will process your KYC data securely and quickly, often within minutes.</li>
+								<p class="caption text-center">Our partner, MetaMap, provides a seamless and secure verification process, ensuring that your data is handled with the utmost care. Simply follow the steps below:</p>
+
+								<ul class="caption text-center" style="color: gray; font-size: 0.8rem;">
+									<li><b>Upload Documents:</b> Choose and upload clear images of your government-issued ID, such as a passport or driver's license.</li>
+									<li><b>Selfie Capture:</b> Take a quick selfie to match your ID photo for further verification.</li>
+									<li><b>Quick Processing:</b> Once your documents are submitted, MetaMap will process your KYC data securely and quickly, often within minutes.</li>
 								</ul>
+
 								<div class="text-center">
-									<script src="https://web-button.metamap.com/button.js">
-									</script>
+									<script src="https://web-button.metamap.com/button.js"></script>
 									<div id="metamap-button-container"></div>
-								</div>
+								</div> 
 							@else
 								@if($userKyc->status == "verified")
-									<h6 class="fw-semibold text-black text-center mb-4">Your Kyc Is Completed.</h6>
-									<p style="color: gray; font-size: 0.8rem;text-align: center;" class="caption">Thank you for completing your KYC submission! We are currently reviewing your documents to ensure they meet our verification requirements. This process may take a short while, and once completed, we will notify you immediately of the approval status. We appreciate your patience and look forward to serving you soon!</p> 
-									<div class="text-center"> 
+									<h6 class="fw-semibold text-black text-center mb-4">Your KYC Is Completed.</h6>
+									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
+										Thank you for completing your KYC submission! Your documents have been reviewed and approved.
+										You can now continue using our services.
+									</p>
+									<div class="text-center">
 										<a href="{{ route('home') }}" class="btn btn-primary btn-sm">Continue to use</a>
 									</div>
+
+								@elseif($userKyc->status == "rejected")
+									<h6 class="fw-semibold text-black text-center mb-4">Your verification was rejected.</h6>
+									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
+										Your verification has been rejected. Please follow the instructions below to reverify.
+									</p>
+									<ul style="color: gray; font-size: 0.8rem; text-align: center;">
+										<li><b>Upload Documents:</b> Upload clear images of a government-issued ID, such as a passport or driver's license.</li>
+										<li><b>Selfie Capture:</b> Take a selfie to match your ID photo for further verification.</li>
+										<li><b>Quick Processing:</b> Once submitted, MetaMap will process your KYC data securely and quickly.</li>
+									</ul>
+									<div class="text-center">
+										<div id="metamap-button-container"></div>
+									</div>
+
 								@else
 									<h6 class="fw-semibold text-black text-center mb-4">Thank you for KYC</h6>
-									<p style="color: gray; font-size: 0.8rem;text-align: center;" class="caption">Thank you for completing your KYC submission! We are currently reviewing your documents to ensure they meet our verification requirements. This process may take a short while, and once completed, we will notify you immediately of the approval status. We appreciate your patience and look forward to serving you soon!</p> 
+									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
+										Your documents are under review to ensure they meet our verification requirements. We will notify you once the process is complete.
+									</p>
 								@endif
 							@endif
 						</div>
