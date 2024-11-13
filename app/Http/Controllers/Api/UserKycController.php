@@ -67,7 +67,7 @@
 		 
 		public function getKYCVerification(Request $request)
 		{  
-				
+			Log::error($request->all());	
 			// Obtain the access token
 			$authResponse = Http::withOptions(['verify' => false])->withHeaders([
 				'Content-Type' => 'application/x-www-form-urlencoded',
