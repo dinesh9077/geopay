@@ -50,7 +50,7 @@
 	Route::post('/verify/otp', [RegisterController::class, 'verifyMobileOtp']);
 	  
 	Route::post('/user-kyc/verify', [UserKycController::class, 'verify']);
-	Route::get('/user-kyc-cron', [UserKYCController::class, 'getKYCVerification']);
+	Route::post('/user-kyc-cron', [UserKYCController::class, 'getKYCVerification']);
 	
 	// ---------------------------
 	// Country Module

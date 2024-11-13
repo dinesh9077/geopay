@@ -11,7 +11,7 @@
 			* Get the path the user should be redirected to when they are not authenticated.
 		*/
 		protected function redirectTo(Request $request)
-		{ 
+		{  
 			if ($request->expectsJson()) {
 				// Return null to bypass redirection
 				return response()->json([

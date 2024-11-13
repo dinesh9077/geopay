@@ -38,8 +38,16 @@
 									<div id="metamap-button-container"></div>
 								</div>
 							@else
-								<h6 class="fw-semibold text-black text-center mb-4">Thank you for KYC</h6>
-								<p style="color: gray; font-size: 0.8rem;text-align: center;" class="caption">Thank you for completing your KYC submission! We are currently reviewing your documents to ensure they meet our verification requirements. This process may take a short while, and once completed, we will notify you immediately of the approval status. We appreciate your patience and look forward to serving you soon!</p> 
+								@if($userKyc->status == "verified")
+									<h6 class="fw-semibold text-black text-center mb-4">Your Kyc Is Completed.</h6>
+									<p style="color: gray; font-size: 0.8rem;text-align: center;" class="caption">Thank you for completing your KYC submission! We are currently reviewing your documents to ensure they meet our verification requirements. This process may take a short while, and once completed, we will notify you immediately of the approval status. We appreciate your patience and look forward to serving you soon!</p> 
+									<div class="text-center"> 
+										<a href="{{ route('home') }}" class="btn btn-primary btn-sm">Continue to use</a>
+									</div>
+								@else
+									<h6 class="fw-semibold text-black text-center mb-4">Thank you for KYC</h6>
+									<p style="color: gray; font-size: 0.8rem;text-align: center;" class="caption">Thank you for completing your KYC submission! We are currently reviewing your documents to ensure they meet our verification requirements. This process may take a short while, and once completed, we will notify you immediately of the approval status. We appreciate your patience and look forward to serving you soon!</p> 
+								@endif
 							@endif
 						</div>
 					</div>
