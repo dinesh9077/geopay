@@ -111,7 +111,18 @@
 			}
 
 			$response = $verificationResponse->json();
-
+			
+			// Check if the status is 'rejected' or 'deleted'
+			if (in_array($response['identity']['status'], ['rejected', 'deleted'])) {
+				// Delete stored files (videos and documents)
+				$this->deleteKYCFiles($userId);
+				
+				// Delete the KYC record from the database
+				$metaKycDetail->delete();
+				
+				return;
+			}
+	
 			// Process and store video
 			$storedVideoUrl = $this->storeKYCVideo($response, $userId);
 
@@ -174,7 +185,15 @@
 			return $documentImages;
 		}
 
-		
+		/**
+		* Delete KYC video and document images associated with a user ID.
+		*/
+		private function deleteKYCFiles($userId)
+		{
+			Storage::disk('public')->deleteDirectory("kyc-videos/{$userId}");
+			Storage::disk('public')->deleteDirectory("kyc-documents/{$userId}");
+		}
+
 		/* public function getKYCVerification(Request $request)
 			{  
 			Log::error($request->all());	
