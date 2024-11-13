@@ -53,6 +53,7 @@ Route::middleware(['webdecrypt.request'])->group(function ()
 	
 	Route::get('/metamap/kyc', [KycController::class, 'metaMapKyc'])->name('metamap.kyc');
 	Route::post('/metamap/kyc-finished', [KycController::class, 'metaMapKycFinished'])->name('metamap.kyc-finished');
+	Route::get('/metamap/kyc-check-status', [KycController::class, 'metaMapKycStatus'])->name('metamap.kyc-check-status');
 	
 });
 

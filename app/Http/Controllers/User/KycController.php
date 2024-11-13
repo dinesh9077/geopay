@@ -38,6 +38,18 @@ class KycController extends Controller
 		return view('user.kyc.metamapkyc', compact('encryptedData', 'userKyc', 'user'));
 	}
 	
+	function metaMapKycStatus()
+	{
+		$user = Auth::user();
+		$userKyc = UserKyc::where('user_id', $user->id)->first();
+		$output = "";
+		if($userKyc->verification_status == "verified")
+		{
+			$output .= '<h6 class="fw-semibold text-black text-center mb-4">Your KYC Is Completed.</h6><p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">Thank you for completing your KYC submission! Your documents have been reviewed and approved.You can now continue using our services.</p><div class="text-center"><a href="{{ route("home") }}" class="btn btn-primary btn-sm">Continue to use</a></div>'; 
+			return $this->successResponse('The kyc is verified successfully.', ['output' => $output]); 
+		} 
+	}
+	
 	public function metaMapKycFinished(Request $request)
 	{  
 		DB::beginTransaction();

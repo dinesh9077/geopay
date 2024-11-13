@@ -23,7 +23,7 @@
 					<div id="container" class="container d-flex align-items-center justify-content-center py-4"> 
 						<div class="bg_overlay_3"></div>
 						<div class="bg_overlay_4"></div>
-						<div class="w-100 px-4 register-form-container z-2 kyc-container">
+						<div class="w-100 px-4 register-form-container z-2 kyc-container" id="kyc_response_html">
 							@if(!$userKyc)
 								<h6 class="fw-semibold text-black text-center mb-4">KYC Verification</h6>
 								<p class="caption text-center">Our partner, MetaMap, provides a seamless and secure verification process, ensuring that your data is handled with the utmost care. Simply follow the steps below:</p>
@@ -150,6 +150,29 @@
 					}
 				});
 				
+			@else
+				
+				// Define a variable to hold the interval ID
+				let checkKycInterval = setInterval(() => {
+					$.ajax({
+						async: true,
+						type: "get",
+						url: "{{ route('metamap.kyc-check-status') }}", 
+						cache: false, 
+						dataType: 'json', 
+						success: function (res) {   
+							if (res.status === "success") { 
+								toastrMsg(res.status, res.message); 
+								const decryptRes = decryptData(res.response); 
+								$('#kyc_response_html').html(decryptRes.output);
+
+								// Stop the interval if the response status is "success"
+								clearInterval(checkKycInterval);
+							}  
+						}
+					});
+				}, 2000); // 2000 ms (2 seconds)
+ 
 			@endif
 		</script>
 	</body>
