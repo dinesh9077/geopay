@@ -68,7 +68,7 @@
 		public function getKYCVerification(Request $request)
 		{  
 			$data = $request->all();
-			Log::error($data);
+			//Log::error($data);
 			if (empty($data['flowId']) || $data['flowId'] != env('META_VERIFICATION_FLOW_ID')) {
 				return; // Exit if flowId is missing or does not match
 			}
@@ -156,15 +156,15 @@
 
 			// Update the KYC record in the database
 			DB::transaction(function () use ($response, $documentImages, $storedVideoUrl, $data, $userId) {
-				UserKyc::where('verification_id', $response['id'])
-					->where('identification_id', $response['identity']['id'])
-					->update([
-						'verification_status' => $response['identity']['status'],
-						'document' => json_encode($documentImages),
-						'video' => $storedVideoUrl,
-						'meta_response' => json_encode($data),
-						'updated_at' => now()
-					]);
+				UserKyc::where('verification_id', $response['id']) 
+				->update([
+					'verification_status' => $response['identity']['status'],
+					'identification_id' => $response['identity']['id'],
+					'document' => json_encode($documentImages),
+					'video' => $storedVideoUrl,
+					'meta_response' => json_encode($data),
+					'updated_at' => now()
+				]);
 					
 				// Determine KYC verification status
 				$isKycVerified = $response['identity']['status'] == "verified" ? 1 : 0;

@@ -47,8 +47,7 @@
 									</p>
 									<div class="text-center">
 										<a href="{{ route('home') }}" class="btn btn-primary btn-sm">Continue to use</a>
-									</div>
-
+									</div> 
 								@elseif($userKyc->status == "rejected")
 									<h6 class="fw-semibold text-black text-center mb-4">Your verification was rejected.</h6>
 									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
@@ -61,8 +60,7 @@
 									</ul>
 									<div class="text-center">
 										<div id="metamap-button-container"></div>
-									</div>
-
+									</div> 
 								@else
 									<h6 class="fw-semibold text-black text-center mb-4">Thank you for KYC</h6>
 									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
