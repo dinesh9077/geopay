@@ -44,14 +44,14 @@
 				
 				// Insert or update the KYC data
 				$userKyc = UserKyc::updateOrCreate(
-				['email' => $user->email], // Conditions to find existing record
-				[
-				'user_id' => $user->id,
-				'verification_status' => 'pending',
-				'verification_id' => $request->verification_id, // Laravel handles null automatically
-				'identification_id' => $request->identification_id,
-				'meta_response' => json_encode($request->meta_response), // Assuming meta_response is of JSON type
-				]
+					['email' => $user->email], // Conditions to find existing record
+					[
+						'user_id' => $user->id,
+						'verification_status' => 'pending',
+						'verification_id' => $request->verification_id, // Laravel handles null automatically
+						'identification_id' => $request->identification_id,
+						'meta_response' => json_encode($request->meta_response), // Assuming meta_response is of JSON type
+					]
 				);
 				
 				// Commit the transaction
@@ -74,14 +74,36 @@
 			}
 
 			// Ensure event type is correct before proceeding
-			if (!in_array($data['eventName'], ['verification_updated', 'verification_completed'])) {
+			if (!in_array($data['eventName'], ['verification_updated', 'verification_completed', 'step_completed'])) {
 				return;
 			}
-
-
+			
 			// Get verification ID from resource URL
 			$verificationId = basename($data['resource']);
-
+			
+			if($data['eventName'] == "step_completed" && isset($data['metadata']['user_id']))
+			{
+				$user_id = $data['metadata']['user_id'];
+				$user_email = $data['metadata']['user_email'];
+				$step_id = $data['step']['id'];
+				
+				$user_id = $data['metadata']['user_id'];
+				$user_email = isset($data['metadata']['user_email']) ? $data['metadata']['user_email'] : null; // Check if 'user_email' exists
+				$step_id = $data['step']['id'] ?? 'pending'; // Default to 'pending' if 'step_id' is not present
+	
+				// Update or create the KYC record
+				UserKyc::updateOrCreate(
+					['user_id' => $user_id], // Conditions to find existing record
+					[
+						'user_email' => $user_email,
+						'verification_status' => $step_id, // Set the verification status
+						'verification_id' => $verificationId, // Laravel handles null automatically 
+						'meta_response' => json_encode($data), // Assuming meta_response is of JSON type 
+					]
+				);
+				return;
+			}
+ 
 			// Fetch KYC detail from database
 			$metaKycDetail = UserKyc::where('verification_id', $verificationId)->first();
 			if (!$metaKycDetail) {
@@ -140,7 +162,8 @@
 						'verification_status' => $response['identity']['status'],
 						'document' => json_encode($documentImages),
 						'video' => $storedVideoUrl,
-						'meta_response' => json_encode($data)
+						'meta_response' => json_encode($data),
+						'updated_at' => now()
 					]);
 					
 				// Determine KYC verification status

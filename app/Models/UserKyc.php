@@ -24,6 +24,7 @@ class UserKyc extends Model
         'identification_id',
         'verification_id',
         'meta_response', 
+        'updated_at', 
     ];
 
     // Disable timestamps if you do not want to use created_at and updated_at
