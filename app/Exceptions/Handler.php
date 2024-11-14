@@ -6,9 +6,10 @@
 	use Throwable;
 	use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 	use Illuminate\Auth\AuthenticationException;
+	use Illuminate\Session\TokenMismatchException; 
 	
 	class Handler extends ExceptionHandler
-	{
+	{ 
 		/**
 			* The list of the inputs that are never flashed to the session on validation exceptions.
 			*
@@ -23,8 +24,14 @@
 		
 		public function render($request, Throwable $exception)
 		{
-		
-		 
+			if ($exception instanceof TokenMismatchException) {
+				// Handle the CSRF token mismatch 
+				return response()->json([
+					'status' => 'error', 
+					'message' => 'CSRF token mismatch. Please refresh the page and try again.'
+				]);  
+			}
+			
 			// Handle NotFoundHttpException for API requests
 			if ($exception instanceof NotFoundHttpException) {
 			    // If the request is not an API request, abort with a 404 response
@@ -32,9 +39,9 @@
     				return abort(404);
     			}
 				return response()->json([
-				'success' => false,
-				'message' => 'URL not found. Please check the endpoint and try again.',
-				], 404);
+					'success' => false,
+					'message' => 'URL not found. Please check the endpoint and try again.',
+					], 404);
 			}
 			
 			// Handle AuthenticationException for API requests

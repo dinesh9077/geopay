@@ -13,6 +13,12 @@
 		<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css" />
+		<style>
+			.kyc-container {
+				background-color: #fff !important;
+				max-width: 700px;
+			}
+		</style>
 	</head>
 	
 	<body>
@@ -48,7 +54,7 @@
 									<div class="text-center">
 										<a href="{{ route('home') }}" class="btn btn-primary btn-sm">Continue to use</a>
 									</div> 
-								@elseif($userKyc->verification_status == "rejected")
+									{{-- @elseif($userKyc->verification_status == "rejected")
 									<h6 class="fw-semibold text-black text-center mb-4">Your Meta verification was rejected.</h6>
 									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
 										Your verification has been rejected. Please follow the instructions below to reverify.
@@ -60,7 +66,7 @@
 									</ul>
 									<div class="text-center">
 										<div id="metamap-button-container"></div>
-									</div> 
+									</div> --}}
 								@else
 									<h6 class="fw-semibold text-black text-center mb-4">Thank you for Meta KYC</h6>
 									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
@@ -79,7 +85,7 @@
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
-		@include('components.scripts')
+		<x-scripts :cryptoKey="$cryptoKey" /> 
 		<script>
 			@if(!$userKyc)
 				// Securely pass MetaMap data from the backend

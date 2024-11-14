@@ -16,7 +16,7 @@ use App\Http\Controllers\User\KycController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-//\Artisan::call('migrate');
+//\Artisan::call('storage:link');
 
 Route::get('/', function () {
     return view('welcome');
@@ -39,7 +39,7 @@ Route::post('/verify/email-otp', [RegisterController::class, 'verifyEmailOtp'])-
 Route::post('/mobile/send', [RegisterController::class, 'sendMobileOtp'])->name('mobile.send')->middleware('webdecrypt.request');
 Route::post('/mobile/resend', [RegisterController::class, 'resendMobileOtp'])->name('mobile.resend')->middleware('webdecrypt.request');
 Route::post('/verify/mobile-otp', [RegisterController::class, 'verifyMobileOtp'])->name('verify.mobile-otp')->middleware('webdecrypt.request');
-
+ 
 Route::middleware(['webdecrypt.request'])->group(function ()
 {  
 	// Reset Password

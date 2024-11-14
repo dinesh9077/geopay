@@ -103,7 +103,7 @@
 												<div class="input-group">
 													<input id="email" name="email" type="email" class="form-control bg-light border-light" autocomplete="off"/>
 													<input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control bg-light border-light" value="0" >
-													<button class="input-group-text bg-light border-2 verify-text" id="emailVerifyText" onclick="verifyOtp('email', event, 'individualRegisterForm')">Verify</button>
+													<button type="button" class="input-group-text bg-light border-2 verify-text" id="emailVerifyText" onclick="verifyOtp('email', event, 'individualRegisterForm')">Verify</button>
 												</div> 
 											</div>
 											
@@ -132,7 +132,7 @@
 												<div class="input-group">
 													<input id="mobile_number" name="mobile_number" type="text" class="form-control bg-light border-light" autocomplete="off"/>
 													<input id="is_mobile_verify" name="is_mobile_verify" type="hidden" class="form-control bg-light border-light" value="0" >
-													<button class="input-group-text bg-light border-2 verify-text" id="mobileVerifyText" onclick="verifyOtp('mobile_number', event, 'individualRegisterForm')">Verify</button>
+													<button type="button" class="input-group-text bg-light border-2 verify-text" id="mobileVerifyText" onclick="verifyOtp('mobile_number', event, 'individualRegisterForm')">Verify</button>
 												</div>  
 											</div>
 											
@@ -171,7 +171,7 @@
 												<div class="input-group">
 													<input id="email" name="email" type="email" class="form-control bg-light border-light" autocomplete="off"/>
 													<input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control bg-light border-light" value="0" >
-													<button class="input-group-text bg-light border-2 verify-text" id="emailVerifyText" onclick="verifyOtp('email', event, 'companyRegisterForm')">Verify</button>
+													<button type="button" class="input-group-text bg-light border-2 verify-text" id="emailVerifyText" onclick="verifyOtp('email', event, 'companyRegisterForm')">Verify</button>
 												</div> 
 											</div>
 											
@@ -203,7 +203,7 @@
 												<div class="input-group">
 													<input id="mobile_number" name="mobile_number" type="text" class="form-control bg-light border-light" autocomplete="off"/>
 													<input id="is_mobile_verify" name="is_mobile_verify" type="hidden" class="form-control bg-light border-light" value="0" >
-													<button class="input-group-text bg-light border-2 verify-text" id="mobileVerifyText" onclick="verifyOtp('mobile_number', event, 'companyRegisterForm')">Verify</button>
+													<button type="button" class="input-group-text bg-light border-2 verify-text" id="mobileVerifyText" onclick="verifyOtp('mobile_number', event, 'companyRegisterForm')">Verify</button>
 												</div>  
 											</div> 
 										</div> 
@@ -290,7 +290,8 @@
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
-		@include('components.scripts')
+		<x-scripts :cryptoKey="$cryptoKey" /> 
+		
 		<script>  
 			let timer;
 			let countdown = 60; // Set the countdown duration in seconds
@@ -381,9 +382,10 @@
 					{ 
 						$individualForm.find('button').prop('disabled',false);	 
 						$('.error_msg').remove(); 
-						if(res.status === "error")
+						if(res.status === "success")
 						{ 
-							toastrMsg(res.status, res.message);
+							toastrMsg(res.status, res.message); 
+							window.location.href = "{{ route('metamap.kyc') }}"; 
 						}
 						else if(res.status == "validation")
 						{  
@@ -406,8 +408,7 @@
 						}
 						else
 						{ 
-							toastrMsg(res.status, res.message); 
-							window.location.href = "{{ route('metamap.kyc') }}";
+							toastrMsg(res.status, res.message);
 						}
 					} 
 				});
@@ -446,9 +447,10 @@
 					{ 
 						$companyForm.find('button').prop('disabled',false);	 
 						$('.error_msg').remove(); 
-						if(res.status === "error")
+						if(res.status === "success")
 						{ 
-							toastrMsg(res.status, res.message);
+							toastrMsg(res.status, res.message); 
+							window.location.href = "{{ route('corporate.kyc') }}"; 
 						}
 						else if(res.status == "validation")
 						{  
@@ -471,8 +473,7 @@
 						}
 						else
 						{ 
-							toastrMsg(res.status, res.message); 
-							window.location.href = "{{ route('corporate.kyc') }}";
+							toastrMsg(res.status, res.message);
 						}
 					} 
 				});
@@ -506,18 +507,8 @@
 						$form.find('button').prop('disabled', false); // Enable the submit button
 						$form.find('.error_msg').remove(); // Remove any previous error messages
 
-						if (res.status === "error") {
-							toastrMsg(res.status, res.message);
-						} else if (res.status === "validation") {
-							$.each(res.errors, function(key, value) {
-								const inputField = $form.find('#' + key);
-								const errorSpan = $('<span>')
-									.addClass('error_msg text-danger')
-									.attr('id', key + 'Error')
-									.text(value[0]);
-								inputField.parent().append(errorSpan);
-							});
-						} else {
+						if (res.status === "success") 
+						{ 
 							toastrMsg(res.status, res.message);
 							
 							if ($form.attr('id') === 'verifyOtpEmailForm') 
@@ -550,6 +541,17 @@
 								$form.find('input').val('');
 								$('#verifymobile_numbermodal').modal('hide'); 
 							}
+						} else if (res.status === "validation") {
+							$.each(res.errors, function(key, value) {
+								const inputField = $form.find('#' + key);
+								const errorSpan = $('<span>')
+									.addClass('error_msg text-danger')
+									.attr('id', key + 'Error')
+									.text(value[0]);
+								inputField.parent().append(errorSpan);
+							});
+						} else { 
+							toastrMsg(res.status, res.message);
 						}
 					} 
 				});
@@ -588,23 +590,8 @@
 					success: function (res) 
 					{   
 						$('.error_msg').remove(); 
-						if(res.status === "error")
+						if(res.status === "success")
 						{ 
-							toastrMsg(res.status, res.message);
-						}
-						else if(res.status == "validation")
-						{  
-							$.each(res.errors, function(key, value) {
-								var inputField = $('#'+ formId).find('input[name="'+key+'"]');
-								var errorSpan = $('<span>')
-								.addClass('error_msg text-danger') 
-								.attr('id', key + 'Error')
-								.text(value[0]);  
-								inputField.parent().parent().append(errorSpan); 
-							});
-						}
-						else
-						{    
 							$('#verify'+keyId+'modal').modal('show');
 							$('#verify' + keyId + 'modal').find('input').val('');
 							$('#verify' + keyId + 'modal').find('#'+ 'resend'+keyId+'otp').text('');
@@ -630,7 +617,22 @@
 							const resendUrl = resendRoutes[keyId];
 							timer = setInterval(function() {
 								updateTimer(keyId, 'resend'+keyId+'otp', resendUrl, $('#'+ formId));
-							}, 1000); 
+							}, 1000);  
+						}
+						else if(res.status == "validation")
+						{  
+							$.each(res.errors, function(key, value) {
+								var inputField = $('#'+ formId).find('input[name="'+key+'"]');
+								var errorSpan = $('<span>')
+								.addClass('error_msg text-danger') 
+								.attr('id', key + 'Error')
+								.text(value[0]);  
+								inputField.parent().parent().append(errorSpan); 
+							});
+						}
+						else
+						{    
+							toastrMsg(res.status, res.message);
 						}
 					} 
 				});
@@ -660,7 +662,12 @@
 					dataType: 'json',
 					success: function(res) {
 						$('.error_msg').remove();
-						if (res.status === "error") {
+						if (res.status === "success") { 
+							countdown = 60; // Reset countdown after successful OTP resend
+							clearInterval(timer);
+							timer = setInterval(function() {
+								updateTimer(keyId, resendId, resendUrl, commonForm);
+							}, 1000);
 							toastrMsg(res.status, res.message);
 						} 
 						else if (res.status == "validation") 
@@ -674,12 +681,7 @@
 								inputField.parent().parent().append(errorSpan);
 							});
 						} else {
-							toastrMsg(res.status, res.message);
-							countdown = 60; // Reset countdown after successful OTP resend
-							clearInterval(timer);
-							timer = setInterval(function() {
-								updateTimer(keyId, resendId, resendUrl, commonForm);
-							}, 1000);
+							toastrMsg(res.status, res.message)
 						}
 					}
 				});

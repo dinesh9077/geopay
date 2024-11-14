@@ -13,6 +13,12 @@
 		<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css" />
+		<style>
+			.kyc-container {
+				background-color: #fff !important;
+				max-width: 700px;
+			}
+		</style>
 	</head>
 	
 	<body>
@@ -23,7 +29,20 @@
 					<div id="container" class="container d-flex align-items-center justify-content-center py-4">
 						<div class="bg_overlay_3"></div>
 						<div class="bg_overlay_4"></div>
-						<div class="px-4 register-form-container z-2 kyc-container">
+						<div class="px-4 register-form-container z-2 kyc-container"> 
+							@if($user->is_company == 1 && $user->is_kyc_verify == 1)
+								
+								<h6 class="fw-semibold text-black text-center mb-4">Your Corporate KYC Is Completed.</h6>
+								<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
+									Thank you for completing your KYC submission! Your documents have been reviewed and approved.
+									You can now continue using our services.
+								</p>
+								<div class="text-center">
+									<a href="{{ route('home') }}" class="btn btn-primary btn-sm">Continue to use</a>
+								</div>
+								
+							@else
+								
 							<h6 class="fw-semibold text-black text-center mb-4">KYC Verification</h6>
 							<p style="color: gray; font-size: 0.8rem;text-align: center;" class="caption">To ensure a secure and compliant experience, please upload your KYC documents. Quick, secure, and hassle-free verification!</p> 
 							<div>
@@ -78,7 +97,7 @@
 										</div> 
 										<div class="row mb-4">
 											<div class="col-md-12">
-												<label for="account_number" class="required text-black font-md mb-2">Account No<span class="text-danger">*</span></label>
+												<label for="account_number" class="required text-black font-md mb-2">Account No <span class="text-danger">*</span></label>
 												<input type="text" class="form-control bg-light border-light" id="account_number" name="account_number" value="{{ $companyDetail ? $companyDetail->account_number : '' }}"> 
 											</div>
 										</div> 
@@ -90,67 +109,66 @@
 									
 									<!-- Company Form 3 -->
 									<div class="step step-3" style="display:{{ $stepNumber == 3 ? 'show' : 'none' }}">
-										<div class="row mb-3">
-											<div class="col-md-6">
-												<label for="bankName" class="required text-black font-md mb-2">Memorandum Articles of Association</label>
-												<input type="file" class="form-control bg-light border-light" id="memorandum_articles_of_association" name="company_document['memorandum_articles_of_association']"> 
+										@php
+											$documentFields = [
+												'memorandum_articles_of_association' => 'Memorandum Articles of Association',
+												'registration_of_shareholders' => 'Registration of Shareholders',
+												'registration_of_directors' => 'Registration of Directors',
+												'proof_of_address_shareholders' => 'Proof of Address for Shareholders (Utility bill or bank statement)',
+												'proof_of_address_directors' => 'Proof of Address for Directors (Utility bill or bank statement)',
+												'govt_id_shareholders' => 'Government ID for Shareholders (Passport, Driving License or National ID)',
+												'govt_id_directors' => 'Government ID for Directors (Passport, Driving License or National ID)'
+											];
+										@endphp
+
+										@foreach($documentFields as $fieldKey => $fieldLabel)
+											@php 
+												$document = $companyDocument[$fieldKey] ?? null;
+											@endphp
+											<div class="row mb-3">
+												<div class="col-md-12"> 
+													<label for="{{ $fieldKey }}" class="required text-black font-md mb-2">{{ $fieldLabel }} <span class="text-danger">*</span></label>
+													<input type="file" class="form-control bg-light border-light" 
+													   id="{{ $fieldKey }}" 
+													   name="company_document[{{ $fieldKey }}]" 
+													   style="pointer-events: {{ $document && $document['status'] == 1 ? 'none' : 'auto' }};" 
+													   multiple>
+ 
+													@if($document)
+														<div class="mt-2">
+															@if($document['status'] == 2)
+																<span class="text-danger">Rejected: {{ $document['reason'] ?? 'No reason provided' }}</span>
+															@elseif($document['status'] == 1)
+																<span class="text-success">Approved: Your document has been approved.</span>
+															@else
+																<span class="text-warning">Pending: Your document is under review.</span>
+															@endif
+														</div> 
+													@endif
+												</div>
 											</div>
-											<div class="col-md-6">
-												<label for="bankCode" class="required text-black font-md mb-2">Registration of Shareholders(UPDATED)</label>
-												<input type="file" class="form-control bg-light border-light" id="registration_of_shareholders" name="company_document['registration_of_shareholders']"> 
-											</div>
-										</div>
-										<div class="row mb-3">
-											<div class="col-md-12">
-												<label for="bankName" class="required text-black font-md mb-2">Registration of Directors (UPDATED)</label>
-												<input type="file" class="form-control bg-light border-light" id="registration_of_directors" name="company_document['registration_of_directors']"> 
-											</div>
-										</div>
-										<div class="row mb-3">
-											<div class="col-md-12">
-												<label for="bankName" class="required text-black font-md mb-2">Proof of Address for Shareholders (Utility bill or bank statement)</label>
-												<input type="file" class="form-control bg-light border-light" id="proof_of_address_shareholders" name="company_document['proof_of_address_shareholders']"> 
-											</div>
-										</div>
-										<div class="row mb-3">
-											<div class="col-md-12">
-												<label for="bankName" class="required text-black font-md mb-2">Proof of Address for Directors (Utility bill or bank statement)</label>
-												<input type="file" class="form-control bg-light border-light" id="proof_of_address_directors" name="company_document['proof_of_address_directors']"> 
-											</div>
-										</div>
-										<div class="row mb-3">
-											<div class="col-md-12">
-												<label for="bankName" class="required text-black font-md mb-2">Valid government issued Identification proof (Passport, Driving License or National ID) for Shareholders</label>
-												<input type="file" class="form-control bg-light border-light" id="govt_id_shareholders" name="company_document['govt_id_shareholders']"> 
-											</div>
-										</div>
-										<div class="row mb-3">
-											<div class="col-md-12">
-												<label for="bankName" class="required text-black font-md mb-2">Valid government issued Identification proof (Passport, Driving License or National ID) for Directors</label>
-												<input type="file" class="form-control bg-light border-light" id="govt_id_directors" name="company_document['govt_id_directors']"> 
-											</div>
-										</div>
-										
+										@endforeach
+
 										<div class="d-flex align-items-center gap-3">
 											<button type="button" class="btn btn-primary w-100 prev-step">Previous</button>
 											<button type="button" class="btn btn-secondary w-100 submit-final">Register</button>
 										</div>
-									</div>
+									</div> 
 								</form>
 							</div>
+							@endif
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		
+		</div> 
 		<script src="https://kit.fontawesome.com/ae360af17e.js" ></script>
 		<script src="{{ asset('assets/js/bootstrap/js/bootstrap.bundle.min.js') }}"></script>   
 		<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
-		@include('components.scripts')
+		<x-scripts :cryptoKey="$cryptoKey" /> 
 		
 		<!-- Stepper Script Starts -->
 		<script>
@@ -184,18 +202,35 @@
 				// Function to submit each form step via AJAX
 				function submitFormStep(stepNumber, isFinal = false) 
 				{ 
-					var stepFields = $(".step-" + stepNumber)
- 
+					var stepFields = $(".step-" + stepNumber) 
 					stepFields.find('button').prop('disabled',true);   
-					var formData = {};
-					stepFields.find("input, select").each(function()
-					{
-						var inputName = $(this).attr('name'); 
-						formData[inputName] = $(this).val();
-					});
+					 
+					var formDataInput = {}; 
+					stepFields.find("input, select").each(function() {
+						var inputName = $(this).attr('name');
+						
+						// For text inputs, just append the value to formData
+						if ($(this).attr('type') !== 'file') { 
+							formDataInput[inputName] = $(this).val();
+						}
+					}); 
+					const encrypted_data = encryptData(JSON.stringify(formDataInput));
 					
-					// Encrypt data before sending
-					const encrypted_data = encryptData(JSON.stringify(formData));
+					// Collect form data excluding file inputs
+					var formData = new FormData(); 
+					formData.append('encrypted_data', encrypted_data);  
+					formData.append('_token', "{{ csrf_token() }}");
+					
+					stepFields.find("input[type='file']").each(function() {
+						var inputName = $(this).attr('name');
+						var files = $(this)[0].files;
+
+						// Loop through each file and append to FormData
+						$.each(files, function(index, file) {
+							formData.append(inputName + '[]', file); // For multiple files, append as array
+						});
+					});
+ 
 					const url = isFinal
 						? "{{ route('corporate.kyc.submit-final') }}"
 						: "{{ route('corporate.kyc.submit-step', ['step' => '__STEP_NUMBER__']) }}".replace('__STEP_NUMBER__', stepNumber);
@@ -203,7 +238,9 @@
 					$.ajax({
 						url: url,
 						type: "POST",
-						data: { encrypted_data: encrypted_data, '_token': "{{ csrf_token() }}" },
+						data: formData,
+						processData: false, // Important: Let FormData handle the data processing
+						contentType: false, // Important: Let FormData handle the content type
 						cache: false, 
 						success: function(res)
 						{
@@ -215,20 +252,41 @@
 									showStep(stepNumber + 1); // Move to the next step if not final
 								}else{
 									toastrMsg(res.status, res.message);// Show success message if final
+									window.location.href = "{{ route('corporate.kyc') }}";
 								}
 							}
 							else if(res.status == "validation")
-							{  
+							{   
 								$.each(res.errors, function(key, value) {
-									var inputField = stepFields.find('#' + key);
+								
+									if (key.includes('.')) 
+									{ 
+										fieldName = key.replace(/\./g, '[').replace(/^/, '') + ']';
+										if (key.endsWith('.0') || key.endsWith('.1')) { 
+											key = key.replace(/\.(0|1)$/, '');  // Replace .0 or .1 at the end of the string
+											fieldName = key.replace(/\./g, '[').replace(/^/, '') + ']';
+										} 
+									} else { 
+										fieldName = key;
+									} 
+								 
+									// Find the input field using the converted name format
+									var inputField = stepFields.find('input[name="' + fieldName + '"]');
+									
+									// Create an error span to display the error message
 									var errorSpan = $('<span>')
-									.addClass('error_msg text-danger') 
-									.attr('id', key + 'Error')
-									.text(value[0]);  
-									inputField.parent().append(errorSpan);
+										.addClass('error_msg text-danger') 
+										.attr('id', key + 'Error') // Use the key as the unique ID
+										.text(value[0]); // Use the first error message
+									
+									// Append the error message after the input field
+									if (inputField.length > 0) {
+										inputField.parent().append(errorSpan); // Append to the parent div
+									}
 								});
+
 							} else {
-								toastrMsg(res.status, res.message);// Show success message if final
+								toastrMsg(res.status, res.message); 
 							}
 						} 
 					});

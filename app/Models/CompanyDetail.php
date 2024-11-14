@@ -45,4 +45,9 @@ class CompanyDetail extends Model
     {
         return $this->belongsTo(User::class);
     }
+	
+	public function companyDocuments()
+	{
+		return $this->hasMany(CompanyDocument::class, 'company_details_id');
+	}
 }
