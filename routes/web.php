@@ -16,7 +16,7 @@ use App\Http\Controllers\User\KycController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-\Artisan::call('migrate');
+//\Artisan::call('migrate');
 
 Route::get('/', function () {
     return view('welcome');
