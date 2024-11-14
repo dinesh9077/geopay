@@ -43,7 +43,9 @@ h4 {
   max-width: var(--sidebar-width);
   min-width: var(--sidebar-width);
   transition: all var(--transition-speed) ease-in-out;
-  border-right: 1px solid rgb(240, 235, 235);
+  border-right: 1px solid transparent;
+  border-image-source: linear-gradient( 180deg, rgba(0, 0, 0, 0) 0%, #343434 50.5%, rgba(102, 102, 102, 0) 100% );
+  border-image-slice: 1;
 }
 
 .main {
@@ -70,10 +72,14 @@ h4 {
 }
 
 .sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   list-style: none;
   margin-bottom: 0;
   padding-left: 0;
   margin-left: 0;
+  padding: 0 20px;
 }
 
 .sidebar-header {
@@ -86,9 +92,18 @@ a.sidebar-link {
   padding: var(--spacing-medium) var(--sidebar-padding);
   color: var(--primary-color);
   position: relative;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 5px;
   font-size: var(--font-size-sidebar-link);
 }
+
+.sidebar-item .active{
+  color: var(--white);
+  background-color: var(--primary-color);
+}
+
 a.sidebar-link[data-bs-toggle=collapse]::after {
   border: solid;
   border-width: 0 0.075rem 0.075rem 0;
@@ -260,6 +275,14 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
 
 #multi-step-form{
   overflow-x: hidden;
+}
+
+.home-banner-carousel .img-fluid {
+  min-width: 100%;
+  max-height: 410px;
+  object-fit: cover;
+  border: 0.75px solid var(--theme-border-color);
+  border-radius: 14px;
 }
 
 

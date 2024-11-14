@@ -1,27 +1,33 @@
 @extends('user.layouts.app')
 @section('title', env('APP_NAME').' - Dashboard')
 @section('content')
-<div class="container-fluid">
-	<div class="row">
+<div class="container-fluid p-0">
+	<div class="row g-4">
 		<!-- Left Column -->
-		<div class="col-lg-8 mb-3">
+		<div class="col-lg-9 mb-3">
 			<!-- First Row -->
-			<div class="row mb-3">
-				<div class="col">
-					<div class="w-100 h-100">
-						<img src="{{ asset('assets/image/dashboard/fram1.svg') }}" class="img-fluid" alt="">
+			<div id="carouselExampleSlidesOnly" class="carousel home-banner-carousel slide mb-3" data-bs-ride="carousel">
+				<div class="carousel-inner">
+					<div class="carousel-item active" data-bs-interval="5000">
+						<img src="{{ asset('assets/image/dashboard/carousel-img.jfif') }}" class="img-fluid w-100" alt="">
+					</div>
+					<div class="carousel-item" data-bs-interval="5000">
+						<img src="{{ asset('assets/image/dashboard/carousel-img.jfif') }}" class="img-fluid w-100" alt="">
+					</div>
+					<div class="carousel-item" data-bs-interval="5000">
+							<img src="{{ asset('assets/image/dashboard/carousel-img.jfif') }}" class="img-fluid w-100" alt="">
 					</div>
 				</div>
 			</div>
 			<!-- Second Row -->
 			<div class="row g-2">
 				<!-- First Column (6 columns wide) -->
-				<div class="col-md-8">
+				<div class="col-md-7">
 					<!-- First Row inside First Column -->
-					<p class="service-title text-center">Services</p>
-					<div class="row g-2 mb-2 justify-content-center">
+					<p class="service-title">Services</p>
+					<div class="row g-5 mb-2 justify-content-center">
 						<div class="col-md-4 col-sm-3">
-							<div class="border text-center h-100 align-content-center service-box">
+							<div class="text-center h-100 align-content-center service-box">
 								<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
 									<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
 									<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
@@ -30,7 +36,7 @@
 							</div>
 						</div>
 						<div class="col-md-4 col-sm-3">
-							<div class="border text-center h-100 align-content-center service-box">
+							<div class="text-center h-100 align-content-center service-box">
 								<img src="{{ asset('assets/image/dashboard/wallet-to-wallet.svg') }}" alt="wallet">
 								<p class="service-title">Wallet to Wallet</p>
 							</div>
@@ -38,21 +44,21 @@
 					</div>
 					<!-- Second Row inside First Column -->
 					<p class="service-title text-center">Pay Services</p>
-					<div class="row g-2 justify-content-between">
+					<div class="row g-5 justify-content-between">
 						<div class="col-md-4 col-sm-3">
-							<div class="border text-center h-100 align-content-center service-box">
+							<div class="text-center h-100 align-content-center service-box">
 								<img src="{{ asset('assets/image/dashboard/mobile-money.svg') }}" alt="wallet">
 								<p class="service-title">Transfer to Mobile Money</p>
 							</div>
 						</div>
 						<div class="col-md-4 col-sm-3">
-							<div class="border text-center h-100 align-content-center service-box">
+							<div class="text-center h-100 align-content-center service-box">
 								<img src="{{ asset('assets/image/dashboard/airtime.svg') }}" alt="wallet">
 								<p class="service-title">International Airtime</p>
 							</div>
 						</div>
 						<div class="col-md-4 col-sm-3">
-							<div class="border text-center h-100 align-content-center service-box">
+							<div class="text-center h-100 align-content-center service-box">
 								<img src="{{ asset('assets/image/dashboard/bank.svg') }}" alt="wallet">
 								<p class="service-title">Transfer to Bank</p>
 							</div>
@@ -61,7 +67,7 @@
 				</div>
 				
 				<!-- Second Column (4 columns wide) -->
-				<div class="col-md-4">
+				<div class="col-md-5">
 					<div class="border text-center d-flex flex-column qr-container">
 						<span class="font-text-13">To Pay Pritesh Salla</span>
 						<span class="qr-caption">Share your GEOPAY QR Code to receive payments</span>
@@ -73,7 +79,7 @@
 		</div>
 		
 		<!-- Quick Transfer Column -->
-		<div class="col-lg-4">
+		<div class="col-lg-3">
 			<div class="p-3 border text-center rounded-3 quick-transfer-container">
 				<!-- First Row: Avatar Selection (Screenshot Design) -->
 				<div class="d-flex justify-content-around align-items-center quick-transfer-sub-container">
