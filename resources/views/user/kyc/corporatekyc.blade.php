@@ -93,41 +93,41 @@
 										<div class="row mb-3">
 											<div class="col-md-6">
 												<label for="bankName" class="required text-black font-md mb-2">Memorandum Articles of Association</label>
-												<input type="file" class="form-control bg-light border-light" id="bankName" name="bankName"> 
+												<input type="file" class="form-control bg-light border-light" id="memorandum_articles_of_association" name="company_document['memorandum_articles_of_association']"> 
 											</div>
 											<div class="col-md-6">
 												<label for="bankCode" class="required text-black font-md mb-2">Registration of Shareholders(UPDATED)</label>
-												<input type="file" class="form-control bg-light border-light" id="bankCode" name="bankCode"> 
+												<input type="file" class="form-control bg-light border-light" id="registration_of_shareholders" name="company_document['registration_of_shareholders']"> 
 											</div>
 										</div>
 										<div class="row mb-3">
 											<div class="col-md-12">
 												<label for="bankName" class="required text-black font-md mb-2">Registration of Directors (UPDATED)</label>
-												<input type="file" class="form-control bg-light border-light" id="bankName" name="bankName"> 
+												<input type="file" class="form-control bg-light border-light" id="registration_of_directors" name="company_document['registration_of_directors']"> 
 											</div>
 										</div>
 										<div class="row mb-3">
 											<div class="col-md-12">
 												<label for="bankName" class="required text-black font-md mb-2">Proof of Address for Shareholders (Utility bill or bank statement)</label>
-												<input type="file" class="form-control bg-light border-light" id="bankName" name="bankName"> 
+												<input type="file" class="form-control bg-light border-light" id="proof_of_address_shareholders" name="company_document['proof_of_address_shareholders']"> 
 											</div>
 										</div>
 										<div class="row mb-3">
 											<div class="col-md-12">
 												<label for="bankName" class="required text-black font-md mb-2">Proof of Address for Directors (Utility bill or bank statement)</label>
-												<input type="file" class="form-control bg-light border-light" id="bankName" name="bankName"> 
+												<input type="file" class="form-control bg-light border-light" id="proof_of_address_directors" name="company_document['proof_of_address_directors']"> 
 											</div>
 										</div>
 										<div class="row mb-3">
 											<div class="col-md-12">
 												<label for="bankName" class="required text-black font-md mb-2">Valid government issued Identification proof (Passport, Driving License or National ID) for Shareholders</label>
-												<input type="file" class="form-control bg-light border-light" id="bankName" name="bankName"> 
+												<input type="file" class="form-control bg-light border-light" id="govt_id_shareholders" name="company_document['govt_id_shareholders']"> 
 											</div>
 										</div>
 										<div class="row mb-3">
 											<div class="col-md-12">
 												<label for="bankName" class="required text-black font-md mb-2">Valid government issued Identification proof (Passport, Driving License or National ID) for Directors</label>
-												<input type="file" class="form-control bg-light border-light" id="bankName" name="bankName"> 
+												<input type="file" class="form-control bg-light border-light" id="govt_id_directors" name="company_document['govt_id_directors']"> 
 											</div>
 										</div>
 										

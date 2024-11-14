@@ -14,11 +14,11 @@ return new class extends Migration
 		Schema::create('company_details', function (Blueprint $table) {
 			$table->id();
 			$table->unsignedBigInteger('user_id')->index(); 
-			$table->string('business_licence'); 
+			$table->string('business_licence')->nullable(); 
 			$table->string('tin')->nullable(); 
 			$table->string('vat')->nullable(); 
 			$table->text('company_address')->nullable();
-			$table->string('postcode'); 
+			$table->string('postcode')->nullable();
 			$table->string('bank_name')->nullable(); 
 			$table->string('account_number')->nullable();
 			$table->string('bank_code')->nullable();
