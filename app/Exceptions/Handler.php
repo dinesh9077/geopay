@@ -29,19 +29,20 @@
 				return response()->json([
 					'status' => 'error', 
 					'message' => 'CSRF token mismatch. Please refresh the page and try again.'
-				]);  
+				]); 
 			}
 			
 			// Handle NotFoundHttpException for API requests
-			if ($exception instanceof NotFoundHttpException) {
+			if ($exception instanceof NotFoundHttpException) 
+			{
 			    // If the request is not an API request, abort with a 404 response
-			    if (!$request->expectsJson()) { 
-    				return abort(404);
-    			}
-				return response()->json([
+			    if ($request->expectsJson()) { 
+    				return response()->json([
 					'success' => false,
 					'message' => 'URL not found. Please check the endpoint and try again.',
 					], 404);
+				} 
+				return abort(404);
 			}
 			
 			// Handle AuthenticationException for API requests
@@ -54,20 +55,20 @@
 		}
 		
 		protected function unauthenticated($request, AuthenticationException $exception)
-		{
-			if (!$request->expectsJson()) {
-				return redirect()->route('login');
+		{ 
+			// Check if the request expects JSON
+			if ($request->expectsJson()) {
+				// Return JSON response for API requests
+				return response()->json([
+					'success' => false,
+					'message' => 'Unauthorized. Please check your token and try again.',
+				], 401);
 			}
-			// Return JSON response for unauthenticated requests
-			return response()->json([
-				'success' => false,
-				'message' => 'Unauthorized. Please check your token and try again.',
-			], 401);
+
+			// Otherwise, redirect to the login page for web requests
+			return redirect()->route('login');
 		}
-		
-		/**
-			* Register the exception handling callbacks for the application.
-		*/
+ 
 		public function register(): void
 		{
 			$this->reportable(function (Throwable $e) {

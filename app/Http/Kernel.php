@@ -24,7 +24,7 @@ class Kernel extends HttpKernel
 		
     ];
 
-    /**
+/**
      * The application's route middleware groups.
      *
      * @var array<string, array<int, class-string|string>>
@@ -41,10 +41,10 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-			\App\Http\Middleware\DecryptRequest::class,
+			//\App\Http\Middleware\DecryptRequest::class,
         ],
     ];
 

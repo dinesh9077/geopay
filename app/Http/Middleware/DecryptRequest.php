@@ -18,8 +18,13 @@
 		{ 
 			try { 
 				// Check if the request has the encrypted fields
-				if ($request->isMethod('post') && $request->has('encrypted_data')) 
+				if ($request->isMethod('post') ) 
 				{  
+					if(!$request->has('encrypted_data'))
+					{
+						return response()->json(['status' => 'error', 'message' => 'encrypted data is invalid.']); 
+					}
+					
 					$secretKey = env('ENCRYPTION_SECRET_KEY'); 
 					// Decrypt the encrypted_data field 
 					$decryptedData = openssl_decrypt(

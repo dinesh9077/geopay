@@ -22,50 +22,37 @@
 		|
 	*/
 	
-	// ---------------------------
-	// Login & Logout
-	// ---------------------------
-	Route::post('login', [LoginController::class, 'login']); 
+	Route::middleware(['decrypt.request'])->group(function () 
+	{  
+		Route::post('login', [LoginController::class, 'login']);  
+		
+		Route::post('forgot-password', [LoginController::class, 'forgotPassword']);
+		Route::post('forgot-resend-otp', [LoginController::class, 'forgotResendOtp']);
+		Route::post('verify-email-otp', [LoginController::class, 'verifyEmailOtp']);
+		Route::post('reset-password', [LoginController::class, 'resetPassword']);
+		
+		Route::post('register', [RegisterController::class, 'register']);
+		
+		Route::post('email/send', [RegisterController::class, 'sendEmailOtp']);
+		Route::post('/email/resend', [RegisterController::class, 'resendEmailOtp']);
+		Route::post('/verify/email-otp', [RegisterController::class, 'verifyEmailOtp']);
+		 
+		Route::post('/mobile/send', [RegisterController::class, 'sendMobileOtp']);
+		Route::post('/mobile/resend', [RegisterController::class, 'resendMobileOtp']);
+		Route::post('/verify/otp', [RegisterController::class, 'verifyMobileOtp']);
+		  
+		Route::post('/user-kyc/verify', [UserKycController::class, 'verify']);
+		Route::post('/user-kyc-cron', [UserKYCController::class, 'getKYCVerification']);
+	});
+	
 	Route::post('logout', [LoginController::class, 'logout'])->middleware(['auth:api', 'ensure.token']);
 	
-	// ---------------------------
-	// Forgot Password
-	// ---------------------------
-	Route::post('forgot-password', [LoginController::class, 'forgotPassword']);
-	Route::post('forgot-resend-otp', [LoginController::class, 'forgotResendOtp']);
-	Route::post('verify-email-otp', [LoginController::class, 'verifyEmailOtp']);
-	Route::post('reset-password', [LoginController::class, 'resetPassword']);
+	Route::get('countries', [CountryController::class, 'index']); 
+	
+	Route::get('user-roles', [UserController::class, 'userRoles']); 
 	 
-	// ---------------------------
-	// Register User
-	// ---------------------------
-	Route::post('register', [RegisterController::class, 'register']);
 	
-	Route::post('email/send', [RegisterController::class, 'sendEmailOtp']);
-	Route::post('/email/resend', [RegisterController::class, 'resendEmailOtp']);
-	Route::post('/verify/email-otp', [RegisterController::class, 'verifyEmailOtp']);
-	 
-	Route::post('/mobile/send', [RegisterController::class, 'sendMobileOtp']);
-	Route::post('/mobile/resend', [RegisterController::class, 'resendMobileOtp']);
-	Route::post('/verify/otp', [RegisterController::class, 'verifyMobileOtp']);
-	  
-	Route::post('/user-kyc/verify', [UserKycController::class, 'verify']);
-	Route::post('/user-kyc-cron', [UserKYCController::class, 'getKYCVerification']);
-	
-	// ---------------------------
-	// Country Module
-	// ---------------------------
-	Route::get('countries', [CountryController::class, 'index']);
-	
-	// ---------------------------
-	// User Roles Module
-	// ---------------------------
-	Route::get('user-roles', [UserController::class, 'userRoles']);
-	
-	// ---------------------------
-	// Protected Routes (Require Authentication)
-	// ---------------------------
-	Route::middleware(['auth:api', 'ensure.token'])->group(function () 
+	Route::middleware(['auth:api', 'ensure.token', 'decrypt.request'])->group(function () 
 	{ 
 		Route::post('user-details', [LoginController::class, 'userDetails']);
 		Route::post('user-profile', [RegisterController::class, 'updateProfile']);
