@@ -1,11 +1,13 @@
 :root {
     /* Colors */
-    --primary-color: #27435B;
+    --white: #ffffff;
+    --primary-color: #102030;
     --primary-color-hover: #376186;
     --secondary-color: #81A8C7;
     --secondary-color-hover: #5d7d97;
     --gray-color: #E0E0E0;
     --gray-color-hover: #b9b9b9;
+    --theme-border-color: #bababa;
     --background-color-dark: var(--bs-dark);
     /* --background-color-dark-subtle: var(--bs-dark-bg-subtle); */
     --primary-bg-subtle: var(--bs-primary-bg-subtle);
@@ -23,9 +25,9 @@
     /* Spacing */
     --spacing-small: 0.375rem;
     --spacing-medium: 0.625rem;
-    --spacing-large: 1.15rem;
+    --spacing-large: 1.4rem;
     --sidebar-padding: 1.625rem;
-    --sidebar-width: 264px;
+    --sidebar-width: 260px;
 
     /* Avatar */
     --avatar-size: 40px;
@@ -59,7 +61,7 @@
     --font-size-small: clamp(0.75rem, 2vw + 0.5rem, 0.875rem);
 
     /* Font Size for Sidebar and Navigation */
-    --font-size-sidebar-link: clamp(0.875rem, 2vw + 0.75rem, 0.9rem);
+    --font-size-sidebar-link: clamp(0.875rem, 2vw + 0.75rem, 1.1rem);
     --font-size-sidebar-logo: clamp(1rem, 2vw + 0.875rem, 1.25rem);
     --font-size-sidebar-header: clamp(0.75rem, 1.5vw + 0.5rem, 0.9rem);
 

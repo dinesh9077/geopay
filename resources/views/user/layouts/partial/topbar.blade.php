@@ -1,5 +1,8 @@
 <nav class="navbar navbar-expand px-3 border-bottom"> 
-	<h6>Dashboard</h6>
+	<button class="btn d-md-none" id="sidebar-toggle" type="button">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<h6 class="mb-0">Dashboard</h6>
 	<div class="navbar-collapse navbar">
 		<ul class="navbar-nav gap-3">
 			<!-- Wallet Balance -->
