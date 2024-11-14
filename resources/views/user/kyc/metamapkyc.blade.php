@@ -39,7 +39,7 @@
 									<div id="metamap-button-container"></div>
 								</div> 
 							@else
-								@if($userKyc->status == "verified")
+								@if($userKyc->verification_status == "verified")
 									<h6 class="fw-semibold text-black text-center mb-4">Your Meta KYC Is Completed.</h6>
 									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
 										Thank you for completing your KYC submission! Your documents have been reviewed and approved.
@@ -48,7 +48,7 @@
 									<div class="text-center">
 										<a href="{{ route('home') }}" class="btn btn-primary btn-sm">Continue to use</a>
 									</div> 
-								@elseif($userKyc->status == "rejected")
+								@elseif($userKyc->verification_status == "rejected")
 									<h6 class="fw-semibold text-black text-center mb-4">Your Meta verification was rejected.</h6>
 									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
 										Your verification has been rejected. Please follow the instructions below to reverify.
@@ -151,7 +151,7 @@
 				});
 				
 			@else
-				@if(!in_array($userKyc->status, ['verified', 'rejected']))
+				@if(!in_array($userKyc->verification_status, ['verified', 'rejected']))
 					// Define a variable to hold the interval ID
 					let checkKycInterval = setInterval(() => {
 						$.ajax({
