@@ -151,28 +151,28 @@
 				});
 				
 			@else
-				
-				// Define a variable to hold the interval ID
-				let checkKycInterval = setInterval(() => {
-					$.ajax({
-						async: true,
-						type: "get",
-						url: "{{ route('metamap.kyc-check-status') }}", 
-						cache: false, 
-						dataType: 'json', 
-						success: function (res) {   
-							if (res.status === "success") { 
-								toastrMsg(res.status, res.message); 
-								const decryptRes = decryptData(res.response); 
-								$('#kyc_response_html').html(decryptRes.output);
+				@if(!in_array($userKyc->status, ['verified', 'rejected']))
+					// Define a variable to hold the interval ID
+					let checkKycInterval = setInterval(() => {
+						$.ajax({
+							async: true,
+							type: "get",
+							url: "{{ route('metamap.kyc-check-status') }}", 
+							cache: false, 
+							dataType: 'json', 
+							success: function (res) {   
+								if (res.status === "success") { 
+									toastrMsg(res.status, res.message); 
+									const decryptRes = decryptData(res.response); 
+									$('#kyc_response_html').html(decryptRes.output);
 
-								// Stop the interval if the response status is "success"
-								clearInterval(checkKycInterval);
-							}  
-						}
-					});
-				}, 2000); // 2000 ms (2 seconds)
- 
+									// Stop the interval if the response status is "success"
+									clearInterval(checkKycInterval);
+								}  
+							}
+						});
+					}, 2000); // 2000 ms (2 seconds) 
+				@endif  
 			@endif  
 		</script>
 	</body>
