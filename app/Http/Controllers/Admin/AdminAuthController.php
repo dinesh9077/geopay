@@ -7,9 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Admin; // Assuming you have an Admin model
+use Validator;
+use App\Http\Traits\WebResponseTrait;
 
 class AdminAuthController extends Controller
 {
+	use WebResponseTrait;
+	
     // Show the admin login form
     public function showLoginForm()
     {
@@ -23,17 +27,29 @@ class AdminAuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+        $validator = Validator::make($request->all(), [
+			'email' => 'required|string|email|max:255',
+			'password' => 'required|string',
+		]);
+		
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		} 
+		
+		try 
+		{   
+			if (Auth::guard('admin')->attempt($request->only('email', 'password')))
+			{ 
+				$url = route('admin.dashboard'); 
+				return $this->successResponse('logged in successfully.', ['url' => $url]);
+			}
 
-        if (Auth::guard('admin')->attempt($request->only('email', 'password'))) {
-            return redirect()->route('admin.dashboard');
-        }
-
-		session()->flash('error', 'Invalid credentials.');
-        return redirect()->back()->withInput();
+			return $this->errorResponse('Invalid credentials.');
+		}
+		catch (\Throwable $e)
+		{
+			return $this->errorResponse($e->getMessage());
+		}
     }
 
     public function logout()

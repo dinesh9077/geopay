@@ -21,7 +21,7 @@ class CheckKycStatus
             $is_company = Auth::user()->is_company;
             
             // Define allowed routes for accessing KYC pages
-            $routesArr = $is_company == 1 ? ['corporate.kyc', 'corporate.kyc.submit-step', 'corporate.kyc.submit-final', 'logout'] : ['metamap.kyc', 'metamap.kyc-check-status', 'logout'];
+            $routesArr = $is_company == 1 ? ['corporate.kyc', 'corporate.kyc.submit-step', 'corporate.kyc.submit-final'] : ['metamap.kyc', 'metamap.kyc-check-status'];
             $redirectUrl = $is_company == 1
                 ? redirect()->route('corporate.kyc')->with('message', 'Please complete your KYC verification.')
                 : redirect()->route('metamap.kyc')->with('message', 'Please complete your KYC verification.');

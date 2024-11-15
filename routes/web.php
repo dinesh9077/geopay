@@ -39,16 +39,16 @@ Route::post('/verify/email-otp', [RegisterController::class, 'verifyEmailOtp'])-
 Route::post('/mobile/send', [RegisterController::class, 'sendMobileOtp'])->name('mobile.send')->middleware('webdecrypt.request');
 Route::post('/mobile/resend', [RegisterController::class, 'resendMobileOtp'])->name('mobile.resend')->middleware('webdecrypt.request');
 Route::post('/verify/mobile-otp', [RegisterController::class, 'verifyMobileOtp'])->name('verify.mobile-otp')->middleware('webdecrypt.request');
- 
-Route::middleware(['webdecrypt.request'])->group(function ()
-{  
-	// Reset Password
-	Route::get('/password/reset', [ResetPasswordController::class, 'showOtpRequestForm'])->name('password.request');  
-	Route::post('/password/send-otp', [ResetPasswordController::class, 'sendOtp'])->name('password.sendOtp');  
-	Route::post('/password/resend-otp', [ResetPasswordController::class, 'resendOtp'])->name('password.resendOtp');
-	Route::post('/password/verify-otp', [ResetPasswordController::class, 'verifyEmailOtp'])->name('password.verifyOtp');  
-	Route::post('/password/reset', [ResetPasswordController::class, 'resetPassword'])->name('password.reset'); 
-	 
+
+// Reset Password
+Route::get('/password/reset', [ResetPasswordController::class, 'showOtpRequestForm'])->name('password.request');  
+Route::post('/password/send-otp', [ResetPasswordController::class, 'sendOtp'])->name('password.sendOtp')->middleware('webdecrypt.request');  
+Route::post('/password/resend-otp', [ResetPasswordController::class, 'resendOtp'])->name('password.resendOtp')->middleware('webdecrypt.request');
+Route::post('/password/verify-otp', [ResetPasswordController::class, 'verifyEmailOtp'])->name('password.verifyOtp')->middleware('webdecrypt.request');
+Route::post('/password/reset', [ResetPasswordController::class, 'resetPassword'])->name('password.reset')->middleware('webdecrypt.request');
+
+Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
+{     
 	// Meta Kyc
 	Route::get('/metamap/kyc', [KycController::class, 'metaMapKyc'])->name('metamap.kyc');
 	Route::get('/metamap/kyc-check-status', [KycController::class, 'metaMapKycStatus'])->name('metamap.kyc-check-status');
@@ -58,8 +58,8 @@ Route::middleware(['webdecrypt.request'])->group(function ()
 	Route::get('/corporate/kyc', [KycController::class, 'corporateKyc'])->name('corporate.kyc'); 
 	Route::post('corporate/kyc/step/{step}', [KycController::class, 'corporateKycStep'])->name('corporate.kyc.submit-step');
 	Route::post('corporate/kyc/final', [KycController::class, 'corporateKycFinal'])->name('corporate.kyc.submit-final');
-
-	Route::get('/home', [HomeController::class, 'index'])->name('home');
 	
+	// Dashboard
+	Route::get('/home', [HomeController::class, 'index'])->name('home'); 
 });
 
