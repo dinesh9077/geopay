@@ -22,57 +22,54 @@
 			<!-- Second Row -->
 			<div class="row g-2">
 				<!-- First Column (6 columns wide) -->
-				<div class="col-md-7">
+				<div class="col-lg-8 order-2 order-lg-1">
 					<!-- First Row inside First Column -->
-					<p class="service-title">Services</p>
-					<div class="row g-5 mb-2 justify-content-center">
-						<div class="col-md-4 col-sm-3">
-							<div class="text-center h-100 align-content-center service-box">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
-									<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-									<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-								</svg>
-								<p class="service-title">Add Money</p>
+					<p class="heading-4 mb-2 text-center">Services</p>
+					<div class="row g-3 gx-xxl-5 mb-3 justify-content-center service-section mw-100 mx-auto">
+						<div class="col-6 col-md-4">
+							<div class="text-center h-100 align-content-center service-box m-auto">
+								<img class="in-svg mb-3" src="{{ asset('assets/image/icons/plus-circle.svg') }}" alt="Add Money Icon">
+								<p class="content-2">Add Money</p>
 							</div>
 						</div>
-						<div class="col-md-4 col-sm-3">
-							<div class="text-center h-100 align-content-center service-box">
-								<img src="{{ asset('assets/image/dashboard/wallet-to-wallet.svg') }}" alt="wallet">
-								<p class="service-title">Wallet to Wallet</p>
+						<div class="col-6 col-md-4">
+							<div class="text-center h-100 align-content-center service-box m-auto">
+								<img class="in-svg mb-3" src="{{ asset('assets/image/icons/wallet.svg') }}" alt="Wallet to Wallet Icon">
+								<p class="content-2">Wallet to Wallet</p>
 							</div>
 						</div>
 					</div>
 					<!-- Second Row inside First Column -->
-					<p class="service-title text-center">Pay Services</p>
-					<div class="row g-5 justify-content-between">
-						<div class="col-md-4 col-sm-3">
-							<div class="text-center h-100 align-content-center service-box">
-								<img src="{{ asset('assets/image/dashboard/mobile-money.svg') }}" alt="wallet">
-								<p class="service-title">Transfer to Mobile Money</p>
+					<p class="heading-4 mb-2 text-center">Pay Services</p>
+					<div class="row g-3 gx-xxl-5 justify-content-between pay-service-section mw-100 mx-auto">
+						<div class="col-6 col-md-4">
+							<div class="text-center h-100 align-content-center service-box m-auto">
+								<img class="in-svg mb-3" src="{{ asset('assets/image/icons/expense.svg') }}" alt="Transfer to Mobile Money Icon">
+								<p class="content-2">Transfer to Mobile Money</p>
 							</div>
 						</div>
-						<div class="col-md-4 col-sm-3">
-							<div class="text-center h-100 align-content-center service-box">
-								<img src="{{ asset('assets/image/dashboard/airtime.svg') }}" alt="wallet">
-								<p class="service-title">International Airtime</p>
+						<div class="col-6 col-md-4">
+							<div class="text-center h-100 align-content-center service-box m-auto">
+								<img class="in-svg mb-3" src="{{ asset('assets/image/icons/globe.svg') }}" alt="International Airtime Icon">
+								<p class="content-2">International Airtime</p>
 							</div>
 						</div>
-						<div class="col-md-4 col-sm-3">
-							<div class="text-center h-100 align-content-center service-box">
-								<img src="{{ asset('assets/image/dashboard/bank.svg') }}" alt="wallet">
-								<p class="service-title">Transfer to Bank</p>
+						<div class="col-6 col-md-4">
+							<div class="text-center h-100 align-content-center service-box m-auto">
+								<img class="in-svg mb-3" src="{{ asset('assets/image/icons/bank.svg') }}" alt="Transfer to Mobile Money Icon">
+								<p class="content-2">Transfer to Bank</p>
 							</div>
 						</div>
 					</div>
 				</div>
 				
 				<!-- Second Column (4 columns wide) -->
-				<div class="col-md-5">
+				<div class="col-lg-4 order-1 order-lg-2">
 					<div class="border text-center d-flex flex-column qr-container">
 						<span class="font-text-13">To Pay Pritesh Salla</span>
-						<span class="qr-caption">Share your GEOPAY QR Code to receive payments</span>
+						<span class="">Share your GEOPAY QR Code to receive payments</span>
 						<!-- <span class="mb-3">Share your GEOPAY QR Code to receive payments</span> -->
-						<img src="{{ asset('assets/image/dashboard/QRCode.png') }}" class="img-fluid p-2 mw-100" alt="Centered Image">
+						<img src="{{ asset('assets/image/dashboard/QRCode.png') }}" class="img-fluid p-2 mw-100 qr-code" alt="Centered Image">
 					</div>
 				</div>
 			</div>
@@ -108,7 +105,7 @@
 				</div>
 			</div>
 			<div class="border rounded px-3 py-2 mt-3">
-				<b class="service-title">Recent Transactions</b>
+				<b class="">Recent Transactions</b>
 				<div class="d-flex justify-content-between align-items-center my-3">
 					<div class="d-flex gap-lg-2 gap-md-3">
 						<img src="{{ asset('assets/image/dashboard/card-sign.svg') }}" class="transaction-icon"/>

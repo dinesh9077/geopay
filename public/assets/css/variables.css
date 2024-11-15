@@ -39,29 +39,29 @@
     --transition-speed: 0.35s;
 
     /* Font Size for Headings */
-    --font-size-h1: clamp(1.5rem, 5vw + 1rem, 3rem);
-    --font-size-h2: clamp(1.375rem, 4.5vw + 1rem, 2.5rem);
-    --font-size-h3: clamp(1.25rem, 4vw + 1rem, 2.25rem);
-    --font-size-h4: clamp(1.125rem, 3.5vw + 1rem, 2rem);
-    --font-size-h5: clamp(1.0625rem, 3vw + 1rem, 1.75rem);
-    --font-size-h6: clamp(1rem, 2.5vw + 1rem, 1.5rem);
+    --font-size-h1: clamp(24px, 1vw + 4px, 26px);
+    --font-size-h2: clamp(22px, 1vw + 4px, 24px);
+    --font-size-h3: clamp(20px, 1vw + 4px, 22px);
+    --font-size-h4: clamp(19px, 1vw + 4px, 20px);
+    --font-size-h5: clamp(17px, 1vw + 4px, 18px);
+    --font-size-h6: clamp(15px, 1vw + 4px, 16px);
 
     /* Font Size for Paragraphs */
-    --font-size-p1: clamp(1rem, 3vw + 1rem, 1.25rem); /* Responsive Paragraph 1 */
-    --font-size-p2: clamp(0.875rem, 2.5vw + 1rem, 1.125rem); /* Responsive Paragraph 2 */
-    --font-size-p3: clamp(0.75rem, 2vw + 1rem, 1rem); /* Responsive Paragraph 3 */
+    --font-size-content-1: clamp(16px, 1vw + 4px, 18px);
+    --font-size-content-2: clamp(15px, 1vw + 2px, 16px);
+    --font-size-content-3: clamp(13px, 1vw + 2px, 14px);
 
     /* Font Size for Labels */
-    --font-size-label1: clamp(0.875rem, 2.5vw + 0.5rem, 1rem); /* Responsive Label 1 */
-    --font-size-label2: clamp(0.75rem, 2vw + 0.5rem, 0.875rem); /* Responsive Label 2 */
-    --font-size-label3: clamp(0.625rem, 1.5vw + 0.5rem, 0.775rem); /* Responsive Label 3 */
+    --font-size-label1: clamp(0.875rem, 2.5vw + 0.5rem, 1rem);
+    --font-size-label2: clamp(0.75rem, 2vw + 0.5rem, 0.875rem);
+    --font-size-label3: clamp(0.625rem, 1.5vw + 0.5rem, 0.775rem);
 
     /* Font Size for Body Text */
     --font-size-body: clamp(0.875rem, 2vw + 0.75rem, 1rem);
     --font-size-small: clamp(0.75rem, 2vw + 0.5rem, 0.875rem);
 
     /* Font Size for Sidebar and Navigation */
-    --font-size-sidebar-link: clamp(0.875rem, 2vw + 0.75rem, 1.1rem);
+    --font-size-sidebar-link: clamp(14px, 1vw + 2px, 16px);
     --font-size-sidebar-logo: clamp(1rem, 2vw + 0.875rem, 1.25rem);
     --font-size-sidebar-header: clamp(0.75rem, 1.5vw + 0.5rem, 0.9rem);
 
@@ -71,5 +71,8 @@
     /* Font Size for Navbar */
     --font-size-navbar: clamp(0.875rem, 2vw + 0.75rem, 1rem);
 
+    @media (min-width: 1199px) and (max-width: 1399px) {
+      --sidebar-width: 230px;
+    }
   }
   

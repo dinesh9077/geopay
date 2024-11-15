@@ -64,8 +64,14 @@
 		<script>
 			// for sidebar collapse
 			const sidebarToggle = document.querySelector("#sidebar-toggle");
-			sidebarToggle.addEventListener("click",function(){
-				document.querySelector("#sidebar").classList.toggle("collapsed");
+			const sidebarClose = document.querySelector("#sidebar-close");
+			const sidebar = document.querySelector("#sidebar");
+			
+			sidebarToggle.addEventListener("click", function () {
+				sidebar.classList.toggle("collapsed");
+			});
+			sidebarClose.addEventListener("click", function () {
+				sidebar.classList.remove("collapsed");
 			});
 
 			// To convert img to svg
