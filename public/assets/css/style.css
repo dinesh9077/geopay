@@ -2,6 +2,7 @@
 @import url("variables.css");
 @import url("auth.css");
 @import url("responsive-fonts.css");
+@import url("common-fonts.css");
 
 *,
 ::after,
@@ -15,6 +16,7 @@ body {
   opacity: 1;
   overflow-y: auto;
   margin: 0;
+  background: #fafafa;
 }
 
 a {
@@ -46,6 +48,25 @@ h4 {
   border-right: 1px solid transparent;
   border-image-source: linear-gradient( 180deg, rgba(0, 0, 0, 0) 0%, #343434 50.5%, rgba(102, 102, 102, 0) 100% );
   border-image-slice: 1;
+}
+
+@media (max-width: 1199px) {
+  #sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 2;
+    background: white;
+  }
+}
+@media (min-width: 1200px) {
+  #sidebar-toggle{
+    display: none;
+  }
+  #sidebar-close{
+    display: none;
+  }
 }
 
 .main {
@@ -279,19 +300,19 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
 
 .home-banner-carousel .img-fluid {
   min-width: 100%;
-  max-height: 410px;
+  max-height: 40dvh;
   object-fit: cover;
   border: 0.75px solid var(--theme-border-color);
   border-radius: 14px;
 }
 
-
-
-
-
-
-
-
+.qr-container {
+  border-radius: 10px;
+  padding: 0.3rem;
+  max-width: 400px;
+  margin: auto;
+  background-color: var(--white);
+}
 
 
 
@@ -320,7 +341,7 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
 }
 
 
-@media (max-width: 767.98px) {
+@media (max-width: 1199px) {
   .register-form-container{
     /* margin-top: 10%; */
     align-content: center;
