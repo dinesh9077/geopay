@@ -1,5 +1,5 @@
 @extends('user.layouts.app')
-@section('title', env('APP_NAME').' - Dashboard')
+@section('title', config('setting.site_name').' - Dashboard')
 @section('content')
 <div class="container-fluid p-0">
 	<div class="row g-4">

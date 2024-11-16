@@ -58,8 +58,8 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	Route::get('/corporate/kyc', [KycController::class, 'corporateKyc'])->name('corporate.kyc'); 
 	Route::post('corporate/kyc/step/{step}', [KycController::class, 'corporateKycStep'])->name('corporate.kyc.submit-step');
 	Route::post('corporate/kyc/final', [KycController::class, 'corporateKycFinal'])->name('corporate.kyc.submit-final');
-	
+	 
 	// Dashboard
-	Route::get('/home', [HomeController::class, 'index'])->name('home'); 
+	Route::get('/home', [HomeController::class, 'index'])->name('home');  
 });
 

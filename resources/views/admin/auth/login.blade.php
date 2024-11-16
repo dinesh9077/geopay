@@ -1,76 +1,72 @@
-<!-- meta tags and other links -->
 <!DOCTYPE html>
-<html class="" lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>{{ env('APP_NAME') }} - Admin Login</title>
-		<link rel="icon" type="image/png" href="{{ asset('admin/images/favicon.png') }}" sizes="16x16">
-		<!-- google fonts -->
-		<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-		<!-- remix icon font css  -->
-		<link rel="stylesheet" href="{{ asset('admin/css/remixicon.css') }}">
+<html lang="en">
+	<head> 
+		<title>{{ config('setting.site_name') }} - Admin Login</title>
+		<link rel="shortcut icon" href="{{ url('storage/setting', config('setting.fevicon_icon')) }}" />
+		<!-- color-modes:js -->
+		<script src="{{ asset('admin/js/color-modes.js') }}"></script>
+		<!-- endinject -->
 		
-		<link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
-		<!-- main css -->
-		<link rel="stylesheet" href="{{ asset('admin/css/style.css') }}">
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+		<!-- End fonts -->
+		
+		<!-- core:css -->
+		<link rel="stylesheet" href="{{ asset('admin/vendors/core/core.css') }}">
+		<!-- endinject -->
+		 
+		<!-- inject:css -->
+		<link rel="stylesheet" href="{{ asset('admin/fonts/feather-font/css/iconfont.css') }}">
+		<!-- endinject -->
+		
+		<!-- Layout styles -->  
+		<link rel="stylesheet" href="{{ asset('admin/css/demo1/style.css') }}">
+		<!-- End layout styles --> 
+		<link href="{{ asset('assets/css/toastr.min.css') }}" rel="stylesheet" type="text/css">
 	</head>
-	<body class="dark:bg-neutral-800 bg-neutral-100 dark:text-white">
-		
-		<section class="bg-white dark:bg-dark-2 flex flex-wrap min-h-[100vh]">  
-			 
-			<div class="lg:w-1/2 py-8 px-6 flex flex-col justify-center" style="margin: auto;">
-				<div class="lg:max-w-[464px] mx-auto w-full">
-					<div> 
-						<h4 class="mb-3">Sign In to your Account</h4>
-						<p class="mb-8 text-secondary-light text-lg">Welcome back! please enter your detail</p>
-					</div>
-					<form id="loginForm" action="{{ route('admin.login.submit') }}" method="POST">
-						<div class="icon-field mb-4 relative">
-							<span class="absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none flex text-xl">
-								<iconify-icon icon="mage:email"></iconify-icon>
-							</span>
-							<input type="email" id="email" name="email" class="form-control h-[56px] ps-11 border-neutral-300 bg-neutral-50 dark:bg-dark-2 rounded-xl" placeholder="Email address" autocomplete="off" required>
-						</div>
-						<div class="relative mb-5">
-							<div class="icon-field">
-								<span class="absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none flex text-xl">
-									<iconify-icon icon="solar:lock-password-outline"></iconify-icon>
-								</span> 
-								<input type="password" id="password" name="password" class="form-control h-[56px] ps-11 border-neutral-300 bg-neutral-50 dark:bg-dark-2 rounded-xl" placeholder="Password" required>
+	<body>
+		<div class="main-wrapper">
+			<div class="page-wrapper full-page">
+				<div class="page-content d-flex justify-content-center">
+					
+					<div class="row w-100 mx-0 auth-page">
+						<div class="col-md-10 col-lg-8 col-xl-6 mx-auto">
+							<div class="card m-auto mt-sm-7" style="max-width:500px">  
+								<div class="auth-form-wrapper px-4 py-5">
+									<a href="{{ url('/') }}" class="nobleui-logo d-block mb-2">{{ config('setting.site_name') }}</a>
+									<h5 class="text-secondary fw-normal mb-4">Welcome back! Log in to your account.</h5>
+									<form class="forms-sample" id="loginForm" action="{{ route('admin.login.submit') }}" method="POST">
+										<div class="mb-3">
+											<label for="userEmail" class="form-label">Email address</label>
+											<input type="email" id="email" name="email" class="form-control"  placeholder="Email">
+										</div>
+										<div class="mb-3">
+											<label for="userPassword" class="form-label">Password</label>
+											<input type="password" id="password" name="password" class="form-control" autocomplete="current-password" placeholder="Password">
+										</div> 
+										<div>
+											<button type="submit" class="btn btn-primary me-2 mb-2 mb-md-0 text-white">Login</button> 
+										</div> 
+									</form>
+								</div> 
 							</div>
-							<span class="toggle-password ri-eye-line cursor-pointer absolute end-0 top-1/2 -translate-y-1/2 me-4 text-secondary-light" data-toggle="#password"></span>
-						</div>  
-						<button type="submit" class="btn btn-primary justify-center text-sm btn-sm px-3 py-4 w-full rounded-xl mt-8"> Log In</button> 
-					</form>
+						</div>
+					</div> 
 				</div>
 			</div>
-		</section>
+		</div>
+		 
+		<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script>
+		 
+		<script src="{{ asset('admin/vendors/feather-icons/feather.min.js') }}"></script> 
 		
-		<!-- jQuery library js -->
-		<script src="{{ asset('admin/js/lib/jquery-3.7.1.min.js') }}"></script> 
-		<!-- Iconify Font js -->
-		<script src="{{ asset('admin/js/lib/iconify-icon.min.js') }}"></script>
-		<!-- jQuery UI js -->
-		<script src="{{ asset('admin/js/lib/jquery-ui.min.js') }}"></script>
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
 		<x-scripts :cryptoKey="$cryptoKey" />
 		
-		<script> 
-			function initializePasswordToggle(toggleSelector) {
-				$(toggleSelector).on('click', function() {
-					$(this).toggleClass("ri-eye-off-line");
-					var input = $($(this).attr("data-toggle"));
-					if (input.attr("type") === "password") {
-						input.attr("type", "text");
-						} else {
-						input.attr("type", "password");
-					}
-				});
-			} 
-			initializePasswordToggle('.toggle-password'); 
-			
+		<script>  
 			$('#loginForm').submit(function(event) 
 			{
 				event.preventDefault();   
@@ -110,7 +106,7 @@
 								var inputField = $('#' + key);
 								var errorSpan = $('<span>')
 									.addClass('error_msg') // Add other classes if necessary
-									.addClass('text-danger-600') // Explicitly add Tailwind class
+									.addClass('text-danger') // Explicitly add Tailwind class
 									.attr('id', key + 'Error')
 									.text(value[0]);
 								inputField.parent().append(errorSpan);

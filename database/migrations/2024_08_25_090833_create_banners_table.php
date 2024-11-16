@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('banners', function (Blueprint $table) {
-            $table->id(); // auto-incrementing primary key
-            $table->string('name', 255)->nullable(); // banner name field with varchar(255)
-            $table->text('app_image'); // banner image field for app
-            $table->text('web_image'); // banner image field for app
-            $table->text('description')->nullable(); // banner text field with text
-            $table->timestamps(); // created_at and updated_at timestamps
+            $table->id();  
+            $table->string('title')->nullable();   
+            $table->string('image')->nullable(); 
+            $table->longText('description')->nullable(); 
+            $table->integer('status')->default(1)->index(); 
+            $table->timestamps();  
         });
     }
 

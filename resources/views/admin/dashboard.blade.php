@@ -1,656 +1,424 @@
 @extends('admin.layouts.app')
-@section('title', env('APP_NAME') . ' - Dashboard')
+@section('title', config('setting.site_name') . ' - Dashboard')
 
 @section('content')
-<div class="dashboard-main-body">
-				<div class="flex flex-wrap items-center justify-between gap-2 mb-6">
-					<h6 class="font-semibold mb-0 dark:text-white">Dashboard</h6>
-					<ul class="flex items-center gap-[6px]">
-						<li class="font-medium">
-							<a href="index.html" class="flex items-center gap-2 hover:text-primary-600 dark:text-white">
-								<iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
-								Dashboard
-							</a>
-						</li>
-						<li class="dark:text-white">-</li>
-						<li class="font-medium dark:text-white">AI</li>
-					</ul>
-				</div>
-				
-				<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 gap-6">
-					<div class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-cyan-600/10 to-bg-white">
-						<div class="card-body p-5">
-							<div class="flex flex-wrap items-center justify-between gap-3">
-								<div>
-									<p class="font-medium text-neutral-900 dark:text-white mb-1">Total Users</p>
-									<h6 class="mb-0 dark:text-white">20,000</h6>
-								</div>
-								<div class="w-[50px] h-[50px] bg-cyan-600 rounded-full flex justify-center items-center">
-									<iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl mb-0"></iconify-icon>
-								</div>
-							</div>
-							<p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 mb-0 flex items-center gap-2">
-								<span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400"><iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +4000</span> 
-								Last 30 days users
-							</p>
-						</div>
-					</div><!-- card end -->
-					<div class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-purple-600/10 to-bg-white">
-						<div class="card-body p-5">
-							<div class="flex flex-wrap items-center justify-between gap-3">
-								<div>
-									<p class="font-medium text-neutral-900 dark:text-white mb-1">Total Subscription</p>
-									<h6 class="mb-0 dark:text-white">15,000</h6>
-								</div>
-								<div class="w-[50px] h-[50px] bg-purple-600 rounded-full flex justify-center items-center">
-									<iconify-icon icon="fa-solid:award" class="text-white text-2xl mb-0"></iconify-icon>
+<div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
+	<div>
+		<h4 class="mb-3 mb-md-0">Welcome to Dashboard</h4>
+	</div>
+	<div class="d-flex align-items-center flex-wrap text-nowrap">
+		<div class="input-group flatpickr w-200px me-2 mb-2 mb-md-0" id="dashboardDate">
+			<span class="input-group-text input-group-addon bg-transparent border-primary" data-toggle><i data-feather="calendar" class="text-primary"></i></span>
+			<input type="text" class="form-control bg-transparent border-primary" placeholder="Select date" data-input>
+		</div>
+		<button type="button" class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0">
+			<i class="btn-icon-prepend" data-feather="printer"></i>
+			Print
+		</button>
+		<button type="button" class="btn btn-primary btn-icon-text mb-2 mb-md-0">
+			<i class="btn-icon-prepend" data-feather="download-cloud"></i>
+			Download Report
+		</button>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-12 col-xl-12 stretch-card">
+		<div class="row flex-grow-1">
+			<div class="col-md-4 grid-margin stretch-card">
+				<div class="card">
+					<div class="card-body">
+						<div class="d-flex justify-content-between align-items-baseline">
+							<h6 class="card-title mb-0">New Customers</h6>
+							<div class="dropdown mb-2">
+								<a type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<i class="icon-lg text-secondary pb-3px" data-feather="more-horizontal"></i>
+								</a>
+								<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="eye" class="icon-sm me-2"></i> <span class="">View</span></a>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="edit-2" class="icon-sm me-2"></i> <span class="">Edit</span></a>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="trash" class="icon-sm me-2"></i> <span class="">Delete</span></a>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="printer" class="icon-sm me-2"></i> <span class="">Print</span></a>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="download" class="icon-sm me-2"></i> <span class="">Download</span></a>
 								</div>
 							</div>
-							<p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 mb-0 flex items-center gap-2">
-								<span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400"><iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon> -800</span> 
-								Last 30 days subscription
-							</p>
 						</div>
-					</div><!-- card end -->
-					<div class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-blue-600/10 to-bg-white">
-						<div class="card-body p-5">
-							<div class="flex flex-wrap items-center justify-between gap-3">
-								<div>
-									<p class="font-medium text-neutral-900 dark:text-white mb-1">Total Free Users</p>
-									<h6 class="mb-0 dark:text-white">5,000</h6>
-								</div>
-								<div class="w-[50px] h-[50px] bg-blue-600 rounded-full flex justify-center items-center">
-									<iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
+						<div class="row">
+							<div class="col-6 col-md-12 col-xl-5">
+								<h3 class="mb-2">3,897</h3>
+								<div class="d-flex align-items-baseline">
+									<p class="text-success">
+										<span>+3.3%</span>
+										<i data-feather="arrow-up" class="icon-sm mb-1"></i>
+									</p>
 								</div>
 							</div>
-							<p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 mb-0 flex items-center gap-2">
-								<span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400"><iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +200</span> 
-								Last 30 days users
-							</p>
-						</div>
-					</div><!-- card end -->
-					<div class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-success-600/10 to-bg-white">
-						<div class="card-body p-5">
-							<div class="flex flex-wrap items-center justify-between gap-3">
-								<div>
-									<p class="font-medium text-neutral-900 dark:text-white mb-1">Total Income</p>
-									<h6 class="mb-0 dark:text-white">$42,000</h6>
-								</div>
-								<div class="w-[50px] h-[50px] bg-success-600 rounded-full flex justify-center items-center">
-									<iconify-icon icon="solar:wallet-bold" class="text-white text-2xl mb-0"></iconify-icon>
-								</div>
-							</div>
-							<p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 mb-0 flex items-center gap-2">
-								<span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400"><iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +$20,000</span> 
-								Last 30 days income
-							</p>
-						</div>
-					</div><!-- card end -->
-					<div class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-red-600/10 to-bg-white">
-						<div class="card-body p-5">
-							<div class="flex flex-wrap items-center justify-between gap-3">
-								<div>
-									<p class="font-medium text-neutral-900 dark:text-white mb-1">Total Expense</p>
-									<h6 class="mb-0 dark:text-white">$30,000</h6>
-								</div>
-								<div class="w-[50px] h-[50px] bg-red-600 rounded-full flex justify-center items-center">
-									<iconify-icon icon="fa6-solid:file-invoice-dollar" class="text-white text-2xl mb-0"></iconify-icon>
-								</div>
-							</div>
-							<p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 mb-0 flex items-center gap-2">
-								<span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400"><iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +$5,000</span> 
-								Last 30 days expense
-							</p>
-						</div>
-					</div><!-- card end -->
-				</div>
-				
-				<div class="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-6">
-					<div class="xl:col-span-12 2xl:col-span-6">
-						<div class="card h-full rounded-lg border-0">
-							<div class="card-body">
-								<div class="flex flex-wrap items-center justify-between">
-									<h6 class="text-lg mb-0">Sales Statistic</h6>
-									<select class="form-select bg-white dark:bg-neutral-700 form-select-sm w-auto">
-										<option>Yearly</option>
-										<option>Monthly</option>
-										<option>Weekly</option>
-										<option>Today</option>
-									</select>
-								</div>
-								<div class="flex flex-wrap items-center gap-2 mt-2">
-									<h6 class="mb-0">$27,200</h6>
-									<span class="text-sm font-semibold rounded-full bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 border border-success-200 dark:border-success-600/50 px-2 py-1.5 line-height-1 flex items-center gap-1">
-										10% <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
-									</span>
-									<span class="text-xs font-medium">+ $1400 Per Day</span>
-								</div>
-								<div id="chart" class="pt-[28px] apexcharts-tooltip-style-1"></div>
-							</div>
-						</div>
-					</div>
-					<div class="xl:col-span-6 2xl:col-span-3">
-						<div class="card h-full rounded-lg border-0">
-							<div class="card-body p-6">
-								<h6 class="mb-3 font-semibold text-lg">Total Subscriber</h6>
-								<div class="flex items-center gap-2 mb-5">
-									<h6 class="font-semibold mb-0">5,000</h6>
-									<span class="text-sm font-semibold rounded-full bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 border border-danger-200 dark:border-danger-600/50 px-2 py-1.5 line-height-1 flex items-center gap-1">
-										10% <iconify-icon icon="iconamoon:arrow-down-2-fill" class="icon"></iconify-icon>  
-									</span>
-									- 20 Per Day 
-								</div>
-								
-								<div id="barChart"></div>
-								
-							</div>
-						</div>
-					</div>
-					<div class="xl:col-span-6 2xl:col-span-3">
-						<div class="card h-full rounded-lg border-0 overflow-hidden">
-							<div class="card-body p-6">
-								<div class="flex items-center flex-wrap gap-2 justify-between">
-									<h6 class="mb-2 font-bold text-lg">Users Overview</h6>
-									<div class="">
-										<select class="form-select form-select-sm w-auto bg-white dark:bg-neutral-700 border text-secondary-light">
-											<option>Today</option>
-											<option>Weekly</option>
-											<option>Monthly</option>
-											<option>Yearly</option>
-										</select>
-									</div>
-								</div>
-								
-								
-								<div id="userOverviewDonutChart" class="apexcharts-tooltip-z-none"></div>
-								
-								<ul class="flex flex-wrap items-center justify-between mt-4 gap-3">
-									<li class="flex items-center gap-2">
-										<span class="w-3 h-3 rounded-sm bg-primary-600"></span>
-										<span class="text-secondary-light text-sm font-normal">New: 
-											<span class="text-neutral-600 dark:text-neutral-200 font-semibold">400</span>
-										</span>
-									</li>
-									<li class="flex items-center gap-2">
-										<span class="w-3 h-3 rounded-sm bg-warning-600"></span>
-										<span class="text-secondary-light text-sm font-normal">Subscribed:  
-											<span class="text-neutral-600 dark:text-neutral-200 font-semibold">300</span>
-										</span>
-									</li>
-								</ul>
-								
-							</div>
-						</div>
-					</div>
-					<div class="xl:col-span-12 2xl:col-span-9">
-						<div class="card h-full border-0">
-							<div class="card-body p-6">
-								
-								<div class="mb-4">
-									<ul class="tab-style-gradient flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
-										<li class="" role="presentation">
-											<button class="py-2.5 px-4 border-t-2 font-semibold text-lg inline-flex items-center gap-3 text-neutral-600" id="registered-tab" data-tabs-target="#registered" type="button" role="tab" aria-controls="registered" aria-selected="false">
-												Latest Registered
-												<span class="text-white px-2 py-0.5 bg-neutral-600 rounded-full text-sm">20</span>
-											</button>
-										</li>
-										<li class="" role="presentation">
-											<button class="py-2.5 px-4 border-t-2 font-semibold text-lg inline-flex items-center gap-3 text-neutral-600 hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="subscribe-tab" data-tabs-target="#subscribe" type="button" role="tab" aria-controls="subscribe" aria-selected="false">
-												Latest Subscribe
-												<span class="text-white px-2 py-0.5 bg-neutral-600 rounded-full text-sm">20</span>
-											</button>
-										</li>
-									</ul>
-								</div>
-								
-								<div id="default-tab-content">
-									<div class="hidden" id="registered" role="tabpanel" aria-labelledby="registered-tab">
-										<div class="overflow-x-auto">
-											<table class="table bordered-table sm-table mb-0 table-auto">
-												<thead>
-													<tr>
-														<th scope="col">Users </th>
-														<th scope="col">Registered On</th>
-														<th scope="col">Plan</th>
-														<th scope="col" class="text-center">Status</th>
-													</tr>
-												</thead>
-												<tbody>
-													<tr>
-														<td>
-															<div class="flex items-center">
-																<img src="{{ asset('admin/images/users/user1.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-2 overflow-hidden">
-																<div class="grow">
-																	<h6 class="text-base mb-0 font-medium">Dianne Russell</h6>
-																	<span class="text-sm text-secondary-light font-medium">redaniel@gmail.com</span>
-																</div>
-															</div>
-														</td>
-														<td>27 Mar 2024</td>
-														<td>Free</td>
-														<td class="text-center"> 
-															<span class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-6 py-1.5 rounded-full font-medium text-sm">Active</span> 
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<div class="flex items-center">
-																<img src="{{ asset('admin/images/users/user2.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-2 overflow-hidden">
-																<div class="grow">
-																	<h6 class="text-base mb-0 font-medium">Wade Warren</h6>
-																	<span class="text-sm text-secondary-light font-medium">xterris@gmail.com</span>
-																</div>
-															</div>
-														</td>
-														<td>27 Mar 2024</td>
-														<td>Basic</td>
-														<td class="text-center"> 
-															<span class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-6 py-1.5 rounded-full font-medium text-sm">Active</span> 
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<div class="flex items-center">
-																<img src="{{ asset('admin/images/users/user3.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-2 overflow-hidden">
-																<div class="grow">
-																	<h6 class="text-base mb-0 font-medium">Albert Flores</h6>
-																	<span class="text-sm text-secondary-light font-medium">seannand@mail.ru</span>
-																</div>
-															</div>
-														</td>
-														<td>27 Mar 2024</td>
-														<td>Standard</td>
-														<td class="text-center"> 
-															<span class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-6 py-1.5 rounded-full font-medium text-sm">Active</span> 
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<div class="flex items-center">
-																<img src="{{ asset('admin/images/users/user4.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-2 overflow-hidden">
-																<div class="grow">
-																	<h6 class="text-base mb-0 font-medium">Bessie Cooper </h6>
-																	<span class="text-sm text-secondary-light font-medium">igerrin@gmail.com</span>
-																</div>
-															</div>
-														</td>
-														<td>27 Mar 2024</td>
-														<td>Business</td>
-														<td class="text-center"> 
-															<span class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-6 py-1.5 rounded-full font-medium text-sm">Active</span> 
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<div class="flex items-center">
-																<img src="{{ asset('admin/images/users/user5.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-2 overflow-hidden">
-																<div class="grow">
-																	<h6 class="text-base mb-0 font-medium">Arlene McCoy</h6>
-																	<span class="text-sm text-secondary-light font-medium">fellora@mail.ru</span>
-																</div>
-															</div>
-														</td>
-														<td>27 Mar 2024</td>
-														<td>Enterprise </td>
-														<td class="text-center"> 
-															<span class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-6 py-1.5 rounded-full font-medium text-sm">Active</span> 
-														</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-									</div>
-									<div class="hidden" id="subscribe" role="tabpanel" aria-labelledby="subscribe-tab">
-										<div class="overflow-x-auto">
-											<table class="table bordered-table sm-table mb-0 table-auto">
-												<thead>
-													<tr>
-														<th scope="col">Users Name </th>
-														<th scope="col">Registered On</th>
-														<th scope="col">Plan</th>
-														<th scope="col" class="text-center">Status</th>
-													</tr>
-												</thead>
-												<tbody>
-													<tr>
-														<td>
-															<div class="flex items-center">
-																<img src="{{ asset('admin/images/users/user1.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-2 overflow-hidden">
-																<div class="grow">
-																	<h6 class="text-base mb-0 font-medium">Dianne Russell</h6>
-																	<span class="text-sm text-secondary-light font-medium">redaniel@gmail.com</span>
-																</div>
-															</div>
-														</td>
-														<td>27 Mar 2024</td>
-														<td>Free</td>
-														<td class="text-center"> 
-															<span class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-6 py-1.5 rounded-full font-medium text-sm">Active</span> 
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<div class="flex items-center">
-																<img src="{{ asset('admin/images/users/user2.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-2 overflow-hidden">
-																<div class="grow">
-																	<h6 class="text-base mb-0 font-medium">Wade Warren</h6>
-																	<span class="text-sm text-secondary-light font-medium">xterris@gmail.com</span>
-																</div>
-															</div>
-														</td>
-														<td>27 Mar 2024</td>
-														<td>Basic</td>
-														<td class="text-center"> 
-															<span class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-6 py-1.5 rounded-full font-medium text-sm">Active</span> 
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<div class="flex items-center">
-																<img src="{{ asset('admin/images/users/user3.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-2 overflow-hidden">
-																<div class="grow">
-																	<h6 class="text-base mb-0 font-medium">Albert Flores</h6>
-																	<span class="text-sm text-secondary-light font-medium">seannand@mail.ru</span>
-																</div>
-															</div>
-														</td>
-														<td>27 Mar 2024</td>
-														<td>Standard</td>
-														<td class="text-center"> 
-															<span class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-6 py-1.5 rounded-full font-medium text-sm">Active</span> 
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<div class="flex items-center">
-																<img src="{{ asset('admin/images/users/user4.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-2 overflow-hidden">
-																<div class="grow">
-																	<h6 class="text-base mb-0 font-medium">Bessie Cooper </h6>
-																	<span class="text-sm text-secondary-light font-medium">igerrin@gmail.com</span>
-																</div>
-															</div>
-														</td>
-														<td>27 Mar 2024</td>
-														<td>Business</td>
-														<td class="text-center"> 
-															<span class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-6 py-1.5 rounded-full font-medium text-sm">Active</span> 
-														</td>
-													</tr>
-													<tr>
-														<td>
-															<div class="flex items-center">
-																<img src="{{ asset('admin/images/users/user5.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-2 overflow-hidden">
-																<div class="grow">
-																	<h6 class="text-base mb-0 font-medium">Arlene McCoy</h6>
-																	<span class="text-sm text-secondary-light font-medium">fellora@mail.ru</span>
-																</div>
-															</div>
-														</td>
-														<td>27 Mar 2024</td>
-														<td>Enterprise </td>
-														<td class="text-center"> 
-															<span class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-6 py-1.5 rounded-full font-medium text-sm">Active</span> 
-														</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-									</div>
-								</div>
-								
-							</div>
-						</div>
-					</div>
-					<div class="xl:col-span-6 2xl:col-span-3">
-						<div class="card h-full border-0">
-							<div class="card-body">
-								<div class="flex items-center flex-wrap gap-2 justify-between">
-									<h6 class="font-bold text-lg mb-0">Top Performer</h6>
-									<a href="javascript:void(0)" class="text-primary-600 dark:text-primary-600 hover-text-primary flex items-center gap-1">
-										View All
-										<iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
-									</a>
-								</div>
-								
-								<div class="mt-8">
-									
-									<div class="flex items-center justify-between gap-2 mb-6">
-										<div class="flex items-center gap-3">
-											<img src="{{ asset('admin/images/users/user1.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-											<div class="grow">
-												<h6 class="text-base mb-0 font-medium">Dianne Russell</h6>
-												<span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-											</div>
-										</div>
-										<span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$20</span>
-									</div>
-									
-									<div class="flex items-center justify-between gap-2 mb-6">
-										<div class="flex items-center gap-3">
-											<img src="{{ asset('admin/images/users/user2.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-											<div class="grow">
-												<h6 class="text-base mb-0 font-medium">Wade Warren</h6>
-												<span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-											</div>
-										</div>
-										<span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$20</span>
-									</div>
-									
-									<div class="flex items-center justify-between gap-2 mb-6">
-										<div class="flex items-center gap-3">
-											<img src="{{ asset('admin/images/users/user3.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-											<div class="grow">
-												<h6 class="text-base mb-0 font-medium">Albert Flores</h6>
-												<span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-											</div>
-										</div>
-										<span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$30</span>
-									</div>
-									
-									<div class="flex items-center justify-between gap-2 mb-6">
-										<div class="flex items-center gap-3">
-											<img src="{{ asset('admin/images/users/user4.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-											<div class="grow">
-												<h6 class="text-base mb-0 font-medium">Bessie Cooper</h6>
-												<span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-											</div>
-										</div>
-										<span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$40</span>
-									</div>
-									
-									<div class="flex items-center justify-between gap-2 mb-6">
-										<div class="flex items-center gap-3">
-											<img src="{{ asset('admin/images/users/user5.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-											<div class="grow">
-												<h6 class="text-base mb-0 font-medium">Arlene McCoy</h6>
-												<span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-											</div>
-										</div>
-										<span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$10</span>
-									</div>
-									
-									<div class="flex items-center justify-between gap-2">
-										<div class="flex items-center gap-3">
-											<img src="{{ asset('admin/images/users/user1.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-											<div class="grow">
-												<h6 class="text-base mb-0 font-medium">Arlene McCoy</h6>
-												<span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-											</div>
-										</div>
-										<span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$10</span>
-									</div>
-									
-								</div>
-								
-							</div>
-						</div>
-					</div>
-					<div class="xl:col-span-6 2xl:col-span-6">
-						<div class="card h-full border-0">
-							<div class="card-body">
-								<div class="flex items-center flex-wrap gap-2 justify-between mb-5">
-									<h6 class="font-bold text-lg mb-0">Top Countries</h6>
-									<select class="form-select form-select-sm w-auto bg-white dark:bg-neutral-700 border text-secondary-light">
-										<option>Today</option>
-										<option>Weekly</option>
-										<option>Monthly</option>
-										<option>Yearly</option>
-									</select>
-								</div>
-								
-								<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-									<div id="world-map" class="h-full border border-neutral-200 dark:border-neutral-600 rounded-lg"></div>
-									<div class="h-full border border-neutral-200 dark:border-neutral-600 p-4 pe-0 rounded-lg">
-										<div class="max-h-[266px] overflow-y-auto scroll-sm pe-6">
-											<div class="flex items-center justify-between gap-3 mb-3 pb-2">
-												<div class="flex items-center">
-													<img src="{{ asset('admin/images/flags/flag1.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-4">
-													<div class="grow">
-														<h6 class="text-sm mb-0">USA</h6>
-														<span class="text-xs text-secondary-light font-medium">1,240 Users</span>
-													</div>
-												</div>
-												<div class="flex items-center gap-2">
-													<div class="w-full max-w-66 ms-auto">
-														<div class="progress progress-sm rounded-full" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-															<div class="progress-bar bg-primary-600 rounded-full" style="width: 80%;"></div>
-														</div>
-													</div>
-													<span class="text-secondary-light font-xs font-semibold">80%</span>
-												</div>
-											</div>
-											
-											<div class="flex items-center justify-between gap-3 mb-3 pb-2">
-												<div class="flex items-center">
-													<img src="{{ asset('admin/images/flags/flag2.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-4">
-													<div class="grow">
-														<h6 class="text-sm mb-0">Japan</h6>
-														<span class="text-xs text-secondary-light font-medium">1,240 Users</span>
-													</div>
-												</div>
-												<div class="flex items-center gap-2">
-													<div class="w-full max-w-66 ms-auto">
-														<div class="progress progress-sm rounded-full" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-															<div class="progress-bar bg-orange rounded-full" style="width: 60%;"></div>
-														</div>
-													</div>
-													<span class="text-secondary-light font-xs font-semibold">60%</span>
-												</div>
-											</div>
-											
-											<div class="flex items-center justify-between gap-3 mb-3 pb-2">
-												<div class="flex items-center">
-													<img src="{{ asset('admin/images/flags/flag3.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-4">
-													<div class="grow">
-														<h6 class="text-sm mb-0">France</h6>
-														<span class="text-xs text-secondary-light font-medium">1,240 Users</span>
-													</div>
-												</div>
-												<div class="flex items-center gap-2">
-													<div class="w-full max-w-66 ms-auto">
-														<div class="progress progress-sm rounded-full" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-															<div class="progress-bar bg-warning-600 rounded-full" style="width: 49%;"></div>
-														</div>
-													</div>
-													<span class="text-secondary-light font-xs font-semibold">49%</span>
-												</div>
-											</div>
-											
-											<div class="flex items-center justify-between gap-3 mb-3 pb-2">
-												<div class="flex items-center">
-													<img src="{{ asset('admin/images/flags/flag4.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-4">
-													<div class="grow">
-														<h6 class="text-sm mb-0">Germany</h6>
-														<span class="text-xs text-secondary-light font-medium">1,240 Users</span>
-													</div>
-												</div>
-												<div class="flex items-center gap-2">
-													<div class="w-full max-w-66 ms-auto">
-														<div class="progress progress-sm rounded-full" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-															<div class="progress-bar bg-success-600 rounded-full" style="width: 100%;"></div>
-														</div>
-													</div>
-													<span class="text-secondary-light font-xs font-semibold">100%</span>
-												</div>
-											</div>
-											
-											<div class="flex items-center justify-between gap-3 mb-3 pb-2">
-												<div class="flex items-center">
-													<img src="{{ asset('admin/images/flags/flag5.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-4">
-													<div class="grow">
-														<h6 class="text-sm mb-0">South Korea</h6>
-														<span class="text-xs text-secondary-light font-medium">1,240 Users</span>
-													</div>
-												</div>
-												<div class="flex items-center gap-2">
-													<div class="w-full max-w-66 ms-auto">
-														<div class="progress progress-sm rounded-full" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-															<div class="progress-bar bg-info-600 rounded-full" style="width: 30%;"></div>
-														</div>
-													</div>
-													<span class="text-secondary-light font-xs font-semibold">30%</span>
-												</div>
-											</div>
-											<div class="flex items-center justify-between gap-3">
-												<div class="flex items-center">
-													<img src="{{ asset('admin/images/flags/flag1.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0 me-4">
-													<div class="grow">
-														<h6 class="text-sm mb-0">USA</h6>
-														<span class="text-xs text-secondary-light font-medium">1,240 Users</span>
-													</div>
-												</div>
-												<div class="flex items-center gap-2">
-													<div class="w-full max-w-66 ms-auto">
-														<div class="progress progress-sm rounded-full" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-															<div class="progress-bar bg-primary-600 rounded-full" style="width: 80%;"></div>
-														</div>
-													</div>
-													<span class="text-secondary-light font-xs font-semibold">80%</span>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								
-							</div>
-						</div>
-					</div>
-					<div class="xl:col-span-6 2xl:col-span-6">
-						<div class="card h-full border-0">
-							<div class="card-body">
-								<div class="flex items-center flex-wrap gap-2 justify-between">
-									<h6 class="font-bold text-lg mb-0">Generated Content</h6>
-									<select class="form-select form-select-sm w-auto bg-white dark:bg-neutral-700 border text-secondary-light">
-										<option>Today</option>
-										<option>Weekly</option>
-										<option>Monthly</option>
-										<option>Yearly</option>
-									</select>
-								</div>
-								
-								<ul class="flex flex-wrap items-center mt-4 gap-3">
-									<li class="flex items-center gap-2">
-										<span class="w-3 h-3 rounded-full bg-primary-600"></span>
-										<span class="text-secondary-light text-sm font-semibold">Word: 
-											<span class="text-neutral-600 dark:text-neutral-200 font-bold">400</span>
-										</span>
-									</li>
-									<li class="flex items-center gap-2">
-										<span class="w-3 h-3 rounded-full bg-warning-600"></span>
-										<span class="text-secondary-light text-sm font-semibold">Image:  
-											<span class="text-neutral-600 dark:text-neutral-200 font-bold">300</span>
-										</span>
-									</li>
-								</ul>
-								
-								<div class="mt-[60px]">
-									<div id="paymentStatusChart" class="margin-16-minus"></div>
-								</div>
-								
+							<div class="col-6 col-md-12 col-xl-7">
+								<div id="customersChart" class="mt-md-3 mt-xl-0"></div>
 							</div>
 						</div>
 					</div>
 				</div>
-				
 			</div>
-@endsection
+			<div class="col-md-4 grid-margin stretch-card">
+				<div class="card">
+					<div class="card-body">
+						<div class="d-flex justify-content-between align-items-baseline">
+							<h6 class="card-title mb-0">New Orders</h6>
+							<div class="dropdown mb-2">
+								<a type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<i class="icon-lg text-secondary pb-3px" data-feather="more-horizontal"></i>
+								</a>
+								<div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="eye" class="icon-sm me-2"></i> <span class="">View</span></a>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="edit-2" class="icon-sm me-2"></i> <span class="">Edit</span></a>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="trash" class="icon-sm me-2"></i> <span class="">Delete</span></a>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="printer" class="icon-sm me-2"></i> <span class="">Print</span></a>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="download" class="icon-sm me-2"></i> <span class="">Download</span></a>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-6 col-md-12 col-xl-5">
+								<h3 class="mb-2">35,084</h3>
+								<div class="d-flex align-items-baseline">
+									<p class="text-danger">
+										<span>-2.8%</span>
+										<i data-feather="arrow-down" class="icon-sm mb-1"></i>
+									</p>
+								</div>
+							</div>
+							<div class="col-6 col-md-12 col-xl-7">
+								<div id="ordersChart" class="mt-md-3 mt-xl-0"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4 grid-margin stretch-card">
+				<div class="card">
+					<div class="card-body">
+						<div class="d-flex justify-content-between align-items-baseline">
+							<h6 class="card-title mb-0">Growth</h6>
+							<div class="dropdown mb-2">
+								<a type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<i class="icon-lg text-secondary pb-3px" data-feather="more-horizontal"></i>
+								</a>
+								<div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="eye" class="icon-sm me-2"></i> <span class="">View</span></a>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="edit-2" class="icon-sm me-2"></i> <span class="">Edit</span></a>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="trash" class="icon-sm me-2"></i> <span class="">Delete</span></a>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="printer" class="icon-sm me-2"></i> <span class="">Print</span></a>
+									<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="download" class="icon-sm me-2"></i> <span class="">Download</span></a>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-6 col-md-12 col-xl-5">
+								<h3 class="mb-2">89.87%</h3>
+								<div class="d-flex align-items-baseline">
+									<p class="text-success">
+										<span>+2.8%</span>
+										<i data-feather="arrow-up" class="icon-sm mb-1"></i>
+									</p>
+								</div>
+							</div>
+							<div class="col-6 col-md-12 col-xl-7">
+								<div id="growthChart" class="mt-md-3 mt-xl-0"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div> <!-- row -->
+
+<div class="row">
+	<div class="col-12 col-xl-12 grid-margin stretch-card">
+		<div class="card overflow-hidden">
+			<div class="card-body">
+				<div class="d-flex justify-content-between align-items-baseline mb-4 mb-md-3">
+					<h6 class="card-title mb-0">Revenue</h6>
+					<div class="dropdown">
+						<a type="button" id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="icon-lg text-secondary pb-3px" data-feather="more-horizontal"></i>
+						</a>
+						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton3">
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="eye" class="icon-sm me-2"></i> <span class="">View</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="edit-2" class="icon-sm me-2"></i> <span class="">Edit</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="trash" class="icon-sm me-2"></i> <span class="">Delete</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="printer" class="icon-sm me-2"></i> <span class="">Print</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="download" class="icon-sm me-2"></i> <span class="">Download</span></a>
+						</div>
+					</div>
+				</div>
+				<div class="row align-items-start">
+					<div class="col-md-7">
+						<p class="text-secondary fs-13px mb-3 mb-md-0">Revenue is the income that a business has from its normal business activities, usually from the sale of goods and services to customers.</p>
+					</div>
+					<div class="col-md-5 d-flex justify-content-md-end">
+						<div class="btn-group mb-3 mb-md-0" role="group" aria-label="Basic example">
+							<button type="button" class="btn btn-outline-primary">Today</button>
+							<button type="button" class="btn btn-outline-primary d-none d-md-block">Week</button>
+							<button type="button" class="btn btn-primary">Month</button>
+							<button type="button" class="btn btn-outline-primary">Year</button>
+						</div>
+					</div>
+				</div>
+				<div id="revenueChart"></div>
+			</div>
+		</div>
+	</div>
+</div> <!-- row -->
+
+<div class="row">
+	<div class="col-lg-7 col-xl-8 grid-margin stretch-card">
+		<div class="card">
+			<div class="card-body">
+				<div class="d-flex justify-content-between align-items-baseline mb-2">
+					<h6 class="card-title mb-0">Monthly sales</h6>
+					<div class="dropdown mb-2">
+						<a type="button" id="dropdownMenuButton4" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="icon-lg text-secondary pb-3px" data-feather="more-horizontal"></i>
+						</a>
+						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton4">
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="eye" class="icon-sm me-2"></i> <span class="">View</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="edit-2" class="icon-sm me-2"></i> <span class="">Edit</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="trash" class="icon-sm me-2"></i> <span class="">Delete</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="printer" class="icon-sm me-2"></i> <span class="">Print</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="download" class="icon-sm me-2"></i> <span class="">Download</span></a>
+						</div>
+					</div>
+				</div>
+				<p class="text-secondary">Sales are activities related to selling or the number of goods or services sold in a given time period.</p>
+				<div id="monthlySalesChart"></div>
+			</div> 
+		</div>
+	</div>
+	<div class="col-lg-5 col-xl-4 grid-margin stretch-card">
+		<div class="card">
+			<div class="card-body">
+				<div class="d-flex justify-content-between align-items-baseline">
+					<h6 class="card-title mb-0">Cloud storage</h6>
+					<div class="dropdown mb-2">
+						<a type="button" id="dropdownMenuButton5" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="icon-lg text-secondary pb-3px" data-feather="more-horizontal"></i>
+						</a>
+						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton5">
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="eye" class="icon-sm me-2"></i> <span class="">View</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="edit-2" class="icon-sm me-2"></i> <span class="">Edit</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="trash" class="icon-sm me-2"></i> <span class="">Delete</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="printer" class="icon-sm me-2"></i> <span class="">Print</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="download" class="icon-sm me-2"></i> <span class="">Download</span></a>
+						</div>
+					</div>
+				</div>
+				<div id="storageChart"></div>
+				<div class="row mb-3">
+					<div class="col-6 d-flex justify-content-end">
+						<div>
+							<label class="d-flex align-items-center justify-content-end fs-10px text-uppercase fw-bolder">Total storage <span class="p-1 ms-1 rounded-circle bg-secondary"></span></label>
+							<h5 class="fw-bolder mb-0 text-end">8TB</h5>
+						</div>
+					</div>
+					<div class="col-6">
+						<div>
+							<label class="d-flex align-items-center fs-10px text-uppercase fw-bolder"><span class="p-1 me-1 rounded-circle bg-primary"></span> Used storage</label>
+							<h5 class="fw-bolder mb-0">~5TB</h5>
+						</div>
+					</div>
+				</div>
+				<div class="d-grid">
+					<button class="btn btn-primary">Upgrade storage</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div> <!-- row -->
+
+<div class="row">
+	<div class="col-lg-5 col-xl-4 grid-margin grid-margin-xl-0 stretch-card">
+		<div class="card">
+			<div class="card-body">
+				<div class="d-flex justify-content-between align-items-baseline mb-2">
+					<h6 class="card-title mb-0">Inbox</h6>
+					<div class="dropdown mb-2">
+						<a type="button" id="dropdownMenuButton6" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="icon-lg text-secondary pb-3px" data-feather="more-horizontal"></i>
+						</a>
+						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton6">
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="eye" class="icon-sm me-2"></i> <span class="">View</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="edit-2" class="icon-sm me-2"></i> <span class="">Edit</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="trash" class="icon-sm me-2"></i> <span class="">Delete</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="printer" class="icon-sm me-2"></i> <span class="">Print</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="download" class="icon-sm me-2"></i> <span class="">Download</span></a>
+						</div>
+					</div>
+				</div>
+				<div class="d-flex flex-column">
+					<a href="javascript:;" class="d-flex align-items-center border-bottom pb-3">
+						<div class="me-3">
+							<img src="https://via.placeholder.com/35x35" class="rounded-circle w-35px" alt="user">
+						</div>
+						<div class="w-100">
+							<div class="d-flex justify-content-between">
+								<h6 class="text-body mb-2">Leonardo Payne</h6>
+								<p class="text-secondary fs-12px">12.30 PM</p>
+							</div>
+							<p class="text-secondary fs-13px">Hey! there I'm available...</p>
+						</div>
+					</a>
+					<a href="javascript:;" class="d-flex align-items-center border-bottom py-3">
+						<div class="me-3">
+							<img src="https://via.placeholder.com/35x35" class="rounded-circle w-35px" alt="user">
+						</div>
+						<div class="w-100">
+							<div class="d-flex justify-content-between">
+								<h6 class="text-body mb-2">Carl Henson</h6>
+								<p class="text-secondary fs-12px">02.14 AM</p>
+							</div>
+							<p class="text-secondary fs-13px">I've finished it! See you so..</p>
+						</div>
+					</a>
+					<a href="javascript:;" class="d-flex align-items-center border-bottom py-3">
+						<div class="me-3">
+							<img src="https://via.placeholder.com/35x35" class="rounded-circle w-35px" alt="user">
+						</div>
+						<div class="w-100">
+							<div class="d-flex justify-content-between">
+								<h6 class="text-body mb-2">Jensen Combs</h6>
+								<p class="text-secondary fs-12px">08.22 PM</p>
+							</div>
+							<p class="text-secondary fs-13px">This template is awesome!</p>
+						</div>
+					</a>
+					<a href="javascript:;" class="d-flex align-items-center border-bottom py-3">
+						<div class="me-3">
+							<img src="https://via.placeholder.com/35x35" class="rounded-circle w-35px" alt="user">
+						</div>
+						<div class="w-100">
+							<div class="d-flex justify-content-between">
+								<h6 class="text-body mb-2">Amiah Burton</h6>
+								<p class="text-secondary fs-12px">05.49 AM</p>
+							</div>
+							<p class="text-secondary fs-13px">Nice to meet you</p>
+						</div>
+					</a>
+					<a href="javascript:;" class="d-flex align-items-center border-bottom py-3">
+						<div class="me-3">
+							<img src="https://via.placeholder.com/35x35" class="rounded-circle w-35px" alt="user">
+						</div>
+						<div class="w-100">
+							<div class="d-flex justify-content-between">
+								<h6 class="text-body mb-2">Yaretzi Mayo</h6>
+								<p class="text-secondary fs-12px">01.19 AM</p>
+							</div>
+							<p class="text-secondary fs-13px">Hey! there I'm available...</p>
+						</div>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-7 col-xl-8 stretch-card">
+		<div class="card">
+			<div class="card-body">
+				<div class="d-flex justify-content-between align-items-baseline mb-2">
+					<h6 class="card-title mb-0">Projects</h6>
+					<div class="dropdown mb-2">
+						<a type="button" id="dropdownMenuButton7" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="icon-lg text-secondary pb-3px" data-feather="more-horizontal"></i>
+						</a>
+						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton7">
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="eye" class="icon-sm me-2"></i> <span class="">View</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="edit-2" class="icon-sm me-2"></i> <span class="">Edit</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="trash" class="icon-sm me-2"></i> <span class="">Delete</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="printer" class="icon-sm me-2"></i> <span class="">Print</span></a>
+							<a class="dropdown-item d-flex align-items-center" href="javascript:;"><i data-feather="download" class="icon-sm me-2"></i> <span class="">Download</span></a>
+						</div>
+					</div>
+				</div>
+				<div class="table-responsive">
+					<table class="table table-hover mb-0">
+						<thead>
+							<tr>
+								<th class="pt-0">#</th>
+								<th class="pt-0">Project Name</th>
+								<th class="pt-0">Start Date</th>
+								<th class="pt-0">Due Date</th>
+								<th class="pt-0">Status</th>
+								<th class="pt-0">Assign</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>1</td>
+								<td>NobleUI jQuery</td>
+								<td>01/01/2024</td>
+								<td>26/04/2024</td>
+								<td><span class="badge bg-danger">Released</span></td>
+								<td>Leonardo Payne</td>
+							</tr>
+							<tr>
+								<td>2</td>
+								<td>NobleUI Angular</td>
+								<td>01/01/2024</td>
+								<td>26/04/2024</td>
+								<td><span class="badge bg-success">Review</span></td>
+								<td>Carl Henson</td>
+							</tr>
+							<tr>
+								<td>3</td>
+								<td>NobleUI ReactJs</td>
+								<td>01/05/2024</td>
+								<td>10/09/2024</td>
+								<td><span class="badge bg-info">Pending</span></td>
+								<td>Jensen Combs</td>
+							</tr>
+							<tr>
+								<td>4</td>
+								<td>NobleUI VueJs</td>
+								<td>01/01/2024</td>
+								<td>31/11/2024</td>
+								<td><span class="badge bg-warning">Work in Progress</span>
+								</td>
+								<td>Amiah Burton</td>
+							</tr>
+							<tr>
+								<td>5</td>
+								<td>NobleUI Laravel</td>
+								<td>01/01/2024</td>
+								<td>31/12/2024</td>
+								<td><span class="badge bg-danger">Coming soon</span></td>
+								<td>Yaretzi Mayo</td>
+							</tr>
+							<tr>
+								<td>6</td>
+								<td>NobleUI NodeJs</td>
+								<td>01/01/2024</td>
+								<td>31/12/2024</td>
+								<td><span class="badge bg-primary">Coming soon</span></td>
+								<td>Carl Henson</td>
+							</tr>
+							<tr>
+								<td class="border-bottom">3</td>
+								<td class="border-bottom">NobleUI EmberJs</td>
+								<td class="border-bottom">01/05/2024</td>
+								<td class="border-bottom">10/11/2024</td>
+								<td class="border-bottom"><span class="badge bg-info">Pending</span></td>
+								<td class="border-bottom">Jensen Combs</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div> 
+		</div>
+	</div>
+</div> <!-- row -->
+@endsection		
+@push('js') 
+<script src="{{ asset('admin/vendors/flatpickr/flatpickr.min.js') }}"></script>
+<script src="{{ asset('admin/vendors/apexcharts/apexcharts.min.js') }}"></script>
+<script src="{{ asset('admin/js/dashboard.js') }}"></script>
+@endpush
