@@ -22,6 +22,10 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 	
 	// Banners
     Route::get('/banner', [SettingController::class, 'banner'])->name('banner');
+    Route::post('/banner/ajax', [SettingController::class, 'bannerAjax'])
+        ->withoutMiddleware('webdecrypt.request') // Exclude this middleware
+        ->name('banner.ajax');
+	Route::get('/banner/create', [SettingController::class, 'bannerCreate'])->name('banner.create');
     Route::post('/banner/update', [SettingController::class, 'bannerUpdate'])->name('banner.update');
      
     /* 
@@ -29,3 +33,4 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 		Route::post('/profile/update', [DashboardController::class, 'profileUpdate'])->name('profile-update'); 
     */
 });
+

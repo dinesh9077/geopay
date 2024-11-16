@@ -26,11 +26,24 @@
 		<link rel="stylesheet" href="{{ asset('admin/fonts/feather-font/css/iconfont.css') }}">
 		<!-- endinject -->
 		
+		<!-- Plugin css for this page -->
+		<link rel="stylesheet" href="{{ asset('admin/vendors/datatables.net-bs5/dataTables.bootstrap5.css') }}">
+		<!-- End plugin css for this page -->
+		
 		<!-- Layout styles -->  
 		<link rel="stylesheet" href="{{ asset('admin/css/demo1/style.css') }}">
 		<!-- End layout styles -->
 		<link href="{{ asset('assets/css/toastr.min.css') }}" rel="stylesheet" type="text/css">
-		
+		<script> 
+            let modalOpen = false;
+            function closemodal()
+            {
+                setTimeout(function()
+                {
+                    modalOpen = false;
+				},1000)
+			}
+		</script>
 	</head>
 	<body>
 		<div class="main-wrapper">
@@ -56,8 +69,12 @@
 				<!-- partial -->
 				
 			</div>
-		</div>
-		<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script>
+		</div> 
+		<div id="modal-view-render"></div>
+		
+		<script src="{{ asset('admin/vendors/jquery/jquery.min.js') }}"></script>
+		<script src="{{ asset('admin/vendors/datatables.net/dataTables.js') }}"></script>
+		<script src="{{ asset('admin/vendors/datatables.net-bs5/dataTables.bootstrap5.js') }}"></script>
 		<!-- core:js -->
 		<script src="{{ asset('admin/vendors/core/core.js') }}"></script>
 		<!-- endinject -->

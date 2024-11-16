@@ -83,7 +83,8 @@
 			closemodal(); 
 			$.get("{{route('admin.banner.create')}}", function(res)
 			{
-				$('body').find('#modal-view-render').html(res.view);
+				const result = decryptData(res.response);
+				$('body').find('#modal-view-render').html(result.view);
 				$('#addBannerModal').modal('show');  
 			});
 		} 

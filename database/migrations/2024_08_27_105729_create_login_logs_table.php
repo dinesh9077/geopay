@@ -19,9 +19,7 @@ return new class extends Migration
             $table->string('device')->nullable(); 
             $table->Text('browser')->nullable(); 
             $table->string('source')->default('WEB')->index()->comment('WEB, APP'); 
-            $table->timestamps();  
-			
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->timestamps();   
         });
     }
 
