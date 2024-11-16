@@ -30,11 +30,16 @@ class AppServiceProvider extends ServiceProvider
 			'metaSecretKey' => env('META_VERIFICATION_SECRET')
 		];
 		 
-		// Fetch settings and map `name` to `value`
-        $settings = Setting::all()->pluck('value', 'name')->toArray(); 
-        foreach ($settings as $key => $value) {
-            config()->set('setting.'.$key, $value);
-        }
+		// Check if the 'settings' table exists before querying
+		if (Schema::hasTable('settings')) {
+			// Fetch settings and map `name` to `value`
+			$settings = Setting::all()->pluck('value', 'name')->toArray(); 
+
+			// Dynamically add settings to the configuration
+			foreach ($settings as $key => $value) {
+				config()->set('setting.' . $key, $value);
+			}
+		}
  
 		foreach ($viewShares as $key => $viewShare) {
 			View::share($key, $viewShare);
