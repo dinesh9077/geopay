@@ -35,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
 		}
 		
 		$viewShares = [
-			'cryptoKey' => env('encryption_secret_key',''), 
+			'cryptoKey' => env('ENCRYPTION_SECRET_KEY',''), 
 		];
 		
 		foreach ($viewShares as $key => $viewShare) {
