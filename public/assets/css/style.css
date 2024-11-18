@@ -309,9 +309,12 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
 .qr-container {
   border-radius: 10px;
   padding: 0.3rem;
+  background-color: var(--white);
+}
+.qr-container .qr-code{
   max-width: 400px;
   margin: auto;
-  background-color: var(--white);
+  width: 100%;
 }
 
 
@@ -330,6 +333,16 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
 
 
 
+
+
+
+@media (min-width: 992px) {
+  .border-linear-right{
+    border-right: 1px solid transparent;
+    border-image-slice: 1;
+    border-image-source: linear-gradient( 180deg, rgba(0, 0, 0, 0) 0%, #343434 50.5%, rgba(102, 102, 102, 0) 100% );
+  }
+}
 
 
 
