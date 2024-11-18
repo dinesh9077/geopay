@@ -25,13 +25,13 @@
 					
 					<div class="mb-3 col-md-6">
 						<label for="exampleInputPassword1" class="form-label">Site Logo</label> 
-						<input type="file" name="site_logo" id="site_logo" class="form-control" accept=".jpg,.jpeg,.png"> 
+						<input type="file" name="site_logo" id="site_logo" class="form-control" accept=".jpg,.jpeg,.png,.svg"> 
 						<img class="mt-3" src="{{ url('storage/setting', config('setting.site_logo')) }}" style="height:80px; width:80px">
 					</div>
 					
 					<div class="mb-3 col-md-6">
 						<label for="exampleInputPassword1" class="form-label">Login Logo</label> 
-						<input type="file" name="login_logo" id="login_logo" class="form-control" accept=".jpg,.jpeg,.png"> 
+						<input type="file" name="login_logo" id="login_logo" class="form-control" accept=".jpg,.jpeg,.png,.svg"> 
 						<img class="mt-3" src="{{ url('storage/setting', config('setting.login_logo')) }}" style="height:80px; width:80px">
 					</div>
 					

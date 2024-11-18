@@ -1,19 +1,19 @@
-<div class="modal fade" id="addBannerModal" tabindex="-1" aria-labelledby="varyingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="addFaqModal" tabindex="-1" aria-labelledby="varyingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="varyingModalLabel">Add New Banner</h5>
+				<h5 class="modal-title" id="varyingModalLabel">Add New Faq's</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
 			</div>
-			<form id="addBannerForm" action="{{ route('admin.banner.store') }}" method="post" enctype="multipart/form-data">
+			<form id="addFaqForm" action="{{ route('admin.faqs.store') }}" method="post" enctype="multipart/form-data">
 				<div class="modal-body">
 					<div class="mb-3">
 						<label for="recipient-name" class="form-label">Title <span class="text-danger">*</span></label>
 						<input type="text" class="form-control" id="title" name="title">
 					</div> 
 					<div class="mb-3">
-						<label for="recipient-name" class="form-label">Banner Image <span class="text-danger">*</span></label>
-						<input type="file" class="form-control" id="image" name="image" accept=".jpg, .png, .jpeg">
+						<label for="recipient-name" class="form-label">Description <span class="text-danger">*</span></label>
+						<textarea class="form-control" id="description" name="description"></textarea>
 					</div> 
 					<div class="mb-3">
 						<label for="recipient-name" class="form-label">Status <span class="text-danger">*</span></label>
@@ -32,7 +32,7 @@
 	</div>
 </div>
 <script>
-	$('#addBannerForm').submit(function(event) 
+	$('#addFaqForm').submit(function(event) 
 	{
 		event.preventDefault();   
 		
@@ -71,14 +71,14 @@
 			dataType: 'Json', 
 			success: function (res) 
 			{ 
-				$('#addBannerForm').find('button').prop('disabled',false);	 
+				$('#addFaqForm').find('button').prop('disabled',false);	 
 				$('.error_msg').remove(); 
 				
 				if(res.status === "success")
 				{ 
 					dataTable.draw();
 					toastrMsg(res.status,res.message);  
-					$('#addBannerModal').modal('hide');
+					$('#addFaqModal').modal('hide');
 				}
 				else if(res.status == "validation")
 				{  

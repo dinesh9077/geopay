@@ -6,6 +6,7 @@
 	use Illuminate\Http\Request;
 	use App\Models\Setting;
 	use App\Models\Banner;
+	use App\Models\Faq;
 	use App\Http\Traits\WebResponseTrait; 
 	use Validator, DB, Auth, ImageManager;
 	
@@ -31,12 +32,11 @@
 			if ($validator->fails()) {
 				return $this->validateResponse($validator->errors());
 			}
-			
-			
-			$data = $request->except('_token', 'fevicon_icon', 'site_logo');
-			
+			 
 			try {
 				DB::beginTransaction();
+				
+				$data = $request->except('_token', 'fevicon_icon', 'login_logo', 'site_logo');
 				
 				// Bulk update or create for general settings
 				foreach ($data as $key => $value) {
@@ -46,10 +46,17 @@
 					);
 				}
 				
-				// Handle file uploads
-				$this->handleFileUpload($request, 'fevicon_icon', 'setting');
-				$this->handleFileUpload($request, 'login_logo', 'setting');
-				$this->handleFileUpload($request, 'site_logo', 'setting');
+				$images = $request->only('fevicon_icon', 'login_logo', 'site_logo');
+				
+				foreach($images as $key => $image)
+				{
+					$fileName = $this->handleFileUpload($request, $key, 'setting'); 
+					Setting::updateOrCreate(
+						['name' => $key],
+						['value' => $fileName, 'updated_at' => now()]
+					);
+				}
+				
 				
 				DB::commit();
 				
@@ -65,13 +72,10 @@
 			if ($request->hasFile($fieldName)) {
 				$file = $request->file($fieldName);
 				$extension = $file->getClientOriginalExtension();
-				$fileName = ImageManager::imgUpdate($directory, config('setting.'. $fieldName), $extension, $file);
-				
-				Setting::updateOrCreate(
-				['name' => $fieldName],
-				['value' => $fileName, 'updated_at' => now()]
-				);
+				$fileName = ImageManager::imgUpdate($directory, (config('setting.'. $fieldName) ?? ''), $extension, $file);
+				return $fileName; 
 			}
+			return null; 
 		}
 		
 		public function banner()
@@ -114,11 +118,13 @@
 				foreach ($values as $value)
 				{
 					$data[] = [
-						'id' => $user->id,
-						'name' => $user->name,
-						'email' => $user->email,
-						'created_at' => $user->created_at->format('Y-m-d H:i:s'),
-						'action' => '<a href="/users/' . $user->id . '" class="btn btn-sm btn-primary">View</a>',
+						'id' => $i,
+						'title' => $value->title,
+						'image' => '<img src="'.url('storage/banner', $value->image).'" style="height:70px;width:70px">',
+						'status' => '<span class="badge bg-'.( $value->status == 1 ? 'success' : 'danger').'">'.( $value->status == 1 ? 'Active' : 'In-Active').'</span>',
+						'created_at' => $value->created_at->format('Y-m-d H:i:s'),
+						'action' => '<a href="'.route('admin.banner.edit', ['id' => $value->id]).'" onclick="editBanner(this, event)" class="btn btn-sm btn-primary">Edit</a>
+						<a href="javascript:;" data-url='.route('admin.banner.delete', ['id' => $value->id]).' data-message="Are you sure you want to delete this item?" onclick="deleteConfirmModal(this,event)" class="btn btn-sm btn-danger">Delete</a>',
 					];
 					
 					$i++;
@@ -139,4 +145,265 @@
 			return $this->successResponse('success', ['view' => $view])	;
 		} 
 		
+		public function bannerStore(Request $request)
+		{  
+			$validator = Validator::make($request->all(), [
+				'title' => 'required|string|max:255', 
+				'image' => 'required|file|mimes:jpg,jpeg,png|max:2048', 
+				'status' => 'required|in:1,0', 
+			]);
+			
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors());
+			}
+			 
+			try {
+				DB::beginTransaction();
+				
+				$data = $request->only('title', 'status'); 
+				$fileName = $this->handleFileUpload($request, 'image', 'banner');
+				if($fileName)
+				{
+					$data['image'] = $fileName;
+				}
+				
+				Banner::create($data);
+				 
+				DB::commit();
+				
+				return $this->successResponse('The banner has been created successfully.');
+			}
+			catch (\Throwable $e)
+			{
+				DB::rollBack();
+				return $this->errorResponse('Failed to update settings. ' . $e->getMessage());
+			}
+		}
+		
+		public function bannerEdit($bannerId)
+		{
+			$banner = Banner::find($bannerId);
+			$view = view('admin.banner.edit', compact('banner'))->render();
+			return $this->successResponse('success', ['view' => $view])	;
+		} 
+		
+		public function bannerUpdate(Request $request, $id)
+		{  
+			$validator = Validator::make($request->all(), [
+				'title' => 'required|string|max:255', 
+				'image' => 'nullable|file|mimes:jpg,jpeg,png|max:2048', 
+				'status' => 'required|in:1,0', 
+			]);
+			
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors());
+			}
+			 
+			try {
+				DB::beginTransaction();
+				
+				$data = $request->only('title', 'status'); 
+				$fileName = $this->handleFileUpload($request, 'image', 'banner');
+				if($fileName)
+				{
+					$data['image'] = $fileName;
+				}
+				
+				$banner = Banner::find($id);
+				$banner->update($data);
+				 
+				DB::commit();
+				
+				return $this->successResponse('The banner have been update successfully.');
+			}
+			catch (\Throwable $e)
+			{
+				DB::rollBack();
+				return $this->errorResponse('Failed to update settings. ' . $e->getMessage());
+			}
+		}
+		 
+		public function bannerDelete($id)
+		{   
+			try {
+				DB::beginTransaction();
+				 
+				$banner = Banner::find($id);
+				if(!$banner)
+				{
+					return $this->errorResponse('The banner not found.');
+				}
+				
+				if($banner->image)
+				{ 
+					ImageManager::imgDelete('banner/'.$banner->image);
+				}
+				$banner->delete(); 
+				DB::commit();
+				
+				return $this->successResponse('The banner has been delete successfully.');
+			}
+			catch (\Throwable $e)
+			{
+				DB::rollBack();
+				return $this->errorResponse('Failed to update settings. ' . $e->getMessage());
+			}
+		}
+		
+		//Faqs
+		public function faqs()
+		{
+			return view('admin.faqs.index');
+		}
+		
+		public function faqsAjax(Request $request)
+		{
+			if ($request->ajax())
+			{
+				$columns = ['id', 'title', 'c', 'status', 'created_at', 'action'];
+				  
+				$search = $request->input('search.value');
+				$start = $request->input('start');
+				$limit = $request->input('length');
+				
+				// Base query
+				$query = Faq::query();
+				
+				// Apply search filter if present
+				if (!empty($search)) {
+					$query->where(function ($q) use ($search) {
+						$q->where('title', 'LIKE', "%{$search}%")
+						->where('description', 'LIKE', "%{$search}%")
+						->orWhere('created_at', 'LIKE', "%{$search}%");
+					}); 
+				}
+				
+				$totalData = $query->count();
+				$totalFiltered = $totalData;
+				
+				// Get data with limit and offset for pagination
+				$values = $query->offset($start)->limit($limit)
+                ->orderBy($columns[$request->input('order.0.column')], $request->input('order.0.dir'))
+                ->get();
+				
+				// Format response
+				$data = [];
+				$i = $start + 1;
+				foreach ($values as $value)
+				{
+					$data[] = [
+						'id' => $i,
+						'title' => $value->title,
+						'description' => $value->description,
+						'status' => '<span class="badge bg-'.( $value->status == 1 ? 'success' : 'danger').'">'.( $value->status == 1 ? 'Active' : 'In-Active').'</span>',
+						'created_at' => $value->created_at->format('Y-m-d H:i:s'),
+						'action' => '<a href="'.route('admin.faqs.edit', ['id' => $value->id]).'" onclick="editFaq(this, event)" class="btn btn-sm btn-primary">Edit</a>
+						<a href="javascript:;" data-url='.route('admin.faqs.delete', ['id' => $value->id]).' data-message="Are you sure you want to delete this item?" onclick="deleteConfirmModal(this,event)" class="btn btn-sm btn-danger">Delete</a>',
+					];
+					
+					$i++;
+				}
+				
+				return response()->json([
+					'draw' => intval($request->input('draw')),
+					'recordsTotal' => $totalData,
+					'recordsFiltered' => $totalFiltered,
+					'data' => $data,
+				]);
+			}
+		}
+		
+		public function faqsCreate()
+		{
+			$view = view('admin.faqs.create')->render();
+			return $this->successResponse('success', ['view' => $view])	;
+		} 
+		
+		public function faqsStore(Request $request)
+		{  
+			$validator = Validator::make($request->all(), [
+				'title' => 'required|string|max:255', 
+				'description' => 'required|string', 
+				'status' => 'required|in:1,0', 
+			]);
+			
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors());
+			}
+			 
+			try {
+				DB::beginTransaction();
+				
+				$data = $request->only('title', 'description', 'status');  
+				Faq::create($data); 
+				
+				DB::commit(); 
+				return $this->successResponse('The faqs has been created successfully.');
+			}
+			catch (\Throwable $e)
+			{
+				DB::rollBack();
+				return $this->errorResponse('Failed to update settings. ' . $e->getMessage());
+			}
+		}
+		
+		public function faqsEdit($bannerId)
+		{
+			$faq = Faq::find($bannerId);
+			$view = view('admin.faqs.edit', compact('faq'))->render();
+			return $this->successResponse('success', ['view' => $view])	;
+		} 
+		
+		public function faqsUpdate(Request $request, $id)
+		{  
+			$validator = Validator::make($request->all(), [
+				'title' => 'required|string|max:255', 
+				'description' => 'required|string', 
+				'status' => 'required|in:1,0', 
+			]);
+			
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors());
+			}
+			 
+			try {
+				DB::beginTransaction();
+				
+				$data = $request->only('title', 'description', 'status');   
+				$faq = Faq::find($id);
+				$faq->update($data);
+				 
+				DB::commit();
+				
+				return $this->successResponse('The faq have been update successfully.');
+			}
+			catch (\Throwable $e)
+			{
+				DB::rollBack();
+				return $this->errorResponse('Failed to update settings. ' . $e->getMessage());
+			}
+		}
+		 
+		public function faqsDelete($id)
+		{   
+			try {
+				
+				DB::beginTransaction(); 
+				
+				$faq = Faq::find($id);
+				if(!$faq)
+				{
+					return $this->errorResponse('The faq not found.');
+				} 
+				$faq->delete();
+				
+				DB::commit(); 
+				return $this->successResponse('The faq has been delete successfully.');
+			}
+			catch (\Throwable $e)
+			{
+				DB::rollBack();
+				return $this->errorResponse('Failed to update settings. ' . $e->getMessage());
+			}
+		}
 	}

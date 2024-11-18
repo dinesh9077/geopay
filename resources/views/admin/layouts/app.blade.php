@@ -70,7 +70,9 @@
 				
 			</div>
 		</div> 
+		
 		<div id="modal-view-render"></div>
+		<x-delete-modal/>
 		
 		<script src="{{ asset('admin/vendors/jquery/jquery.min.js') }}"></script>
 		<script src="{{ asset('admin/vendors/datatables.net/dataTables.js') }}"></script>

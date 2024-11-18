@@ -22,11 +22,21 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 	
 	// Banners
     Route::get('/banner', [SettingController::class, 'banner'])->name('banner');
-    Route::post('/banner/ajax', [SettingController::class, 'bannerAjax'])
-        ->withoutMiddleware('webdecrypt.request') // Exclude this middleware
-        ->name('banner.ajax');
+    Route::post('/banner/ajax', [SettingController::class, 'bannerAjax'])->withoutMiddleware('webdecrypt.request')->name('banner.ajax');
 	Route::get('/banner/create', [SettingController::class, 'bannerCreate'])->name('banner.create');
-    Route::post('/banner/update', [SettingController::class, 'bannerUpdate'])->name('banner.update');
+	Route::post('/banner/store', [SettingController::class, 'bannerStore'])->name('banner.store');
+	Route::get('/banner/edit/{id}', [SettingController::class, 'bannerEdit'])->name('banner.edit');
+    Route::post('/banner/update/{id}', [SettingController::class, 'bannerUpdate'])->name('banner.update');
+    Route::post('/banner/delete/{id}', [SettingController::class, 'bannerDelete'])->withoutMiddleware('webdecrypt.request')->name('banner.delete');
+
+	// Faqs
+    Route::get('/faqs', [SettingController::class, 'faqs'])->name('faqs');
+    Route::post('/faqs/ajax', [SettingController::class, 'faqsAjax'])->withoutMiddleware('webdecrypt.request')->name('faqs.ajax');
+	Route::get('/faqs/create', [SettingController::class, 'faqsCreate'])->name('faqs.create');
+	Route::post('/faqs/store', [SettingController::class, 'faqsStore'])->name('faqs.store');
+	Route::get('/faqs/edit/{id}', [SettingController::class, 'faqsEdit'])->name('faqs.edit');
+    Route::post('/faqs/update/{id}', [SettingController::class, 'faqsUpdate'])->name('faqs.update');
+    Route::post('/faqs/delete/{id}', [SettingController::class, 'faqsDelete'])->withoutMiddleware('webdecrypt.request')->name('faqs.delete');
      
     /* 
 		Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');

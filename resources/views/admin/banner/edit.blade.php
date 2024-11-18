@@ -1,15 +1,15 @@
-<div class="modal fade" id="addBannerModal" tabindex="-1" aria-labelledby="varyingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="editBannerModal" tabindex="-1" aria-labelledby="varyingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="varyingModalLabel">Add New Banner</h5>
+				<h5 class="modal-title" id="varyingModalLabel">Update Banner</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
 			</div>
-			<form id="addBannerForm" action="{{ route('admin.banner.store') }}" method="post" enctype="multipart/form-data">
+			<form id="editBannerForm" action="{{ route('admin.banner.update', $banner->id) }}" method="post" enctype="multipart/form-data">
 				<div class="modal-body">
 					<div class="mb-3">
 						<label for="recipient-name" class="form-label">Title <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" id="title" name="title">
+						<input type="text" class="form-control" id="title" name="title" value="{{ $banner->title }}">
 					</div> 
 					<div class="mb-3">
 						<label for="recipient-name" class="form-label">Banner Image <span class="text-danger">*</span></label>
@@ -18,13 +18,13 @@
 					<div class="mb-3">
 						<label for="recipient-name" class="form-label">Status <span class="text-danger">*</span></label>
 						<select class="form-control" id="status" name="status">
-							<option value="1"> Active </option>
-							<option value="0"> In-Active </option>
+							<option value="1" {{ $banner->status == 1 ? 'selected' : '' }}> Active </option>
+							<option value="0" {{ $banner->status == 0 ? 'selected' : '' }}> In-Active </option>
 						</select>
 					</div> 
 					
 				</div>
-				<div class="modal-footer">
+				<div class="modal-footer"> 
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</div>
 			</form>
@@ -32,7 +32,7 @@
 	</div>
 </div>
 <script>
-	$('#addBannerForm').submit(function(event) 
+	$('#editBannerForm').submit(function(event) 
 	{
 		event.preventDefault();   
 		
@@ -71,14 +71,14 @@
 			dataType: 'Json', 
 			success: function (res) 
 			{ 
-				$('#addBannerForm').find('button').prop('disabled',false);	 
+				$('#editBannerForm').find('button').prop('disabled',false);	 
 				$('.error_msg').remove(); 
 				
 				if(res.status === "success")
 				{ 
 					dataTable.draw();
 					toastrMsg(res.status,res.message);  
-					$('#addBannerModal').modal('hide');
+					$('#editBannerModal').modal('hide');
 				}
 				else if(res.status == "validation")
 				{  
@@ -92,7 +92,7 @@
 					});
 				}
 				else
-				{  
+				{ 
 					toastrMsg(res.status,res.message); 
 				}
 			} 

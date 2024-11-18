@@ -32,7 +32,25 @@
 			console.error("Toastr is not defined.");
 		}
 	}
-	 
+	
+	function getQueryParams(url) {
+		var queryString = url.split('?')[1];
+		
+		if (!queryString) {
+			return {};
+		}
+
+		var queryParams = {};
+		var queryArray = queryString.split('&');
+
+		queryArray.forEach(function(pair) {
+			var keyValue = pair.split('=');
+			queryParams[keyValue[0]] = decodeURIComponent(keyValue[1] || '');
+		});
+
+		return queryParams;
+	}
+	
 	const secretKey = @json($cryptoKey);
 
 	// Encrypt function

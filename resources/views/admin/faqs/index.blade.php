@@ -1,15 +1,15 @@
 @extends('admin.layouts.app')
-@section('title', config('setting.site_name') . ' - Banner')
+@section('title', config('setting.site_name') . ' - Faqs')
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
 	<div>
-		<h4 class="mb-3 mb-md-0">Banners</h4>
+		<h4 class="mb-3 mb-md-0">Faqs</h4>
 	</div> 
 	<div class="d-flex align-items-center flex-wrap text-nowrap"> 
-		<button type="button" onclick="addBanner(this, event)" class="btn btn-primary btn-icon-text mb-2 mb-md-0">
+		<button type="button" onclick="addFaqs(this, event)" class="btn btn-primary btn-icon-text mb-2 mb-md-0">
 			<i class="btn-icon-prepend" data-feather="plus"></i>
-			Add Banners
+			Add Faqs
 		</button>
 	</div>
 </div>
@@ -19,12 +19,12 @@
 		<div class="card">
 			<div class="card-body"> 
 				<div class="table-responsive">
-					<table id="bannerDatatable" class="table">
+					<table id="faqDatatable" class="table">
 						<thead>
 							<tr>
 								<th>#</th>
 								<th>Title</th>
-								<th>Image</th>
+								<th>Description</th>
 								<th>Status</th> 
 								<th>Created At</th>
 								<th>Action</th>
@@ -41,7 +41,7 @@
 
 @push('js')
 <script> 
-	var dataTable = $('#bannerDatatable').DataTable({ 
+	var dataTable = $('#faqDatatable').DataTable({ 
 		processing:true,
 		"language": {
 			'loadingRecords': '&nbsp;',
@@ -57,7 +57,7 @@
 		order: [[0, 'desc'] ],
 		bAutoWidth: false,			 
 		"ajax":{
-			"url": "{{ route('admin.banner.ajax') }}",
+			"url": "{{ route('admin.faqs.ajax') }}",
 			"dataType": "json",
 			"type": "POST",
 			"data": function (d) {
@@ -67,30 +67,30 @@
 		"columns": [
 			{ "data": "id" },    
 			{ "data": "title" },   
-			{ "data": "faq" },  
+			{ "data": "description" },  
 			{ "data": "status" },  
 			{ "data": "created_at" }, 
 			{ "data": "action" }
 		]
 	}); 
 	
-	function addBanner(obj, event)
+	function addFaqs(obj, event)
 	{
 		event.preventDefault();
 		if (!modalOpen)
 		{
 			modalOpen = true;
 			closemodal(); 
-			$.get("{{route('admin.banner.create')}}", function(res)
+			$.get("{{route('admin.faqs.create')}}", function(res)
 			{
 				const result = decryptData(res.response);
 				$('body').find('#modal-view-render').html(result.view);
-				$('#addBannerModal').modal('show');  
+				$('#addFaqModal').modal('show');  
 			});
 		} 
 	}
 	
-	function editBanner(obj, event)
+	function editFaq(obj, event)
 	{
 		event.preventDefault();
 		if (!modalOpen)
@@ -101,9 +101,10 @@
 			{
 				const result = decryptData(res.response);
 				$('body').find('#modal-view-render').html(result.view);
-				$('#editBannerModal').modal('show');  
+				$('#editFaqModal').modal('show');  
 			});
 		} 
-	} 
+	}
+	 
 </script>
 @endpush				
