@@ -20,9 +20,9 @@
 				</div>
 			</div>
 			<!-- Second Row -->
-			<div class="row g-2">
+			<div class="row g-5 g-lg-2 my-3">
 				<!-- First Column (6 columns wide) -->
-				<div class="col-lg-8 order-2 order-lg-1">
+				<div class="col-lg-8 order-2 order-lg-1 border-linear-right">
 					<!-- First Row inside First Column -->
 					<p class="heading-4 mb-2 text-center">Services</p>
 					<div class="row g-3 gx-xxl-5 mb-3 justify-content-center service-section mw-100 mx-auto">
@@ -65,11 +65,11 @@
 				
 				<!-- Second Column (4 columns wide) -->
 				<div class="col-lg-4 order-1 order-lg-2">
-					<div class="border text-center d-flex flex-column qr-container">
-						<span class="font-text-13">To Pay Pritesh Salla</span>
-						<span class="">Share your GEOPAY QR Code to receive payments</span>
+					<div class="border text-center d-flex flex-column qr-container p-4 h-100 mx-lg-3">
+						<span class="content-3">To Pay Pritesh Salla</span>
+						<span class="content-3 fw-semibold">Share your GEOPAY QR Code to receive payments</span>
 						<!-- <span class="mb-3">Share your GEOPAY QR Code to receive payments</span> -->
-						<img src="{{ asset('assets/image/dashboard/QRCode.png') }}" class="img-fluid p-2 mw-100 qr-code" alt="Centered Image">
+						<img src="{{ asset('assets/image/dashboard/QRCode.png') }}" class="img-fluid p-2 qr-code" alt="Centered Image">
 					</div>
 				</div>
 			</div>
