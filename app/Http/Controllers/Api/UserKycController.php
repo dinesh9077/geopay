@@ -69,7 +69,7 @@
 		{  
 			$data = $request->all();
 			//Log::error($data);
-			if (empty($data['flowId']) || $data['flowId'] != env('META_VERIFICATION_FLOW_ID')) {
+			if (empty($data['flowId']) || $data['flowId'] != config('setting.meta_verification_flow_id')) {
 				return; // Exit if flowId is missing or does not match
 			}
 
@@ -117,10 +117,10 @@
 			$authResponse = Http::withOptions(['verify' => false])
 				->withHeaders([
 					'Content-Type' => 'application/x-www-form-urlencoded',
-					'Authorization' => 'Basic ' . env('META_BEARER')
+					'Authorization' => 'Basic ' . config('setting.meta_bearer')
 				])
 				->asForm()
-				->post(env('META_HOST') . '/oauth', ['grant_type' => 'client_credentials']);
+				->post(config('setting.meta_host') . '/oauth', ['grant_type' => 'client_credentials']);
 
 			if ($authResponse->failed()) {
 				return;
@@ -131,7 +131,7 @@
 			// Fetch verification details
 			$verificationResponse = Http::withOptions(['verify' => false])
 				->withToken($authToken)
-				->get(env('META_HOST') . '/v2/verifications/' . $verificationId);
+				->get(config('setting.meta_host') . '/v2/verifications/' . $verificationId);
 
 			if ($verificationResponse->failed()) {
 				return;

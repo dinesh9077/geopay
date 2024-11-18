@@ -22,11 +22,11 @@
 		public function generalSettingUpdate(Request $request)
 		{  
 			$validator = Validator::make($request->all(), [
-			'site_name' => 'required|string|max:255',
-			'default_currency' => 'required|string|max:10',
-			'site_logo' => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048', 
-			'fevicon_icon' => 'nullable|file|mimes:jpg,jpeg,png,ico|max:1024', 
-			'login_logo' => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048', 
+				'site_name' => 'required|string|max:255',
+				'default_currency' => 'required|string|max:10',
+				'site_logo' => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048', 
+				'fevicon_icon' => 'nullable|file|mimes:jpg,jpeg,png,ico|max:1024', 
+				'login_logo' => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048', 
 			]);
 			
 			if ($validator->fails()) {
@@ -47,14 +47,16 @@
 				}
 				
 				$images = $request->only('fevicon_icon', 'login_logo', 'site_logo');
-				
-				foreach($images as $key => $image)
+				if($images)
 				{
-					$fileName = $this->handleFileUpload($request, $key, 'setting'); 
-					Setting::updateOrCreate(
-						['name' => $key],
-						['value' => $fileName, 'updated_at' => now()]
-					);
+					foreach($images as $key => $image)
+					{
+						$fileName = $this->handleFileUpload($request, $key, 'setting'); 
+						Setting::updateOrCreate(
+							['name' => $key],
+							['value' => $fileName, 'updated_at' => now()]
+						);
+					}
 				}
 				
 				
@@ -400,6 +402,52 @@
 				DB::commit(); 
 				return $this->successResponse('The faq has been delete successfully.');
 			}
+			catch (\Throwable $e)
+			{
+				DB::rollBack();
+				return $this->errorResponse('Failed to update settings. ' . $e->getMessage());
+			}
+		}
+		
+		// Third Party keys
+		public function ThirdPartyKey()
+		{
+			return view('admin.setting.third-party');
+		}
+		
+		public function ThirdPartyKeyUpdate(Request $request)
+		{  
+			// Define your validation rules dynamically based on the request input keys
+			$rules = collect($request->all())->mapWithKeys(function ($value, $key) {
+				return [$key => 'nullable|string']; // Adjust rules dynamically as needed
+			})->toArray();
+
+			// Validate the request
+			$validator = Validator::make($request->all(), $rules);
+
+			// Check if validation fails
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors());
+			}
+			 
+			try 
+			{
+				DB::beginTransaction();
+				
+				$data = $request->except('_token');
+				
+				// Bulk update or create for general settings
+				foreach ($data as $key => $value) {
+					Setting::updateOrCreate(
+						['name' => $key],
+						['value' => $value, 'updated_at' => now()]
+					);
+				}
+				 
+				DB::commit();
+				
+				return $this->successResponse('The data have been added or update successfully.');
+			} 
 			catch (\Throwable $e)
 			{
 				DB::rollBack();

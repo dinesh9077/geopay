@@ -22,14 +22,7 @@ class AppServiceProvider extends ServiceProvider
      * Bootstrap any application services.
      */
     public function boot(): void
-	{ 
-		$viewShares = [
-			'cryptoKey' => env('ENCRYPTION_SECRET_KEY'),
-			'metaClientId' => env('META_VERIFICATION_API_KEY'),
-			'metaFlowId' => env('META_VERIFICATION_FLOW_ID'),
-			'metaSecretKey' => env('META_VERIFICATION_SECRET')
-		];
-		 
+	{   
 		// Check if the 'settings' table exists before querying
 		if (Schema::hasTable('settings')) {
 			// Fetch settings and map `name` to `value`
@@ -38,15 +31,18 @@ class AppServiceProvider extends ServiceProvider
 			// Dynamically add settings to the configuration
 			foreach ($settings as $key => $value) {
 				config()->set('setting.' . $key, $value);
-			}
+			} 
 		}
- 
+		
+		$viewShares = [
+			'cryptoKey' => env('encryption_secret_key',''), 
+		];
+		
 		foreach ($viewShares as $key => $viewShare) {
 			View::share($key, $viewShare);
 		}
-
+		
 		// Ensure schema column length is set
 		Schema::defaultStringLength(191);
-	}
-
+	} 
 }

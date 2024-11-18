@@ -21,10 +21,10 @@ class SmsService
     public function __construct()
     {
         // Fetch environment variables from .env file
-        $this->host = env('SMS_HOST');
-        $this->username = env('SMS_USERNAME');
-        $this->password = env('SMS_PASSWORD');
-        $this->sender = env('SMS_SENDER');
+        $this->host = config('setting.sms_host');
+        $this->username = config('setting.sms_username');
+        $this->password = config('setting.sms_password');
+        $this->sender = config('setting.sms_sender');
     }
  
 	/**

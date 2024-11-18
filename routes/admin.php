@@ -37,6 +37,10 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 	Route::get('/faqs/edit/{id}', [SettingController::class, 'faqsEdit'])->name('faqs.edit');
     Route::post('/faqs/update/{id}', [SettingController::class, 'faqsUpdate'])->name('faqs.update');
     Route::post('/faqs/delete/{id}', [SettingController::class, 'faqsDelete'])->withoutMiddleware('webdecrypt.request')->name('faqs.delete');
+	
+	// Third Party Key
+    Route::get('/third-party-key', [SettingController::class, 'ThirdPartyKey'])->name('third-party-key'); 
+    Route::post('/third-party-key/update', [SettingController::class, 'ThirdPartyKeyUpdate'])->name('third-party-key.update'); 
      
     /* 
 		Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');

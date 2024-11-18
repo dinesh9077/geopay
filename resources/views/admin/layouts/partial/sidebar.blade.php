@@ -37,7 +37,7 @@
 							<a href="{{ route('admin.faqs')}}" class="nav-link">FAQ's</a>
 						</li>
 						<li class="nav-item">
-							<a href="#" class="nav-link">Third Party API</a>
+							<a href="{{ route('admin.third-party-key')}}" class="nav-link">Third Party API</a>
 						</li>
 					</ul>
 				</div>

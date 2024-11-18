@@ -25,8 +25,8 @@ class KycController extends Controller
 	{
 		$user = Auth::user();
 		 
-		$metaClientId = env('META_VERIFICATION_API_KEY');
-        $metaFlowId = env('META_VERIFICATION_FLOW_ID');
+		$metaClientId = config('setting.meta_verification_api_key');
+        $metaFlowId = config('setting.meta_verification_flow_id');
         
         // Encrypt the data (client id, flow id)
 		$metaKey = [
