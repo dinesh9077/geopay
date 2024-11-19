@@ -96,5 +96,44 @@
 			});
 		} 
 	} 
+	
+	$(document).on('change', '.companyActiveInactive', function () 
+	{
+		const userId = $(this).data('id');
+		const status = $(this).is(':checked') ? 1 : 0; 
+		
+		var formDataInput = {}; 
+		formDataInput['id'] = userId; 
+		formDataInput['status'] = status; 
+
+		// Ensure encryptData function works properly
+		const encrypted_data = encryptData(JSON.stringify(formDataInput));
+
+		var formData = new FormData(); 
+		formData.append('encrypted_data', encrypted_data);  
+		formData.append('_token', "{{ csrf_token() }}");
+
+		$.ajax({
+			type: 'POST', // Correct method type for POST request
+			url: '{{ route("admin.companies.update-status") }}', // Use the correct route URL
+			data: formData,
+			processData: false,
+			contentType: false,
+			cache: false,
+			dataType: 'json', // Ensure the correct data type is specified
+			success: function (res) {
+				$('.error_msg').remove();
+				if(res.status === "success") {
+					dataTable.draw(); // Refresh your data table
+					toastrMsg(res.status, res.message);   
+				} else {
+					toastrMsg(res.status, res.message); 
+				}
+			},
+			error: function(xhr, status, error) { 
+				toastrMsg('error', 'Something went wrong!');
+			}
+		});
+	}); 
 </script>
 @endpush				

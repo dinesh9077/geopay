@@ -52,8 +52,7 @@ class CompaniesController extends Controller
 			} else {
 				$query->where('status', $status); // Apply specific status
 			}
-
-			 
+ 
 			// Apply search filter if present
 			if (!empty($search)) {
 				$query->where(function ($q) use ($search) {

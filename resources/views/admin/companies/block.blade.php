@@ -129,14 +129,10 @@
 					toastrMsg(res.status, res.message); 
 				}
 			},
-			error: function(xhr, status, error) {
-				// Handle error (optional)
-				console.log(xhr.responseText);
+			error: function(xhr, status, error) { 
 				toastrMsg('error', 'Something went wrong!');
 			}
 		});
-	});
-
-
+	}); 
 </script>
 @endpush				
