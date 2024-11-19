@@ -4,8 +4,10 @@
     --primary-color: #102030;
     --primary-color-hover: #376186;
     --secondary-color: #81A8C7;
+    --secondary-soft-color: #81a8c761;
     --secondary-color-hover: #5d7d97;
     --gray-color: #E0E0E0;
+    --light-gray: #2c2c2c73;
     --gray-color-hover: #b9b9b9;
     --theme-border-color: #bababa;
     --background-color-dark: var(--bs-dark);
@@ -52,9 +54,9 @@
     --font-size-content-3: clamp(13px, 1vw + 2px, 14px);
 
     /* Font Size for Labels */
-    --font-size-label1: clamp(0.875rem, 2.5vw + 0.5rem, 1rem);
-    --font-size-label2: clamp(0.75rem, 2vw + 0.5rem, 0.875rem);
-    --font-size-label3: clamp(0.625rem, 1.5vw + 0.5rem, 0.775rem);
+    --font-size-label1: clamp(16px, 1vw + 4px, 18px);
+    --font-size-label2: clamp(15px, 1vw + 2px, 16px);
+    --font-size-label3: clamp(13px, 1vw + 2px, 14px);
 
     /* Font Size for Body Text */
     --font-size-body: clamp(0.875rem, 2vw + 0.75rem, 1rem);
