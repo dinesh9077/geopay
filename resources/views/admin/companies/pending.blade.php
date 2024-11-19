@@ -95,7 +95,7 @@
 				$('#editCompanyModal').modal('show');  
 			});
 		} 
-	} 
+	}  
 	
 	$(document).on('change', '.companyActiveInactive', function () 
 	{
