@@ -8,11 +8,10 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
-use Spatie\Permission\Traits\HasRoles; 
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, LogsActivity, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, LogsActivity;
 
     /**
 	 * The attributes that are mass assignable.
@@ -68,7 +67,7 @@ class User extends Authenticatable
 	{  
 		$user_name = auth()->check() ? auth()->user()->name : 'Unknown User'; // Fixed ternary operator
 		return LogOptions::defaults()
-			->logOnly(['*', 'userRole.role_name'])
+			->logOnly(['*', 'country.name', 'userRole.role_name'])
 			->logOnlyDirty()
 			->dontSubmitEmptyLogs()
 			->useLogName($logName)
@@ -86,9 +85,14 @@ class User extends Authenticatable
     {
         return $this->belongsTo(UserRole::class, 'user_role_id');
     }
+	
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id');
+    }
 
     public function loginLogs()
     {
         return $this->hasMany(LoginLog::class);
-    }
+    } 
 }

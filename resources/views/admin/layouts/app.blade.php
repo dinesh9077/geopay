@@ -30,10 +30,13 @@
 		<link rel="stylesheet" href="{{ asset('admin/vendors/datatables.net-bs5/dataTables.bootstrap5.css') }}">
 		<!-- End plugin css for this page -->
 		
+		<link rel="stylesheet" href="{{ asset('admin/vendors/select2/select2.min.css') }}">
+		
 		<!-- Layout styles -->  
 		<link rel="stylesheet" href="{{ asset('admin/css/demo1/style.css') }}">
 		<!-- End layout styles -->
 		<link href="{{ asset('assets/css/toastr.min.css') }}" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="{{ asset('admin/vendors/flatpickr/flatpickr.min.css') }}">
 		<script> 
             let modalOpen = false;
             function closemodal()
@@ -85,7 +88,12 @@
 		<script src="{{ asset('admin/vendors/feather-icons/feather.min.js') }}"></script>
 		<script src="{{ asset('admin/js/app.js') }}"></script>
 		<!-- endinject -->
-		 
+		
+		<script src="{{ asset('admin/vendors/pickr/pickr.min.js') }}"></script>
+		<script src="{{ asset('admin/vendors/moment/moment.min.js') }}"></script>
+		<script src="{{ asset('admin/vendors/flatpickr/flatpickr.min.js') }}"></script>
+		
+		<script src="{{ asset('admin/vendors/select2/select2.min.js') }}"></script>
 		<!-- End custom js for this page -->
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>

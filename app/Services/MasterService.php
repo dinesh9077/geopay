@@ -2,7 +2,7 @@
 	
 	namespace App\Services; 
 	use App\Models\{
-		UserRole, User
+		UserRole, User, Role
 	};
 	use Illuminate\Support\Facades\Log;
 	use Auth;
@@ -37,5 +37,15 @@
 				$users->where('status', $status);
 			} 
 			return $users->get();
+		}	
+		
+		public function getRoles($status = null)
+		{ 
+			$users = Role::orderBy('name');
+			
+			if ($status !== null) {
+				$users->where('status', $status);
+			} 
+			return $users->get(['id', 'name']);
 		}	
 	}

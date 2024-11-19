@@ -96,7 +96,7 @@
 			<li class="nav-item dropdown">
 				<a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
 					@if(auth()->guard('admin')->user()->profile) 
-						<img src="{{ url('storage', auth()->guard('admin')->user()->profile) }}" alt="user-image" class="w-30px h-30px ms-1 rounded-circle">
+						<img src="{{ url('storage/admin_profile', auth()->guard('admin')->user()->profile) }}" alt="user-image" class="w-30px h-30px ms-1 rounded-circle">
 					@else
 						<img src="{{ url('admin/default-profile.png') }}" alt="user-image" class="w-30px h-30px ms-1 rounded-circle">
 					@endif 
@@ -117,7 +117,7 @@
 					</div>
 					<ul class="list-unstyled p-1">
 						<li class="dropdown-item py-2">
-							<a href="#" class="text-body ms-0">
+							<a href="{{ route('admin.profile') }}" class="text-body ms-0">
 								<i class="me-2 icon-md" data-feather="user"></i>
 								<span>Profile</span>
 							</a>

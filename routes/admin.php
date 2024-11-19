@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\CompaniesController;
 use Illuminate\Support\Facades\Route; 
  
 // Admin authentication routes
@@ -12,16 +14,16 @@ Route::post('logout', [AdminAuthController::class, 'logout'])->name('admin.logou
 
 // Protected admin routes
 
-Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(function () {
-    
+Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(function () 
+{ 
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 	
 	// Settings
-    Route::get('/general-setting', [SettingController::class, 'generalSetting'])->name('general-setting');
+    Route::get('/general-setting', [SettingController::class, 'generalSetting'])->name('general-setting')->middleware('permission:general_setting.view');
     Route::post('/general-setting/update', [SettingController::class, 'generalSettingUpdate'])->name('general-setting.update');
 	
 	// Banners
-    Route::get('/banner', [SettingController::class, 'banner'])->name('banner');
+    Route::get('/banner', [SettingController::class, 'banner'])->name('banner')->middleware('permission:banner.view');
     Route::post('/banner/ajax', [SettingController::class, 'bannerAjax'])->withoutMiddleware('webdecrypt.request')->name('banner.ajax');
 	Route::get('/banner/create', [SettingController::class, 'bannerCreate'])->name('banner.create');
 	Route::post('/banner/store', [SettingController::class, 'bannerStore'])->name('banner.store');
@@ -30,7 +32,7 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
     Route::post('/banner/delete/{id}', [SettingController::class, 'bannerDelete'])->withoutMiddleware('webdecrypt.request')->name('banner.delete');
 
 	// Faqs
-    Route::get('/faqs', [SettingController::class, 'faqs'])->name('faqs');
+    Route::get('/faqs', [SettingController::class, 'faqs'])->name('faqs')->middleware('permission:faqs.view');
     Route::post('/faqs/ajax', [SettingController::class, 'faqsAjax'])->withoutMiddleware('webdecrypt.request')->name('faqs.ajax');
 	Route::get('/faqs/create', [SettingController::class, 'faqsCreate'])->name('faqs.create');
 	Route::post('/faqs/store', [SettingController::class, 'faqsStore'])->name('faqs.store');
@@ -39,12 +41,48 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
     Route::post('/faqs/delete/{id}', [SettingController::class, 'faqsDelete'])->withoutMiddleware('webdecrypt.request')->name('faqs.delete');
 	
 	// Third Party Key
-    Route::get('/third-party-key', [SettingController::class, 'ThirdPartyKey'])->name('third-party-key'); 
+    Route::get('/third-party-key', [SettingController::class, 'ThirdPartyKey'])->name('third-party-key')
+	->middleware('permission:third_party_api.view');
     Route::post('/third-party-key/update', [SettingController::class, 'ThirdPartyKeyUpdate'])->name('third-party-key.update'); 
-     
-    /* 
-		Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
-		Route::post('/profile/update', [DashboardController::class, 'profileUpdate'])->name('profile-update'); 
-    */
+    
+	// Profile
+	Route::get('/profile', [SettingController::class, 'profile'])->name('profile');
+	Route::post('/profile/update', [SettingController::class, 'profileUpdate'])->name('profile-update'); 
+  
+	//Roles
+	Route::get('/roles', [StaffController::class, 'roles'])->name('roles')->middleware('permission:role.view');
+    Route::post('/roles/ajax', [StaffController::class, 'rolesAjax'])->withoutMiddleware('webdecrypt.request')->name('roles.ajax');
+	Route::get('/roles/create', [StaffController::class, 'rolesCreate'])->name('roles.create');
+	Route::post('/roles/store', [StaffController::class, 'rolesStore'])->name('roles.store');
+	Route::get('/roles/edit/{id}', [StaffController::class, 'rolesEdit'])->name('roles.edit');
+    Route::post('/roles/update/{id}', [StaffController::class, 'rolesUpdate'])->name('roles.update');
+    Route::post('/roles/delete/{id}', [StaffController::class, 'rolesDelete'])->withoutMiddleware('webdecrypt.request')->name('roles.delete'); 
+	Route::get('roles/groups/{id}', [StaffController::class, 'rolesGroups']);
+	
+	//staffs
+	Route::get('/staff', [StaffController::class, 'staff'])->name('staff')->middleware('permission:staff.view');
+    Route::post('/staff/ajax', [StaffController::class, 'staffAjax'])->withoutMiddleware('webdecrypt.request')->name('staff.ajax');
+	Route::get('/staff/create', [StaffController::class, 'staffCreate'])->name('staff.create');
+	Route::post('/staff/store', [StaffController::class, 'staffStore'])->name('staff.store');
+	Route::get('/staff/edit/{id}', [StaffController::class, 'staffEdit'])->name('staff.edit');
+    Route::post('/staff/update/{id}', [StaffController::class, 'staffUpdate'])->name('staff.update');
+    Route::post('/staff/delete/{id}', [StaffController::class, 'staffDelete'])->withoutMiddleware('webdecrypt.request')->name('staff.delete'); 
+	Route::get('/staff/permission/{id}', [StaffController::class, 'staffPermission'])->name('staff.permission');
+	Route::post('/staff/permission/{id}', [StaffController::class, 'staffPermissionUpdate'])->name('staff.permission-update');
+	
+	//Manage Companies 
+	Route::get('/companies/active', [CompaniesController::class, 'companiesActive'])
+	->name('company.active')->middleware('permission:active_company.view'); 
+	
+	Route::get('/companies/pending', [CompaniesController::class, 'companiesPending'])
+	->name('company.pending')->middleware('permission:pending_company.view'); 
+	
+	Route::get('/companies/block', [CompaniesController::class, 'companiesBlock'])
+	->name('company.block')->middleware('permission:block_company.view'); 
+	
+	Route::post('/companies/ajax', [CompaniesController::class, 'companiesAjax'])->withoutMiddleware('webdecrypt.request')->name('companies.ajax');
+	Route::get('/companies/edit/{id}', [CompaniesController::class, 'companiesEdit'])->name('companies.edit');
+    Route::post('/companies/update/{id}', [CompaniesController::class, 'companiesUpdate'])->name('companies.update');
+	Route::post('/companies/update-status', [CompaniesController::class, 'companiesUpdateStatus'])->name('companies.update-status');
 });
 

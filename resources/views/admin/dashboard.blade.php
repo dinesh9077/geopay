@@ -21,7 +21,7 @@
 		</button>
 	</div>
 </div>
-
+@if(config('permission.dashboard.view'))
 <div class="row">
 	<div class="col-12 col-xl-12 stretch-card">
 		<div class="row flex-grow-1">
@@ -416,6 +416,8 @@
 		</div>
 	</div>
 </div> <!-- row -->
+@endif
+
 @endsection		
 @push('js') 
 <script src="{{ asset('admin/vendors/flatpickr/flatpickr.min.js') }}"></script>

@@ -1,19 +1,11 @@
 @extends('admin.layouts.app')
-@section('title', config('setting.site_name') . ' - Banner')
+@section('title', config('setting.site_name') . ' - Active Company')
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
 	<div>
-		<h4 class="mb-3 mb-md-0">Banners</h4>
-	</div> 
-	@if(config('permission.banner.add'))
-	<div class="d-flex align-items-center flex-wrap text-nowrap"> 
-		<button type="button" onclick="addBanner(this, event)" class="btn btn-primary btn-icon-text mb-2 mb-md-0">
-			<i class="btn-icon-prepend" data-feather="plus"></i>
-			Add Banners
-		</button>
-	</div>
-	@endif
+		<h4 class="mb-3 mb-md-0">Active Company</h4>
+	</div>  
 </div>
 
 <div class="row">
@@ -21,12 +13,17 @@
 		<div class="card">
 			<div class="card-body"> 
 				<div class="table-responsive">
-					<table id="bannerDatatable" class="table">
+					<table id="companyDatatable" class="table">
 						<thead>
 							<tr>
 								<th>#</th>
-								<th>Title</th>
-								<th>Image</th>
+								<th>Name</th>
+								<th>Email</th>
+								<th>Mobile</th> 
+								<th>Country</th> 
+								<th>Is Kyc Verified</th> 
+								<th>Is Email Verified</th> 
+								<th>Is Mobile Verified</th> 
 								<th>Status</th> 
 								<th>Created At</th>
 								<th>Action</th>
@@ -43,7 +40,7 @@
 
 @push('js')
 <script> 
-	var dataTable = $('#bannerDatatable').DataTable({ 
+	var dataTable = $('#companyDatatable').DataTable({ 
 		processing:true,
 		"language": {
 			'loadingRecords': '&nbsp;',
@@ -59,40 +56,32 @@
 		order: [[0, 'desc'] ],
 		bAutoWidth: false,			 
 		"ajax":{
-			"url": "{{ route('admin.banner.ajax') }}",
+			"url": "{{ route('admin.companies.ajax') }}",
 			"dataType": "json",
 			"type": "POST",
 			"data": function (d) {
 				d._token   = "{{csrf_token()}}"; 
+				d.page_status  = 'active';
+				d.is_kyc_verify   = 1; 
+				d.status   = 1; 
 			}
 		},
 		"columns": [
 			{ "data": "id" },    
-			{ "data": "title" },   
-			{ "data": "image" },  
+			{ "data": "name" },   
+			{ "data": "email" },  
+			{ "data": "mobile" },  
+			{ "data": "country" },  
+			{ "data": "is_kyc_verify" },  
+			{ "data": "is_email_verify" },  
+			{ "data": "is_mobile_verify" },  
 			{ "data": "status" },  
 			{ "data": "created_at" }, 
 			{ "data": "action" }
 		]
 	}); 
-	
-	function addBanner(obj, event)
-	{
-		event.preventDefault();
-		if (!modalOpen)
-		{
-			modalOpen = true;
-			closemodal(); 
-			$.get("{{route('admin.banner.create')}}", function(res)
-			{
-				const result = decryptData(res.response);
-				$('body').find('#modal-view-render').html(result.view);
-				$('#addBannerModal').modal('show');  
-			});
-		} 
-	}
-	
-	function editBanner(obj, event)
+	  
+	function editCompany(obj, event)
 	{
 		event.preventDefault();
 		if (!modalOpen)
@@ -103,7 +92,7 @@
 			{
 				const result = decryptData(res.response);
 				$('body').find('#modal-view-render').html(result.view);
-				$('#editBannerModal').modal('show');  
+				$('#editCompanyModal').modal('show');  
 			});
 		} 
 	} 

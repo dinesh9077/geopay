@@ -6,12 +6,14 @@
 	<div>
 		<h4 class="mb-3 mb-md-0">Faqs</h4>
 	</div> 
+	@if(config('permission.banner.add'))
 	<div class="d-flex align-items-center flex-wrap text-nowrap"> 
 		<button type="button" onclick="addFaqs(this, event)" class="btn btn-primary btn-icon-text mb-2 mb-md-0">
 			<i class="btn-icon-prepend" data-feather="plus"></i>
 			Add Faqs
 		</button>
 	</div>
+	@endif
 </div>
 
 <div class="row">

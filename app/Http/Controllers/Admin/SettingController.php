@@ -8,7 +8,7 @@
 	use App\Models\Banner;
 	use App\Models\Faq;
 	use App\Http\Traits\WebResponseTrait; 
-	use Validator, DB, Auth, ImageManager;
+	use Validator, DB, Auth, ImageManager, Hash;
 	
 	class SettingController extends Controller
 	{
@@ -117,20 +117,34 @@
 				// Format response
 				$data = [];
 				$i = $start + 1;
-				foreach ($values as $value)
-				{
+				foreach ($values as $key => $value) {
+					$statusClass = $value->status == 1 ? 'success' : 'danger';
+					$statusText = $value->status == 1 ? 'Active' : 'In-Active';
+
+					// Initialize the row data
 					$data[] = [
-						'id' => $i,
+						'id' => $i, // Use $key for indexing
 						'title' => $value->title,
-						'image' => '<img src="'.url('storage/banner', $value->image).'" style="height:70px;width:70px">',
-						'status' => '<span class="badge bg-'.( $value->status == 1 ? 'success' : 'danger').'">'.( $value->status == 1 ? 'Active' : 'In-Active').'</span>',
+						'image' => '<img src="' . url('storage/banner', $value->image) . '" style="height:70px;width:70px">',
+						'status' => "<span class=\"badge bg-{$statusClass}\">{$statusText}</span>",
 						'created_at' => $value->created_at->format('Y-m-d H:i:s'),
-						'action' => '<a href="'.route('admin.banner.edit', ['id' => $value->id]).'" onclick="editBanner(this, event)" class="btn btn-sm btn-primary">Edit</a>
-						<a href="javascript:;" data-url='.route('admin.banner.delete', ['id' => $value->id]).' data-message="Are you sure you want to delete this item?" onclick="deleteConfirmModal(this,event)" class="btn btn-sm btn-danger">Delete</a>',
+						'action' => '', // Initialize action
 					];
-					
+
+					// Manage actions with permission checks
+					$actions = [];
+					if (config('permission.banner.edit')) {
+						$actions[] = '<a href="' . route('admin.banner.edit', ['id' => $value->id]) . '" onclick="editBanner(this, event)" class="btn btn-sm btn-primary">Edit</a>';
+					}
+					if (config('permission.banner.delete')) {
+						$actions[] = '<a href="javascript:;" data-url="' . route('admin.banner.delete', ['id' => $value->id]) . '" data-message="Are you sure you want to delete this item?" onclick="deleteConfirmModal(this, event)" class="btn btn-sm btn-danger">Delete</a>';
+					}
+
+					// Assign actions to the row if available
+					$data[$key]['action'] = implode(' ', $actions);
 					$i++;
 				}
+
 				
 				return response()->json([
 					'draw' => intval($request->input('draw')),
@@ -262,7 +276,7 @@
 		{
 			if ($request->ajax())
 			{
-				$columns = ['id', 'title', 'c', 'status', 'created_at', 'action'];
+				$columns = ['id', 'title', 'description', 'status', 'created_at', 'action'];
 				  
 				$search = $request->input('search.value');
 				$start = $request->input('start');
@@ -291,20 +305,34 @@
 				// Format response
 				$data = [];
 				$i = $start + 1;
-				foreach ($values as $value)
-				{
+				foreach ($values as $key => $value) {
+					$statusClass = $value->status == 1 ? 'success' : 'danger';
+					$statusText = $value->status == 1 ? 'Active' : 'In-Active';
+
+					// Build the row data
 					$data[] = [
-						'id' => $i,
+						'id' => $i, // Use $key for dynamic indexing
 						'title' => $value->title,
 						'description' => $value->description,
-						'status' => '<span class="badge bg-'.( $value->status == 1 ? 'success' : 'danger').'">'.( $value->status == 1 ? 'Active' : 'In-Active').'</span>',
+						'status' => "<span class=\"badge bg-{$statusClass}\">{$statusText}</span>",
 						'created_at' => $value->created_at->format('Y-m-d H:i:s'),
-						'action' => '<a href="'.route('admin.faqs.edit', ['id' => $value->id]).'" onclick="editFaq(this, event)" class="btn btn-sm btn-primary">Edit</a>
-						<a href="javascript:;" data-url='.route('admin.faqs.delete', ['id' => $value->id]).' data-message="Are you sure you want to delete this item?" onclick="deleteConfirmModal(this,event)" class="btn btn-sm btn-danger">Delete</a>',
+						'action' => '', // Initialize action
 					];
-					
+
+					// Initialize actions with permission checks
+					$actions = [];
+					if (config('permission.faqs.edit')) {
+						$actions[] = '<a href="' . route('admin.faqs.edit', ['id' => $value->id]) . '" onclick="editFaq(this, event)" class="btn btn-sm btn-primary">Edit</a>';
+					}
+					if (config('permission.faqs.delete')) {
+						$actions[] = '<a href="javascript:;" data-url="' . route('admin.faqs.delete', ['id' => $value->id]) . '" data-message="Are you sure you want to delete this item?" onclick="deleteConfirmModal(this, event)" class="btn btn-sm btn-danger">Delete</a>';
+					}
+
+					// Assign actions to the row if available
+					$data[$key]['action'] = implode(' ', $actions);
 					$i++;
 				}
+
 				
 				return response()->json([
 					'draw' => intval($request->input('draw')),
@@ -454,4 +482,55 @@
 				return $this->errorResponse('Failed to update settings. ' . $e->getMessage());
 			}
 		}
+		
+		// Profile
+		public function profile()
+		{ 
+			$admin = auth()->guard('admin')->user();
+			return view('admin.setting.profile', compact('admin'));
+		}
+		
+		public function profileUpdate(Request $request)
+		{
+			$admin = auth()->guard('admin')->user();
+			
+			$validator = Validator::make($request->all(), [
+				'name' => 'required|string|max:255', 
+				'email' => 'required|email|unique:admins,email,' . $admin->id, 
+				'mobile' => 'required|string|unique:admins,mobile,' . $admin->id
+			]);
+			
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors());
+			}
+			 
+			try {
+				DB::beginTransaction();
+
+				// Collect only the necessary fields
+				$data = $request->except(['_token', 'profile', 'password']);
+				$data['dob'] = $data['dob'] ? $data['dob'] : null;
+				if($request->filled('password'))
+				{
+					$data['password'] = Hash::make($request->password);
+					$data['xps'] = base64_encode($request->password);
+				}
+				
+				$fileName = $this->handleFileUpload($request, 'profile', 'admin_profile');
+				if($fileName)
+				{
+					$data['profile'] = $fileName;
+				} 
+				// Update admin profile
+				$admin->update($data);
+				
+				DB::commit();
+
+				return $this->successResponse('The profile has been updated successfully.');
+			} catch (\Throwable $e) {
+				DB::rollBack();
+				return $this->errorResponse('Failed to update profile. ' . $e->getMessage());
+			}
+		}
+
 	}

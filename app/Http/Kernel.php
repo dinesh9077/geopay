@@ -36,7 +36,8 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,   
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,  
+			\App\Http\Middleware\Permission::class,
         ],
 
         'api' => [
@@ -73,6 +74,7 @@ class Kernel extends HttpKernel
         'decrypt.request' => \App\Http\Middleware\DecryptRequest::class,
         'webdecrypt.request' => \App\Http\Middleware\WebDecryptRequest::class,
         'checkAdmin' => \App\Http\Middleware\CheckAdminRole::class,
-        'kycStatus' => \App\Http\Middleware\CheckKycStatus::class
+        'kycStatus' => \App\Http\Middleware\CheckKycStatus::class, 
+        'permission' => \App\Http\Middleware\Permission::class,
     ];
 }

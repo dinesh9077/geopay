@@ -41,7 +41,6 @@ return array(
     'Symfony\\Component\\CssSelector\\' => array($vendorDir . '/symfony/css-selector'),
     'Symfony\\Component\\Console\\' => array($vendorDir . '/symfony/console'),
     'Symfony\\Bridge\\PsrHttpMessage\\' => array($vendorDir . '/symfony/psr-http-message-bridge'),
-    'Spatie\\Permission\\' => array($vendorDir . '/spatie/laravel-permission/src'),
     'Spatie\\LaravelPackageTools\\' => array($vendorDir . '/spatie/laravel-package-tools/src'),
     'Spatie\\LaravelIgnition\\' => array($vendorDir . '/spatie/error-solutions/legacy/laravel-ignition', $vendorDir . '/spatie/laravel-ignition/src'),
     'Spatie\\Ignition\\' => array($vendorDir . '/spatie/error-solutions/legacy/ignition', $vendorDir . '/spatie/ignition/src'),
