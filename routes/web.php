@@ -61,5 +61,25 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	 
 	// Dashboard
 	Route::get('/home', [HomeController::class, 'index'])->name('home');  
+	
+	Route::get('/add-money', function () {
+		return view('user.transaction.add-money.index');
+	})->name('add-money');  
+
+	Route::get('/wallet-to-wallet', function () {
+		return view('user.transaction.wallet-to-wallet');
+	})->name('wallet-to-wallet');  
+
+	Route::get('/transfer-to-mobile-money', function () {
+		return view('user.transaction.transfer-to-mobile-money');
+	})->name('transfer-to-mobile-money');
+	
+	Route::get('/international-airtime', function () {
+		return view('user.transaction.international-airtime');
+	})->name('international-airtime');
+
+	Route::get('/setting', function () {
+		return view('user.setting.index');
+	})->name('setting');  
 });
 
