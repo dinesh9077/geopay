@@ -3,7 +3,7 @@
 	<div class="h-100 position-relative">
 		<a href="{{ route('home') }}">
 			<div class="sidebar-logo"> 
-				<img src="{{ asset('assets/image/logo.svg') }}" alt="Logo">
+				<img class="w-100" src="{{ asset('assets/image/logo.png') }}" alt="Logo" style="max-width: 100px;">
 			</div>
 		</a>
 		<button class="btn position-absolute top-0 end-0" id="sidebar-close" type="button">

@@ -1,23 +1,23 @@
-<h6 class="fw-semibold text-black text-center mb-4">Verify OTP</h6> 
-<label for="terms" class="d-flex text-center text-secondary font-md mb-3">
+<h6 class="heading-xl fw-medium text-primary text-center mb-4">Verify OTP</h6> 
+<label for="terms" class="d-flex text-center text-secondary content-3 mb-3">
 	Please enter the OTP sent to your email to verify your identity.
 </label>
 <form id="verifyOtpForm" action="{{ route('password.verifyOtp') }}" method="post">
 	<div class="mb-4">
-		<label for="email" class="required text-black font-md mb-2">Email</label>
+		<label for="email" class="required content-3 text-primary mb-2">Email</label>
 		<div class="input-group">
-			<input type="text" class="form-control border-0 bg-light" id="email" name="email" placeholder="Enter your email" readonly>
+			<input type="text" class="form-control form-control-lg border-0 bg-light" id="email" name="email" placeholder="Enter your email" readonly>
 		</div> 
 	</div>
 	<div class="mb-4">
-		<label for="otp" class="required text-black font-md mb-2">Enter OTP</label>
+		<label for="otp" class="required content-3 text-primary mb-2">Enter OTP</label>
 		<div class="input-group mb-3">
-			<input type="text" class="form-control border-0 bg-light" id="otp" name="otp" placeholder="Enter your OTP">
+			<input type="text" class="form-control form-control-lg border-0 bg-light" id="otp" name="otp" placeholder="Enter your OTP">
+			<span id="resendOtp" class="content-3 text-secondary"></span>
 		</div> 
-		<span id="resendOtp"></span>
 	</div>
 	<div class="text-center">
-		<button type="submit" class="btn btn-primary w-100">Verify OTP</button>
+		<button type="submit" class="btn btn-lg btn-primary w-100">Verify OTP</button>
 	</div>
 </form>
 

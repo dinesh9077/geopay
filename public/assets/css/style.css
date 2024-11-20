@@ -1,8 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
 @import url("variables.css");
 @import url("auth.css");
 @import url("responsive-fonts.css");
 @import url("common-fonts.css");
+@import url("select2-custom-style.css");
 
 *,
 ::after,
@@ -17,6 +17,10 @@ body {
   overflow-y: auto;
   margin: 0;
   background: #fafafa;
+}
+
+.bg-light{
+  background-color: #F5F7FA !important;
 }
 
 a {
@@ -71,6 +75,15 @@ h4 {
   color: #fff;
   background-color: #50a5f1;
   border-color: transparent;
+}
+
+.form-check-input:checked {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.slick-slide {
+  height: auto;
 }
 
 .aspect-sq{
@@ -219,6 +232,7 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
   border: 1px solid var(--gray-color)
 }
 .register-form-container .nav-pills .nav-link.active,.register-form-container .nav-pills .show>.nav-link{
+  color: var(--white);
   background-color: var(--primary-color);
   border: 1px solid var(--primary-color)
 }
@@ -413,6 +427,14 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
   border: none;
 }
 
+.text-soft-white{ color: #ffffff8c; }
+
+.spinner-border{
+    height: 18px;
+    width: 18px;
+    font-size: 10px;
+}
+
 .btn-grey{ background: #acbacf45; }
 .btn-grey:hover{ background: #acbacf86; }
 
@@ -476,11 +498,11 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
 /* Footer CSS End*/
 
 /* Modal CSS Start */
-.modal .form-control:focus {
+.form-control:focus {
   box-shadow:none !important;
   border-color: var(--secondary-color) !important;
 }
-.modal .form-control::placeholder {
+.form-control::placeholder {
   color: #99999985 !important;
 }
 .modal .form-control {
@@ -501,6 +523,29 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
 .international-airtime-section .nav-link {
   color: var(--light-gray);
   font-weight: 600;
+}
+
+.plan-tabs .plan{
+  max-width: 175px;
+  min-width: 175px;
+  min-height: 100px;
+  flex: 1;
+}
+
+.plan-tabs .nav-link:focus-visible {
+  outline: 0;
+  box-shadow: none;
+}
+
+.plan-tabs .plan .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Align card content evenly */
+}
+
+.plan-container{
+  display: flex;
+  scrollbar-width: thin;
 }
 /* International Airtime CSS End */
 

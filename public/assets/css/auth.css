@@ -33,6 +33,11 @@
     margin-right: -10px; /* Controls overlap of avatars */
 }
 
+.form-check-input {
+    --bs-form-check-bg: #F5F7FA;
+    border: var(--bs-border-width) solid #ababab;
+}
+
 .avatar-sm {
     width: 40px; /* Avatar size */
     height: 40px;
@@ -57,13 +62,34 @@ p {
 }
 
 .avatar-group-item img {
-    width: 3rem;
-    height: 3rem;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    border: 2px solid white;
+    border: 3px solid white;
     transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1),
-        background-color 0.5s ease, color 0.5s ease;
 }
+
+.social-icon{
+    width: 55px;
+    height: 55px;
+}
+
+@media (min-width: 1199px) and (max-width: 1499px) {
+    .avatar-group-item img {
+        width: 45px;
+        height: 45px;
+        border: 2px solid white;
+    } 
+    .avatar-md {
+        width: 45px;
+        height: 45px;
+    }
+    .social-icon{
+        width: 40px;
+        height: 40px;
+    }
+}
+
 
 /* Hover effect */
 .avatar-group-item:hover {
@@ -143,6 +169,10 @@ p {
 .avatar-sm {
     width: 40px;
     height: 40px;
+}
+.avatar-md {
+    width: 50px;
+    height: 50px;
 }
 .font-text-13 {
     font-size: 13px;
