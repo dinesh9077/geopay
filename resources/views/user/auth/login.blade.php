@@ -112,7 +112,7 @@
 				</div>
 			</div>
 		</div>
-	</body> 
+	</body>  
 	<script src="https://kit.fontawesome.com/ae360af17e.js" ></script>
 	<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script>
 	<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
