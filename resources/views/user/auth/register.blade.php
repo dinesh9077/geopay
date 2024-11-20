@@ -8,46 +8,31 @@
 		<title>{{ config('setting.site_name') }} | Register</title>
 		<link rel="stylesheet" href="{{ asset('assets/css/animate.min.css') }}" /> 
 		<link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}">
-		<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
+		<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css" />
-		<style>
-			.select2-container .select2-selection--single .select2-selection__rendered {
-				display: flex;
-				align-items: center;
-			}
-			
-			.select2-container .select2-selection--single .select2-selection__rendered img {
-				margin-right: 8px;
-			} 
-			
-			.select2-container .select2-selection--single {
-				height: 35px !important;
-			}
-			.select2-container--default .select2-selection--single .select2-selection__rendered { 
-				line-height: 35px !important;
-			} 
- 
-		</style>
 	</head> 
 	<body>
 		<div class="container-fluid">
 			<div class="row min-vh-100">
 				<!-- Left Section -->
-				<div class="col-lg-7 d-none d-lg-flex align-items-end justify-content-start text-white auth-left-image-banner">
-					<div class="content-wrapper m-4">
-						<div class="mb-4">
-							<img class="mb-4" src="{{ asset('assets/image/icons/spark-icon.svg') }}" alt="">
-							<h2 class="mb-4">Very Good Works are waiting for you. Login now.</h2>
-							<p class="font-sm">Access your account to explore exclusive features, personalized content, and stay up-to-date with the latest updates.</p>
+				<div class="col-lg-6 col-xxl-7 d-none d-lg-flex align-items-end justify-content-start text-white auth-left-image-banner">
+					<div class="content-wrapper m-3 m-xxl-5">
+						<div class="d-flex justify-content-center py-5">
+							<img class="mb-xxl-4" src="{{ asset('assets/image/logo-white.png') }}" alt="" style="max-width: 150px;">
 						</div>
-						<div class="d-flex align-items-center">
+						<div class="mb-4 mb-xxl-5 me-xxl-5 pe-xxl-5">
+							<img class="mb-4" src="{{ asset('assets/image/icons/spark-icon.svg') }}" alt="">
+							<h2 class="mb-4 mb-xxl-5 heading-xxl font-radio-canada">Very Good Works are waiting for you. Login now.</h2>
+							<p class="content-2 text-soft-white">Access your account to explore exclusive features, personalized content, and stay up-to-date with the latest updates.</p>
+						</div>
+						<div class="d-flex align-items-center mb-4 mb-xxl-5">
 							<div class="avatar-group me-3">
-								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-1.jpg') }}" class="rounded-circle avatar-sm" alt="Avatar 1"></div>
-								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-2.jpg') }}" class="rounded-circle avatar-sm" alt="Avatar 2"></div>
-								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-3.jpg') }}" class="rounded-circle avatar-sm" alt="Avatar 3"></div>
-								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-4.jpg') }}" class="rounded-circle avatar-sm" alt="Avatar 4"></div>
+								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-1.jpg') }}" class="rounded-circle" alt="Avatar 1"></div>
+								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-2.jpg') }}" class="rounded-circle" alt="Avatar 2"></div>
+								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-3.jpg') }}" class="rounded-circle" alt="Avatar 3"></div>
+								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-4.jpg') }}" class="rounded-circle" alt="Avatar 4"></div>
 							</div>
 							<div class="d-flex flex-column ms-2">
 								<div class="d-flex gap-2 mb-1">
@@ -57,20 +42,32 @@
 									<i class="bi bi-star-fill text-warning"></i>
 									<i class="bi bi-star-fill text-warning"></i>
 								</div>
-								<span class="text-sm">From 200+ reviews</span>
+								<span class="content-1">From 200+ reviews</span>
 							</div>
+						</div>
+						<h1 class="heading-4 mb-2">Follow Us</h1>
+						<div class="d-flex align-items-center mb-3 gap-3">
+							<button class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
+								<img src="{{ asset('assets/image/icons/facebook.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
+							</button>
+							<button class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
+								<img src="{{ asset('assets/image/icons/google.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
+							</button>
+							<button class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
+								<img src="{{ asset('assets/image/icons/linkedin.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
+							</button>
 						</div>
 					</div>
 				</div>
 				
 				<!-- Right Form Section -->
-				<div class="col-lg-5 d-flex align-items-center justify-content-center position-relative bg-white z-1">
+				<div class="col-lg-6 col-xxl-5 d-flex align-items-center justify-content-center position-relative bg-white z-1">
 					<div id="container" class="container d-flex align-items-center justify-content-center py-4">
-						<div class="bg_overlay_3"></div>
-						<div class="bg_overlay_4"></div>
-						<div class="w-100 px-4 register-form-container z-2">
-							<h6 class="fw-semibold text-black text-center mb-4">Register</h6>
-							<ul class="nav nav-pills my-3 d-flex flex-nowrap justify-content-center gap-2" id="pills-tab" role="tablist">
+						<!-- <div class="bg_overlay_3"></div>
+						<div class="bg_overlay_4"></div> -->
+						<div class="w-100 px-md-4 register-form-container z-2">
+							<h6 class="heading-xl fw-medium text-primary text-center mb-4 mb-md-5">Register</h6>
+							<ul class="nav nav-pills my-3 d-flex justify-content-center gap-2" id="pills-tab" role="tablist">
 								<li class="nav-item" role="presentation">
 									<button class="nav-link px-5 active" id="register-individual-tab" data-bs-toggle="pill"
                                     data-bs-target="#register-individual" type="button" role="tab" aria-controls="register-individual"
@@ -89,67 +86,81 @@
 									<form id="individualRegisterForm" action="{{ route('register.individual') }}" method="post">
 										<div class="row">
 											<div class="col-md-6 mb-3">
-												<label for="first_name" class="required font-md">First Name <span class="text-danger">*</span></label>
-												<input id="first_name" name="first_name" type="text" class="form-control bg-light border-light"/>
+												<label for="first_name" class="required content-3 text-primary">First Name <span class="text-danger">*</span></label>
+												<input id="first_name" name="first_name" type="text" class="form-control form-control-lg bg-light border-light"/>
 											</div>
 											<div class="col-md-6 mb-3">
-												<label for="last_name" class="required font-md">Last Name <span class="text-danger">*</span></label>
-												<input id="last_name" name="last_name" type="text" class="form-control bg-light border-light"/> 
+												<label for="last_name" class="required content-3 text-primary">Last Name <span class="text-danger">*</span></label>
+												<input id="last_name" name="last_name" type="text" class="form-control form-control-lg bg-light border-light"/> 
 											</div>
 										</div>
 										
 										<div class="row">
 											<div class="col-md-6 mb-3">
-												<label for="email" class="required font-md">Email <span class="text-danger">*</span></label>
+												<label for="email" class="required content-3 text-primary">Email <span class="text-danger">*</span></label>
 												<div class="input-group">
-													<input id="email" name="email" type="email" class="form-control bg-light border-light" autocomplete="off"/>
-													<input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control bg-light border-light" value="0" >
-													<button type="button" class="input-group-text bg-light border-2 verify-text" id="emailVerifyText" onclick="verifyOtp('email', event, 'individualRegisterForm')">Verify</button>
+													<input id="email" name="email" type="email" class="form-control form-control-lg bg-light border-light" autocomplete="off"/>
+													<input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control form-control-lg bg-light border-light" value="0" >
+													<button type="button" class="input-group-text border-0 btn-secondary text-white content-4" id="emailVerifyText" onclick="verifyOtp('email', event, 'individualRegisterForm')">
+														<span class="before-verify">Verify</span>
+														<div class="spinner-border text-light during-verify" role="status" style="display: none;"></div>
+														<div class="after-verified" style="display: none;">
+															<i class="bi bi-check-lg text-success me-1 content-2"></i>
+															<span class="text-success">Verified</span>
+														</div>
+													</button>
 												</div> 
 											</div>
 											
 											<div class="col-md-6 mb-3">
-												<label for="password" class="required font-md">Password <span class="text-danger">*</span></label>
-												<input id="password" name="password" type="password" autocomplete="off" class="form-control bg-light border-light" /> 
+												<label for="password" class="required content-3 text-primary">Password <span class="text-danger">*</span></label>
+												<input id="password" name="password" type="password" autocomplete="off" class="form-control form-control-lg bg-light border-light" /> 
 											</div> 
 										</div>
 										<div class="row">
 											
 											<div class="col-md-6 mb-3">
-												<label for="confirmPassword" class="required font-md">Confirm Password <span class="text-danger">*</span></label>
+												<label for="confirmPassword" class="required content-3 text-primary">Confirm Password <span class="text-danger">*</span></label>
 												<input id="password_confirmation" name="password_confirmation" type="password"
-                                                class="form-control bg-light border-light" /> 
+                                                class="form-control form-control-lg bg-light border-light" /> 
 											</div>
 											<div class="col-md-6 mb-3">
-												<label for="country" class="required font-md">Country <span class="text-danger">*</span></label>
-												<select id="country_id" name="country_id" class="form-control bg-light border-light"> 
+												<label for="country" class="required content-3 text-primary">Country <span class="text-danger">*</span></label>
+												<select id="country_id" name="country_id" class="form-control form-control-lg bg-light border-light"> 
 												</select>
 											</div>
 										</div>
 										
 										<div class="row">
 											<div class="col-md-6 mb-3">
-												<label for="mobile_number" class="required font-md">Mobile Number (Without country code) <span class="text-danger">*</span></label>
+												<label for="mobile_number" class="required content-3 text-primary">Mobile Number (Without country code) <span class="text-danger">*</span></label>
 												<div class="input-group">
-													<input id="mobile_number" name="mobile_number" type="text" class="form-control bg-light border-light" autocomplete="off"/>
-													<input id="is_mobile_verify" name="is_mobile_verify" type="hidden" class="form-control bg-light border-light" value="0" >
-													<button type="button" class="input-group-text bg-light border-2 verify-text" id="mobileVerifyText" onclick="verifyOtp('mobile_number', event, 'individualRegisterForm')">Verify</button>
-												</div>  
+													<input id="mobile_number" name="mobile_number" type="text" class="form-control form-control-lg bg-light border-light" autocomplete="off"/>
+													<input id="is_mobile_verify" name="is_mobile_verify" type="hidden" class="form-control form-control-lg bg-light border-light" value="0" >
+													<button type="button" class="input-group-text border-0 btn-secondary text-white content-4" id="mobile_numberVerifyText" onclick="verifyOtp('mobile_number', event, 'individualRegisterForm')">
+														<span class="before-verify">Verify</span>
+														<div class="spinner-border text-light during-verify" role="status" style="display: none;"></div>
+														<div class="after-verified" style="display: none;">
+															<i class="bi bi-check-lg text-success me-1 content-2"></i>
+															<span class="text-success">Verified</span>
+														</div>
+													</button>
+												</div>
 											</div>
 											
 											<div class="col-md-6 mb-3">
-												<label for="referalcode" class="required font-md">Promo Code</label>
-												<input id="referalcode" name="referalcode" type="text" class="form-control bg-light border-light"/> 
+												<label for="referalcode" class="required content-3 text-primary">Promo Code</label>
+												<input id="referalcode" name="referalcode" type="text" class="form-control form-control-lg bg-light border-light"/> 
 											</div> 
 										</div> 
 										<div class="mb-3">
 											<div class="d-flex">
-												<input type="checkbox" id="terms" name="terms" class="me-2 font-md" value="1" />
-												<label for="terms" class="d-flex text-secondary font-md"> I have read the User agreement and I accept it</label>
+												<input type="checkbox" id="terms" name="terms" class="me-2 content-3" value="1" />
+												<label for="terms" class="d-flex text-secondary content-3"> I have read the User agreement and I accept it</label>
 											</div> 
 										</div> 
 										<div class="text-center">
-											<button type="submit" class="btn btn-primary w-100 font-md">Register</button>
+											<button type="submit" class="btn btn-lg btn-primary w-100 font-md">Register</button>
 										</div>
 									</form>
 								</div>
@@ -157,68 +168,89 @@
 									<form class="mt-4" id="companyRegisterForm" action="{{ route('register.company') }}" method="post">
 										<div class="row">
 											<div class="col-md-6 mb-3">
-												<label for="first_name" class="required font-md">First Name <span class="text-danger">*</span></label>
-												<input id="first_name" name="first_name" type="text" class="form-control bg-light border-light"/>
+												<label for="first_name" class="required content-3 text-primary">First Name <span class="text-danger">*</span></label>
+												<input id="first_name" name="first_name" type="text" class="form-control form-control-lg bg-light border-light"/>
 											</div>
 											<div class="col-md-6 mb-3">
-												<label for="last_name" class="required font-md">Last Name <span class="text-danger">*</span></label>
-												<input id="last_name" name="last_name" type="text" class="form-control bg-light border-light"/> 
+												<label for="last_name" class="required content-3 text-primary">Last Name <span class="text-danger">*</span></label>
+												<input id="last_name" name="last_name" type="text" class="form-control form-control-lg bg-light border-light"/> 
 											</div>
 										</div>
 									
 										<div class="row">
 											<div class="col-md-6 mb-3">
-												<label for="email" class="required font-md">Email <span class="text-danger">*</span></label>
+												<label for="email" class="required content-3 text-primary">Email <span class="text-danger">*</span></label>
 												<div class="input-group">
-													<input id="email" name="email" type="email" class="form-control bg-light border-light" autocomplete="off"/>
-													<input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control bg-light border-light" value="0" >
-													<button type="button" class="input-group-text bg-light border-2 verify-text" id="emailVerifyText" onclick="verifyOtp('email', event, 'companyRegisterForm')">Verify</button>
+													<input id="email" name="email" type="email" class="form-control form-control-lg bg-light border-light" autocomplete="off"/>
+													<input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control form-control-lg bg-light border-light" value="0" >
+													<button type="button" class="input-group-text border-0 btn-secondary text-white content-4" id="emailVerifyText" onclick="verifyOtp('email', event, 'companyRegisterForm')">
+														<span class="before-verify">Verify</span>
+														<div class="spinner-border text-light during-verify" role="status" style="display: none;"></div>
+														<div class="after-verified" style="display: none;">
+															<i class="bi bi-check-lg text-success me-1 content-2"></i>
+															<span class="text-success">Verified</span>
+														</div>
+													</button>
 												</div> 
 											</div>
 											
 											<div class="col-md-6 mb-3">
-												<label for="company_name" class="required font-md">Company Name <span class="text-danger">*</span></label>
-												<input id="company_name" name="company_name" type="text" class="form-control bg-light border-light"/> 
+												<label for="company_name" class="required content-3 text-primary">Company Name <span class="text-danger">*</span></label>
+												<input id="company_name" name="company_name" type="text" class="form-control form-control-lg bg-light border-light"/> 
 											</div>  
 										</div>
 										<div class="row">
 											<div class="col-md-6 mb-3">
-												<label for="password" class="required font-md">Password <span class="text-danger">*</span></label>
-												<input id="password" name="password" type="password" autocomplete="off" class="form-control bg-light border-light" /> 
+												<label for="password" class="required content-3 text-primary">Password <span class="text-danger">*</span></label>
+												<input id="password" name="password" type="password" autocomplete="off" class="form-control form-control-lg bg-light border-light" /> 
 											</div> 
 											<div class="col-md-6 mb-3">
-												<label for="confirmPassword" class="required font-md">Confirm Password <span class="text-danger">*</span></label>
+												<label for="confirmPassword" class="required content-3 text-primary">Confirm Password <span class="text-danger">*</span></label>
 												<input id="password_confirmation" name="password_confirmation" type="password"
-												class="form-control bg-light border-light" /> 
+												class="form-control form-control-lg bg-light border-light" /> 
 											</div> 
 										</div>
 										
 										<div class="row">
 											<div class="col-md-6 mb-3">
-												<label for="country" class="required font-md">Country <span class="text-danger">*</span></label>
-												<select id="country_id1" name="country_id" class="form-control bg-light border-light"> 
+												<label for="country" class="required content-3 text-primary">Country <span class="text-danger">*</span></label>
+												<select id="country_id1" name="country_id" class="form-control form-control-lg bg-light border-light"> 
 												</select>
 											</div>
 											<div class="col-md-6 mb-3">
-												<label for="mobile_number" class="required font-md">Mobile Number (Without country code)  <span class="text-danger">*</span></label>
+												<label for="mobile_number" class="required content-3 text-primary">Mobile Number (Without country code) <span class="text-danger">*</span></label>
 												<div class="input-group">
-													<input id="mobile_number" name="mobile_number" type="text" class="form-control bg-light border-light" autocomplete="off"/>
-													<input id="is_mobile_verify" name="is_mobile_verify" type="hidden" class="form-control bg-light border-light" value="0" >
-													<button type="button" class="input-group-text bg-light border-2 verify-text" id="mobileVerifyText" onclick="verifyOtp('mobile_number', event, 'companyRegisterForm')">Verify</button>
-												</div>  
-											</div> 
+													<input id="mobile_number" name="mobile_number" type="text" class="form-control form-control-lg bg-light border-light" autocomplete="off"/>
+													<input id="is_mobile_verify" name="is_mobile_verify" type="hidden" class="form-control form-control-lg bg-light border-light" value="0" >
+													<button type="button" class="input-group-text border-0 btn-secondary text-white content-4" id="mobile_numberVerifyText" onclick="verifyOtp('mobile_number', event, 'companyRegisterForm')">
+														<span class="before-verify">Verify</span>
+														<div class="spinner-border text-light during-verify" role="status" style="display: none;"></div>
+														<div class="after-verified" style="display: none;">
+															<i class="bi bi-check-lg text-success me-1 content-2"></i>
+															<span class="text-success">Verified</span>
+														</div>
+													</button>
+												</div>
+											</div>
 										</div> 
 										<div class="mb-3">
 											<div class="d-flex">
-												<input type="checkbox" id="terms" name="terms" class="me-2 font-md" value="1"/>
-												<label for="terms" class="d-flex text-secondary font-md"> I have read the User agreement and I accept it</label>
+												<input type="checkbox" id="terms" name="terms" class="me-2 content-3" value="1"/>
+												<label for="terms" class="d-flex text-secondary content-3"> I have read the User agreement and I accept it</label>
 											</div> 
 										</div> 
 										<div class="text-center">
-											<button type="submit" class="btn btn-primary w-100 font-md">Register</button>
+											<button type="submit" class="btn btn-lg btn-primary w-100 font-md">Register</button>
 										</div> 
 									</form>
 								</div>
+								<div class="d-flex align-items-center justify-content-center my-3">
+									<hr class="flex-grow-1 hr-line text-secondary">
+									<label class="d-flex text-center justify-content-end content-3 text-muted mx-2">Already have an account?</label>
+									
+									<hr class="flex-grow-1 hr-line text-secondary">
+								</div>
+								<a href="{{ route('login') }}" class="btn btn-lg btn-secondary w-100 mb-4">Login</a>
 							</div>
 						</div>
 					</div>
@@ -231,24 +263,24 @@
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="d-flex justify-content-center align-items-center">
-						<img src="{{ asset('assets/favicon.png') }}" width="50" class="modal-logo p-1">
+						<img src="{{ url('storage/setting', config('setting.fevicon_icon')) }}" width="80" class="modal-logo p-1">
 					</div>
 					 <!-- Modal Header -->
 					<div class="text-end m-2">
-						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+						<button type="button" class="content-4 btn-close" data-bs-dismiss="modal"></button>
 					</div>
-					<div class="modal-body p-4">
+					<div class="modal-body p-4 pt-0">
 						<form id="verifyOtpEmailForm" action="{{ route('verify.email-otp') }}" method="post">
-							<b class="text-center d-block mb-4">Verify The Email Otp</b>
-							<div class="mb-4"> 
-								<input type="text" class="form-control" id="email" name="email" placeholder="Enter Email">
+							<b class="text-center d-block mb-4 heading-3 fw-medium">Verify Email Otp</b>
+							<div class="mb-3"> 
+								<input type="text" class="form-control form-control-lg bg-light border-light" id="email" name="email" placeholder="Enter Email">
 							</div>
-							<div class="mb-4"> 
-								<input type="text" class="form-control" id="otp" name="otp" placeholder="Enter OTP">
+							<div class="mb-3"> 
+								<input type="text" class="form-control form-control-lg bg-light border-light" id="otp" name="otp" placeholder="Enter OTP">
+								<span id="resendemailotp" class="content-3 text-secondary"></span>
 							</div>
-							<span id="resendemailotp"></span>
 							<div class="text-center">
-								<button type="submit" class="btn btn-primary w-100">Verify Otp</button>
+								<button type="submit" class="btn btn-lg btn-primary w-100">Verify Otp</button>
 							</div>
 						</form>
 					</div>                                                    
@@ -260,24 +292,24 @@
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="d-flex justify-content-center align-items-center">
-						<img src="{{ asset('assets/favicon.png') }}" width="50" class="modal-logo p-1">
+						<img src="{{ url('storage/setting', config('setting.fevicon_icon')) }}" width="80" class="modal-logo p-1">
 					</div>
 					 <!-- Modal Header -->
 					<div class="text-end m-2">
-						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+						<button type="button" class="content-4 btn-close" data-bs-dismiss="modal"></button>
 					</div>
-					<div class="modal-body p-4">
+					<div class="modal-body p-4 pt-0">
 						<form id="verifyOtpMobileForm" action="{{ route('verify.mobile-otp') }}" method="post">
-							<b class="text-center d-block mb-4">Verify The Mobile Otp</b>
+							<b class="text-center d-block mb-4 heading-3 fw-medium">Verify Mobile Otp</b>
 							<div class="mb-4"> 
-								<input type="text" class="form-control" id="mobile_number" name="mobile_number" placeholder="Enter Mobile">
+								<input type="text" class="form-control form-control-lg bg-light border-light" id="mobile_number" name="mobile_number" placeholder="Enter Mobile">
 							</div>
 							<div class="mb-4"> 
-								<input type="text" class="form-control" id="otp" name="otp" placeholder="Enter OTP">
+								<input type="text" class="form-control form-control-lg bg-light border-light" id="otp" name="otp" placeholder="Enter OTP">
+								<span id="resendmobile_numberotp" class="content-3 text-secondary"></span>
 							</div>
-							<span id="resendmobile_numberotp"></span>
 							<div class="text-center">
-								<button type="submit" class="btn btn-primary w-100">Verify Otp</button>
+								<button type="submit" class="btn btn-lg btn-primary w-100">Verify Otp</button>
 							</div>
 						</form>
 					</div>                                                    
@@ -393,10 +425,10 @@
 							$.each(res.errors, function(key, value) {
 								var inputField = $individualForm.find('#' + key);
 								var errorSpan = $('<span>')
-								.addClass('error_msg text-danger') 
+								.addClass('error_msg text-danger content-4') 
 								.attr('id', key + 'Error')
 								.text(value[0]);  
-								if(key == "email" || key == "terms")
+								if(key == "email" || key == "mobile_number" || key == "terms")
 								{
 									inputField.parent().parent().append(errorSpan);
 								}
@@ -458,10 +490,10 @@
 							$.each(res.errors, function(key, value) {
 								var inputField = $companyForm.find('#' + key);
 								var errorSpan = $('<span>')
-								.addClass('error_msg text-danger') 
+								.addClass('error_msg text-danger content-4') 
 								.attr('id', key + 'Error')
 								.text(value[0]);  
-								if(key == "email" || key == "terms")
+								if(key == "email" || key == "mobile_number" || key == "terms")
 								{
 									inputField.parent().parent().append(errorSpan);
 								}
@@ -482,7 +514,8 @@
 			 
 			$('#verifyOtpEmailForm, #verifyOtpMobileForm').submit(function(event) {
 				event.preventDefault();
-
+				
+				 
 				const $form = $(this); // Cache the current form being submitted
 				$form.find('button').prop('disabled', true); // Disable submit button
 
@@ -517,11 +550,23 @@
 								if($('#register-individual-tab').hasClass('active')) {
 									$individualForm.find('#is_email_verify').val(1);
 									$individualForm.find('#email').attr('readonly', true);
-									$individualForm.find('#emailVerifyText').addClass('text-success').text('verified').attr('disabled', true);
+									$individualForm.find('#emailVerifyText').removeClass('btn-secondary').addClass('btn-light').attr('disabled', true);
+
+									var $button = $individualForm.find("#emailVerifyText"); 
+									// Hide "Verify" text and show spinner
+									$button.find(".before-verify").hide();
+									$button.find(".during-verify").hide();
+									$button.find(".after-verified").show();
+
 								} else {
 									$companyForm.find('#is_email_verify').val(1);
 									$companyForm.find('#email').attr('readonly', true);
-									$companyForm.find('#emailVerifyText').addClass('text-success').text('verified').attr('disabled', true);
+									$companyForm.find('#emailVerifyText').removeClass('btn-secondary').addClass('btn-light').attr('disabled', true);
+									var $button = $companyForm.find("#emailVerifyText"); 
+									// Hide "Verify" text and show spinner
+									$button.find(".before-verify").hide();
+									$button.find(".during-verify").hide();
+									$button.find(".after-verified").show();
 								}
  
 								$form.find('input').val('');
@@ -532,11 +577,23 @@
 								if($('#register-individual-tab').hasClass('active')) {
 									$individualForm.find('#is_mobile_verify').val(1);
 									$individualForm.find('#mobile_number').attr('readonly', true);
-									$individualForm.find('#mobileVerifyText').addClass('text-success').text('verified').attr('disabled', true);
+									$individualForm.find('#mobile_numberVerifyText').removeClass('btn-secondary').addClass('btn-light').attr('disabled', true);
+									var $button = $individualForm.find("#mobile_numberVerifyText"); 
+									// Hide "Verify" text and show spinner
+									$button.find(".before-verify").hide();
+									$button.find(".during-verify").hide();
+									$button.find(".after-verified").show();
+
 								} else {
 									$companyForm.find('#is_mobile_verify').val(1);
 									$companyForm.find('#mobile_number').attr('readonly', true);
-									$companyForm.find('#mobileVerifyText').addClass('text-success').text('verified').attr('disabled', true);
+									$companyForm.find('#mobile_numberVerifyText').removeClass('btn-secondary').addClass('btn-light').attr('disabled', true);
+
+									var $button = $companyForm.find("#mobile_numberVerifyText"); 
+									// Hide "Verify" text and show spinner
+									$button.find(".before-verify").hide();
+									$button.find(".during-verify").hide();
+									$button.find(".after-verified").show();
 								} 
 								
 								$form.find('input').val('');
@@ -546,7 +603,7 @@
 							$.each(res.errors, function(key, value) {
 								const inputField = $form.find('#' + key);
 								const errorSpan = $('<span>')
-									.addClass('error_msg text-danger')
+									.addClass('error_msg text-danger content-4')
 									.attr('id', key + 'Error')
 									.text(value[0]);
 								inputField.parent().append(errorSpan);
@@ -561,7 +618,13 @@
 			function verifyOtp(keyId, event, formId)
 			{
 				event.preventDefault();   
-				 
+				
+				var $button = $('#'+ formId).find("#"+ keyId + "VerifyText");
+
+				// Hide "Verify" text and show spinner
+				$button.find(".before-verify").hide();
+				$button.find(".during-verify").show();
+
 				// Create a JSON object from form data
 				var formData = {};
 				var inputName = $('#'+ formId).find('#'+ keyId).attr('name');
@@ -590,6 +653,10 @@
 					dataType: 'Json', 
 					success: function (res) 
 					{   
+						// Hide "Verify" text and show spinner
+						$button.find(".before-verify").show();
+						$button.find(".during-verify").hide();
+
 						$('.error_msg').remove(); 
 						if(res.status === "success")
 						{ 
@@ -625,7 +692,7 @@
 							$.each(res.errors, function(key, value) {
 								var inputField = $('#'+ formId).find('input[name="'+key+'"]');
 								var errorSpan = $('<span>')
-								.addClass('error_msg text-danger') 
+								.addClass('error_msg text-danger content-4') 
 								.attr('id', key + 'Error')
 								.text(value[0]);  
 								inputField.parent().parent().append(errorSpan); 
@@ -676,7 +743,7 @@
 							$.each(res.errors, function(key, value) {
 								const inputField = commonForm.find('#' + key);
 								const errorSpan = $('<span>')
-									.addClass('error_msg text-danger')
+									.addClass('error_msg text-danger content-4')
 									.attr('id', key + 'Error')
 									.text(value[0]);
 								inputField.parent().parent().append(errorSpan);
@@ -696,7 +763,7 @@
 					countdown--;
 				} else {
 					// Enable the resend link once countdown reaches zero
-					timerElement.innerHTML = '<a href="javascript:;" id="resendLink">Resend OTP</a>';
+					timerElement.innerHTML = '<a href="javascript:;" id="resendLink" class="content-3 text-secondary">Resend OTP</a>';
 
 					// Attach event listener to trigger OTP resend functionality
 					document.getElementById('resendLink').addEventListener('click', function(event) {

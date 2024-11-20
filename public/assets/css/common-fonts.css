@@ -1,3 +1,44 @@
+/* Poppins Regular */
+@font-face {
+    font-family: "Poppins";
+    src: url("../fonts/Poppins/Poppins-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* Poppins Bold */
+@font-face {
+    font-family: "Poppins";
+    src: url("../fonts/Poppins/Poppins-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* Radio Canada Regular */
+@font-face {
+    font-family: "Radio Canada";
+    src: url("../fonts/Radio_Canada/static/RadioCanada-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* Radio Canada Bold */
+@font-face {
+    font-family: "Radio Canada";
+    src: url("../fonts/Radio_Canada/static/RadioCanada-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+}
+  
+
+
+
+
+
+.font-radio-canada { font-family: 'Radio Canada', sans-serif; }
+
+.heading-xxl { font-size: var(--font-size-xxl); margin-bottom: 0px; font-weight: 600; }
+.heading-xl { font-size: var(--font-size-xl); margin-bottom: 0px; font-weight: 600; }
 .heading-1 { font-size: var(--font-size-h1); margin-bottom: 0px; font-weight: 600; }
 .heading-2 { font-size: var(--font-size-h2); margin-bottom: 0px; font-weight: 600; }
 .heading-3 { font-size: var(--font-size-h3); margin-bottom: 0px; font-weight: 600; }
@@ -8,3 +49,4 @@
 .content-1 { font-size: var(--font-size-content-1); margin-bottom: 0px; }
 .content-2 { font-size: var(--font-size-content-2); margin-bottom: 0px; }
 .content-3 { font-size: var(--font-size-content-3); margin-bottom: 0px; }
+.content-4 { font-size: var(--font-size-content-4); margin-bottom: 0px; }

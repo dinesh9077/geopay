@@ -18,18 +18,21 @@
 			<div class="row h-100">
 				<!-- Left Section -->
 				<div class="col-lg-7 d-none d-lg-flex align-items-end justify-content-start text-white auth-left-image-banner">
-					<div class="content-wrapper m-4">
-						<div class="mb-4">
-							<img class="mb-4" src="{{ asset('assets/image/icons/spark-icon.svg') }}" alt="">
-							<h2 class="mb-4">Very Good Works are waiting for you. Login now.</h2>
-							<p class="font-sm">Access your account to explore exclusive features, personalized content, and stay up-to-date with the latest updates.</p>
+					<div class="content-wrapper m-3 m-xxl-5">
+						<div class="d-flex justify-content-center py-5">
+							<img class="mb-xxl-4" src="{{ asset('assets/image/logo-white.png') }}" alt="" style="max-width: 150px;">
 						</div>
-						<div class="d-flex align-items-center">
+						<div class="mb-4 mb-xxl-5 me-xxl-5 pe-xxl-5">
+							<img class="mb-4" src="{{ asset('assets/image/icons/spark-icon.svg') }}" alt="">
+							<h2 class="mb-4 mb-xxl-5 heading-xxl font-radio-canada">Very Good Works are waiting for you. Login now.</h2>
+							<p class="content-2 text-soft-white">Access your account to explore exclusive features, personalized content, and stay up-to-date with the latest updates.</p>
+						</div>
+						<div class="d-flex align-items-center mb-4 mb-xxl-5">
 							<div class="avatar-group me-3">
-								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-1.jpg') }}" class="rounded-circle avatar-sm" alt="Avatar 1"></div>
-								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-2.jpg') }}" class="rounded-circle avatar-sm" alt="Avatar 2"></div>
-								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-3.jpg') }}" class="rounded-circle avatar-sm" alt="Avatar 3"></div>
-								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-4.jpg') }}" class="rounded-circle avatar-sm" alt="Avatar 4"></div>
+								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-1.jpg') }}" class="rounded-circle" alt="Avatar 1"></div>
+								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-2.jpg') }}" class="rounded-circle" alt="Avatar 2"></div>
+								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-3.jpg') }}" class="rounded-circle" alt="Avatar 3"></div>
+								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-4.jpg') }}" class="rounded-circle" alt="Avatar 4"></div>
 							</div>
 							<div class="d-flex flex-column ms-2">
 								<div class="d-flex gap-2 mb-1">
@@ -39,8 +42,20 @@
 									<i class="bi bi-star-fill text-warning"></i>
 									<i class="bi bi-star-fill text-warning"></i>
 								</div>
-								<span class="text-sm">From 200+ reviews</span>
+								<span class="content-1">From 200+ reviews</span>
 							</div>
+						</div>
+						<h1 class="heading-4 mb-2">Follow Us</h1>
+						<div class="d-flex align-items-center mb-3 gap-3">
+							<button class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
+								<img src="{{ asset('assets/image/icons/facebook.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
+							</button>
+							<button class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
+								<img src="{{ asset('assets/image/icons/google.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
+							</button>
+							<button class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
+								<img src="{{ asset('assets/image/icons/linkedin.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
+							</button>
 						</div>
 					</div>
 				</div>
@@ -48,64 +63,48 @@
 				<!-- Right Section -->
 				<div class="col-lg-5 position-relative bg-white z-1">
 					<div id="container" class="container d-flex vh-100 align-items-center justify-content-center">
-						<div class="bg_overlay_3"></div>
-						<div class="bg_overlay_4"></div>
+						<!-- <div class="bg_overlay_3"></div>
+						<div class="bg_overlay_4"></div> -->
 						<div class="w-100 px-4 auth-container z-2">
-							<div class="alert alert-danger" role="alert" style="display: none;">Error message here</div>
-							<h6 class="fw-semibold text-black text-center mb-4">Sign in To Fintech</h6>
-							
-							<div class="d-flex justify-content-center mb-3 gap-3">
-								<button class="btn social-icon border-1 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0" style="width: 40px; height: 40px;">
-									<img src="{{ asset('assets/image/icons/facebook.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
-								</button>
-								<button class="btn social-icon border-1 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0" style="width: 40px; height: 40px;">
-									<img src="{{ asset('assets/image/icons/google.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
-								</button>
-								<button class="btn social-icon border-1 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0" style="width: 40px; height: 40px;">
-									<img src="{{ asset('assets/image/icons/linkedin.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
-								</button>
-							</div>
-							
-							<div class="text-center mb-3"> 
-								<label class="d-flex text-center justify-content-center text-secondary font-md mb-3">Or use your {{ __('Email Address') }} account</label>
-							</div>
-							
+							<h6 class="heading-xl fw-medium text-primary text-center mb-5">Sign in To {{ config('setting.site_name') }}</h6>							
 							<form id="loginForm" action="{{ route('login.submit') }}" method="post">
 								<div class="mb-3">
+									<label for="email" class="required content-3 text-primary">Email <span class="text-danger">*</span></label>
 									<div class="input-group">
-										<span class="input-group-text bg-light border-0"><i class="bi bi-envelope"></i></span>
-										<input id="email" type="email" name="email" class="form-control border-0 bg-light" placeholder="Email">
+										<span class="input-group-text bg-light border-0"><img class="in-svg" src="{{ asset('assets/image/icons/envelope-icon.svg') }}" height="17" alt=""></span>
+										<input id="email" type="email" name="email" class="form-control form-control-lg border-0 bg-light" placeholder="Email">
 									</div> 
 								</div>
 								
 								<div class="mb-3">
+									<label for="password" class="required content-3 text-primary">Password <span class="text-danger">*</span></label>
 									<div class="input-group">
-										<span class="input-group-text bg-light border-0"><i class="bi bi-lock-fill"></i></span>
-										<input id="password" type="password" name="password" class="form-control border-0 bg-light" placeholder="Password">
+										<span class="input-group-text bg-light border-0"><img class="in-svg" src="{{ asset('assets/image/icons/lock-icon.svg') }}" height="19" alt=""></span>
+										<input id="password" type="password" name="password" class="form-control form-control-lg border-0 bg-light" placeholder="Password">
 									</div> 
 								</div>
 							 
-								<div class="mb-3 d-flex justify-content-between"> 
-									<div class="form-check">
-										<input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+								<div class="mb-4 d-flex justify-content-between"> 
+									<div class="d-flex align-items-center">
+										<input class="form-check-input m-0 me-1" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
 
-										<label class="form-check-label" for="remember">
+										<label class="form-check-label content-3" for="remember">
 											{{ __('Remember Me') }}
 										</label>
 									</div>
-									<label class="d-flex text-center justify-content-end text-secondary font-md mb-3"> <a href="{{ route('password.request') }}" >Forgot your password?</a> </label>
+									<label class="d-flex text-center justify-content-end text-secondary font-md"> <a class="content-3 text-primary" href="{{ route('password.request') }}" >Forgot your password?</a> </label>
 								</div>
 								
 								<div class="text-center">
-									<button type="submit" class="btn btn-primary w-100">Login</button>
+									<button type="submit" class="btn btn-lg btn-primary w-100">Login</button>
 								</div>
 								<div class="d-flex align-items-center justify-content-center my-3">
 									<hr class="flex-grow-1 hr-line text-secondary">
-									<label class="d-flex text-center justify-content-end text-muted font-md mx-2">Or with sign up</label>
+									<label class="d-flex text-center justify-content-end content-3 text-muted mx-2">Don't have an account?</label>
 									
 									<hr class="flex-grow-1 hr-line text-secondary">
 								</div>
-								<a href="{{ route('register') }}" class="btn btn-secondary w-100">Sign up</a>
+								<a href="{{ route('register') }}" class="btn btn-lg btn-secondary w-100">Sign up</a>
 							</form>
 						</div>
 					</div>
@@ -155,7 +154,7 @@
 						$.each(res.errors, function(key, value) {
 							var inputField = $('#' + key);
 							var errorSpan = $('<span>')
-							.addClass('error_msg text-danger') 
+							.addClass('error_msg text-danger content-4') 
 							.attr('id', key + 'Error')
 							.text(value[0]);  
 							inputField.parent().parent().append(errorSpan);

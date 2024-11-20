@@ -18,18 +18,21 @@
 			<div class="row h-100">
 				<!-- Left Section -->
 				<div class="col-lg-7 d-none d-lg-flex align-items-end justify-content-start text-white auth-left-image-banner">
-					<div class="content-wrapper m-4">
-						<div class="mb-4">
-							<img class="mb-4" src="{{ asset('assets/image/icons/spark-icon.svg') }}" alt="">
-							<h2 class="mb-4">Very Good Works are waiting for you. Login now.</h2>
-							<p class="font-sm">Access your account to explore exclusive features, personalized content, and stay up-to-date with the latest updates.</p>
+					<div class="content-wrapper m-3 m-xxl-5">
+						<div class="d-flex justify-content-center py-5">
+							<img class="mb-xxl-4" src="{{ asset('assets/image/logo-white.png') }}" alt="" style="max-width: 150px;">
 						</div>
-						<div class="d-flex align-items-center">
+						<div class="mb-4 mb-xxl-5 me-xxl-5 pe-xxl-5">
+							<img class="mb-4" src="{{ asset('assets/image/icons/spark-icon.svg') }}" alt="">
+							<h2 class="mb-4 mb-xxl-5 heading-xxl font-radio-canada">Very Good Works are waiting for you. Login now.</h2>
+							<p class="content-2 text-soft-white">Access your account to explore exclusive features, personalized content, and stay up-to-date with the latest updates.</p>
+						</div>
+						<div class="d-flex align-items-center mb-4 mb-xxl-5">
 							<div class="avatar-group me-3">
-								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-1.jpg') }}" class="rounded-circle avatar-sm" alt="Avatar 1"></div>
-								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-2.jpg') }}" class="rounded-circle avatar-sm" alt="Avatar 2"></div>
-								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-3.jpg') }}" class="rounded-circle avatar-sm" alt="Avatar 3"></div>
-								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-4.jpg') }}" class="rounded-circle avatar-sm" alt="Avatar 4"></div>
+								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-1.jpg') }}" class="rounded-circle" alt="Avatar 1"></div>
+								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-2.jpg') }}" class="rounded-circle" alt="Avatar 2"></div>
+								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-3.jpg') }}" class="rounded-circle" alt="Avatar 3"></div>
+								<div class="avatar-group-item"><img src="{{ asset('assets/image/avatar-4.jpg') }}" class="rounded-circle" alt="Avatar 4"></div>
 							</div>
 							<div class="d-flex flex-column ms-2">
 								<div class="d-flex gap-2 mb-1">
@@ -39,8 +42,20 @@
 									<i class="bi bi-star-fill text-warning"></i>
 									<i class="bi bi-star-fill text-warning"></i>
 								</div>
-								<span class="text-sm">From 200+ reviews</span>
+								<span class="content-1">From 200+ reviews</span>
 							</div>
+						</div>
+						<h1 class="heading-4 mb-2">Follow Us</h1>
+						<div class="d-flex align-items-center mb-3 gap-3">
+							<button class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
+								<img src="{{ asset('assets/image/icons/facebook.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
+							</button>
+							<button class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
+								<img src="{{ asset('assets/image/icons/google.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
+							</button>
+							<button class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
+								<img src="{{ asset('assets/image/icons/linkedin.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
+							</button>
 						</div>
 					</div>
 				</div>
@@ -48,8 +63,8 @@
 				<!-- Right Section -->
 				<div class="col-lg-5 position-relative bg-white z-1">
 					<div id="container" class="container d-flex vh-100 align-items-center justify-content-center">
-						<div class="bg_overlay_3"></div>
-						<div class="bg_overlay_4"></div>
+						<!-- <div class="bg_overlay_3"></div>
+						<div class="bg_overlay_4"></div> -->
 						<div class="w-100 px-4 auth-container z-2 shadow-none bg-transparent" id="response-view">  
 							@include('user.auth.passwords.email') 
 						</div> 
