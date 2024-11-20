@@ -6,6 +6,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>{{ config('setting.site_name') }} | Register</title>
+		<link rel="icon" type="image/svg+xml" href="{{ url('storage/setting', config('setting.fevicon_icon')) }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/animate.min.css') }}" /> 
 		<link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">

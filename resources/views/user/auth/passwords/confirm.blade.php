@@ -63,7 +63,7 @@
 					$.each(res.errors, function(key, value) {
 						var inputField = $('#' + key);
 						var errorSpan = $('<span>')
-						.addClass('error_msg text-danger') 
+						.addClass('error_msg text-danger content-4') 
 						.attr('id', key + 'Error')
 						.text(value[0]);  
 						inputField.parent().parent().append(errorSpan);

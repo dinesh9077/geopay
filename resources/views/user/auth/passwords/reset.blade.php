@@ -6,6 +6,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>{{ config('setting.site_name') }} | Password Reset</title>
+		<link rel="icon" type="image/svg+xml" href="{{ url('storage/setting', config('setting.fevicon_icon')) }}">
 		<link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}"> 
 		<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/auth.css') }}">
@@ -120,7 +121,7 @@
 						$.each(res.errors, function(key, value) {
 							var inputField = $('#' + key);
 							var errorSpan = $('<span>')
-							.addClass('error_msg text-danger') 
+							.addClass('error_msg text-danger content-4') 
 							.attr('id', key + 'Error')
 							.text(value[0]);  
 							inputField.parent().parent().append(errorSpan);
@@ -169,7 +170,7 @@
 						$.each(res.errors, function(key, value) {
 							var inputField = $('#' + key);
 							var errorSpan = $('<span>')
-							.addClass('error_msg text-danger') 
+							.addClass('error_msg text-danger content-4') 
 							.attr('id', key + 'Error')
 							.text(value[0]);  
 							inputField.parent().parent().append(errorSpan);
