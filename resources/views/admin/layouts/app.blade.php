@@ -89,6 +89,8 @@
 		<script src="{{ asset('admin/js/app.js') }}"></script>
 		<!-- endinject -->
 		
+		<script src="{{ asset('admin/vendors/tinymce/tinymce.min.js') }}"></script>
+			
 		<script src="{{ asset('admin/vendors/pickr/pickr.min.js') }}"></script>
 		<script src="{{ asset('admin/vendors/moment/moment.min.js') }}"></script>
 		<script src="{{ asset('admin/vendors/flatpickr/flatpickr.min.js') }}"></script>

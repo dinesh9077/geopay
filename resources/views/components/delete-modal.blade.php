@@ -95,7 +95,20 @@
 				
 				if(response.status === 'success') {
 					$('#deleteConfirmModal').modal('hide');
-					dataTable.draw();
+					// Check if dataTable is defined before calling draw
+					if (typeof dataTable !== 'undefined' && dataTable !== null) {
+						dataTable.draw();
+					}
+
+					// Check if addServiceTable is defined before calling draw
+					if (typeof addServiceTable !== 'undefined' && addServiceTable !== null) {
+						addServiceTable.draw();
+					}
+
+					// Check if payServiceTable is defined before calling draw
+					if (typeof payServiceTable !== 'undefined' && payServiceTable !== null) {
+						payServiceTable.draw();
+					}
 				}  
 			} 
 		});

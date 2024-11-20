@@ -7,6 +7,7 @@
 	use App\Models\Setting;
 	use App\Models\Banner;
 	use App\Models\Faq;
+	use App\Models\UserLimit;
 	use App\Http\Traits\WebResponseTrait; 
 	use Validator, DB, Auth, ImageManager, Hash;
 	
@@ -16,23 +17,28 @@
 		
 		public function generalSetting()
 		{
-			return view('admin.setting.index');
+			$userLimits = UserLimit::all();
+			return view('admin.setting.index', compact('userLimits'));
 		}
 		
 		public function generalSettingUpdate(Request $request)
-		{  
-			$validator = Validator::make($request->all(), [
-				'site_name' => 'required|string|max:255',
-				'default_currency' => 'required|string|max:10',
-				'site_logo' => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048', 
-				'fevicon_icon' => 'nullable|file|mimes:jpg,jpeg,png,ico|max:1024', 
-				'login_logo' => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048', 
-			]);
+		{   
+			// Define validation rules dynamically for flexibility
+			$validationRules = [
+				'site_name'        => 'required|string|max:255',
+				'default_currency' => 'required|string', 
+				'site_logo'        => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048',
+				'fevicon_icon'     => 'nullable|file|mimes:jpg,jpeg,png,ico|max:1024',
+				'login_logo'       => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048',
+			];
+
+			// Validate the incoming request
+			$validator = Validator::make($request->all(), $validationRules);
 			
 			if ($validator->fails()) {
 				return $this->validateResponse($validator->errors());
 			}
-			 
+			
 			try {
 				DB::beginTransaction();
 				
@@ -63,6 +69,39 @@
 				DB::commit();
 				
 				return $this->successResponse('Settings have been successfully updated.');
+				} catch (\Throwable $e) {
+				DB::rollBack();
+				return $this->errorResponse('Failed to update settings. ' . $e->getMessage());
+			}
+		}
+		
+		public function UserLimitUpdate(Request $request)
+		{    
+			$validationRules = [
+				'id' => 'required|numeric',
+				'name' => 'required|string|max:255',
+				'daily_add_limit' => 'required|string',
+				'daily_pay_limit' => 'required|string'
+			];
+
+			// Validate the incoming request
+			$validator = Validator::make($request->all(), $validationRules);
+			
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors());
+			}
+			
+			try {
+				DB::beginTransaction();
+				
+				$data = $request->only('name', 'daily_add_limit', 'daily_pay_limit');
+				 
+				$userLimit = UserLimit::find($request->id);
+				$userLimit->update($data);
+				
+				DB::commit();
+				
+				return $this->successResponse('user limit have been successfully updated.', ['data' => $request->all()]);
 				} catch (\Throwable $e) {
 				DB::rollBack();
 				return $this->errorResponse('Failed to update settings. ' . $e->getMessage());
@@ -532,5 +571,6 @@
 				return $this->errorResponse('Failed to update profile. ' . $e->getMessage());
 			}
 		}
-
+		
+		
 	}

@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\CompaniesController;
+use App\Http\Controllers\Admin\ExchangeRateController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route; 
  
 // Admin authentication routes
@@ -21,6 +23,7 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 	// Settings
     Route::get('/general-setting', [SettingController::class, 'generalSetting'])->name('general-setting')->middleware('permission:general_setting.view');
     Route::post('/general-setting/update', [SettingController::class, 'generalSettingUpdate'])->name('general-setting.update');
+    Route::post('/user-limit/update', [SettingController::class, 'UserLimitUpdate'])->name('user-limit.update');
 	
 	// Banners
     Route::get('/banner', [SettingController::class, 'banner'])->name('banner')->middleware('permission:banner.view');
@@ -84,5 +87,23 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 	Route::get('/companies/edit/{id}', [CompaniesController::class, 'companiesEdit'])->name('companies.edit');
     Route::post('/companies/update/{id}', [CompaniesController::class, 'companiesUpdate'])->name('companies.update');
 	Route::post('/companies/update-status', [CompaniesController::class, 'companiesUpdateStatus'])->name('companies.update-status');
+	
+	//Manage Exchnage Rate
+	Route::get('/exchange-rate', [ExchangeRateController::class, 'exchangeRate'])
+	->name('exchange-rate')->middleware('permission:exchange_rate.view');
+	Route::post('/exchange-rate/ajax', [ExchangeRateController::class, 'exchangeRateAjax'])->withoutMiddleware('webdecrypt.request')->name('exchange-rate.ajax');
+	Route::get('/exchange-rate/import', [ExchangeRateController::class, 'exchangeRateImport'])->name('exchange-rate.import');
+	Route::post('/exchange-rate/store', [ExchangeRateController::class, 'exchangeRateStore'])->name('exchange-rate.store');
+	Route::post('/exchange-rate/delete/{id}', [ExchangeRateController::class, 'exchangeRateDelete'])->withoutMiddleware('webdecrypt.request')->name('exchange-rate.delete'); 
+	
+	//Manage Users 
+	Route::get('/user/active', [UserController::class, 'userActive'])->name('user.active')->middleware('permission:active_user.view');  
+	Route::get('/user/pending', [UserController::class, 'userPending'])->name('user.pending')->middleware('permission:pending_user.view');
+	Route::get('/user/block', [UserController::class, 'userBlock'])->name('user.block')->middleware('permission:block_user.view');  
+	Route::post('/user/ajax', [UserController::class, 'userAjax'])->withoutMiddleware('webdecrypt.request')->name('user.ajax');
+	Route::get('/user/edit/{id}', [UserController::class, 'userEdit'])->name('user.edit');
+    Route::post('/user/update/{id}', [UserController::class, 'userUpdate'])->name('user.update');
+	Route::post('/user/update-status', [UserController::class, 'userUpdateStatus'])->name('user.update-status');
+	
 });
 

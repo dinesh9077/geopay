@@ -12,93 +12,153 @@
 	<div class="sidebar-body">
 		<ul class="nav" id="sidebarNav">
 			<li class="nav-item nav-category">Main</li>
-			<li class="nav-item">
-				<a href="{{ route('admin.dashboard') }}" class="nav-link">
+			 
+			<li class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+				<a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
 					<i class="link-icon" data-feather="box"></i>
 					<span class="link-title">Dashboard</span>
 				</a>
 			</li>
-			
+
 			@php
 				$manageStaffs = [
 					'role' => ['route' => 'admin.roles', 'label' => 'Roles'],
-					'staff' => ['route' => 'admin.staff', 'label' => 'Staff'], 
+					'staff' => ['route' => 'admin.staff', 'label' => 'Staff'],
 				];
 			@endphp
 
-			@if(collect($manageStaffs)->keys()->some(fn($key) => config("permission.$key.view"))) 
-			<li class="nav-item">
-				<a class="nav-link" data-bs-toggle="collapse" href="#manageStaff" role="button" aria-expanded="false" aria-controls="manageStaff">
+			@if(collect($manageStaffs)->keys()->some(fn($key) => config("permission.$key.view")))
+			<li class="nav-item {{ collect($manageStaffs)->contains(fn($item) => request()->routeIs($item['route'])) ? 'active' : '' }}">
+				<a class="nav-link" data-bs-toggle="collapse" href="#manageStaff" role="button" 
+				   aria-expanded="{{ collect($manageStaffs)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}" 
+				   aria-controls="manageStaff">
 					<i class="link-icon" data-feather="users"></i>
 					<span class="link-title">Manage Staff</span>
 					<i class="link-arrow" data-feather="chevron-down"></i>
 				</a>
-				<div class="collapse" data-bs-parent="#sidebarNav" id="manageStaff">
+				<div class="collapse {{ collect($manageStaffs)->contains(fn($item) => request()->routeIs($item['route'])) ? 'show' : '' }}" id="manageStaff">
 					<ul class="nav sub-menu">
-						@foreach ($manageStaffs as $key => $manageStaff)
+						@foreach ($manageStaffs as $key => $item)
 							@if (config("permission.$key.view"))
 							<li class="nav-item">
-								<a href="{{ route($manageStaff['route']) }}" class="nav-link">{{ $manageStaff['label'] }}</a>
+								<a href="{{ route($item['route']) }}" class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}">
+									{{ $item['label'] }}
+								</a>
 							</li>
 							@endif
-						@endforeach 
+						@endforeach
 					</ul>
 				</div>
-			</li> 
+			</li>
 			@endif
-			
-			
+
 			@php
 				$manageCompanies = [
 					'active_company' => ['route' => 'admin.company.active', 'label' => 'Active Company'],
-					'pending_company' => ['route' => 'admin.company.pending', 'label' => 'Pending Company'], 
-					'block_company' => ['route' => 'admin.company.block', 'label' => 'Block Company'], 
+					'pending_company' => ['route' => 'admin.company.pending', 'label' => 'Pending Company'],
+					'block_company' => ['route' => 'admin.company.block', 'label' => 'Blocked Company'],
 				];
 			@endphp
 
-			@if(collect($manageCompanies)->keys()->some(fn($key) => config("permission.$key.view"))) 
-			<li class="nav-item">
-				<a class="nav-link" data-bs-toggle="collapse" href="#manageCompanies" role="button" aria-expanded="false" aria-controls="manageCompanies">
+			@if(collect($manageCompanies)->keys()->some(fn($key) => config("permission.$key.view")))
+			<li class="nav-item {{ collect($manageCompanies)->contains(fn($item) => request()->routeIs($item['route'])) ? 'active' : '' }}">
+				<a class="nav-link" data-bs-toggle="collapse" href="#manageCompanies" role="button" 
+				   aria-expanded="{{ collect($manageCompanies)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}" 
+				   aria-controls="manageCompanies">
 					<i class="link-icon" data-feather="users"></i>
 					<span class="link-title">Manage Companies</span>
 					<i class="link-arrow" data-feather="chevron-down"></i>
 				</a>
-				<div class="collapse" data-bs-parent="#sidebarNav" id="manageCompanies">
+				<div class="collapse {{ collect($manageCompanies)->contains(fn($item) => request()->routeIs($item['route'])) ? 'show' : '' }}" id="manageCompanies">
 					<ul class="nav sub-menu">
-						@foreach ($manageCompanies as $key => $manageCompany)
+						@foreach ($manageCompanies as $key => $item)
 							@if (config("permission.$key.view"))
 							<li class="nav-item">
-								<a href="{{ route($manageCompany['route']) }}" class="nav-link">{{ $manageCompany['label'] }}</a>
+								<a href="{{ route($item['route']) }}" class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}">
+									{{ $item['label'] }}
+								</a>
 							</li>
 							@endif
-						@endforeach 
+						@endforeach
 					</ul>
 				</div>
-			</li> 
+			</li>
 			@endif
-			
+
+			@php
+				$manageExchanges = [
+					'exchange_rate' => ['route' => 'admin.exchange-rate', 'label' => 'Manage Exchange Rate'],
+				];
+			@endphp
+
+			@if(collect($manageExchanges)->keys()->some(fn($key) => config("permission.$key.view")))
+			<li class="nav-item">
+				<a href="{{ route('admin.exchange-rate') }}" class="nav-link {{ request()->routeIs('admin.exchange-rate') ? 'active' : '' }}">
+					<i class="link-icon" data-feather="box"></i>
+					<span class="link-title">Manage Exchange Rate</span>
+				</a>
+			</li>
+			@endif
+
+			@php
+				$manageUsers = [
+					'active_user' => ['route' => 'admin.user.active', 'label' => 'Active User'],
+					'pending_user' => ['route' => 'admin.user.pending', 'label' => 'Pending User'],
+					'block_user' => ['route' => 'admin.user.block', 'label' => 'Blocked User'],
+				];
+			@endphp
+
+			@if(collect($manageUsers)->keys()->some(fn($key) => config("permission.$key.view")))
+			<li class="nav-item {{ collect($manageUsers)->contains(fn($item) => request()->routeIs($item['route'])) ? 'active' : '' }}">
+				<a class="nav-link" data-bs-toggle="collapse" href="#manageUsers" role="button" 
+				   aria-expanded="{{ collect($manageUsers)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}" 
+				   aria-controls="manageUsers">
+					<i class="link-icon" data-feather="users"></i>
+					<span class="link-title">Manage Users</span>
+					<i class="link-arrow" data-feather="chevron-down"></i>
+				</a>
+				<div class="collapse {{ collect($manageUsers)->contains(fn($item) => request()->routeIs($item['route'])) ? 'show' : '' }}" id="manageUsers">
+					<ul class="nav sub-menu">
+						@foreach ($manageUsers as $key => $item)
+							@if (config("permission.$key.view"))
+							<li class="nav-item">
+								<a href="{{ route($item['route']) }}" class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}">
+									{{ $item['label'] }}
+								</a>
+							</li>
+							@endif
+						@endforeach
+					</ul>
+				</div>
+			</li>
+			@endif
+
 			@php
 				$settings = [
 					'general_setting' => ['route' => 'admin.general-setting', 'label' => 'General'],
 					'banner' => ['route' => 'admin.banner', 'label' => 'Banner'],
 					'faqs' => ['route' => 'admin.faqs', 'label' => "FAQ's"],
-					'third_party_api' => ['route' => 'admin.third-party-key', 'label' => 'Third Party API']
+					'third_party_api' => ['route' => 'admin.third-party-key', 'label' => 'Third Party API'],
 				];
 			@endphp
 
 			@if(collect($settings)->keys()->some(fn($key) => config("permission.$key.view")))
-			<li class="nav-item">
-				<a class="nav-link" data-bs-toggle="collapse" href="#settings" role="button" aria-expanded="false" aria-controls="settings">
+			<li class="nav-item {{ collect($settings)->contains(fn($item) => request()->routeIs($item['route'])) ? 'active' : '' }}">
+				<a class="nav-link" data-bs-toggle="collapse" href="#settings" role="button" 
+				   aria-expanded="{{ collect($settings)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}" 
+				   aria-controls="settings">
 					<i class="link-icon" data-feather="anchor"></i>
-					<span class="link-title">Setting</span>
+					<span class="link-title">Settings</span>
 					<i class="link-arrow" data-feather="chevron-down"></i>
 				</a>
-				<div class="collapse" data-bs-parent="#sidebarNav" id="settings">
+				<div class="collapse {{ collect($settings)->contains(fn($item) => request()->routeIs($item['route'])) ? 'show' : '' }}" id="settings">
 					<ul class="nav sub-menu">
-						@foreach ($settings as $key => $setting)
+						@foreach ($settings as $key => $item)
 							@if (config("permission.$key.view"))
 							<li class="nav-item">
-								<a href="{{ route($setting['route']) }}" class="nav-link">{{ $setting['label'] }}</a>
+								<a href="{{ route($item['route']) }}" class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}">
+									{{ $item['label'] }}
+								</a>
 							</li>
 							@endif
 						@endforeach

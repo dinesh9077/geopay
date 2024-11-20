@@ -8,29 +8,28 @@ use App\Models\User;
 use DB, Auth, Helper, Hash, Validator;
 use App\Http\Traits\WebResponseTrait; 
 
-class CompaniesController extends Controller
+class UserController extends Controller
 {
 	use WebResponseTrait;
-    public function companiesActive()
+    public function userActive()
 	{
-		return view('admin.companies.active');
+		return view('admin.users.active');
+	}
+	 
+    public function userPending()
+	{
+		return view('admin.users.pending');
+	} 
+    public function userBlock()
+	{
+		return view('admin.users.block');
 	}
 	
-    public function companiesPending()
-	{
-		return view('admin.companies.pending');
-	}
-	
-    public function companiesBlock()
-	{
-		return view('admin.companies.block');
-	}
-	
-	public function companiesAjax(Request $request)
+	public function userAjax(Request $request)
 	{
 		if ($request->ajax()) {
 			// Define the columns for ordering and searching
-			$columns = ['id', 'name', 'email', 'mobile', 'country.name', 'is_kyc_verify', 'is_email_verify', 'is_mobile_verify', 'status', 'created_at'];
+			$columns = ['id', 'name', 'email', 'mobile', 'country.name',  'balance', 'is_kyc_verify', 'is_email_verify', 'is_mobile_verify', 'status', 'created_at'];
 
 			$search = $request->input('search.value'); // Global search value
 			$start = $request->input('start'); // Offset for pagination
@@ -44,13 +43,15 @@ class CompaniesController extends Controller
 			 
 			// Base query with relationship for country
 			$query = User::with('country:id,name')
-				->where('is_company', 1)
+				->where('is_company', 0)
 				->where('is_kyc_verify', $is_kyc_verify);
-
-			if ($page_status === 'pending') {
-				$query->whereIn('status', [1, 0]); // Allow both active and inactive statuses
-			} else {
-				$query->where('status', $status); // Apply specific status
+			if($page_status == "pending")
+			{
+				$query->whereIn('status', [1, 0]);
+			}
+			else
+			{
+				$query->where('status', $status);
 			}
  
 			// Apply search filter if present
@@ -90,6 +91,7 @@ class CompaniesController extends Controller
 					'email' => $value->email,
 					'mobile' => $value->formatted_number,
 					'country' => $value->country ? $value->country->name : 'N/A',
+					'balance' => $value->balance ?? 0,
 					'is_kyc_verify' => $value->is_kyc_verify ? '<span class="badge bg-success">Verified</span>' : '<span class="badge bg-danger">Not Verified</span>',
 					'is_email_verify' => $value->is_email_verify ? '<span class="badge bg-success">Verified</span>' : '<span class="badge bg-danger">Not Verified</span>',
 					'is_mobile_verify' => $value->is_mobile_verify ? '<span class="badge bg-success">Verified</span>' : '<span class="badge bg-danger">Not Verified</span>', 
@@ -111,8 +113,8 @@ class CompaniesController extends Controller
 
 				// Manage actions with permission checks
 				$actions = [];
-				if (config('permission.active_company.edit') || config('permission.pending_company.edit') || config('permission.block_company.edit')) {
-					$actions[] = '<a href="' . route('admin.companies.edit', ['id' => $value->id]) . '" onclick="editCompany(this, event)" class="btn btn-sm btn-primary">Edit</a>';
+				if (config('permission.active_user.edit') || config('permission.block_user.edit')) {
+					$actions[] = '<a href="' . route('admin.user.edit', ['id' => $value->id]) . '" onclick="editUser(this, event)" class="btn btn-sm btn-primary">Edit</a>';
 				} 
 
 				// Assign actions to the row if permissions exist
@@ -129,55 +131,25 @@ class CompaniesController extends Controller
 			]);
 		} 
 	}
-	
-	public function companiesUpdateStatus(Request $request)
-	{ 
-		$validator = Validator::make($request->all(), [
-			'id' => 'required|exists:users,id',
-			'status' => 'required|in:1,0',
-		]);
-		
-		if ($validator->fails()) {
-			return $this->errorResponse($validator->errors()->first());
-		}
-		
-		try {
-			DB::beginTransaction();
-			
-			$user = User::find($request->id); 
-			$user->update(['status' => $request->status]);
-			
-			DB::commit(); 
-			return $this->successResponse('Status updated successfully.'); 
-		} 
-		catch (\Throwable $e) 
-		{
-			// Rollback in case of an exception
-			DB::rollBack(); 
-			// Return error response with the exception message
-			return $this->errorResponse('Failed to update status. ' . $e->getMessage());
-		}
-	}
-
-
-	public function companiesEdit($companyid)
+	  
+	public function userEdit($companyid)
 	{
-		$company = User::find($companyid);
-		if(!$company)
+		$user = User::find($companyid);
+		if(!$user)
 		{
-			return $this->errorResponse('Company not found.');
+			return $this->errorResponse('User not found.');
 		}
-		$view = view('admin.companies.edit', compact('company'))->render();
+		$view = view('admin.users.edit', compact('user'))->render();
 		return $this->successResponse('success', ['view' => $view]);
 	}
 	
-	public function companiesUpdate(Request $request, $companyid)
+	public function userUpdate(Request $request, $companyid)
 	{
 		$validator = Validator::make($request->all(), [
 			'first_name' => 'required|string|max:255',
 			'last_name' => 'required|string|max:255', 
 			'password' => 'nullable|string|max:255', 
-			'company_name' => 'required|string', 
+			'balance' => 'required|string', 
 			'status' => 'required|in:1,0', 
 		]);
 		
@@ -199,7 +171,7 @@ class CompaniesController extends Controller
 			  
 			DB::commit();
 			
-			return $this->successResponse('Company have been successfully updated.');
+			return $this->successResponse('User have been successfully updated.');
 		} 
 		catch (\Throwable $e)
 		{
