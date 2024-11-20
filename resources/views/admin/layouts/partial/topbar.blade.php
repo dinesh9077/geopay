@@ -105,7 +105,7 @@
 					<div class="d-flex flex-column align-items-center border-bottom px-5 py-3">
 						<div class="mb-3"> 
 							@if(auth()->guard('admin')->user()->profile) 
-								<img src="{{ url('storage', auth()->guard('admin')->user()->profile) }}" alt="user-image" class="w-80px h-80px rounded-circle">
+								<img src="{{ url('storage/admin_profile', auth()->guard('admin')->user()->profile) }}" alt="user-image" class="w-80px h-80px rounded-circle">
 							@else
 								<img src="{{ url('admin/default-profile.png') }}" alt="user-image" class="w-80px h-80px rounded-circle">
 							@endif 
