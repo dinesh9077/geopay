@@ -8,7 +8,7 @@
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
-    ),
+    ), 
     'versions' => array(
         'brick/math' => array(
             'pretty_version' => '0.12.1',

@@ -53,7 +53,7 @@ return array(
     'App\\Http\\Traits\\WebResponseTrait' => $baseDir . '/app/Http/Traits/WebResponseTrait.php',
     'App\\Imports\\ExchangeRate' => $baseDir . '/app/Imports/ExchangeRate.php',
     'App\\Listeners\\LogSuccessfulLogin' => $baseDir . '/app/Listeners/LogSuccessfulLogin.php',
-    'App\\Mail\\OtpEmail' => $baseDir . '/app/Mail/OtpEmail.php',
+    'App\\Mail\\OtpEmail' => $baseDir . '/app/Mail/OtpEmail.php', 
     'App\\Mail\\PasswordResetOtp' => $baseDir . '/app/Mail/PasswordResetOtp.php',
     'App\\Mail\\PasswordResetSuccess' => $baseDir . '/app/Mail/PasswordResetSuccess.php',
     'App\\Models\\Admin' => $baseDir . '/app/Models/Admin.php',
