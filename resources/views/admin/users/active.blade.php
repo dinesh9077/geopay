@@ -92,13 +92,20 @@
 			closemodal(); 
 			$.get(obj, function(res)
 			{
-				const result = decryptData(res.response);
-				$('body').find('#modal-view-render').html(result.view);
-				$('#editUserModal').modal('show');  
+				if(res.status == "success")
+				{
+					const result = decryptData(res.response); 
+					$('body').find('#modal-view-render').html(result.view);
+					$('#editUserModal').modal('show');  
+				}
+				else
+				{
+					toastrMsg(res.status, res.message)
+				}
 			});
 		} 
 	} 
-	
+	 
 	$(document).on('change', '.companyActiveInactive', function () {
 		const userId = $(this).data('id');
 		const status = $(this).is(':checked') ? 1 : 0; 

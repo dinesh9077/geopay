@@ -48,15 +48,15 @@
 						</div>
 						<h1 class="heading-4 mb-2">Follow Us</h1>
 						<div class="d-flex align-items-center mb-3 gap-3">
-							<button class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
+							<a href="{{ config('setting.social_facebook') }}" class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
 								<img src="{{ asset('assets/image/icons/facebook.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
-							</button>
-							<button class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
-								<img src="{{ asset('assets/image/icons/google.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
-							</button>
-							<button class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
+							</a>
+							<a href="{{ config('setting.social_instagram') }}"class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
+								<img src="{{ asset('assets/image/icons/insta-icon.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
+							</a>
+							<a href="{{ config('setting.social_linkedin') }}" class="btn btn-light social-icon border-0 border-secondary rounded-circle d-flex align-items-center justify-content-center p-0">
 								<img src="{{ asset('assets/image/icons/linkedin.svg') }}" alt="Facebook Icon" class="img-fluid" style="width: 50%;">
-							</button>
+							</a>
 						</div>
 					</div>
 				</div>

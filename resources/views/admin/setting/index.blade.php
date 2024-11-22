@@ -15,6 +15,9 @@
 				<a class="nav-link active" id="general-setting-tab" data-bs-toggle="tab" href="#general-setting" role="tab" aria-controls="general-setting" aria-selected="true">General Setting</a>
 			</li>
 			<li class="nav-item">
+				<a class="nav-link" id="social-line-tab" data-bs-toggle="tab" href="#social-line" role="tab" aria-controls="social-line" aria-selected="false">Social Media Link</a>
+			</li>  
+			<li class="nav-item">
 				<a class="nav-link" id="aboutus-line-tab" data-bs-toggle="tab" href="#aboutus-line" role="tab" aria-controls="aboutus-line" aria-selected="false">About Us</a>
 			</li>  
 			<li class="nav-item">
@@ -84,6 +87,41 @@
 				</div> 
 			</div>
 			
+			<div class="tab-pane fade" id="social-line" role="tabpanel" aria-labelledby="social-line-tab"> 
+				<div class="col-md-12 grid-margin stretch-card">
+					<div class="card">
+						<div class="card-body"> 
+							<form class="forms-sample row" id="socialForm" action="{{ route('admin.general-setting.update') }}" method="post" enctype="multipart/form-data">
+								   
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">Facebook</label>
+									<input type="url" class="form-control" id="social_facebook" name="social_facebook" autocomplete="off" placeholder="Facebook Url"  value="{{ config('setting.social_facebook') }}">
+								</div>
+								
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">Instagram</label>
+									<input type="url" class="form-control" id="social_instagram" name="social_instagram" autocomplete="off" placeholder="Instagram Url"  value="{{ config('setting.social_instagram') }}">
+								</div>
+								
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">WhatsApp</label>
+									<input type="url" class="form-control" id="social_whatsapp" name="social_whatsapp" autocomplete="off" placeholder="WhatsApp Url"  value="{{ config('setting.social_whatsapp') }}">
+								</div>
+								
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">LinkedIn</label>
+									<input type="url" class="form-control" id="social_linkedin" name="social_linkedin" autocomplete="off" placeholder="LinkedIn Url"  value="{{ config('setting.social_linkedin') }}">
+								</div>
+								
+								<div class="d-flex justify-content-end">
+									<button type="submit" class="btn btn-primary me-2">Submit</button> 
+								</div>
+							</form> 
+						</div>
+					</div>
+				</div> 
+			</div>
+			 
 			<div class="tab-pane fade" id="aboutus-line" role="tabpanel" aria-labelledby="aboutus-line-tab"> 
 				<div class="col-md-12 grid-margin stretch-card">
 					<div class="card">
@@ -256,7 +294,7 @@
 	});
 
  
-	$('#generalForm, #aboutUsForm, #companyLimitForm').submit(function(event) {
+	$('#generalForm, #aboutUsForm, #companyLimitForm, #socialForm').submit(function(event) {
 		event.preventDefault(); // Prevent default form submission
 		
 		var $form = $(this);

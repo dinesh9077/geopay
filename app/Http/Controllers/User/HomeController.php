@@ -1,8 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Banner;
+use App\Http\Traits\WebResponseTrait; 
+use Validator, DB, Auth;
+use Helper, ImageManager;
 
 class HomeController extends Controller
 {
@@ -20,9 +26,10 @@ class HomeController extends Controller
      * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
-     */
+    */
     public function index()
     {
-        return view('user.home');
+		$banners = Banner::where('status', 1)->orderByDesc('id')->get();
+        return view('user.home', compact('banners'));
     }
 }

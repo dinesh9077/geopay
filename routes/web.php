@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\User\HomeController;
+use App\Http\Controllers\User\SettingController;
 use App\Http\Controllers\User\KycController;
 /*
 |--------------------------------------------------------------------------
@@ -77,9 +78,10 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	Route::get('/international-airtime', function () {
 		return view('user.transaction.international-airtime');
 	})->name('international-airtime');
-
-	Route::get('/setting', function () {
-		return view('user.setting.index');
-	})->name('setting');  
+	
+	//Setting
+	Route::get('/setting', [SettingController::class, 'index'])->name('setting');  
+	Route::post('/password-change', [SettingController::class, 'changePassword'])->name('password-change');  
+	Route::post('/profile-update', [SettingController::class, 'profileUpdate'])->name('profile-update');  
 });
 

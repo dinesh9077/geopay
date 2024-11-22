@@ -104,6 +104,7 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 	Route::get('/user/edit/{id}', [UserController::class, 'userEdit'])->name('user.edit');
     Route::post('/user/update/{id}', [UserController::class, 'userUpdate'])->name('user.update');
 	Route::post('/user/update-status', [UserController::class, 'userUpdateStatus'])->name('user.update-status');
+	Route::get('/user/view-kyc/{id}', [UserController::class, 'userViewKyc'])->name('user.view-kyc');
 	
 });
 

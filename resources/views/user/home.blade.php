@@ -1,5 +1,5 @@
 @extends('user.layouts.app')
-@section('title', config('setting.site_name').' - Dashboard')
+@section('title', config('setting.site_name').' - Dashboard') 
 @section('content')
 <div class="container-fluid p-0">
 	<div class="row g-4">
@@ -8,15 +8,11 @@
 			<!-- First Row -->
 			<div id="carouselExampleSlidesOnly" class="carousel home-banner-carousel slide mb-3" data-bs-ride="carousel">
 				<div class="carousel-inner">
-					<div class="carousel-item active" data-bs-interval="5000">
-						<img src="{{ asset('assets/image/dashboard/carousel-img.jfif') }}" class="img-fluid w-100" alt="">
-					</div>
-					<div class="carousel-item" data-bs-interval="5000">
-						<img src="{{ asset('assets/image/dashboard/carousel-img.jfif') }}" class="img-fluid w-100" alt="">
-					</div>
-					<div class="carousel-item" data-bs-interval="5000">
-						<img src="{{ asset('assets/image/dashboard/carousel-img.jfif') }}" class="img-fluid w-100" alt="">
-					</div>
+					@foreach($banners as $key => $banner)
+						<div class="carousel-item {{ $key == 0 ? 'active' : '' }}" data-bs-interval="5000">
+							<img src="{{ url('storage/banner', $banner->image) }}" class="img-fluid w-100" alt="">
+						</div> 
+					@endforeach
 				</div>
 			</div>
 			<!-- Second Row -->
@@ -74,10 +70,9 @@
 				<!-- Second Column (4 columns wide) -->
 				<div class="col-lg-4 order-1 order-lg-2">
 					<div class="border text-center d-flex flex-column qr-container p-4 h-100 ms-lg-3">
-						<span class="content-3">To Pay Pritesh Salla</span>
-						<span class="content-3 fw-semibold">Share your GEOPAY QR Code to receive payments</span>
-						<!-- <span class="mb-3">Share your GEOPAY QR Code to receive payments</span> -->
-						<img src="{{ asset('assets/image/dashboard/QRCode.png') }}" class="img-fluid p-2 qr-code" alt="Centered Image">
+						<span class="content-3">To Pay {{ auth()->user()->first_name. ' ' .auth()->user()->last_name }}</span>
+						<span class="content-3 fw-semibold">Share your GEOPAY QR Code to receive payments</span>  
+						<div id="reader" class="img-fluid p-2 qr-code"></div>
 					</div>
 				</div>
 			</div>
@@ -88,3 +83,30 @@
 	</div>
 </div>
 @endsection
+@push('js')
+	<script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
+	<script>
+        // Initialize the QR code reader
+        const html5QrCode = new Html5Qrcode("reader");
+
+        // Start scanning
+        html5QrCode.start(
+            { facingMode: "environment" }, // Use back camera
+            {
+                fps: 10,
+                qrbox: 250
+            },
+            (decodedText, decodedResult) => {
+                // Handle decoded mobile number here
+                console.log(`Mobile Number: ${decodedText}`);
+                alert(`Scanned Mobile Number: ${decodedText}`);
+            },
+            (errorMessage) => {
+                // Optional: Handle scan error
+                console.error(errorMessage);
+            }
+        ).catch((err) => {
+            console.error(err);
+        });
+    </script>
+@endpush

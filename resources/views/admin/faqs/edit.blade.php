@@ -39,7 +39,7 @@
 		$(this).find('button').prop('disabled',true);   
 		
 		var formDataInput = {}; 
-		$(this).find("input, select").each(function() {
+		$(this).find("input, select, textarea").each(function() {
 			var inputName = $(this).attr('name');
 			
 			if ($(this).attr('type') !== 'file') { 

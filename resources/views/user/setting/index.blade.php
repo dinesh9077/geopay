@@ -19,12 +19,12 @@
 						<img class="in-svg d-lg-none mx-2" src="{{ asset('assets/image/icons/change-pass.svg') }}" alt="">	
 					</button>
 				</li>
-				<li class="nav-item" role="presentation">
+				<!--<li class="nav-item" role="presentation">
 					<button class="nav-link" id="referral-code-tab" data-bs-toggle="tab" data-bs-target="#referral-code" type="button" role="tab" aria-controls="referral-code" aria-selected="false">
 						<span class="d-none d-lg-block py-1 px-3 px-xxl-4">Referral Code</span>
 						<img class="in-svg d-lg-none mx-2" src="{{ asset('assets/image/icons/referral-icon.svg') }}" alt="">	
 					</button>
-				</li>
+				</li>-->
 				<li class="nav-item" role="presentation">
 					<button class="nav-link" id="faq-tab" data-bs-toggle="tab" data-bs-target="#faq" type="button" role="tab" aria-controls="faq" aria-selected="false">
 						<span class="d-none d-lg-block py-1 px-3 px-xxl-4">FAQ</span>
@@ -59,11 +59,11 @@
 					@include('user.setting.change-password')
 				</div>
 
-				<!-- Referral Code -->
+				<!-- Referral Code 
 				<div class="tab-pane fade" id="referral-code" role="tabpanel" aria-labelledby="referral-code-tab">
 					<h2 class="text-center text-secondary d-lg-none heading-5">Referral Code</h2>
 					@include('user.setting.referral-code')
-				</div>
+				</div>-->
 
 				<!-- FAQ -->
 				<div class="tab-pane fade" id="faq" role="tabpanel" aria-labelledby="faq-tab">
@@ -90,3 +90,4 @@
 	</div>
 </div>
 @endsection
+ 

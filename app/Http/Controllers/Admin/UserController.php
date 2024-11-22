@@ -113,9 +113,14 @@ class UserController extends Controller
 
 				// Manage actions with permission checks
 				$actions = [];
-				if (config('permission.active_user.edit') || config('permission.block_user.edit')) {
+				if (config('permission.active_user.edit') || config('permission.pending_user.edit') || config('permission.block_user.edit')) {
 					$actions[] = '<a href="' . route('admin.user.edit', ['id' => $value->id]) . '" onclick="editUser(this, event)" class="btn btn-sm btn-primary">Edit</a>';
 				} 
+				
+				if ($value->is_kyc_verify == 1 && (config('permission.active_user.view') || config('permission.pending_user.view') || config('permission.block_user.view'))) {
+					$actions[] = '<a href="' . route('admin.user.view-kyc', ['id' => $value->id]) . '" onclick="editUser(this, event)" class="btn btn-sm btn-warning">View Kyc</a>';
+				}
+
 
 				// Assign actions to the row if permissions exist
 				$data[$i - $start - 1]['action'] = implode(' ', $actions);
@@ -178,5 +183,18 @@ class UserController extends Controller
 			DB::rollBack();
 			return $this->errorResponse('Failed. ' . $e->getMessage());
 		}
+	}
+	
+	public function userViewKyc($userId)
+	{
+		$user = User::with('userKyc')->find($userId);
+		$kyc = $user->userKyc;
+		if(!$user || !$kyc)
+		{ 
+			return $this->errorResponse('User or kyc details not found.');
+		}
+		
+		$view = view('admin.users.view', compact('user', 'kyc'))->render();
+		return $this->successResponse('success', ['view' => $view]);
 	}
 }

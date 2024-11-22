@@ -95,4 +95,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(LoginLog::class);
     } 
+
+    public function userKyc()
+    {
+        return $this->hasOne(UserKyc::class, 'user_id');
+    } 
 }

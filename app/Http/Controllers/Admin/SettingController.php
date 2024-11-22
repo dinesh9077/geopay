@@ -25,8 +25,8 @@
 		{   
 			// Define validation rules dynamically for flexibility
 			$validationRules = [
-				'site_name'        => 'required|string|max:255',
-				'default_currency' => 'required|string', 
+				'site_name'        => 'nullable|string|max:255',
+				'default_currency' => 'nullable|string', 
 				'site_logo'        => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048',
 				'fevicon_icon'     => 'nullable|file|mimes:jpg,jpeg,png,ico|max:1024',
 				'login_logo'       => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048',
