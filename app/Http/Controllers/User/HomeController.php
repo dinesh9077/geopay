@@ -9,6 +9,7 @@ use App\Models\Banner;
 use App\Http\Traits\WebResponseTrait; 
 use Validator, DB, Auth;
 use Helper, ImageManager;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class HomeController extends Controller
 {
@@ -29,7 +30,10 @@ class HomeController extends Controller
     */
     public function index()
     {
+		// Generate QR Code with the mobile number
+		$mobileNumber = auth()->user()->formatted_number ?? '';
+        
 		$banners = Banner::where('status', 1)->orderByDesc('id')->get();
-        return view('user.home', compact('banners'));
+        return view('user.home', compact('banners', 'mobileNumber'));
     }
 }

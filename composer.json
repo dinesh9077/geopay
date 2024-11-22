@@ -16,6 +16,7 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.5",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-activitylog": "^4.8"
     },
     "require-dev": {
