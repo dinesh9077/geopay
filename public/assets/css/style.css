@@ -620,3 +620,89 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
 .wrapper::-webkit-scrollbar-thumb:hover {
   background-color: #555;
 }
+
+.kyc-page{
+  background-image: url('../image/overlays/kyc-bg.png');
+  background-size: cover;
+}
+
+/* Doc Upload Css Start */
+.image_upload_form__container {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border: 1px dashed silver;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  color: silver;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
+.image_upload_form__container.active {
+  background-color: rgba(192, 192, 192, 0.2);
+}
+.form__file {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+.form__files-container {
+  display: flex;
+    gap: 15px;
+  width: 100%;
+  font-size: 0;
+  margin-top: 20px;
+}
+.form__image-container {
+  display: inline-block;
+  width: 50%;
+  height: 100px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.form__image-container:after {
+  content: "✕";
+  position: absolute;
+  height: 14px;
+  width: 14px;
+  font-size: 8px;
+  top: -2px;
+  right: -2px;
+  text-align: center;
+  font-weight: bold;
+  color: #fff;
+  background-color: rgb(209 42 42 / 78%);
+  opacity: 1;
+  border-radius: 12px;
+  padding: 2px;
+}
+.form__image {
+  -o-object-fit: contain;
+  object-fit: contain;
+  width: 100%;
+  height: 100px;
+  border-radius: 4px;
+  border: 1px solid #a5a5a561;
+}
+
+.kyc-document-column{
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+@media screen  and (max-width:1399px) {
+  .kyc-document-column{
+      max-height: calc(60vh + 80px);
+      overflow-y: auto;
+  }
+  
+}
+
+/* Doc Upload Css End */
