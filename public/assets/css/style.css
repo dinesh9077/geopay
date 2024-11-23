@@ -423,7 +423,7 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
 }
 
 .default-input{
-  background: #acbacf45;
+  background: #acbacf45 !important;
   border: none;
 }
 

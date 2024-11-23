@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\SettingController;
+use App\Http\Controllers\User\TransactionController;
 use App\Http\Controllers\User\KycController;
 /*
 |--------------------------------------------------------------------------
@@ -61,15 +62,16 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	Route::post('corporate/kyc/final', [KycController::class, 'corporateKycFinal'])->name('corporate.kyc.submit-final');
 	 
 	// Dashboard
-	Route::get('/home', [HomeController::class, 'index'])->name('home');  
+	Route::get('/home', [HomeController::class, 'index'])->name('home');   
 	
+	Route::get('/wallet-to-wallet', [TransactionController::class, 'walletToWallet'])->name('wallet-to-wallet');  
+	Route::post('/wallet-to-wallet/store', [TransactionController::class, 'walletToWalletStore'])->name('wallet-to-wallet.store');  
+	 
 	Route::get('/add-money', function () {
 		return view('user.transaction.add-money.index');
 	})->name('add-money');  
 
-	Route::get('/wallet-to-wallet', function () {
-		return view('user.transaction.wallet-to-wallet');
-	})->name('wallet-to-wallet');  
+	
 
 	Route::get('/transfer-to-mobile-money', function () {
 		return view('user.transaction.transfer-to-mobile-money');

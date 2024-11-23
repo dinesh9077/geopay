@@ -12,27 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('transactions', function (Blueprint $table) {
-            $table->id();
-            $table->string('user_id', 255);
-            $table->string('receiver_id', 255);
-            $table->string('wallet_id', 255);
-            $table->string('invoice_id', 255);
-            $table->text('transaction_id');
-            $table->string('platform_name', 255);
-            $table->string('platform_provider', 255);
-            $table->string('country_id', 255);
-            $table->text('transaction_type');
-            $table->string('image', 255)->nullable();
-            $table->decimal('previous_amount', 28, 8);
-            $table->decimal('current_amount', 28, 8);
-            $table->decimal('total_amount', 28, 8);
-            $table->decimal('requested_amount', 28, 8);
-            $table->decimal('commission_amount', 28, 8);
-            $table->string('transaction_status', 255);
-            $table->text('remarks');
-            $table->text('comments')->nullable();
-            $table->text('remarks');
-            $table->timestamps();
+            $table->id(); // Auto-incrementing ID
+			$table->unsignedBigInteger('user_id')->index(); // Index for user_id, assuming it references the users table
+			$table->unsignedBigInteger('receiver_id')->nullable()->index(); // Index for receiver_id, nullable in case it's not applicable
+			$table->string('platform_name')->index(); // Index for platform_name, typically used in queries
+			$table->string('platform_provider')->index(); // Index for platform_provider
+			$table->string('transaction_type')->index()->comment('credit, debit'); // Index and comment for type of transaction
+			$table->unsignedBigInteger('country_id')->nullable()->index(); // Index for country_id, nullable for optional countries
+			$table->decimal('txn_amount', 18, 4); // Decimal with 18 digits and 4 decimal places for monetary values
+			$table->string('txn_status')->default('pending')->index()->comment('pending, process, success'); // Default value and index for transaction status
+			$table->longText('comments')->nullable(); // Nullable text for comments
+			$table->longText('notes')->nullable(); // Nullable text for any additional notes
+			$table->timestamps(); // Auto-created created_at and updated_at columns
         });
     }
 

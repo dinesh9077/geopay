@@ -9,62 +9,44 @@ use Spatie\Activitylog\LogOptions;
 
 class Transaction extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
+	
     protected $fillable = [
         'user_id',
         'receiver_id',
-        'wallet_id',
-        'invoice_id',
-        'transaction_id',
         'platform_name',
         'platform_provider',
-        'country_id',
         'transaction_type',
-        'image',
-        'previous_amount',
-        'current_amount',
-        'total_amount',
-        'requested_amount',
-        'commission_amount',
-        'transaction_status',
+        'country_id',
+        'txn_amount',
+        'txn_status',
         'comments',
-        'remarks'
+        'notes'
     ];
-    /**
-     * The name of the log.
-     *
-     * @var string
-     */
-    protected static $logName = 'transaction';
-
-    /**
-     * Whether to log only dirty attributes.
-     *
-     * @var bool
-     */
-    protected static $logOnlyDirty = true;
-
-    /**
-     * Custom description for the log.
-     *
-     * @param string $eventName
-     * @return string
-     */
-    public function getDescriptionForEvent(string $eventName): string
-    {
-        return "Transaction model has been {$eventName}";
-    }
-
-    /**
-     * Get the activity log options for the model.
-     *
-     * @return LogOptions
-     */
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logAll()
-            ->useLogName('transaction')
-            ->logOnlyDirty();
-    }
+   
+	protected static $recordEvents = ['created', 'deleted', 'updated'];
+	
+	public function getActivitylogOptions(string $logName = 'transaction'): LogOptions
+	{  
+		$user_name = auth()->check() ? auth()->user()->name : 'Unknown User'; // Fixed ternary operator
+		return LogOptions::defaults()
+		->logOnly(['*', 'user.first_name', 'receive.first_name'])
+		->logOnlyDirty()
+		->dontSubmitEmptyLogs()
+		->useLogName($logName)
+		->setDescriptionForEvent(function (string $eventName) use ($logName, $user_name) {
+			return "The {$logName} has been {$eventName} by {$user_name}";
+		});
+	}
+	
+	public function user()
+	{
+		return $this->belongsTo(User::class, 'user_id');
+	}
+	
+	public function receive()
+	{
+		return $this->belongsTo(User::class, 'receive_id');
+	}
+   
 }

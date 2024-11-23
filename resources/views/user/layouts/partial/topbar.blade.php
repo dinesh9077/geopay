@@ -2,7 +2,7 @@
 	<button class="btn" id="sidebar-toggle" type="button">
 		<span class="navbar-toggler-icon"></span>
 	</button>
-	<h6 class="mb-0 d-none d-lg-block heading-4">Dashboard</h6>
+	<h6 class="mb-0 d-none d-lg-block heading-4">@yield('header_title')</h6>
 	<div class="navbar-collapse navbar">
 		<ul class="navbar-nav gap-3">
 			<!-- Wallet Balance -->

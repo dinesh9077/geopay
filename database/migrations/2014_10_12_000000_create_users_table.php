@@ -33,6 +33,9 @@ return new class extends Migration
 			$table->decimal('balance', 25, 10)->default(0);
 			$table->rememberToken();
 			$table->string('profile_image')->nullable();
+			$table->integer('terms')->default(1);
+			$table->string('xps')->nullable();
+			$table->string('company_name')->nullable();
 			$table->softDeletes();
 			$table->timestamps();
 		}); 

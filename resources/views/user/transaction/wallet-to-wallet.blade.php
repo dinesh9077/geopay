@@ -1,36 +1,136 @@
 @extends('user.layouts.app')
 @section('title', config('setting.site_name').' - Wallet to Wallet')
+@section('header_title', 'Wallet to Wallet')
 @section('content')
+ 
 <div class="container-fluid p-0">
 	<div class="row g-4">
 		<!-- Left Column -->
 		<div class="col-lg-9 mb-3 add-money-section">
-			<form id="profileForm" class="animate__animated animate__fadeIn g-2">
-				<div class="mb-1">
-					<select id="country_id1" name="country_id" class="form-control form-control-lg default-input mb-3" >
-						<option value="" selected disabled>Select Country*</option>
-						<option value="1">Channel 1</option>
-						<option value="2">Channel 2</option>
-						<option value="3">Channel 3</option>
-					</select>
-					<div class="d-flex align-items-center gap-2">
-						<input id="mobile-number" type="number" class="form-control form-control-lg default-input mobile-number mb-3 px-2" style="max-width: 65px;" placeholder="+91" />
-						<input id="mobile-number" type="number" class="form-control form-control-lg default-input mobile-number mb-3" placeholder="Enter your mobile number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==10) return false;"/>
+			<form id="walletToWalletForm" action="{{ route('wallet-to-wallet.store') }}" method="post" class="animate__animated animate__fadeIn g-2">
+				<div class="mb-1 row">
+					<div class="col-12 mb-3"> 
+						<select id="country_id" name="country_id" class="form-control form-control-lg default-input">
+							<option></option> <!-- Placeholder option -->
+						</select>
 					</div>
-					<input id="amount" type="text" class="form-control form-control-lg default-input mb-3" placeholder="Enter Amount in USD (eg : 100 or eg : 0.0)">
-					<input id="amount" type="text" class="form-control form-control-lg default-input mb-3" placeholder="Beneficiary Name">
-					<textarea name="address" id="address" class="form-control form-control-lg default-input mb-3" id="" placeholder="Account Description"></textarea>
-
+					<div class="col-12 mb-3">
+						<input type="number" id="mobile_number" name="mobile_number" class="form-control form-control-lg default-input mobile-number" placeholder="Enter your mobile number without code" oninput="this.value = this.value.replace(/\D/g, '')"/>
+					</div>
+					<div class="col-12 mb-3">
+						<input id="amount" name="amount" type="text" class="form-control form-control-lg default-input" placeholder="Enter Amount in USD (eg : 100 or eg : 0.0)" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
+					</div>
+					<div class="col-12 mb-3">
+						<textarea name="notes" id="notes" class="form-control form-control-lg default-input" id="" placeholder="Account Description"></textarea>
+					</div> 
 				</div>
-				<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2">
-					<p class="content-3 text-muted col-md-7"> Once a new amount is entered or payment method is changed, the exchange rate and fees will be recalculated. </p>
-					<button type="button" class="btn btn-lg btn-primary rounded-2 text-nowrap" id="addMoney">Add Money</button>
+				<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2"> 
+					<button type="submit" class="btn btn-lg btn-primary rounded-2 text-nowrap" >Pay Money</button>
 				</div>
 			</form>
-		</div>
-		
-		<!-- Quick Transfer Column -->
+		</div>   
 		@include('user.layouts.partial.quick-transfer')
 	</div>
 </div>
 @endsection
+
+@push('js')
+	<script>
+	
+		$walletForm = $('#walletToWalletForm');
+		const countries = @json($countriesWithFlags);
+
+		$(document).ready(function() {
+			// Initialize Select2 for the individual form
+			$walletForm.find('#country_id').select2({
+				data: countries.map(country => ({
+					id: country.id,
+					text: country.name,
+					flag: country.country_flag // Add custom data for the flag
+				})),
+				templateResult: formatCountry,
+				templateSelection: formatCountrySelection,
+				width: "100%",
+				placeholder: "Select Country", 
+				allowClear: false,  
+			});
+			   
+			// Template for the dropdown items
+			function formatCountry(country) {
+				if (!country.id) {
+					return country.text; // Default text if no id (for the placeholder option)
+				}
+				const flagImg = '<img src="'+country.flag+'" style="width: 20px; height: 20px; margin-right: 4px; margin-bottom: 4px;" />';
+				return $('<span>'+flagImg+' '+country.text+'</span>');
+			}
+
+			// Template for the selected item
+			function formatCountrySelection(country) {
+				if (!country.id) {
+					return country.text;
+				}
+				const flagImg = '<img src="'+country.flag+'" style="width: 20px; height: 20px; margin-right: 4px; margin-bottom: 4px;" />';
+				return $('<span>'+flagImg+' '+country.text+'</span>');
+			}
+		 
+		});
+		
+		// Attach the submit event handler
+		$walletForm.submit(function(event) 
+		{
+			event.preventDefault();   
+			
+			$walletForm.find('button').prop('disabled',true);   
+			var formData = {};
+			$walletForm.find('input, select, textarea, checkbox').each(function() {
+				var inputName = $(this).attr('name');
+
+				if ($(this).is(':checkbox')) {
+					// For checkboxes, store whether it is checked (true or false)
+					formData[inputName] = $(this).is(':checked');
+				} else {
+					// For other inputs, use the value
+					formData[inputName] = $(this).val();
+				}
+			});
+
+			// Encrypt data before sending
+			const encrypted_data = encryptData(JSON.stringify(formData));
+
+			$.ajax({
+				async: true,
+				type: $(this).attr('method'),
+				url: $(this).attr('action'),
+				data: { encrypted_data: encrypted_data, '_token': "{{ csrf_token() }}" },
+				cache: false, 
+				dataType: 'Json', 
+				success: function (res) 
+				{ 
+					$walletForm.find('button').prop('disabled',false);	 
+					$('.error_msg').remove(); 
+					if(res.status === "success")
+					{ 
+						toastrMsg(res.status, res.message); 
+						$walletForm[0].reset();
+						$walletForm.find('select').trigger('change'); 
+					}
+					else if(res.status == "validation")
+					{  
+						$.each(res.errors, function(key, value) {
+							var inputField = $walletForm.find('#' + key);
+							var errorSpan = $('<span>')
+							.addClass('error_msg text-danger content-4') 
+							.attr('id', key + 'Error')
+							.text(value[0]);  
+							inputField.parent().append(errorSpan); 
+						});
+					}
+					else
+					{ 
+						toastrMsg(res.status, res.message);
+					}
+				} 
+			});
+		});
+	</script>
+@endpush

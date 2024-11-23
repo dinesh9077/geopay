@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-			$table->integer('terms')->default(1);
-			$table->string('xps')->nullable();
-			$table->string('company_name')->nullable();
-        });
+		Schema::create('notifications', function (Blueprint $table) {
+			$table->char('id', 36)->primary();
+			$table->morphs('notifiable');
+			$table->string('type');
+			$table->text('data');
+			$table->timestamp('read_at')->nullable();
+			$table->timestamps();
+		});
     }
 
     /**
@@ -23,8 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('notifications');
     }
 };

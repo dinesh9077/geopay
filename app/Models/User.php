@@ -1,24 +1,24 @@
 <?php
-
-namespace App\Models;
-
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
-
-class User extends Authenticatable
-{
-    use HasApiTokens, HasFactory, Notifiable, LogsActivity;
-
-    /**
-	 * The attributes that are mass assignable.
-	 *
-	 * @var array<int, string>
-	 */
-    protected $fillable = [
+	
+	namespace App\Models;
+	
+	use Illuminate\Foundation\Auth\User as Authenticatable;
+	use Illuminate\Database\Eloquent\Factories\HasFactory;
+	use Illuminate\Notifications\Notifiable;
+	use Laravel\Passport\HasApiTokens;
+	use Spatie\Activitylog\Traits\LogsActivity;
+	use Spatie\Activitylog\LogOptions;
+	
+	class User extends Authenticatable
+	{
+		use HasApiTokens, HasFactory, Notifiable, LogsActivity;
+		
+		/**
+			* The attributes that are mass assignable.
+			*
+			* @var array<int, string>
+		*/
+		protected $fillable = [
         'first_name',
         'last_name',
         'email',
@@ -38,66 +38,73 @@ class User extends Authenticatable
         'role',
         'xps',
         'terms',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
+        'user_limit_id',
+		];
+		
+		/**
+			* The attributes that should be hidden for serialization.
+			*
+			* @var array<int, string>
+		*/
+		protected $hidden = [
         'password',
         'remember_token',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
+		];
+		
+		/**
+			* The attributes that should be cast.
+			*
+			* @var array<string, string>
+		*/
+		protected $casts = [
         'is_company' => 'boolean',
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-    ];
- 
-	protected static $recordEvents = ['created', 'deleted', 'updated'];
-
-	public function getActivitylogOptions(string $logName = 'user'): LogOptions
-	{  
-		$user_name = auth()->check() ? auth()->user()->name : 'Unknown User'; // Fixed ternary operator
-		return LogOptions::defaults()
-			->logOnly(['*', 'country.name', 'userRole.role_name'])
+		];
+		
+		protected static $recordEvents = ['created', 'deleted', 'updated'];
+		
+		public function getActivitylogOptions(string $logName = 'user'): LogOptions
+		{  
+			$user_name = auth()->check() ? auth()->user()->name : 'Unknown User'; // Fixed ternary operator
+			return LogOptions::defaults()
+			->logOnly(['*', 'country.name'])
 			->logOnlyDirty()
 			->dontSubmitEmptyLogs()
 			->useLogName($logName)
 			->setDescriptionForEvent(function (string $eventName) use ($logName, $user_name) {
 				return "The {$logName} has been {$eventName} by {$user_name}";
 			});
-	}
+		}
+		
+		public function unreadNotifications()
+		{
+			return $this->notifications()->whereNull('read_at');
+		}
+
+		public function companyDetail()
+		{
+			return $this->hasOne(CompanyDetail::class, 'user_id');
+		}
+		 
+		public function country()
+		{
+			return $this->belongsTo(Country::class, 'country_id');
+		}
+		
+		public function loginLogs()
+		{
+			return $this->hasMany(LoginLog::class);
+		} 
+		
+		public function userKyc()
+		{
+			return $this->hasOne(UserKyc::class, 'user_id');
+		} 
+		
+		public function userLimit()
+		{
+			return $this->belongsTo(UserLimit::class, 'user_limit_id');
+		}
  
-    public function companyDetail()
-    {
-        return $this->hasOne(CompanyDetail::class, 'user_id');
-    }
-
-    public function userRole()
-    {
-        return $this->belongsTo(UserRole::class, 'user_role_id');
-    }
-	
-    public function country()
-    {
-        return $this->belongsTo(Country::class, 'country_id');
-    }
-
-    public function loginLogs()
-    {
-        return $this->hasMany(LoginLog::class);
-    } 
-
-    public function userKyc()
-    {
-        return $this->hasOne(UserKyc::class, 'user_id');
-    } 
-}
+	}

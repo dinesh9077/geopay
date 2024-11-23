@@ -14,6 +14,27 @@
 		<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css" />	
+		<style>
+			.select2-container--default .select2-selection--single{
+				background: #acbacf45 !important;
+			}
+			.select2-container .select2-selection--single {
+				height: 42px !important;
+			}
+			.select2-container--default .select2-selection--single .select2-selection__rendered {
+				line-height: 42px !important;
+			}
+			.select2-container--default .select2-selection--single .select2-selection__arrow {
+				height: 42px;
+			}
+			.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+				background-color: var(--primary-color);
+				color: white;
+			}
+			.select2-container--default .select2-selection--single { 
+				border-radius: .5rem;
+			}
+		</style>
 	</head>
 	
 	<body>
