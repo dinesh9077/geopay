@@ -35,6 +35,7 @@
 				border-radius: .5rem;
 			}
 		</style>
+		 @livewireStyles
 	</head>
 	
 	<body>
@@ -59,7 +60,8 @@
 		<script type="text/javascript" src="{{ asset('assets/js/slick/slick.min.js')}}"></script>
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
-		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
+		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script> 
+
 		<x-scripts :cryptoKey="$cryptoKey" />	
 		<script>
 			// for sidebar collapse
@@ -108,29 +110,10 @@
 				]
 			});
 
-			// Profile Image Upload
-			const imageUpload = document.getElementById('imageUpload');
-			const profileImage = document.getElementById('profileImage');
-			const editIcon = document.getElementById('editIcon');
-			editIcon.addEventListener('click', function () {
-				imageUpload.click();
-			});
-			imageUpload.addEventListener('change', function (event) {
-				const file = event.target.files[0];
-				if (file) {
-					const reader = new FileReader();
-					reader.onload = function (e) {
-						profileImage.src = e.target.result;
-					};
-					reader.readAsDataURL(file);
-				}
-			});
-			document.getElementById('updateBtn').addEventListener('click', function () {
-				alert('Profile updated successfully!');
-			});
-
+			 
 		</script>
 		@stack('js')
+		@livewireScripts
 	</body>
 	
 </html>

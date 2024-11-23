@@ -63,7 +63,7 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	 
 	// Dashboard
 	Route::get('/home', [HomeController::class, 'index'])->name('home');   
-	
+	  
 	Route::get('/wallet-to-wallet', [TransactionController::class, 'walletToWallet'])->name('wallet-to-wallet');  
 	Route::post('/wallet-to-wallet/store', [TransactionController::class, 'walletToWalletStore'])->name('wallet-to-wallet.store');  
 	 

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\WebResponseTrait;
 use App\Notifications\WalletTransactionNotification;
 use Illuminate\Support\Facades\Notification;
+use Helper;
 
 class TransactionController extends Controller
 {
@@ -103,9 +104,11 @@ class TransactionController extends Controller
 			// Update receiver's balance (credit the amount)
 			$toUser->increment('balance', $txnAmount);
 			
-			$comment = $txnAmount . ' USD has been transferred to the wallet';
+			$fromComment = 'You have successfully transferred ' . $txnAmount . ' USD to ' . $toUser->first_name . ' ' . $toUser->last_name . '.';
+			$toComment = $user->first_name . ' ' . $user->last_name . ' has sent you ' . $txnAmount . ' USD to your wallet.';
+			
 			// Create a transaction record
-			Transaction::create([
+			$transaction = Transaction::create([
 				'user_id' => $user->id,
 				'receiver_id' => $toUser->id,
 				'platform_name' => 'wallet to wallet',
@@ -114,15 +117,17 @@ class TransactionController extends Controller
 				'country_id' => $countryId,
 				'txn_amount' => $txnAmount,
 				'txn_status' => 'success', // Assuming the transaction is successful
-				'comments' => $comment,
+				'comments' => $fromComment,
 				'notes' => $notes,
 				'created_at' => now(),
 				'updated_at' => now(),
 			]);
 			
-			// Send notifications to both sender and receiver
-			Notification::send($user, new WalletTransactionNotification($user, $toUser, $txnAmount, $comment, $notes));
-			Notification::send($toUser, new WalletTransactionNotification($user, $toUser, $txnAmount, $comment, $notes));
+			Helper::updateLogName($transaction->id, Transaction::class, 'wallet to wallet transaction', $user->id);
+			 
+			Notification::send($user, new WalletTransactionNotification($user, $toUser, $txnAmount, $fromComment, $notes)); // Sender Notification
+			Notification::send($toUser, new WalletTransactionNotification($user, $toUser, $txnAmount, $toComment, $notes)); // Receiver Notification
+
  
 			DB::commit();
 

@@ -1,3 +1,52 @@
+<style> 
+.indicator {
+	position: absolute;
+	top: 0;
+	right: 2px;
+}
+.indicator .circle {
+	background: #6571ff;
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+}
+.indicator .circle::before {
+	background-color: #6571ff;
+	content: "";
+	display: table;
+	border-radius: 50%;
+	position: absolute;
+}
+.indicator .circle::before, .pulse-1 {
+	animation-name: pulse-1;
+	animation-duration: .9s;
+	animation-iteration-count: infinite;
+	animation-timing-function: ease-out;
+}
+@keyframes pulse-1 {
+	0% {
+		opacity: 1;
+		width: 7px;
+		height: 7px;
+		left: 0;
+		top: 0;
+	}
+	95% {
+		opacity: .1;
+		left: -10.5px;
+		top: -10.5px;
+		width: 28px;
+		height: 28px;
+	}
+	100% {
+		opacity: 0;
+		width: 7px;
+		height: 7px;
+		left: 0;
+		top: 0;
+	}
+}
+</style>
 <nav class="navbar navbar-expand px-3 border-bottom"> 
 	<button class="btn" id="sidebar-toggle" type="button">
 		<span class="navbar-toggler-icon"></span>
@@ -10,27 +59,17 @@
 				<i class="fa-solid fa-wallet"></i>
 				<span>{{ Helper::decimalsprint(auth()->user()->balance, 2) }} {{ config('setting.default_currency') }}</span>
 			</div>
+			 
 			<!-- Bell Icon Container -->
-			<li class="nav-item dropdown align-content-center">
-				<a href="#" data-bs-toggle="dropdown">
-					<div class="bg-secondary-subtle rounded-circle d-flex align-items-center justify-content-center bell-icon">
-						<i class="fas fa-bell text-dark"></i>
-					</div>
-				</a>
-				<div class="dropdown-menu dropdown-menu-end">
-					<a href="#" class="dropdown-item">Notification 1</a>
-					<a href="#" class="dropdown-item">Notification 2</a>
-					<a href="#" class="dropdown-item">Notification 3</a>
-				</div>
-			</li>
+			<livewire:notification-dropdown />
 			<!-- Profile Container -->
 			<li class="nav-item dropdown d-flex align-items-center gap-2">
 				<a href="javascipt:;" data-bs-toggle="dropdown" class="nav-icon pe-md-0">
-					 
+					
 					@if(auth()->user()->profile_image)  
-						<img src="{{ url('storage/profile', auth()->user()->profile_image) }}" class="avatar img-fluid rounded-circle " alt="">
+					<img src="{{ url('storage/profile', auth()->user()->profile_image) }}" class="avatar img-fluid rounded-circle " alt="">
 					@else
-						<img src="{{ url('admin/default-profile.png') }}" class="avatar img-fluid rounded-circle " alt="">
+					<img src="{{ url('admin/default-profile.png') }}" class="avatar img-fluid rounded-circle " alt="">
 					@endif 
 				</a>
 				<div class="d-flex flex-column me-3" data-bs-toggle="dropdown">
@@ -39,8 +78,8 @@
 				</div>
 				<!--<div class="dropdown-menu dropdown-menu-end">
 					<a href="#" class="dropdown-item">Profile</a>
-					<a href="#" class="dropdown-item">Setting</a>
-					<a href="/login.html" class="dropdown-item">Logout</a>
+				<a href="#" class="dropdown-item">Setting</a>
+				<a href="/login.html" class="dropdown-item">Logout</a>
 				</div> -->
 			</li>
 		</ul>

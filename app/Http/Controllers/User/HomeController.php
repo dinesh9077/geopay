@@ -13,6 +13,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class HomeController extends Controller
 {
+	use WebResponseTrait;
     /**
      * Create a new controller instance.
      *
@@ -35,5 +36,25 @@ class HomeController extends Controller
         
 		$banners = Banner::where('status', 1)->orderByDesc('id')->get();
         return view('user.home', compact('banners', 'mobileNumber'));
+    }
+	
+	public function fetchNotifications()
+    {
+        $user = Auth::user();
+		
+		$unreadNotificationCount = $user->unreadNotifications()->count();
+		
+        $notifications = $user->notifications()->latest()->limit(6)->get();
+
+        $formattedNotifications = $notifications->map(function ($notification) {
+            return [
+                'id' => $notification->id,
+                'message' => $notification->data['comment'] ?? 'No details provided',
+                'time' => $notification->created_at->diffForHumans(),
+                'image' => $notification->data['sender_image'] ?? 'https://via.placeholder.com/30x30',
+            ];
+        });
+ 
+		return $this->successResponse('success', compact('formattedNotifications', 'unreadNotificationCount'));
     }
 }
