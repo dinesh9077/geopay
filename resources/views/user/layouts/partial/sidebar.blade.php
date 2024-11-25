@@ -10,38 +10,41 @@
 			<i class="bi bi-x fs-4"></i>
 		</button>
 		<ul class="sidebar-nav">
-			
-			<li class="sidebar-item"> 
-				<a href="{{ route('home') }}" class="sidebar-link active">
+			<li class="sidebar-item">
+				<a href="{{ route('home') }}" class="sidebar-link {{ Request::routeIs('home') ? 'active' : '' }}">
 					<img class="in-svg" src="{{ asset('assets/image/icons/home.svg') }}" alt="">
 					Dashboard
 				</a>
 			</li>
-			
+
 			<li class="sidebar-item">
-				<a href="{{ route('transaction-list') }}" class="sidebar-link">
+				<a href="{{ route('transaction-list') }}" class="sidebar-link {{ Request::routeIs('transaction-list') ? 'active' : '' }}">
 					<img class="in-svg" src="{{ asset('assets/image/icons/cash.svg') }}" alt="">
 					Transaction
 				</a>
 			</li>
+
 			<li class="sidebar-item">
-				<a href="{{ route('notification-list') }}" class="sidebar-link">
+				<a href="{{ route('notifications') }}" class="sidebar-link {{ Request::routeIs('notifications') ? 'active' : '' }}">
 					<img class="in-svg" src="{{ asset('assets/image/icons/bell.svg') }}" alt="">
 					Notification
 				</a>
 			</li>
+
 			<li class="sidebar-item">
 				<a href="#" class="sidebar-link">
 					<img class="in-svg" src="{{ asset('assets/image/icons/chart.svg') }}" alt="">
 					Statistics
 				</a>
 			</li>
+
 			<li class="sidebar-item">
-				<a href="{{ route('setting') }}" class="sidebar-link">
+				<a href="{{ route('setting') }}" class="sidebar-link {{ Request::routeIs('setting') ? 'active' : '' }}">
 					<img class="in-svg" src="{{ asset('assets/image/icons/setting.svg') }}" alt="">
 					Settings
 				</a>
 			</li>
+
 			<li class="sidebar-item">
 				<a class="sidebar-link text-danger" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> 
 					<img class="in-svg" src="{{ asset('assets/image/icons/logout.svg') }}" alt="">
@@ -52,5 +55,6 @@
 				</form>
 			</li> 
 		</ul>
+
 	</div>
 </aside>

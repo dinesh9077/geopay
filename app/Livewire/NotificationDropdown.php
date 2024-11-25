@@ -28,7 +28,7 @@ class NotificationDropdown extends Component
                 'id' => $notification->id,
                 'message' => $notification->data['comment'] ?? 'No details provided',
                 'time' => $notification->created_at->diffForHumans(),
-                'image' => $notification->data['sender_image'] ?? url('admin/default-profile.png'), // Adjust sender_image field
+                'image' => $notification->data['receive_image'] ?? url('admin/default-profile.png'), // Adjust sender_image field
             ];
         })->toArray();
 

@@ -29,7 +29,7 @@
             @endforelse
         </div>
         <div class="px-3 py-2 d-flex align-items-center justify-content-center border-top">
-            <a class="content-3 text-primary" href="javascript:;" >View all</a>
+            <a class="content-3 text-primary" href="{{ route('notifications') }}" >View all</a>
         </div>
     </div>
 </li>

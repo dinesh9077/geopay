@@ -10,6 +10,8 @@ use App\Http\Traits\WebResponseTrait;
 use Validator, DB, Auth;
 use Helper, ImageManager;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Carbon\Carbon;
+use App\Models\Notification;
 
 class HomeController extends Controller
 {
@@ -37,4 +39,23 @@ class HomeController extends Controller
 		$banners = Banner::where('status', 1)->orderByDesc('id')->get();
         return view('user.home', compact('banners', 'mobileNumber'));
     } 
+	
+	public function notifications()
+	{ 
+		// Get the authenticated user
+		$user = auth()->user();
+		
+		// Mark all notifications as read
+		$user->notifications->markAsRead();
+		
+		$user->notifications()->where('created_at', '<', Carbon::now()->subDays(2))->delete();
+		
+		 // Get recent notifications from the last 2 days
+		$recentNotifications = $user->notifications()
+        ->where('created_at', '>=', Carbon::now()->subDays(2))
+		->orderByDesc('id')
+        ->get();
+		
+		return view('user.notification.index', compact('recentNotifications'));
+	}
 }
