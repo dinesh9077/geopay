@@ -19,13 +19,13 @@
 			</li>
 			
 			<li class="sidebar-item">
-				<a href="#" class="sidebar-link">
+				<a href="{{ route('transaction-list') }}" class="sidebar-link">
 					<img class="in-svg" src="{{ asset('assets/image/icons/cash.svg') }}" alt="">
 					Transaction
 				</a>
 			</li>
 			<li class="sidebar-item">
-				<a href="#" class="sidebar-link">
+				<a href="{{ route('notification-list') }}" class="sidebar-link">
 					<img class="in-svg" src="{{ asset('assets/image/icons/bell.svg') }}" alt="">
 					Notification
 				</a>

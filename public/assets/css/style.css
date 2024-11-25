@@ -282,6 +282,15 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
 }
 
 
+.avatar-xs {
+  height: 22px;
+  width: 22px;
+}
+.avatar-sm {
+  height: 30px;
+  width: 30px;
+}
+
 .avatar {
   height: var(--avatar-size);
   width: var(--avatar-size);

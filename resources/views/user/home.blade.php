@@ -10,11 +10,23 @@
 			<div id="carouselExampleSlidesOnly" class="carousel home-banner-carousel slide mb-3" data-bs-ride="carousel">
 				<div class="carousel-inner">
 					@foreach($banners as $key => $banner)
-						<div class="carousel-item {{ $key == 0 ? 'active' : '' }}" data-bs-interval="5000">
-							<img src="{{ url('storage/banner', $banner->image) }}" class="img-fluid w-100" alt="">
-						</div> 
+					<div class="carousel-item {{ $key == 0 ? 'active' : '' }}" data-bs-interval="5000">
+						<img src="{{ url('storage/banner', $banner->image) }}" class="img-fluid w-100" alt="">
+					</div> 
 					@endforeach
 				</div>
+				<div class="carousel-indicators">
+				   @foreach($banners as $key => $banner)
+					   <button 
+						   type="button" 
+						   data-bs-target="#carouselExampleSlidesOnly" 
+						   data-bs-slide-to="{{ $key }}" 
+						   class="{{ $key == 0 ? 'active' : '' }}" 
+						   aria-current="{{ $key == 0 ? 'true' : 'false' }}" 
+						   aria-label="Slide {{ $key + 1 }}">
+					   </button>
+				   @endforeach
+			   </div>
 			</div>
 			<!-- Second Row -->
 			<div class="row g-4 g-lg-2 my-1">
