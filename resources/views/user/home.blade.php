@@ -86,7 +86,8 @@
 						<span class="content-3">To Pay {{ auth()->user()->first_name. ' ' .auth()->user()->last_name}}</span>
 						<span class="content-3 fw-semibold">Share your GEOPAY QR Code to receive payments</span> 
 						<div class="img-fluid p-2 qr-code">
-						{!! QrCode::size(300)->generate($mobileNumber) !!}
+						<!-- {!! QrCode::size(300)->generate($mobileNumber) !!} -->
+							{!! QrCode::generate($mobileNumber) !!}
 						</div>
 					</div>
 				</div>

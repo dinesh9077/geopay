@@ -63,6 +63,8 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	 
 	// Dashboard
 	Route::get('/home', [HomeController::class, 'index'])->name('home');   
+	
+	Route::get('/notifications', [HomeController::class, 'notifications'])->name('notifications');   
 	  
 	Route::get('/wallet-to-wallet', [TransactionController::class, 'walletToWallet'])->name('wallet-to-wallet');  
 	Route::post('/wallet-to-wallet/store', [TransactionController::class, 'walletToWalletStore'])->name('wallet-to-wallet.store');  
@@ -70,9 +72,7 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	Route::get('/add-money', function () {
 		return view('user.transaction.add-money.index');
 	})->name('add-money');  
-
-	
-
+  
 	Route::get('/transfer-to-mobile-money', function () {
 		return view('user.transaction.transfer-to-mobile-money');
 	})->name('transfer-to-mobile-money');
@@ -84,11 +84,11 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	Route::get('/transaction-list', function () {
 		return view('user.transaction.transaction-list-page');
 	})->name('transaction-list');
-
-	Route::get('/notification-list', function () {
-		return view('user.notification.index');
-	})->name('notification-list');
 	
+	Route::get('/transfer-to-bank', function () {
+		return view('user.transaction.transfer-bank');
+	})->name('transfer-to-bank');
+	 
 	//Setting
 	Route::get('/setting', [SettingController::class, 'index'])->name('setting');  
 	Route::post('/password-change', [SettingController::class, 'changePassword'])->name('password-change');  

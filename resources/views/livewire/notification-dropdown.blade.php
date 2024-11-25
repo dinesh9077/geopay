@@ -1,7 +1,7 @@
 <li class="nav-item dropdown align-content-center">
     <a href="#" data-bs-toggle="dropdown">
         <div class="bg-secondary-subtle rounded-circle d-flex align-items-center justify-content-center bell-icon position-relative">
-            <i class="bi bi-bell-fill text-primary"></i>
+            <img class="in-svg text-primary" src="{{ asset('assets/image/icons/bell.svg') }}" alt="">
             <div class="indicator" style="display: {{ $unreadCount > 0 ? 'block' : 'none' }}">
 				<div class="circle"></div>
 			</div>
