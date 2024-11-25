@@ -251,7 +251,7 @@
 									
 									<hr class="flex-grow-1 hr-line text-secondary">
 								</div>
-								<a href="{{ route('login') }}" class="btn btn-lg btn-secondary w-100 mb-4">Login</a>
+								<a href="{{ route('login') }}" wire:navigate class="btn btn-lg btn-secondary w-100 mb-4">Login</a>
 							</div>
 						</div>
 					</div>
@@ -324,7 +324,11 @@
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
-		<x-scripts :cryptoKey="$cryptoKey" /> 
+		<script src="{{ asset('vendor/livewire/livewire.js?id=38dc8241') }}"
+        data-csrf="{{ csrf_token() }}"
+        data-update-uri="livewire/update"
+        data-navigate-once="true"></script>
+		<x-scripts :cryptoKey="$cryptoKey" />	
 		
 		<script>  
 			let timer;

@@ -46,7 +46,7 @@
 			</li>
 
 			<li class="sidebar-item">
-				<a class="sidebar-link text-danger" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> 
+				<a class="sidebar-link text-danger" href="{{ route('logout') }}"   wire:navigate onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> 
 					<img class="in-svg" src="{{ asset('assets/image/icons/logout.svg') }}" alt="">
 					{{ __('Logout') }}
 				</a>

@@ -93,7 +93,7 @@
 											{{ __('Remember Me') }}
 										</label>
 									</div>
-									<label class="d-flex text-center justify-content-end text-secondary font-md"> <a class="content-3 text-primary" href="{{ route('password.request') }}" >Forgot your password?</a> </label>
+									<label class="d-flex text-center justify-content-end text-secondary font-md"> <a class="content-3 text-primary" href="{{ route('password.request') }}" wire:navigate>Forgot your password?</a> </label>
 								</div>
 								
 								<div class="text-center">
@@ -105,7 +105,7 @@
 									
 									<hr class="flex-grow-1 hr-line text-secondary">
 								</div>
-								<a href="{{ route('register') }}" class="btn btn-lg btn-secondary w-100">Sign up</a>
+								<a href="{{ route('register') }}" wire:navigate class="btn btn-lg btn-secondary w-100">Sign up</a>
 							</form>
 						</div>
 					</div>
@@ -117,7 +117,11 @@
 	<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script>
 	<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 	<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
-	@include('components.scripts')
+	<script src="{{ asset('vendor/livewire/livewire.js?id=38dc8241') }}"
+        data-csrf="{{ csrf_token() }}"
+        data-update-uri="livewire/update"
+        data-navigate-once="true"></script>
+	<x-scripts :cryptoKey="$cryptoKey" />	
 	<script>  
 		$('#loginForm').submit(function(event) 
 		{
@@ -165,7 +169,7 @@
 					{ 
 						toastrMsg(res.status,res.message); 
 						const decryptRes = decryptData(res.response);
-						window.location.href = decryptRes.url;
+						window.location.href = decryptRes.url; 
 					}
 				} 
 			});
