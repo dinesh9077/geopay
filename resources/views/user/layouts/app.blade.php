@@ -68,14 +68,14 @@
         data-update-uri="livewire/update"
         data-navigate-once="true"></script>
 		<script>
-			document.addEventListener('DOMContentLoaded', function () {
+			/* document.addEventListener('DOMContentLoaded', function () {
 				Livewire.dispatch('refreshRecentTransactions');
-			});
+			}); */
 			 
 			// for sidebar collapse
-			const sidebarToggle = document.querySelector("#sidebar-toggle");
-			const sidebarClose = document.querySelector("#sidebar-close");
-			const sidebar = document.querySelector("#sidebar");
+			var sidebarToggle = document.querySelector("#sidebar-toggle");
+			var sidebarClose = document.querySelector("#sidebar-close");
+			var sidebar = document.querySelector("#sidebar");
 			sidebarToggle.addEventListener("click", function () {
 				sidebar.classList.toggle("collapsed");
 			});

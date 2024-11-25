@@ -51,7 +51,7 @@
 		return queryParams;
 	}
 	
-	const secretKey = @json($cryptoKey);
+	var secretKey = @json($cryptoKey);
 
 	// Encrypt function
 	function encryptData(data) {

@@ -118,9 +118,9 @@
 	});
 	
 	// Profile Image Upload
-	const imageUpload = document.getElementById('imageUpload');
-	const profileImage = document.getElementById('profileImage');
-	const editIcon = document.getElementById('editIcon');
+	var imageUpload = document.getElementById('imageUpload');
+	var profileImage = document.getElementById('profileImage');
+	var editIcon = document.getElementById('editIcon');
 	editIcon.addEventListener('click', function () {
 		imageUpload.click();
 	});
