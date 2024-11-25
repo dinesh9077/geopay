@@ -1,10 +1,3 @@
-vendor/
-
-npm-debug.log
-yarn-error.log
-
-# Laravel 4 specific
-bootstrap/compiled.php
 app/storage/
 
 # Laravel 5 & Lumen specific
@@ -23,9 +16,4 @@ storage/*
 .env.development.local
 .env.test.local
 .env.production.local
-
-Homestead.yaml
-Homestead.json
-/.vagrant
-.phpunit.result.cache
  
