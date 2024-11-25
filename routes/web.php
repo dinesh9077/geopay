@@ -81,6 +81,14 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 		return view('user.transaction.international-airtime');
 	})->name('international-airtime');
 	
+	Route::get('/transaction-list', function () {
+		return view('user.transaction.transaction-list-page');
+	})->name('transaction-list');
+
+	Route::get('/notification-list', function () {
+		return view('user.notification.index');
+	})->name('notification-list');
+	
 	//Setting
 	Route::get('/setting', [SettingController::class, 'index'])->name('setting');  
 	Route::post('/password-change', [SettingController::class, 'changePassword'])->name('password-change');  
