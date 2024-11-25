@@ -4,21 +4,35 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Auth;
 
 class RecentTransactions extends Component
 {
     public $transactions;
 
+    // Define listeners for Livewire events
+    protected $listeners = ['refreshRecentTransactions'];
+
     public function mount()
-    {
-        // Load recent transactions initially
-        $this->transactions = Transaction::orderByDesc('id')->limit(6)->get();
+    {	
+        $this->refreshTransactions(); // Load initial transactions
     }
 
     public function refreshTransactions()
     {
-        // Refresh the transactions list
-        $this->transactions = Transaction::orderByDesc('id')->limit(6)->get();
+        // Fetch the authenticated user
+        $user = Auth::user();
+
+        // Ensure the user is authenticated
+        if ($user) {
+            $this->transactions = Transaction::where('user_id', $user->id)
+                ->orWhere('receiver_id', $user->id)
+                ->orderByDesc('id')
+                ->limit(6)
+                ->get();
+        } else {
+            $this->transactions = collect(); // Empty collection if no user
+        }
     }
 
     public function render()

@@ -68,6 +68,11 @@ class TransactionController extends Controller
 					$validator->errors()->add('mobile_number', 'The provided mobile number is not registered.');
 				}
 				 
+				// Check if the mobile number is registered and KYC is approved
+				if (!User::where('formatted_number', $formattedNumber)->where('is_kyc_verify', 1)->exists()) {
+					$validator->errors()->add('mobile_number', 'The mobile number entered is not linked to an account with approved KYC. Please complete your KYC verification to proceed.');
+				}
+ 
 				// Check if user has sufficient balance
 				if ($request->input('amount') > $user->balance) {
 					$validator->errors()->add('amount', 'Insufficient balance to complete this transaction.');

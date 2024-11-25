@@ -111,8 +111,7 @@
 					if(res.status === "success")
 					{ 
 						toastrMsg(res.status, res.message); 
-						$walletForm[0].reset();
-						$walletForm.find('select').trigger('change'); 
+						resetForm($walletForm); 
 					}
 					else if(res.status == "validation")
 					{  
@@ -132,5 +131,11 @@
 				} 
 			});
 		});
+		
+		function resetForm($form) {
+			$form[0].reset();
+			$form.find('.error_msg').remove();
+			$form.find('select').val(null).trigger('change');
+		}
 	</script>
 @endpush

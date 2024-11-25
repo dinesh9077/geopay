@@ -49,9 +49,11 @@ class WalletTransactionNotification extends Notification
  
     public function toDatabase($notifiable)
     {
+		$receiverProfile = $this->receiver->profile_image ? url('storage/profile', $this->receiver->profile_image): '';
         return new DatabaseMessage([
             'sender_name' => $this->sender->first_name.' '.$this->sender->last_name,
             'receiver_name' => $this->receiver->first_name.' '.$this->receiver->last_name,
+            'receiver_profile' => $receiverProfile,
             'amount' => $this->amount,
             'comment' => $this->comment,
             'notes' => $this->notes,

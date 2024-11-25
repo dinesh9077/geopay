@@ -60,9 +60,9 @@
 		<script type="text/javascript" src="{{ asset('assets/js/slick/slick.min.js')}}"></script>
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
-		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script> 
-
+		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>  
 		<x-scripts :cryptoKey="$cryptoKey" />	
+		@livewireScripts
 		<script>
 			// for sidebar collapse
 			const sidebarToggle = document.querySelector("#sidebar-toggle");
@@ -109,11 +109,9 @@
 					{ breakpoint: 320, settings: { slidesToShow: 1, slidesToScroll: 1, autoplay: true, } }
 				]
 			});
-
-			 
+ 
 		</script>
-		@stack('js')
-		@livewireScripts
+		@stack('js') 
 	</body>
 	
 </html>
