@@ -62,10 +62,10 @@
 			 
 			<!-- Bell Icon Container -->
 			<livewire:notification-dropdown />
+			
 			<!-- Profile Container -->
 			<li class="nav-item dropdown d-flex align-items-center gap-2">
-				<a href="javascipt:;" data-bs-toggle="dropdown" class="nav-icon pe-md-0">
-					
+				<a href="javascipt:;" data-bs-toggle="dropdown" class="nav-icon pe-md-0"> 
 					@if(auth()->user()->profile_image)  
 					<img src="{{ url('storage/profile', auth()->user()->profile_image) }}" class="avatar img-fluid rounded-circle " alt="">
 					@else
@@ -75,12 +75,7 @@
 				<div class="d-flex flex-column me-3" data-bs-toggle="dropdown">
 					<span class="fw-semibold">{{ auth()->user()->first_name. ' ' . auth()->user()->last_name }}</span>
 					<span class="text-muted small">ID #{{ auth()->user()->id }}</span>
-				</div>
-				<!--<div class="dropdown-menu dropdown-menu-end">
-					<a href="#" class="dropdown-item">Profile</a>
-				<a href="#" class="dropdown-item">Setting</a>
-				<a href="/login.html" class="dropdown-item">Logout</a>
-				</div> -->
+				</div> 
 			</li>
 		</ul>
 	</div>
