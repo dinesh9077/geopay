@@ -1,4 +1,4 @@
-<div wire:poll.3s  class="border rounded px-3 py-2 mt-3"> 
+<div class="border rounded px-3 py-2 mt-3"> 
     <div class="d-flex justify-content-between align-items-center">
 		<h4 class="heading-6">Recent Transactions</h4>
 		<a class="content-4 text-secondary" href="#">View All</a>
