@@ -111,7 +111,9 @@
 					if(res.status === "success")
 					{ 
 						toastrMsg(res.status, res.message); 
-						resetForm($walletForm); 
+						resetForm($walletForm);  
+						Livewire.dispatch('refreshRecentTransactions');
+						Livewire.dispatch('refreshNotificationDropdown');
 					}
 					else if(res.status == "validation")
 					{  

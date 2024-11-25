@@ -11,21 +11,21 @@
 		</button>
 		<ul class="sidebar-nav">
 			<li class="sidebar-item">
-				<a href="{{ route('home') }}" class="sidebar-link {{ Request::routeIs('home') ? 'active' : '' }}">
+				<a href="{{ route('home') }}" wire:navigate class="sidebar-link {{ Request::routeIs('home') ? 'active' : '' }}">
 					<img class="in-svg" src="{{ asset('assets/image/icons/home.svg') }}" alt="">
 					Dashboard
 				</a>
 			</li>
 
 			<li class="sidebar-item">
-				<a href="{{ route('transaction-list') }}" class="sidebar-link {{ Request::routeIs('transaction-list') ? 'active' : '' }}">
+				<a href="{{ route('transaction-list') }}" wire:navigate class="sidebar-link {{ Request::routeIs('transaction-list') ? 'active' : '' }}">
 					<img class="in-svg" src="{{ asset('assets/image/icons/cash.svg') }}" alt="">
 					Transaction
 				</a>
 			</li>
 
 			<li class="sidebar-item">
-				<a href="{{ route('notifications') }}" class="sidebar-link {{ Request::routeIs('notifications') ? 'active' : '' }}">
+				<a href="{{ route('notifications') }}" wire:navigate class="sidebar-link {{ Request::routeIs('notifications') ? 'active' : '' }}">
 					<img class="in-svg" src="{{ asset('assets/image/icons/bell.svg') }}" alt="">
 					Notification
 				</a>
@@ -39,7 +39,7 @@
 			</li>
 
 			<li class="sidebar-item">
-				<a href="{{ route('setting') }}" class="sidebar-link {{ Request::routeIs('setting') ? 'active' : '' }}">
+				<a href="{{ route('setting') }}" wire:navigate class="sidebar-link {{ Request::routeIs('setting') ? 'active' : '' }}">
 					<img class="in-svg" src="{{ asset('assets/image/icons/setting.svg') }}" alt="">
 					Settings
 				</a>

@@ -10,8 +10,14 @@ class RecentTransactions extends Component
 {
     public $transactions;
 
-    // Define listeners for Livewire events
-    protected $listeners = ['refreshRecentTransactions'];
+    // Define listeners for Livewire events 
+	protected $listeners = ['refreshRecentTransactions'];
+
+    public function refreshRecentTransactions()
+    {
+        // Refresh the component's data
+        $this->refreshTransactions();
+    }
 
     public function mount()
     {	

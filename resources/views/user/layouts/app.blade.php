@@ -62,8 +62,16 @@
 		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>  
 		<x-scripts :cryptoKey="$cryptoKey" />	
-		@livewireScripts
+		{{-- @livewireScripts --}}
+		<script src="{{ asset('vendor/livewire/livewire.js?id=38dc8241') }}"
+        data-csrf="{{ csrf_token() }}"
+        data-update-uri="livewire/update"
+        data-navigate-once="true"></script>
 		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				Livewire.dispatch('refreshRecentTransactions');
+			});
+			 
 			// for sidebar collapse
 			const sidebarToggle = document.querySelector("#sidebar-toggle");
 			const sidebarClose = document.querySelector("#sidebar-close");

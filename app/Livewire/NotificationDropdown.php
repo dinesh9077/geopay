@@ -9,7 +9,16 @@ class NotificationDropdown extends Component
 {
     public $notifications = [];
     public $unreadCount = 0; 
+	
+	  // Define listeners for Livewire events 
+	protected $listeners = ['refreshNotificationDropdown'];
 
+    public function refreshNotificationDropdown()
+    {
+        // Refresh the component's data
+        $this->fetchUnreadNotifications();
+    }
+  
     public function mount()
     {
        $this->fetchUnreadNotifications();
