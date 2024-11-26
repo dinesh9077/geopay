@@ -8,6 +8,7 @@ use App\Models\UserKyc;
 use App\Models\User;
 use App\Models\CompanyDetail;
 use App\Models\CompanyDocument;
+use App\Models\BusinessType;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\WebResponseTrait; 
@@ -124,9 +125,11 @@ class KycController extends Controller
 			return $documents->first(); // Get the first document in each group
 		})->toArray()
 		: [];
+		
+		$businessTypes = BusinessType::whereStatus(1)->get();
 		 
 		// Pass the necessary data to the view
-		return view('user.kyc.corporatekyc', compact('user', 'companyDetail', 'stepNumber', 'companyDocument'));
+		return view('user.kyc.corporatekyc', compact('user', 'companyDetail', 'stepNumber', 'companyDocument', 'businessTypes'));
 	}
  
 	public function corporateKycStep(Request $request, $step)
@@ -136,6 +139,8 @@ class KycController extends Controller
 		// Common validation rules for each step
 		$validationRules = [
 			1 => [
+				'business_type_id' => 'required|integer',
+				'no_of_director' => 'required|integer',
 				'business_licence' => 'required|string',
 				'postcode' => 'required|string',
 				'company_address' => 'required|string',
@@ -173,6 +178,8 @@ class KycController extends Controller
 			// Step 1: Store company details
 			if ($step == 1) {
 				$companyData = array_merge($companyData, [
+					'business_type_id' => $request->business_type_id,
+					'no_of_director' => $request->no_of_director,
 					'business_licence' => $request->business_licence,
 					'postcode' => $request->postcode,
 					'company_address' => $request->company_address,
@@ -193,12 +200,17 @@ class KycController extends Controller
 				['user_id' => $user->id],
 				$companyData
 			);
-
+		  
 			// Commit the transaction
 			DB::commit();
+			
+			// Render the next step's view based on the current step
+			$view = view($step == 1 ? 'user.kyc.step-2' : 'user.kyc.step-3', compact('companyDetail'))->render();
 
+			// Return a success response with the view and company details
 			return $this->successResponse("Step {$step} has been completed and stored successfully.", [
-				'company_details_id' => $companyDetail->id
+				'company_details_id' => $companyDetail->id,
+				'view' => $view,
 			]);
 			
 		} catch (\Throwable $e) {

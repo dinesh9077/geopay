@@ -23,7 +23,9 @@ class CompanyDetail extends Model
         'bank_name', 
         'account_number', 
         'bank_code',
-        'step_number'
+        'step_number',
+        'business_type_id',
+        'no_of_director'
     ];
 	
 	protected static $recordEvents = ['created', 'deleted', 'updated'];

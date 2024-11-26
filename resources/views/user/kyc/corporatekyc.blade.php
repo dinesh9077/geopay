@@ -55,233 +55,16 @@
 								<form id="multi-step-form">
 									<!-- Company Form 1 -->
 									<div class="step step-1" style="display:{{ $stepNumber == 1 ? 'show' : 'none' }}"> 
-										<div class="row"> 
-											<div class="col-md-6 mb-3">
-												<label for="business_licence" class="required text-black font-md mb-2">Business Type <span class="text-danger">*</span></label>
-												<select id="country_id1" name="country_id" class="form-control form-control-lg bg-light border-light"></select>	
-											</div>
-											<div class="col-md-6 mb-3">
-												<label for="postcode" class="required text-black font-md mb-2">Number of Directors <span class="text-danger">*</span></label>
-												<input type="text" class="form-control bg-light border-light" id="" name=""> 
-											</div> 
-											<div class="col-md-6 mb-3">
-												<label for="business_licence" class="required text-black font-md mb-2">Company Registration Number <span class="text-danger">*</span></label>
-												<input type="text" class="form-control bg-light border-light" id="business_licence" name="business_licence" value="{{ $companyDetail ? $companyDetail->business_licence : '' }}"> 
-											</div>
-											<div class="col-md-6 mb-3">
-												<label for="postcode" class="required text-black font-md mb-2">Postal Code/Zip Code <span class="text-danger">*</span></label>
-												<input type="text" class="form-control bg-light border-light" id="postcode" name="postcode" value="{{ $companyDetail ? $companyDetail->postcode : '' }}"> 
-											</div> 
-											<div class="col-md-12 mb-5">
-												<label for="company_address" class="required text-black font-md mb-2">Legal registered Corporate/Company Address <span class="text-danger">*</span></label>
-												<input type="text" class="form-control bg-light border-light" id="company_address" name="company_address" value="{{ $companyDetail ? $companyDetail->company_address : '' }}"> 
-											</div>
-										</div>
-										
-										<div class="d-flex justify-content-end">
-											<button type="button" class="btn btn-primary next-step">Next <i class="bi bi-arrow-right ms-1"></i></button>
-										</div>
+										@include('user.kyc.step-1')
 									</div>
 									
 									<!-- Company Form 2 -->
 									<div class="step step-2" style="display:{{ $stepNumber == 2 ? 'show' : 'none' }}">
-										<div class="row">
-											<div class="col-md-6 mb-3">
-												<label for="bank_name" class="required text-black font-md mb-2">Bank Name <span class="text-danger">*</span></label>
-												<input type="text" class="form-control bg-light border-light" id="bank_name" name="bank_name" value="{{ $companyDetail ? $companyDetail->bank_name : '' }}"> 
-											</div>
-											<div class="col-md-6 mb-3">
-												<label for="bank_code" class="required text-black font-md mb-2">Bank Code <span class="text-danger">*</span></label>
-												<input type="text" class="form-control bg-light border-light" id="bank_code" name="bank_code" value="{{ $companyDetail ? $companyDetail->bank_code : '' }}"> 
-											</div>
-											<div class="col-md-12 mb-5">
-												<label for="account_number" class="required text-black font-md mb-2">Account No <span class="text-danger">*</span></label>
-												<input type="text" class="form-control bg-light border-light" id="account_number" name="account_number" value="{{ $companyDetail ? $companyDetail->account_number : '' }}"> 
-											</div>
-										</div> 
-
-										<div class="d-flex align-items-center justify-content-between">
-											<button type="button" class="btn btn-secondary prev-step"><i class="bi bi-arrow-left me-1"></i>Previous</button>
-											<button type="button" class="btn btn-primary next-step">Next <i class="bi bi-arrow-right ms-1"></i></button>
-										</div>
+										@include('user.kyc.step-2')
 									</div>
-									
-									<!-- Company Form 3 -->
-									<!-- <div class="step step-3" style="display:{{ $stepNumber == 3 ? 'show' : 'none' }}">
-										@php
-											$documentFields = [
-												'memorandum_articles_of_association' => 'Memorandum Articles of Association',
-												'registration_of_shareholders' => 'Registration of Shareholders',
-												'registration_of_directors' => 'Registration of Directors',
-												'proof_of_address_shareholders' => 'Proof of Address for Shareholders (Utility bill or bank statement)',
-												'proof_of_address_directors' => 'Proof of Address for Directors (Utility bill or bank statement)',
-												'govt_id_shareholders' => 'Government ID for Shareholders (Passport, Driving License or National ID)',
-												'govt_id_directors' => 'Government ID for Directors (Passport, Driving License or National ID)'
-											];
-										@endphp
-
-										@foreach($documentFields as $fieldKey => $fieldLabel)
-											@php 
-												$document = $companyDocument[$fieldKey] ?? null;
-											@endphp
-											<div class="row mb-3">
-												<div class="col-md-12"> 
-													<label for="{{ $fieldKey }}" class="required text-black font-md mb-2">{{ $fieldLabel }} <span class="text-danger">*</span></label>
-													<input type="file" class="form-control bg-light border-light" 
-													   id="{{ $fieldKey }}" 
-													   name="company_document[{{ $fieldKey }}]" 
-													   style="pointer-events: {{ $document && $document['status'] == 1 ? 'none' : 'auto' }};" 
-													   multiple>
- 
-													@if($document)
-														<div class="mt-2">
-															@if($document['status'] == 2)
-																<span class="text-danger">Rejected: {{ $document['reason'] ?? 'No reason provided' }}</span>
-															@elseif($document['status'] == 1)
-																<span class="text-success">Approved: Your document has been approved.</span>
-															@else
-																<span class="text-warning">Pending: Your document is under review.</span>
-															@endif
-														</div> 
-													@endif
-												</div>
-											</div>
-										@endforeach
-
-										<div class="d-flex align-items-center gap-3">
-											<button type="button" class="btn btn-primary w-100 prev-step">Previous</button>
-											<button type="button" class="btn btn-secondary w-100 submit-final">Register</button>
-										</div>
-									</div>  -->
-									<div class="step step-3" style="display:{{ $stepNumber == 2 ? 'show' : 'none' }}">
-										<h5 class="heading-4 fw-normal mb-4 text-center">Please upload these mendetory Documents</h5>
-										<div class="row mb-5">
-											<div class="col-lg-6">
-												<div class="mb-2">
-													<label for="business_licence" class="required text-black content-3 fw-normal mb-2">Select Person <span class="text-danger">*</span></label>
-													<select id="country_id1" name="country_id" class="form-control form-control-lg bg-light border-light"></select>	
-												</div>
-												<div class="mb-3">
-													<label for="bank_code" class="required text-black content-3 fw-normal mb-2">Select Document <span class="text-danger">*</span></label>
-													<select id="country_id1" name="country_id" class="form-control form-control-lg bg-light border-light"></select>	
-												</div>
-												<div class="card">
-													<div class="card-body">
-														<div class="mb-2">
-															<label for="business_licence" class="required text-black content-3 fw-normal mb-2">Name (as per Document) <span class="text-danger">*</span></label>
-															<input type="text" class="form-control bg-light border-light" placeholder="Enter Full Name" id="" name=""> 
-														</div>
-														<div>
-															<label for="business_licence" class="required text-black content-3 fw-normal mb-2">Upload your all Documents <span class="text-danger">*</span></label>
-															<form class="form">
-																<label class="image_upload_form__container" id="upload-container">
-																	<i class="bi bi-cloud-upload fs-1"></i>
-																	<span class="content-1 text-dark">Choose or Drag & Drop Files</span>
-																	<input class="form__file" id="upload-files" type="file" accept="image/*" multiple="multiple"/>
-																	<span class="content-4 text-muted opacity-50">JPEG, PNG, PDG, and MP4 formats, up to 50MB</span>
-																	<span class="btn btn-light border mt-3">Browse File</span>
-																</label>
-																<div class="form__files-container" id="files-list-container"></div>
-															</form>
-														</div>
-														<div class="d-flex justify-content-end">
-															<button type="button" class="btn btn-primary w-fit px-4">Add</button>
-														</div>
-													</div>
-												</div>
-											</div>
-											<div class="col-lg-6 kyc-document-column">
-												<div class="mb-4">
-													<h5 class="heading-6 fw-normal mb-2">Person 1 Documents</h5>
-													<ul class="p-0">
-														<li class="content-3 text-muted mb-2">
-															<div class="d-flex justify-content-between">
-																<span class="d-flex"><i class="bi bi-check-circle-fill text-success me-2"></i>Memorandum Articles of Association</span>
-																<i class="bi bi-pencil-square opacity-75 fw-semibold"></i>
-															</div>
-															<span class="text-danger content-4 opacity-75">Document not verified</span>
-														</li>
-														<li class="content-3 text-muted mb-2">
-															<div class="d-flex justify-content-between">
-																<span class="d-flex"><i class="bi bi-check-circle-fill text-success me-2"></i>Registration of Shareholders</span>
-																<i class="bi bi-pencil-square opacity-75 fw-semibold"></i>
-															</div>	
-														</li>
-														<li class="content-3 text-muted mb-2">
-															<div class="d-flex justify-content-between">
-																<span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Registration of Directors</span>
-																<i class="bi bi-pencil-square opacity-75 fw-semibold"></i>
-															</div>	
-														</li>
-														<li class="content-3 text-muted mb-2">
-															<div class="d-flex justify-content-between">
-																<span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Proof of Address for Shareholders (Utility bill or bank statement)</span>
-																<i class="bi bi-pencil-square opacity-75 fw-semibold"></i>
-															</div>	
-														</li>
-														<li class="content-3 text-muted mb-2">
-															<div class="d-flex justify-content-between">
-																<span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Proof of Address for Directors (Utility bill or bank statement)</span>
-																<i class="bi bi-pencil-square opacity-75 fw-semibold"></i>
-															</div>	
-														</li>
-														<li class="content-3 text-muted mb-2">
-															<div class="d-flex justify-content-between">
-																<span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Government ID for Shareholders (Passport, Driving License or National ID)</span>
-																<i class="bi bi-pencil-square opacity-75 fw-semibold"></i>
-															</div>	
-														</li>
-														<li class="content-3 text-muted mb-2">
-															<div class="d-flex justify-content-between">
-																<span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Government ID for Directors (Passport, Driving License or National ID)</span>
-																<i class="bi bi-pencil-square opacity-75 fw-semibold"></i>
-															</div>	
-														</li>
-													</ul>
-												</div>
-												<div class="mb-4">
-													<h5 class="heading-6 fw-normal mb-2">Person 2 Documents</h5>
-													<ul class="p-0 lh-base">
-													<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-check-circle-fill text-success me-2"></i>Memorandum Articles of Association</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-check-circle-fill text-success me-2"></i>Registration of Shareholders</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Registration of Directors</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Proof of Address for Shareholders (Utility bill or bank statement)</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Proof of Address for Directors (Utility bill or bank statement)</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Government ID for Shareholders (Passport, Driving License or National ID)</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Government ID for Directors (Passport, Driving License or National ID)</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-													</ul>
-												</div>
-												<div class="mb-4">
-													<h5 class="heading-6 fw-normal mb-2">Person 2 Documents</h5>
-													<ul class="p-0 lh-base">
-													<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-check-circle-fill text-success me-2"></i>Memorandum Articles of Association</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-check-circle-fill text-success me-2"></i>Registration of Shareholders</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Registration of Directors</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Proof of Address for Shareholders (Utility bill or bank statement)</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Proof of Address for Directors (Utility bill or bank statement)</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Government ID for Shareholders (Passport, Driving License or National ID)</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Government ID for Directors (Passport, Driving License or National ID)</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-													</ul>
-												</div>
-												<div class="mb-4">
-													<h5 class="heading-6 fw-normal mb-2">Person 2 Documents</h5>
-													<ul class="p-0 lh-base">
-													<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-check-circle-fill text-success me-2"></i>Memorandum Articles of Association</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-check-circle-fill text-success me-2"></i>Registration of Shareholders</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Registration of Directors</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Proof of Address for Shareholders (Utility bill or bank statement)</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Proof of Address for Directors (Utility bill or bank statement)</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Government ID for Shareholders (Passport, Driving License or National ID)</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-														<li class="content-3 d-flex justify-content-between text-muted mb-2"><span class="d-flex"><i class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>Government ID for Directors (Passport, Driving License or National ID)</span><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></li>
-													</ul>
-												</div>
-											</div>
-										</div>
-
-										<div class="d-flex align-items-center justify-content-between">
-											<button type="button" class="btn btn-secondary prev-step"><i class="bi bi-arrow-left me-1"></i>Previous</button>
-											<button type="button" class="btn btn-primary next-step">Next <i class="bi bi-arrow-right ms-1"></i></button>
-										</div>
+									 
+									<div class="step step-3" style="display:{{ $stepNumber == 3 ? 'show' : 'none' }}">
+										@include('user.kyc.step-3') 
 									</div>
 								</form>
 							</div>
@@ -297,11 +80,31 @@
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
-		<x-scripts :cryptoKey="$cryptoKey" /> 
+		<x-scripts :cryptoKey="$cryptoKey" />	
+		{{-- @livewireScripts --}}
+		<script src="{{ asset('vendor/livewire/livewire.js?id=38dc8241') }}"
+        data-csrf="{{ csrf_token() }}"
+        data-update-uri="livewire/update"
+        data-navigate-once="true"></script>
 		
 		<!-- Stepper Script Starts -->
 		<script>		  
-			$(document).ready(function() {
+			$(document).ready(function() 
+			{
+				$('.select2').select2({
+					width: "100%"
+				});
+				
+				$('#business_type_id').change(function(){
+					var is_director = $(this).find(':selected').data('is_director');
+					$('#no_of_director').val(1);
+					$('#no_of_director').attr('readonly', false);
+					if(is_director == 0)
+					{
+						$('#no_of_director').attr('readonly', true);
+					} 
+				})
+				
 				var currentStep = @json($stepNumber);
 
 				// Handle the next button click
@@ -376,6 +179,8 @@
 							$('.error_msg').remove(); 
 							if (res.status === "success")
 							{
+								var result = decryptData(res.response);
+								$('.step-'.stepNumber).html(result.view)
 								if (!isFinal){
 									showStep(stepNumber + 1); // Move to the next step if not final
 								}else{
@@ -399,7 +204,7 @@
 									} 
 								 
 									// Find the input field using the converted name format
-									var inputField = stepFields.find('input[name="' + fieldName + '"]');
+									var inputField = stepFields.find('input[name="' + fieldName + '"], select[name="' + fieldName + '"]');
 									
 									// Create an error span to display the error message
 									var errorSpan = $('<span>')

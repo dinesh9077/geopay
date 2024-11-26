@@ -31,11 +31,11 @@ class RecentTransactions extends Component
 
         // Ensure the user is authenticated
         if ($user) {
-            $this->transactions = Transaction::where('user_id', $user->id)
-                ->orWhere('receiver_id', $user->id)
+            $this->transactions = Transaction::where('user_id', $user->id) 
                 ->orderByDesc('id')
                 ->limit(6)
-                ->get();
+                ->get(); 
+			 
         } else {
             $this->transactions = collect(); // Empty collection if no user
         }

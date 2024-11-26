@@ -38,7 +38,7 @@
 	<script>
 	
 		$walletForm = $('#walletToWalletForm');
-		const countries = @json($countriesWithFlags);
+		var countries = @json($countriesWithFlags);
 
 		$(document).ready(function() {
 			// Initialize Select2 for the individual form

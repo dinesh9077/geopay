@@ -23,17 +23,6 @@
 		*/
 		public function boot()
 		{
-			$this->registerPolicies();
-
-			// Register Passport routes
-			// if (! $this->app->routesAreCached())
-			// {
-				// Passport::routes();
-
-			// 	// Optional: Set token expiration times
-			// 	 Passport::tokensExpireIn(now()->addMinutes(1));
-			// 	// Passport::refreshTokensExpireIn(now()->addDays(30));
-			// 	// Passport::personalAccessTokensExpireIn(now()->addMonths(6));
-			// }
+			$this->registerPolicies(); 
 		}
 	}
