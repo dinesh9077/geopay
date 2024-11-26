@@ -376,11 +376,11 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
   max-height: 40dvh;
   object-fit: cover;
   border: 0.75px solid var(--theme-border-color);
-  border-radius: 14px;
+  border-radius: var(--dash-border-radius);
 }
 
 .qr-container {
-  border-radius: 10px;
+  border-radius: var(--dash-border-radius);
   padding: 0.3rem;
   background-color: var(--white);
 }

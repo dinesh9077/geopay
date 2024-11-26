@@ -1,5 +1,5 @@
 <div class="col-lg-3">
-    <div class="p-4 border text-center rounded-4 quick-transfer-container">
+    <div class="p-4 border text-center quick-transfer-container">
         <!-- First Row: Avatar Selection (Screenshot Design) -->
         <div class="slick-slider qt-slick-slider mb-3">
             <div class="element element-1">

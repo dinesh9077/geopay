@@ -39,7 +39,7 @@
 							<a class="text-primary" href="{{ route('add-money') }}"  wire:navigate>
 								<div class="text-center h-100 align-content-center service-box m-auto">
 									<img class="in-svg mb-3" src="{{ asset('assets/image/icons/plus-circle.svg') }}" alt="Add Money Icon">
-									<p class="content-2 fw-semibold">Add Money</p>
+									<p class="content-2">Add Money</p>
 								</div>
 							</a>
 						</div>
@@ -47,7 +47,7 @@
 							<a class="text-primary" href="{{ route('wallet-to-wallet') }}" wire:navigate>
 								<div class="text-center h-100 align-content-center service-box m-auto">
 									<img class="in-svg mb-3" src="{{ asset('assets/image/icons/wallet.svg') }}" alt="Wallet to Wallet Icon">
-									<p class="content-2 fw-semibold">Wallet to Wallet</p>
+									<p class="content-2">Wallet to Wallet</p>
 								</div>
 							</a>
 						</div>
@@ -59,7 +59,7 @@
 							<a class="text-primary" href="{{ route('transfer-to-mobile-money') }}"  wire:navigate>
 								<div class="text-center h-100 align-content-center service-box m-auto">
 									<img class="in-svg mb-3" src="{{ asset('assets/image/icons/expense.svg') }}" alt="Transfer to Mobile Money Icon">
-									<p class="content-2 fw-semibold">Transfer to Mobile Money</p>
+									<p class="content-2">Transfer to Mobile Money</p>
 								</div>
 							</a>
 						</div>
@@ -67,14 +67,14 @@
 							<a class="text-primary" href="{{ route('international-airtime') }}"  wire:navigate>
 								<div class="text-center h-100 align-content-center service-box m-auto">
 									<img class="in-svg mb-3" src="{{ asset('assets/image/icons/globe.svg') }}" alt="International Airtime Icon">
-									<p class="content-2 fw-semibold">International Airtime</p>
+									<p class="content-2">International Airtime</p>
 								</div>
 							</a>
 						</div>
 						<div class="col-6 col-md-4">
 							<div class="text-center h-100 align-content-center service-box m-auto" >
 								<img class="in-svg mb-3" src="{{ asset('assets/image/icons/bank.svg') }}" alt="Transfer to Mobile Money Icon">
-								<p class="content-2 fw-semibold">Transfer to Bank</p>
+								<p class="content-2">Transfer to Bank</p>
 							</div>
 						</div>
 					</div>
@@ -84,7 +84,7 @@
 				<div class="col-lg-4 order-1 order-lg-2">
 					<div class="border text-center d-flex flex-column qr-container p-4 h-100 ms-lg-3">
 						<span class="content-3">To Pay {{ auth()->user()->first_name. ' ' .auth()->user()->last_name}}</span>
-						<span class="content-3 fw-semibold">Share your GEOPAY QR Code to receive payments</span> 
+						<span class="content-3 opacity-75">Share your GEOPAY QR Code to receive payments</span> 
 						<div class="img-fluid p-2 qr-code">
 						<!-- {!! QrCode::size(300)->generate($mobileNumber) !!} -->
 							{!! QrCode::generate($mobileNumber) !!}

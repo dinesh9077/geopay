@@ -137,8 +137,9 @@ p {
 }
 
 .service-box {
-    border-radius: 15px;
-    padding: 40px 20px;
+    border-radius: var(--dash-border-radius);
+    padding: 35px 20px;
+    background-color: var(--white);
     max-width: 200px;
     border: 0.75px solid var(--theme-border-color);
     color: var(--bs-dark-text-emphasis);
@@ -182,7 +183,12 @@ p {
     font-size: 0.8rem;
 }
 .quick-transfer-container {
-    border-radius: 15px;
+    border-radius: var(--dash-border-radius);
+    padding: 1rem;
+}
+
+.recent-transactions-card{
+    border-radius: var(--dash-border-radius);
     padding: 1rem;
 }
 
