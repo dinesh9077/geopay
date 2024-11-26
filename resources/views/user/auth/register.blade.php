@@ -331,12 +331,12 @@
 		<x-scripts :cryptoKey="$cryptoKey" />	
 		
 		<script>  
-			let timer;
-			let countdown = 60; // Set the countdown duration in seconds
+			var timer;
+			var countdown = 60; // Set the countdown duration in seconds
 			var $individualForm = $('#individualRegisterForm'); 
 			var $companyForm = $('#companyRegisterForm');  
 			 
-			const countries = @json($countriesWithFlags);
+			var countries = @json($countriesWithFlags);
 
 			$(document).ready(function() {
 				// Initialize Select2 for the individual form

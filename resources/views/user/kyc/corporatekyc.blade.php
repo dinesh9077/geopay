@@ -38,7 +38,7 @@
 								
 							@else
 								
-							<h6 class="heading-4  text-black text-center mb-3">KYC Verification</h6>
+							<h6 class="heading-4  text-black text-center mb-3">KYC Process</h6>
 							<p class="caption text-muted content-3 text-center">To ensure a secure and compliant experience, please upload your KYC documents. Quick, secure, and hassle-free verification!</p> 
 							<div>
 								<div class="w-75 mx-auto mt-5 mb-2 stepper-container">
@@ -95,8 +95,9 @@
 					width: "100%"
 				});
 				
-				$('#business_type_id').change(function(){
-					var is_director = $(this).find(':selected').data('is_director');
+				$('#business_type_id').change(function()
+				{
+					var is_director = $(this).find(':selected').data('is_director'); 
 					$('#no_of_director').val(1);
 					$('#no_of_director').attr('readonly', false);
 					if(is_director == 0)
@@ -104,7 +105,7 @@
 						$('#no_of_director').attr('readonly', true);
 					} 
 				})
-				
+				 
 				var currentStep = @json($stepNumber);
 
 				// Handle the next button click

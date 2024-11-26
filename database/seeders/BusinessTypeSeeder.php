@@ -22,7 +22,7 @@ class BusinessTypeSeeder extends Seeder
 				['business_type' => 'Limited Liability Partnership (LLP)', 'is_director' => 1, 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
 				['business_type' => 'Private Limited Company (Pvt. Ltd.)', 'is_director' => 1, 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
 				['business_type' => 'Public Limited Company (PLC)', 'is_director' => 1, 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
-				['business_type' => 'One Person Company (OPC)', 'is_director' => 1, 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
+				['business_type' => 'One Person Company (OPC)', 'is_director' => 0, 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
 				['business_type' => 'Non-Profit Organization (NGO)', 'is_director' => 1, 'status' => 1, 'created_at' => now(), 'updated_at' => now()],
 				['business_type' => 'Limited Partnership (LP)', 'is_director' => 1, 'status' => 1, 'created_at' => now(), 'updated_at' => now()]
 			]

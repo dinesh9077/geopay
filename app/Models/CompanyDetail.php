@@ -52,4 +52,9 @@ class CompanyDetail extends Model
 	{
 		return $this->hasMany(CompanyDocument::class, 'company_details_id');
 	}
+	
+	public function businessTypes()
+	{
+		return $this->belongsTo(BusinessType::class, 'business_type_id');
+	}
 }
