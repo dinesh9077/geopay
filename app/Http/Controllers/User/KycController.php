@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\CompanyDetail;
 use App\Models\CompanyDocument;
 use App\Models\BusinessType;
+use App\Models\DocumentType;
+use App\Models\CompanyDirector;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Traits\WebResponseTrait; 
@@ -114,7 +116,7 @@ class KycController extends Controller
 	{
 		// Fetch the authenticated user and their company details with the related documents
 		$user = Auth::user();
-		$companyDetail = $user->companyDetail()->with('companyDocuments')->first();
+		$companyDetail = $user->companyDetail()->with(['companyDocuments', 'companyDirectors'])->first();
 
 		// Calculate the step number based on the company's step number, defaulting to 1 if not found
 		$stepNumber = $companyDetail ? ($companyDetail->step_number + 1 ?? 1) : 1;
@@ -127,23 +129,26 @@ class KycController extends Controller
 		: [];
 		
 		$businessTypes = BusinessType::whereStatus(1)->get();
-		 
+		$documentTypes = DocumentType::whereStatus(1)->get();
+		$isSelect = true; 
 		// Pass the necessary data to the view
-		return view('user.kyc.corporatekyc', compact('user', 'companyDetail', 'stepNumber', 'companyDocument', 'businessTypes'));
+		return view('user.kyc.corporatekyc', compact('user', 'companyDetail', 'stepNumber', 'companyDocument', 'businessTypes', 'documentTypes', 'isSelect'));
 	}
  
 	public function corporateKycStep(Request $request, $step)
-	{ 
+	{  
 		$user = Auth::user();
 		
 		// Common validation rules for each step
 		$validationRules = [
 			1 => [
 				'business_type_id' => 'required|integer',
-				'no_of_director' => 'required|integer',
+				'no_of_director' => 'required|integer|gt:0',
 				'business_licence' => 'required|string',
 				'postcode' => 'required|string',
 				'company_address' => 'required|string',
+				'director_name' => 'required|array|min:1', // Ensure it's an array with at least one element
+				'director_name.*' => 'required|string|min:1', // Each item must be a non-empty string
 			],
 			2 => [
 				'bank_name' => 'required|string',
@@ -183,7 +188,7 @@ class KycController extends Controller
 					'business_licence' => $request->business_licence,
 					'postcode' => $request->postcode,
 					'company_address' => $request->company_address,
-				]);
+				]); 
 			}
 
 			// Step 2: Update company details
@@ -200,12 +205,42 @@ class KycController extends Controller
 				['user_id' => $user->id],
 				$companyData
 			);
+			
 		  
+			if ($step == 1) {
+				// Ensure `director_name` exists and is an array
+				if ($request->has('director_name') && is_array($request->director_name)) {
+					$submittedDirectorNames = array_filter($request->director_name); // Remove empty values
+				 
+					// Delete unmatched directors
+					if ($request->has('director_id') && is_array($request->director_id)) {
+						CompanyDirector::where('company_details_id', $companyDetail->id)
+							->whereNotIn('id', $request->director_id)
+							->delete();
+					}
+
+					// Loop through submitted director names and update or insert them
+					foreach ($submittedDirectorNames as $directorName) {
+						CompanyDirector::updateOrCreate(
+							[
+								'company_details_id' => $companyDetail->id,
+								'name' => $directorName
+							],
+							[
+								'name' => $directorName, // Ensure updated timestamp
+								'updated_at' => now(), // Ensure updated timestamp
+							]
+						);
+					}
+				}
+			}
+
+ 
 			// Commit the transaction
 			DB::commit();
-			
+			$documentTypes = DocumentType::whereStatus(1)->get();
 			// Render the next step's view based on the current step
-			$view = view($step == 1 ? 'user.kyc.step-2' : 'user.kyc.step-3', compact('companyDetail'))->render();
+			$view = view($step == 1 ? 'user.kyc.step-2' : 'user.kyc.step-3', compact('companyDetail', 'documentTypes'))->render();
 
 			// Return a success response with the view and company details
 			return $this->successResponse("Step {$step} has been completed and stored successfully.", [
@@ -220,6 +255,103 @@ class KycController extends Controller
 		}
 	}
 	
+	public function corporateKycDocumntStore(Request $request)
+	{
+	
+		try {
+			DB::beginTransaction();
+
+			// Validate the incoming request
+			$validator = Validator::make($request->all(), [
+				'company_director_id' => 'required|integer',
+				'company_details_id' => 'required|integer|exists:company_details,id',
+				'document_type_id' => 'required|integer',
+				'documents' => 'required|array|max:2', 
+				'documents.*' => 'mimes:jpg,jpeg,png,pdf|max:2048',  
+			]);
+			
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors()->first());
+			}
+			
+			$user = Auth::user();
+			
+			$companyDetail = CompanyDetail::where('id', $request->company_details_id)->first();
+			$documentType = DocumentType::where('id', $request->document_type_id)->first();
+			// Array to hold file paths
+			$storedFiles = [];
+			  
+			// Validate and process each file in the request
+			foreach ($request->documents as $key => $file) {
+					 
+				// Get the file extension
+				$extension = $file->getClientOriginalExtension();
+				// If company details exist, update document (optional files)
+				if ($companyDetail) {
+					
+					// Check if the document already exists for this company
+					$existingDocs = DB::table('company_documents')
+						->where('company_details_id', $companyDetail->id)
+						->where('document_type_id', $request->document_type_id)
+						->where('company_director_id', $request->company_director_id) 
+						->get();
+
+					if ($existingDocs->isNotEmpty()) {
+						foreach ($existingDocs as $existingDoc) {
+							// Construct the full path for the old document
+							$fullPath = 'company_documents/'.$companyDetail->user_id.'/'.$existingDoc->document;
+							
+							// Delete the old image using ImageManager
+							ImageManager::imgDelete($fullPath);
+							
+							// Delete the record from the database
+							DB::table('company_documents')->where('id', $existingDoc->id)->delete();
+						}
+					}
+
+					// If no existing document, move the new file
+					$storedFile = ImageManager::move('company_documents/'.$companyDetail->user_id, $file, $extension);
+					$storedFiles[] = [
+						'company_details_id' => $companyDetail->id,
+						'company_director_id' => $request->company_director_id,
+						'document_type_id' => $request->document_type_id,
+						'document_type' => $documentType->name,
+						'document' => $storedFile,  // Store the file name returned by move()
+						'status' => 0,  
+						'created_at' => now(),
+						'updated_at' => now(),
+					];
+					
+				} else {
+					// If no company details, move the new file (required for new company details)
+					$storedFile = ImageManager::move('company_documents/'.$companyDetail->user_id, $file, $extension);
+					$storedFiles[] = [
+						'company_details_id' => $companyDetail->id,
+						'company_director_id' => $request->company_director_id,
+						'document_type_id' => $request->document_type_id,
+						'document_type' => $documentType->name,
+						'document' => $storedFile,  // Store the file name returned by move()
+						'status' => 0,
+						'created_at' => now(),
+						'updated_at' => now(),
+					];
+				}
+			 
+			}
+		
+			// Insert new documents into the database if needed
+			if (count($storedFiles) > 0) {
+				DB::table('company_documents')->insert($storedFiles);
+			}
+			
+			DB::commit();
+			return $this->successResponse('KYC documents processed successfully.', ['data' => $request->only('company_details_id', 'company_director_id', 'document_type_id')]);
+			
+		} catch (\Throwable $e) { 
+			DB::rollBack();
+			return $this->errorResponse($e->getMessage());
+		}
+	}
 	public function corporateKycFinal(Request $request)
 	{     
         try {

@@ -57,4 +57,10 @@ class CompanyDetail extends Model
 	{
 		return $this->belongsTo(BusinessType::class, 'business_type_id');
 	}
+	
+	public function companyDirectors()
+	{
+		return $this->hasMany(CompanyDirector::class, 'company_details_id');
+	}
+	  
 }

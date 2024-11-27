@@ -5,7 +5,7 @@
 	</div>
 	<div class="col-md-6 mb-3">
 		<label for="bank_code" class="required text-black font-md mb-2">Bank Code <span class="text-danger">*</span></label>
-		<input type="text" class="form-control bg-light border-light" id="bank_code" name="bank_code" value="{{ $companyDetail ? $companyDetail->bank_code : '' }}"> 
+		<input type="text" class="form-control bg-light border-light" id="bank_code" name="bank_code" value="{{ $companyDetail ? $companyDetail->bank_code : '' }}">
 	</div>
 	<div class="col-md-12 mb-5">
 		<label for="account_number" class="required text-black font-md mb-2">Account No <span class="text-danger">*</span></label>

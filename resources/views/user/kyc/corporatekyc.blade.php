@@ -104,22 +104,62 @@
 					{
 						$('#no_of_director').attr('readonly', true);
 					} 
+					
+					$('#director_html').html('<hr><div class="col-md-12 mb-3"><label for="postcode" class="required text-black font-md mb-2">Director 1  <span class="text-danger">*</span></label><input type="text" class="form-control bg-light border-light" id="director_name_0" name="director_name[0]" value="" placeholder="Enter Director Name"></div><input type="hidden" id="id_0" name="id" value="">');
 				})
-				 
+				
+				$('#no_of_director').keyup(function () {
+					var noofdirector = parseInt($(this).val()); // Parse the input value as an integer
+					var html = '';
+
+					// Validate that the input is a positive number
+					if (!isNaN(noofdirector) && noofdirector > 0) {
+						for (var i = 0; i < noofdirector; i++) {
+							if (i === 0) {
+								html += `<hr>`;
+							}
+
+							// Attempt to retrieve the existing value; if undefined, set as an empty string
+							var director_name = $(`#director_name_${i}`).val() || '';
+							var id = $(`#director_id_${i}`).val() || '';
+
+							html += `
+								<div class="col-md-12 mb-3">
+									<label for="director_name_${i + 1}" class="required text-black font-md mb-2">
+										Director ${i + 1} <span class="text-danger">*</span>
+									</label>
+									<input 
+										type="text" 
+										class="form-control bg-light border-light" 
+										name="director_name[${i}]" 
+										id="director_name_${i}" 
+										placeholder="Enter Director Name"
+										value="${director_name}"
+									>
+								</div>
+								<input type="hidden" id="director_id_${i}" name="director_id[${i}]" value="${id}">
+							`;
+						}
+					}
+
+					// Update the director fields container
+					$('#director_html').html(html);
+				});
+ 
 				var currentStep = @json($stepNumber);
 
 				// Handle the next button click
-				$(".next-step").click(function() {
+				$(document).on('click', ".next-step", function() {
 					submitFormStep(currentStep);
 				});
 
-				// Handle the previous button click
-				$(".prev-step").click(function() {
+				// Handle the previous button click 
+				$(document).on('click', ".prev-step", function() {
 					showStep(currentStep - 1);
 				});
 
-				// Handle the final submit button
-				$(".submit-final").click(function() {
+				// Handle the final submit button 
+				$(document).on('click', ".submit-final", function() {
 					submitFormStep(currentStep, true); // Final step submission
 				});
 
@@ -138,16 +178,38 @@
 					stepFields.find('button').prop('disabled',true);   
 					 
 					var formDataInput = {}; 
-					stepFields.find("input, select").each(function() {
+					stepFields.find("input, select").each(function () {
 						var inputName = $(this).attr('name');
 						
-						// For text inputs, just append the value to formData
-						if ($(this).attr('type') !== 'file') { 
-							formDataInput[inputName] = $(this).val();
+						// Skip processing if the name is empty
+						if (!inputName) return;
+
+						// Handle text inputs and other non-file inputs
+						if ($(this).attr('type') !== 'file') {
+							// Check for array-like inputs (e.g., director_name[])
+							if (inputName.includes('director_name')) {
+								// Initialize the array if not already done
+								if (!formDataInput['director_name']) {
+									formDataInput['director_name'] = [];   
+								}
+								// Append the value to the array
+								formDataInput['director_name'].push($(this).val()); 
+							} 
+							else if (inputName.includes('director_id')) {
+								// Initialize the array if not already done
+								if (!formDataInput['director_id']) {
+									formDataInput['director_id'] = [];   
+								}
+								// Append the value to the array
+								formDataInput['director_id'].push($(this).val()); 
+							} else {
+								// For single inputs
+								formDataInput[inputName] = $(this).val();
+							}
 						}
 					}); 
 					const encrypted_data = encryptData(JSON.stringify(formDataInput));
-					
+				  
 					// Collect form data excluding file inputs
 					var formData = new FormData(); 
 					formData.append('encrypted_data', encrypted_data);  
@@ -161,8 +223,7 @@
 						$.each(files, function(index, file) {
 							formData.append(inputName + '[]', file); // For multiple files, append as array
 						});
-					});
- 
+					}); 
 					const url = isFinal
 						? "{{ route('corporate.kyc.submit-final') }}"
 						: "{{ route('corporate.kyc.submit-step', ['step' => '__STEP_NUMBER__']) }}".replace('__STEP_NUMBER__', stepNumber);
@@ -180,8 +241,9 @@
 							$('.error_msg').remove(); 
 							if (res.status === "success")
 							{
-								var result = decryptData(res.response);
-								$('.step-'.stepNumber).html(result.view)
+								var result = decryptData(res.response); 
+								$('.step-'+parseInt(stepNumber + 1)).html(result.view) 
+								initializeFileUpload();
 								if (!isFinal){
 									showStep(stepNumber + 1); // Move to the next step if not final
 								}else{
@@ -192,18 +254,20 @@
 							else if(res.status == "validation")
 							{   
 								$.each(res.errors, function(key, value) {
-								
-									if (key.includes('.')) 
-									{ 
-										fieldName = key.replace(/\./g, '[').replace(/^/, '') + ']';
-										if (key.endsWith('.0') || key.endsWith('.1')) { 
-											key = key.replace(/\.(0|1)$/, '');  // Replace .0 or .1 at the end of the string
-											fieldName = key.replace(/\./g, '[').replace(/^/, '') + ']';
-										} 
+									
+									if (key.includes('.') && key.includes('director_name')) {
+										var lastIndex = key.split('.').pop(); // Extracts '0' or '1'
+										
+										// Corrected field name using array indexing format
+										fieldName = 'director_name[' + lastIndex + ']';
+										
+										// Correctly calculate the index for human-readable error message
+										value[0] = 'The director ' + (parseInt(lastIndex) + 1) + ' name field is required.';
 									} else { 
+										// For other keys, just assign as usual
 										fieldName = key;
-									} 
-								 
+									}
+
 									// Find the input field using the converted name format
 									var inputField = stepFields.find('input[name="' + fieldName + '"], select[name="' + fieldName + '"]');
 									
@@ -234,97 +298,7 @@
 
 				showStep(currentStep); // Show the first step initially
 			});
-
-			// File Upload JS
-			const INPUT_FILE = document.querySelector('#upload-files');
-			const INPUT_CONTAINER = document.querySelector('#upload-container');
-			const FILES_LIST_CONTAINER = document.querySelector('#files-list-container');
-			const FILE_LIST = [];
-			let UPLOADED_FILES = [];
-
-			const multipleEvents = (element, eventNames, listener) => {
-			const events = eventNames.split(' ');
-			
-			events.forEach(event => {
-				element.addEventListener(event, listener, false);
-			});
-			};
-
-			const previewImages = () => {
-			FILES_LIST_CONTAINER.innerHTML = '';
-			if (FILE_LIST.length > 0) {
-				FILE_LIST.forEach((addedFile, index) => {
-				const content = `
-					<div class="form__image-container js-remove-image" data-index="${index}">
-					<img class="form__image" src="${addedFile.url}" alt="${addedFile.name}">
-					</div>
-				`;
-
-				FILES_LIST_CONTAINER.insertAdjacentHTML('beforeEnd', content);
-				});
-			} else {
-				console.log('empty')
-				INPUT_FILE.value= "";
-			}
-			}
-
-			const fileUpload = () => {
-			if (FILES_LIST_CONTAINER) {
-				multipleEvents(INPUT_FILE, 'click dragstart dragover', () => {
-				INPUT_CONTAINER.classList.add('active');
-				});
-			
-				multipleEvents(INPUT_FILE, 'dragleave dragend drop change blur', () => {
-				INPUT_CONTAINER.classList.remove('active');
-				});
-			
-				INPUT_FILE.addEventListener('change', () => {
-				const files = [...INPUT_FILE.files];
-				console.log("changed")
-				files.forEach(file => {
-					const fileURL = URL.createObjectURL(file);
-					const fileName = file.name;
-					if (!file.type.match("image/")){
-					alert(file.name + " is not an image");
-					console.log(file.type)
-					} else {
-					const uploadedFiles = {
-						name: fileName,
-						url: fileURL,
-					};
-
-					FILE_LIST.push(uploadedFiles);
-					}
-				});
-				
-				console.log(FILE_LIST)//final list of uploaded files
-				previewImages();
-				UPLOADED_FILES = document.querySelectorAll(".js-remove-image");
-				removeFile();
-				}); 
-			}
-			};
-
-			const removeFile = () => {
-			UPLOADED_FILES = document.querySelectorAll(".js-remove-image");
-			
-			if (UPLOADED_FILES) {
-				UPLOADED_FILES.forEach(image => {
-				image.addEventListener('click', function() {
-					const fileIndex = this.getAttribute('data-index');
-
-					FILE_LIST.splice(fileIndex, 1);
-					previewImages();
-					removeFile();
-				});
-				});
-			} else {
-				[...INPUT_FILE.files] = [];
-			}
-			};
-
-			fileUpload();
-			removeFile();
+ 
 		</script>
 		<!-- Stepper Script Ends -->
 	</body>
