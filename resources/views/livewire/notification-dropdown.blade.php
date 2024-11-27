@@ -13,15 +13,15 @@
                 {{ $unreadCount }} New Notifications
             </p>
         </div>
-       <div class="p-1" style="max-height: 350px;overflow: auto;">
+       <div class="p-1" style="max-height: 350px;overflow: auto;scrollbar-width: thin;">
             @forelse ($notifications as $notification)
                 <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
                     <div class="w-30px h-30px d-flex align-items-center justify-content-center bg-primary rounded-circle me-3">
                         <img class="w-30px h-30px rounded-circle" height="30px" src="{{ $notification['image'] }}" alt="user">
                     </div>
                     <div class="flex-grow-1 me-2">
-                        <p class="mb-0 content-3 text-wrap">{{ $notification['message'] }}</p>
-                        <p class="fs-12px text-muted opacity-50 content-4 mb-0">{{ $notification['time'] }}</p>
+                        <p class="mb-0 content-4 text-wrap">{{ $notification['message'] }}</p>
+                        <p class="fs-12px text-secondary content-4 mb-0">{{ $notification['time'] }}</p>
                     </div>
                 </a>
             @empty

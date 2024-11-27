@@ -5,7 +5,7 @@
 <div class="container-fluid p-0">
 	<div class="row g-4">
 		<!-- Left Column -->
-		<div class="col-lg-9 mb-3">
+		<div class="col-lg-8 col-xxl-9 mb-3">
 			<!-- First Row -->
 			<div id="carouselExampleSlidesOnly" class="carousel home-banner-carousel slide mb-3" data-bs-ride="carousel">
 				<div class="carousel-inner">
