@@ -31,12 +31,12 @@
 				</a>
 			</li>
 
-			<li class="sidebar-item">
+			<!-- <li class="sidebar-item">
 				<a href="#" class="sidebar-link">
 					<img class="in-svg" src="{{ asset('assets/image/icons/chart.svg') }}" alt="">
 					Statistics
 				</a>
-			</li>
+			</li> -->
 
 			<li class="sidebar-item">
 				<a href="{{ route('setting') }}" wire:navigate class="sidebar-link {{ Request::routeIs('setting') ? 'active' : '' }}">

@@ -152,9 +152,16 @@ p {
 }
 @media (min-width: 1199px) and (max-width: 1399px) {
     .service-box {
+        padding: 10px;
+    }
+}
+
+@media screen and (min-width: 1550px) and (max-width: 1649px) {
+    .service-box {
         padding: 20px;
     }
 }
+
 
 .service-box img,
 .bi-plus-circle {

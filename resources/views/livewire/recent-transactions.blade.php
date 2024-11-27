@@ -7,18 +7,18 @@
         <div class="d-flex justify-content-between align-items-center my-3">
             <div class="d-flex gap-lg-2 gap-md-3">
                 <img src="{{ asset('assets/image/dashboard/dollar-sign.svg') }}" class="transaction-icon"/>
-                <div class="font-text-13">
-                    <span>{{ $transaction->comments }}</span><br>
-                    <span class="transaction-date">{{ $transaction->created_at->format('d M, Y') }}</span>
+                <div class="content-4">
+                    <p class="ellipsis-2 mb-0">{{ $transaction->comments }}</p>
+                    <p class="transaction-date text-secondary mb-0">{{ $transaction->created_at->format('d M, Y') }}</p>
                 </div>
             </div>
-            <span class="font-text-13 text-nowrap {{ $transaction->transaction_type == 'debit' ? 'text-danger' : 'text-success' }}">
+            <span class="content-3 fw-normal text-nowrap {{ $transaction->transaction_type == 'debit' ? 'text-danger' : 'text-success' }}">
                 {{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}
             </span>
         </div>
     @empty
 	<div class="d-flex justify-content-between align-items-center my-3"> 
-			<p class="font-text-13 m-auto">
+			<p class="content-3 m-auto">
                  No Recent Transaction
 			</p>
     </div>
