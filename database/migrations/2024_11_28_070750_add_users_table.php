@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('company_details', function (Blueprint $table) {
-			$table->unsignedInteger('business_type_id')->index(); // corrected to unsignedInteger
-			$table->integer('no_of_director')->default(1); // semicolon added
-		});
-
+        Schema::table('users', function (Blueprint $table) 
+		{
+            $table->integer('is_upload_document')->default(0);
+        });
     }
 
     /**
@@ -23,7 +22,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('company_details', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             //
         });
     }

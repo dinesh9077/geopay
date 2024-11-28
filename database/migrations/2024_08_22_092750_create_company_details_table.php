@@ -23,6 +23,8 @@ return new class extends Migration
 			$table->string('account_number')->nullable();
 			$table->string('bank_code')->nullable();
 			$table->integer('step_number')->default(0);
+			$table->unsignedInteger('business_type_id')->index(); // corrected to unsignedInteger
+			$table->integer('no_of_director')->default(1); // semicolon added
 			$table->timestamps(); 
 			// Add foreign key constraint
 			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

@@ -68,7 +68,7 @@
 											   class="bi bi-check-circle-fill text-success me-2"></i>
 										@else
 											<i id="check_{{ $companyDirector->id }}_{{ $documentType->id }}" 
-											   class="bi bi-x-circle-fill text-muted opacity-50 me-2"></i>
+											   class="bi bi-x-circle-fill text-muted opacity-50 me-2 not_completed"></i>
 										@endif
 										{{ $documentType->label }}
 									</span>
@@ -88,7 +88,9 @@
 
 <div class="d-flex align-items-center justify-content-between">
 	<button type="button" class="btn btn-secondary prev-step"><i class="bi bi-arrow-left me-1"></i>Previous</button>
-	<button type="button" class="btn btn-primary next-step">Next <i class="bi bi-arrow-right ms-1"></i></button>
+	@if($user->is_upload_document == 0)
+		<button type="button" class="btn btn-primary submit-final">Submit </button>
+	@endif
 </div>
 <script>
 	@if(!isset($isSelect))
@@ -185,7 +187,7 @@
 					
 					$('#check_' + directorSelect.value + '_' + documentSelect.value)
 						.removeClass()
-						.addClass('bi bi-x-circle-fill text-muted opacity-50 me-2');
+						.addClass('bi bi-x-circle-fill text-muted opacity-50 me-2 not_completed');
 					  
 					if (res.status === "success") {
 						var result = decryptData(res.response);

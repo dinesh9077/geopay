@@ -19,26 +19,27 @@
 			* @var array<int, string>
 		*/
 		protected $fillable = [
-        'first_name',
-        'last_name',
-        'email',
-        'password',
-        'country_id',
-        'mobile_number',
-        'formatted_number',
-        'referalcode',
-        'company_name',
-        'fcm_token',
-        'is_email_verify',
-        'is_company',
-        'is_mobile_verify',
-        'is_kyc_verify',
-        'status',
-        'profile_image',
-        'role',
-        'xps',
-        'terms',
-        'user_limit_id',
+			'first_name',
+			'last_name',
+			'email',
+			'password',
+			'country_id',
+			'mobile_number',
+			'formatted_number',
+			'referalcode',
+			'company_name',
+			'fcm_token',
+			'is_email_verify',
+			'is_company',
+			'is_mobile_verify',
+			'is_kyc_verify',
+			'status',
+			'profile_image',
+			'role',
+			'xps',
+			'terms',
+			'user_limit_id',
+			'is_upload_document'
 		];
 		
 		/**
@@ -47,8 +48,8 @@
 			* @var array<int, string>
 		*/
 		protected $hidden = [
-        'password',
-        'remember_token',
+			'password',
+			'remember_token',
 		];
 		
 		/**
@@ -57,9 +58,9 @@
 			* @var array<string, string>
 		*/
 		protected $casts = [
-        'is_company' => 'boolean',
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+			'is_company' => 'boolean',
+			'email_verified_at' => 'datetime',
+			'password' => 'hashed',
 		];
 		
 		protected static $recordEvents = ['created', 'deleted', 'updated'];

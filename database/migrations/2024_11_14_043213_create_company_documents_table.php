@@ -18,6 +18,8 @@ return new class extends Migration
 			$table->string('document')->nullable();
 			$table->integer('status')->default(0)->comment('0 - pending, 1 - approved, 2 - rejected');
 			$table->longText('reason')->nullable();
+			$table->unsignedInteger('document_type_id');
+			$table->unsignedInteger('company_director_id');
 			$table->timestamps();
 		});
 

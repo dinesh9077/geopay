@@ -36,6 +36,7 @@ return new class extends Migration
 			$table->integer('terms')->default(1);
 			$table->string('xps')->nullable();
 			$table->string('company_name')->nullable();
+			$table->integer('user_limit_id')->default(1); 
 			$table->softDeletes();
 			$table->timestamps();
 		}); 

@@ -12,6 +12,7 @@
 		<link rel="stylesheet" href="{{ asset('assets/css/auth.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
+		<link rel="stylesheet" href="{{ asset('admin/vendors/sweetalert2/sweetalert2.min.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css" />
 		<style>
 			.kyc-form-container {
@@ -79,6 +80,7 @@
 		<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
+		<script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.min.js') }}"></script>
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
 		<x-scripts :cryptoKey="$cryptoKey" />	
 		{{-- @livewireScripts --}}
@@ -88,7 +90,8 @@
         data-navigate-once="true"></script>
 		
 		<!-- Stepper Script Starts -->
-		<script>		  
+		<script>		
+			 
 			$(document).ready(function() 
 			{
 				$('.select2').select2({
@@ -160,7 +163,13 @@
 
 				// Handle the final submit button 
 				$(document).on('click', ".submit-final", function() {
-					submitFormStep(currentStep, true); // Final step submission
+					 
+					if ($('.not_completed').length > 0) {
+						toastrMsg('warning', 'Please upload all the required documents.');
+						return false; // Prevent further execution
+					}
+					// Final step submission if validation passes
+					submitFormStep(currentStep, true); 
 				});
 
 				// Function to display the correct step and update the progress bar
@@ -246,9 +255,18 @@
 								initializeFileUpload();
 								if (!isFinal){
 									showStep(stepNumber + 1); // Move to the next step if not final
-								}else{
-									toastrMsg(res.status, res.message);// Show success message if final
-									window.location.href = "{{ route('corporate.kyc') }}";
+								}else{ 
+									Swal.fire({
+										icon: res.status,
+										text: res.message,
+										showDenyButton: false,
+										showCancelButton: false,
+										confirmButtonText: "Ok", 
+									}).then((result) => { 
+										if (result.isConfirmed) {
+											Livewire.navigate("{{ route('corporate.kyc') }}");
+										}  
+									});
 								}
 							}
 							else if(res.status == "validation")

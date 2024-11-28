@@ -21,6 +21,7 @@
 			name="no_of_director" 
 			value="{{ $companyDetail->no_of_director ?? 1 }}"  
 			oninput="this.value = this.value.replace(/\D/g, '')" 
+			{{ $user->is_upload_document == 1 ? 'readonly' : '' }}
 			{{ optional($companyDetail->businessTypes)->is_director === 0 ? 'readonly' : '' }}
 		> 
 	</div> 
