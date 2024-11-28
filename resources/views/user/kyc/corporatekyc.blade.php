@@ -84,19 +84,23 @@
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
 		<x-scripts :cryptoKey="$cryptoKey" />	
 		{{-- @livewireScripts --}}
-		<script src="{{ asset('vendor/livewire/livewire.js?id=38dc8241') }}"
+		<script src="{{ asset('vendor/livewire/livewire.js') }}?v={{ \Carbon\Carbon::now()->timestamp }}"
         data-csrf="{{ csrf_token() }}"
-        data-update-uri="livewire/update"
+        data-update-uri="{{ url('livewire/update') }}"
         data-navigate-once="true"></script>
-		
+ 
 		<!-- Stepper Script Starts -->
 		<script>		
 			 
 			$(document).ready(function() 
 			{
-				$('.select2').select2({
-					width: "100%"
-				});
+				select2()
+				function select2()
+				{
+					$('.select2').select2({
+						width: "100%"
+					});
+				}
 				
 				$('#business_type_id').change(function()
 				{
@@ -148,7 +152,7 @@
 					// Update the director fields container
 					$('#director_html').html(html);
 				});
- 
+				  
 				var currentStep = @json($stepNumber);
 
 				// Handle the next button click
@@ -160,7 +164,7 @@
 				$(document).on('click', ".prev-step", function() {
 					showStep(currentStep - 1);
 				});
-
+		
 				// Handle the final submit button 
 				$(document).on('click', ".submit-final", function() {
 					 
@@ -171,7 +175,12 @@
 					// Final step submission if validation passes
 					submitFormStep(currentStep, true); 
 				});
-
+ 
+				$(document).on('change', "#company_director_id", function () {
+					var directorId = $(this).val(); 
+					fetchDocuments(directorId); // Fetch documents for the selected director
+				});
+	
 				// Function to display the correct step and update the progress bar
 				function showStep(stepNumber) {
 					$(".step").hide();
@@ -252,7 +261,9 @@
 							{
 								var result = decryptData(res.response); 
 								$('.step-'+parseInt(stepNumber + 1)).html(result.view) 
-								initializeFileUpload();
+								initializeFileUpload(); 
+								fetchDirectors("{{ $companyDetail ? $companyDetail->id : '' }}");
+								select2()
 								if (!isFinal){
 									showStep(stepNumber + 1); // Move to the next step if not final
 								}else{ 

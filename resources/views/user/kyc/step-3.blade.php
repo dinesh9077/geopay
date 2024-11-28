@@ -4,21 +4,13 @@
 		<div class="mb-2">
 			<label for="company_director_id" class="required text-black content-3 fw-normal mb-2">Director <span class="text-danger">*</span></label>
 			<select id="company_director_id" name="company_director_id" class="form-control form-control-lg bg-light border-light select2">
-				<option value="">Select Director</option>
-				@if($companyDetail && $companyDetail->companyDirectors->isNotEmpty())
-					@foreach($companyDetail->companyDirectors as $companyDirector)
-						<option value="{{ $companyDirector->id }}">{{ $companyDirector->name }}</option>
-					@endforeach
-				@endif
+				<option value="">Select Director</option> 
 			</select>    
 		</div>
 		<div class="mb-3">
 			<label for="document_type_id" class="required text-black content-3 fw-normal mb-2">Document <span class="text-danger">*</span></label>
 			<select id="document_type_id" name="document_type_id" class="form-control form-control-lg bg-light border-light select2">
-				<option value="">Select Document</option>
-				@foreach($documentTypes as $documentType)
-					<option value="{{ $documentType->id }}">{{ $documentType->label }}</option>
-				@endforeach
+				<option value="">Select Document</option> 
 			</select>    
 		</div>
 		<div class="card">
@@ -43,7 +35,9 @@
 		</div>
 	</div>
 	<div class="col-lg-6 kyc-document-column">
-		@if($companyDetail && $companyDetail->companyDirectors->isNotEmpty())
+	@livewire('company-director-documents', ['companyDetailId' => $companyDetail->id])
+
+	{{-- @if($companyDetail && $companyDetail->companyDirectors->isNotEmpty())
 			@php
 				// Group documents by director ID and document type ID
 				$groupedDocuments = $companyDetail->companyDocuments
@@ -51,37 +45,64 @@
 						return $doc->company_director_id . '_' . $doc->document_type_id;
 					});
 			@endphp
-
+  
 			@foreach($companyDetail->companyDirectors as $companyDirector)
-				<div class="mb-4">
-					<h5 class="heading-6 fw-normal mb-2">{{ $companyDirector->name }} Documents</h5>
-					<ul class="p-0">
-						@foreach($documentTypes as $documentType)
+				<div class="card card-body">
+					<div class="mb-4">
+						<h5 class="heading-6 fw-normal mb-2">
+							{{ $companyDirector->name }} Documents 
 							@php
-								$key = $companyDirector->id . '_' . $documentType->id;
+								// Check if all documents are uploaded for this director
+								$allDocumentsUploaded = true;
+								foreach($documentTypes as $documentType) {
+									$key = $companyDirector->id . '_' . $documentType->id;
+									if (!$groupedDocuments->has($key)) {
+										$allDocumentsUploaded = false;
+										break;
+									}
+								}
 							@endphp
-							<li class="content-3 text-muted mb-2">
-								<div class="d-flex justify-content-between">
-									<span class="d-flex">
+							@if($allDocumentsUploaded)
+								<span class="badge bg-success">Document Uploaded</span>
+							@else
+								<span class="badge bg-warning">Pending</span>
+							@endif
+						</h5>
+						<ul class="p-0">
+							@foreach($documentTypes as $documentType)
+								@php
+									$key = $companyDirector->id . '_' . $documentType->id;
+								@endphp
+								<li class="content-3 text-muted mb-2">
+									<div class="d-flex justify-content-between">
+										<span class="d-flex">
+											@if($groupedDocuments->has($key))
+												<i id="check_{{ $companyDirector->id }}_{{ $documentType->id }}" 
+												   class="bi bi-check-circle-fill text-success me-2"></i>
+											@else
+												<i id="check_{{ $companyDirector->id }}_{{ $documentType->id }}" 
+												   class="bi bi-x-circle-fill text-muted opacity-50 me-2 not_completed"></i>
+											@endif
+											{{ $documentType->label }}
+										</span>
 										@if($groupedDocuments->has($key))
-											<i id="check_{{ $companyDirector->id }}_{{ $documentType->id }}" 
-											   class="bi bi-check-circle-fill text-success me-2"></i>
+											<a href="javascript:;" id="edit_{{ $companyDirector->id }}_{{ $documentType->id }}" data-company_director_id="{{$companyDirector->id}}" data-document_type_id="{{$documentType->id}}" onclick="editDocument(this, event)">
+												<i class="bi bi-pencil-square opacity-75 fw-semibold"></i>
+											</a>
 										@else
-											<i id="check_{{ $companyDirector->id }}_{{ $documentType->id }}" 
-											   class="bi bi-x-circle-fill text-muted opacity-50 me-2 not_completed"></i>
+											<a href="javascript:;" id="edit_{{ $companyDirector->id }}_{{ $documentType->id }}" data-company_director_id="{{$companyDirector->id}}" data-document_type_id="{{$documentType->id}}" onclick="editDocument(this, event)" style="display:none;">
+												<i class="bi bi-pencil-square opacity-75 fw-semibold"></i>
+											</a>
 										@endif
-										{{ $documentType->label }}
-									</span>
-									@if($groupedDocuments->has($key))
-										<a href="javascript:;" data-company_director_id="{{$companyDirector->id}}" data-document_type_id="{{$documentType->id}}" onclick="editDocument(this, event)"><i class="bi bi-pencil-square opacity-75 fw-semibold"></i></a>
-									@endif
-								</div>
-							</li>
-						@endforeach
-					</ul>
+									</div>
+								</li>
+							@endforeach
+						</ul>
+					</div>
 				</div>
 			@endforeach
-		@endif
+
+		@endif --}}
 	</div>
 
 </div>
@@ -93,15 +114,12 @@
 	@endif
 </div>
 <script>
-	@if(!isset($isSelect))
-		$('.select2').select2({
-			width: "100%"
-		});
-	@endif
-	var selectedFiles = []; // Store selected files
+	 
+	var selectedFiles = [];  
 	var fileList = [];
+	
 	document.getElementById('submit-btn').addEventListener('click', function () 
-	{
+	{ 
 		// Form validation variables
 		var isValid = true;
 		const directorSelect = document.getElementById('company_director_id');
@@ -183,17 +201,16 @@
 				contentType: false, 
 				success: function(res)
 				{  	
-					$('#submit-btn').html('Add').prop('disabled', false); 
-					
+					$('#submit-btn').html('Add').prop('disabled', false);  
 					$('#check_' + directorSelect.value + '_' + documentSelect.value)
 						.removeClass()
 						.addClass('bi bi-x-circle-fill text-muted opacity-50 me-2 not_completed');
+					$('#edit_' + directorSelect.value + '_' + documentSelect.value).hide();
 					  
-					if (res.status === "success") {
+					if (res.status === "success") 
+					{
 						var result = decryptData(res.response);
-						toastrMsg(res.status, res.message);
-					
-						// Reset the form inputs
+						toastrMsg(res.status, res.message);  
 						$('#company_director_id').val(null).trigger('change'); // Reset director dropdown
 						$('#document_type_id').val(null).trigger('change');    // Reset document type dropdown
 						$('#upload-files').val(null);                         // Reset file input
@@ -205,19 +222,21 @@
 						$('#check_' + result.data.company_director_id + '_' + result.data.document_type_id)
 							.removeClass()
 							.addClass('bi bi-check-circle-fill text-success me-2');
+						$('#edit_' + result.data.company_director_id + '_' + result.data.document_type_id).show(); 
+						fetchDirectors("{{ $companyDetail ? $companyDetail->id : '' }}");
+						Livewire.dispatch('refreshCompanyDocuments');
 					} else if (res.status === "validation") {
 						// Display validation errors
 						toastrMsg(res.status, res.errors);
 					} else {
 						// Display a generic error message
 						toastrMsg(res.status, res.message);
-					}
-
+					} 
 				} 
 			});
 		}
 	});
-
+	
 	// Helper function to add error messages
 	function addErrorMessage(element, message) {
 		const error = document.createElement('div');
@@ -225,7 +244,75 @@
 		error.innerText = message;
 		element.parentNode.appendChild(error);
 	}
+	
+	// Function to fetch documents for the selected director
+	var fetchDocuments = (directorId) => {
+		if (!directorId) {
+			$('#document_type_id').html('<option value="">Select Document</option>');
+			return;
+		}
 
+		// AJAX request to fetch documents
+		$.ajax({
+			url: "{{ url('corporate/document-type')}}/"+directorId,
+			method: 'GET',
+			success: function (data) {
+				// Clear existing options
+				$('#document_type_id').html('<option value="">Select Document</option>');
+
+				// Populate dropdown with remaining documents
+				data.remainingDocuments.forEach(doc => {
+					$('#document_type_id').append(
+						$('<option></option>').val(doc.id).text(doc.label)
+					);
+				});
+			},
+			error: function (xhr, status, error) {
+				console.error('Error fetching documents:', error);
+			}
+		});
+	};
+	 
+	function fetchDirectors(companyDetailId) {
+		$('#company_director_id').html('<option value="">Select Director</option>');
+
+		// AJAX request to fetch directors
+		$.ajax({
+			url: "{{ url('corporate/director')}}/" + companyDetailId,
+			method: 'GET',
+			success: function (res) {
+				console.log(res);  // Log response to check if it's correct
+
+				// Ensure the response has 'remainingDirectors' as an array
+				if (Array.isArray(res.remainingDirectors)) {
+					// Clear existing options
+					$('#company_director_id').html('<option value="">Select Director</option>');
+
+					// Populate dropdown with directors
+					res.remainingDirectors.forEach(doc => {
+						$('#company_director_id').append(
+							$('<option></option>').val(doc.id).text(doc.name)
+						);
+					});
+				} else {
+					console.error('Expected "remainingDirectors" to be an array, but got:', res.remainingDirectors);
+				}
+			},
+			error: function (xhr, status, error) {
+				console.error('Error fetching directors:', error);
+			}
+		});
+	}
+
+   
+	// Initialize when the page is loaded
+	document.addEventListener('DOMContentLoaded', () => {
+		initializeFileUpload();
+		fetchDirectors("{{ $companyDetail ? $companyDetail->id : '' }}");
+		$('.select2').select2({
+			width: "100%"
+		});	
+	});
 	
 	function initializeFileUpload() {
 		const inputFile = document.querySelector('#upload-files');
@@ -254,11 +341,45 @@
 			}
 
 			fileList.forEach((file, index) => {
-				const previewHTML = `
-					<div class="form__image-container js-remove-image" data-index="${index}">
-						<img class="form__image" src="${file.url}" alt="${file.name}">
-					</div>
-				`;
+				let previewHTML = '';
+
+				if (file.type.startsWith("image/")) {
+					// Preview image
+					previewHTML = `
+						<div class="form__image-container js-remove-file" data-index="${index}">
+							<img class="form__image" src="${file.url}" alt="${file.name}"> 
+						</div> 
+						`;
+				} else if (file.type === "application/pdf") {
+					// Preview PDF
+					previewHTML = `
+						<div class="form__image-container js-remove-file" data-index="${index}">
+							<iframe class="form__pdf" src="${file.url}" frameborder="0" style="max-width: 100%;max-height: 100%;"></iframe>
+							<div class="file-name">${file.name}</div>
+						</div>
+					`;
+				} else if (
+					file.type === "application/msword" ||
+					file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+				) {
+					// Preview Word document
+					previewHTML = `
+						<div class="form__image-container js-remove-file" data-index="${index}">
+							<a href="${file.url}" target="_blank" class="form__word">
+								<img src="word-icon.png" alt="Word File">
+								<div class="file-name">${file.name}</div>
+							</a>
+						</div>
+					`;
+				} else {
+					// Unsupported file type
+					previewHTML = `
+						<div class="form__image-container js-remove-file" data-index="${index}">
+							<div class="file-name text-danger">Unsupported file: ${file.name}</div>
+						</div>
+					`;
+				}
+
 				filesListContainer.prepend(previewHTML);
 			});
 
@@ -274,14 +395,17 @@
 
 			files.forEach(file => {
 				// Validate file type
-				if (!file.type.startsWith("image/")) {
-					alert(`${file.name} is not a valid image file.`);
+				if (!file.type.startsWith("image/") && file.type !== "application/pdf" &&
+					file.type !== "application/msword" &&
+					file.type !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+					alert(`${file.name} is not a valid file type.`);
 					return;
 				}
 
 				// Add file to the list if valid
 				fileList.push({
 					name: file.name,
+					type: file.type,
 					url: URL.createObjectURL(file),
 				});
 				selectedFiles.push(file);
@@ -294,7 +418,7 @@
 		 * Attach remove functionality to preview elements
 		 */
 		const attachRemoveListeners = () => {
-			const removeButtons = document.querySelectorAll(".js-remove-image");
+			const removeButtons = document.querySelectorAll(".js-remove-file");
 
 			removeButtons.forEach(button => {
 				button.addEventListener('click', () => {
@@ -326,11 +450,8 @@
 		}
 	}
 
-	// Initialize when the page is loaded
-	document.addEventListener('DOMContentLoaded', () => {
-		initializeFileUpload();
-	});
-
+	 
+	
 	function editDocument(obj, event)
 	{
 		event.preventDefault();

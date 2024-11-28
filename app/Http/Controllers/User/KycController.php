@@ -134,7 +134,62 @@ class KycController extends Controller
 		// Pass the necessary data to the view
 		return view('user.kyc.corporatekyc', compact('user', 'companyDetail', 'stepNumber', 'companyDocument', 'businessTypes', 'documentTypes', 'isSelect'));
 	}
- 
+	
+	public function getRemainingDirector($companyDetailId)
+    {
+        // Get all active document types
+		$allDocuments = DocumentType::whereStatus(1)->pluck('id')->toArray(); 
+
+		// Fetch all directors
+		$directors = CompanyDirector::where('company_details_id', $companyDetailId)->with('documents')->get();
+
+		$remainingDirectors = $directors->filter(function ($director) use ($allDocuments) {
+			// Get uploaded document IDs for this director
+			$uploadedDocuments = $director->documents->pluck('document_type_id')->toArray();
+
+			// Check if this director is missing any document
+			$missingDocuments = array_diff($allDocuments, $uploadedDocuments);
+
+			return !empty($missingDocuments); // Return true if there are missing documents
+		});
+		
+	 
+		$response = [];
+		foreach($remainingDirectors as $director)
+		{
+			$response[] = [
+					'id' => $director->id,
+					'name' => $director->name,
+				];
+		} 
+		// Return response
+		return response()->json([
+			'remainingDirectors' => $response
+		]);
+    }
+	
+	public function getRemainingDocuments($director_id)
+    {
+        // Fetch all documents for the director
+		$allDocuments = DocumentType::whereStatus(1)->get(['id', 'label'])->toArray(); // Convert to array
+
+		// Fetch already added document IDs for the director
+		$uploadedDocuments = CompanyDocument::query()
+			->where('company_director_id', $director_id)
+			->pluck('document_type_id') // Get document type IDs
+			->toArray(); // Convert to array
+
+		// Filter out the documents that are already uploaded
+		$remainingDocuments = array_filter($allDocuments, function ($doc) use ($uploadedDocuments) {
+			return !in_array($doc['id'], $uploadedDocuments); // Check if document ID is not uploaded
+		});
+
+		// Return remaining documents as JSON response
+		return response()->json([
+			'remainingDocuments' => array_values($remainingDocuments) // Re-index the array
+		]);
+    }
+	
 	public function corporateKycStep(Request $request, $step)
 	{  
 		$user = Auth::user();

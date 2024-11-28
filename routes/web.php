@@ -58,6 +58,8 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	
 	// Company/Corporate Kyc
 	Route::get('/corporate/kyc', [KycController::class, 'corporateKyc'])->name('corporate.kyc'); 
+	Route::get('/corporate/director/{companyDetailId}', [KycController::class, 'getRemainingDirector'])->name('corporate.kyc.director'); 
+	Route::get('/corporate/document-type/{directorId}', [KycController::class, 'getRemainingDocuments'])->name('corporate.kyc.document-type'); 
 	Route::post('corporate/kyc/step/{step}', [KycController::class, 'corporateKycStep'])->name('corporate.kyc.submit-step');
 	Route::post('corporate/kyc/document-store', [KycController::class, 'corporateKycDocumntStore'])->name('corporate.kyc.document-store');
 	Route::post('corporate/kyc/final', [KycController::class, 'corporateKycFinal'])->name('corporate.kyc.submit-final');
