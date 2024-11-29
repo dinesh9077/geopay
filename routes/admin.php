@@ -88,6 +88,9 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
     Route::post('/companies/update/{id}', [CompaniesController::class, 'companiesUpdate'])->name('companies.update');
 	Route::post('/companies/update-status', [CompaniesController::class, 'companiesUpdateStatus'])->name('companies.update-status');
 	
+	Route::get('/companies/view-kyc/{id}', [CompaniesController::class, 'companiesViewKyc'])->name('companies.view-kyc');
+	Route::post('/companies/kyc-update', [CompaniesController::class, 'companiesKycUpdate'])->name('companies.kyc-update')->withoutMiddleware('webdecrypt.request');
+	
 	//Manage Exchnage Rate
 	Route::get('/exchange-rate', [ExchangeRateController::class, 'exchangeRate'])
 	->name('exchange-rate')->middleware('permission:exchange_rate.view');

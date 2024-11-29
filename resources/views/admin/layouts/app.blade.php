@@ -37,6 +37,7 @@
 		<!-- End layout styles -->
 		<link href="{{ asset('assets/css/toastr.min.css') }}" rel="stylesheet" type="text/css">
 		<link rel="stylesheet" href="{{ asset('admin/vendors/flatpickr/flatpickr.min.css') }}">
+		@livewireStyles
 		<script> 
             let modalOpen = false;
             function closemodal()
@@ -100,6 +101,11 @@
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
 		<x-scripts :cryptoKey="$cryptoKey" /> 
+		{{-- @livewireScripts --}}
+		<script src="{{ asset('vendor/livewire/livewire.js') }}?v={{ \Carbon\Carbon::now()->timestamp }}"
+        data-csrf="{{ csrf_token() }}"
+        data-update-uri="{{ url('livewire/update') }}"
+        data-navigate-once="true"></script>
 		
 		@stack('js')
 	</body>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\CompanyDetail;
 use DB, Auth, Helper, Hash, Validator;
 use App\Http\Traits\WebResponseTrait; 
 
@@ -114,6 +115,9 @@ class CompaniesController extends Controller
 				if (config('permission.active_company.edit') || config('permission.pending_company.edit') || config('permission.block_company.edit')) {
 					$actions[] = '<a href="' . route('admin.companies.edit', ['id' => $value->id]) . '" onclick="editCompany(this, event)" class="btn btn-sm btn-primary">Edit</a>';
 				} 
+				if (config('permission.active_company.edit') || config('permission.pending_company.edit') || config('permission.block_company.edit')) {
+					$actions[] = '<a href="' . route('admin.companies.view-kyc', ['id' => $value->id]) . '"  class="btn btn-sm btn-warning">View Kyc</a>';
+				} 
 
 				// Assign actions to the row if permissions exist
 				$data[$i - $start - 1]['action'] = implode(' ', $actions);
@@ -158,8 +162,7 @@ class CompaniesController extends Controller
 			return $this->errorResponse('Failed to update status. ' . $e->getMessage());
 		}
 	}
-
-
+ 
 	public function companiesEdit($companyid)
 	{
 		$company = User::find($companyid);
@@ -200,6 +203,55 @@ class CompaniesController extends Controller
 			DB::commit();
 			
 			return $this->successResponse('Company have been successfully updated.');
+		} 
+		catch (\Throwable $e)
+		{
+			DB::rollBack();
+			return $this->errorResponse('Failed. ' . $e->getMessage());
+		}
+	}
+	
+	public function companiesViewKyc($userId)
+	{ 
+		return view('admin.companies.view-kyc', compact('userId'));
+	}
+	
+	public function companiesKycUpdate(Request $request)
+	{
+		try {
+			DB::beginTransaction();
+			
+			// Retrieve variables from the request
+			$documentTypeIds = $request->document_type_id;
+			$companyDirectorId = $request->company_director_id;
+			$companyDetailsId = $request->company_details_id;
+			
+			// Ensure that documentTypeIds are not empty
+			if (count($documentTypeIds) == 0) {
+				return $this->errorResponse('No document types provided.');
+			}
+			
+			foreach($documentTypeIds as $documentTypeId)
+			{
+				$status = $request->status[$documentTypeId];
+				$reason = $request->reason[$documentTypeId] ?? '';
+				
+				CompanyDocument::where('company_director_id', $companyDirectorId)
+				->where('document_type_id', $documentTypeId)
+				->update(['status' => $status, 'reason' => $reason]);
+			}
+			
+			if(CompanyDocument::where('company_details_id', $companyDetailsId)->whereStatus(2)->exists())
+			{
+				CompanyDetail::where('id', $companyDetailsId)->update(['is_update_kyc' => 0]);
+			}
+			
+			if(CompanyDocument::where('company_director_id', $companyDirectorId)->whereNotIn('status', [0, 2])->exists())
+			{
+				echo 'kyc approved';
+			}
+			DB::commit(); 
+			return $this->successResponse('The director KYC has been updated successfully.');
 		} 
 		catch (\Throwable $e)
 		{

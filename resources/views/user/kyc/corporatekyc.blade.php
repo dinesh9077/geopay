@@ -27,17 +27,20 @@
 			<div class="row min-vh-100">
 				<!-- Right Form Section -->
 				<div class="d-flex align-items-center justify-content-center position-relative z-1">
-					<div id="container" class="container d-flex align-items-center justify-content-center py-4"> 
-						<div class="p-4 shadow rounded-4 register-form-container kyc-form-container z-2"> 
+					<a href="{{ route('logout') }}"  onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="btn btn-primary position-absolute top-0 end-0 m-3 d-none d-lg-block"><i class="bi bi-power ms-1"></i> Logout </a>
+					<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+						@csrf
+					</form>
+					<div id="container" class="container d-flex align-items-center justify-content-center py-4 "> 
+						<div class="p-4 shadow rounded-4 register-form-container kyc-form-container z-2 position-relative"> 
+							<a href="{{ route('logout') }}"  onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="btn btn-primary position-absolute top-0 end-0 m-3 d-lg-none"><i class="bi bi-power ms-1"></i></a>
 							<div > 
-								@if($user->is_company == 1 && $user->is_kyc_verify == 1)
-									
+								@if($user->is_company == 1 && $user->is_kyc_verify == 1) 
 									<h6 class="fw-semibold text-black text-center mb-3">Your Corporate KYC Is Completed.</h6>
 									<p class="caption text-muted content-3 text-center"> Thank you for completing your KYC submission! Your documents have been reviewed and approved. You can now continue using our services. </p>
 									<div class="text-center">
 										<a href="{{ route('home') }}" class="btn btn-primary btn-sm">Continue to use</a>
-									</div>
-									
+									</div> 
 								@else
 									
 								<h6 class="heading-4  text-black text-center mb-3">KYC Process</h6>
@@ -50,7 +53,7 @@
 										<div class="step-container d-flex justify-content-between">
 											<div class="step-circle"><i class="fa-solid fa-circle small"></i></div>
 											<div class="step-circle"><i class="fa-solid fa-circle small"></i></div>
-											<div class="step-circle"><i class="fa-solid fa-circle small"></i></div> 
+											<div class="step-circle"><i class="fa-solid fa-circle small"></i></div>
 										</div>
 									</div>
 									
@@ -68,7 +71,6 @@
 										<div class="step step-3" style="display:{{ $stepNumber == 3 ? 'show' : 'none' }}">
 											@include('user.kyc.step-3') 
 										</div>
-										 
 									</form>
 								</div>
 								@endif

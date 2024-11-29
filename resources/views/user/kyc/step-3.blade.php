@@ -151,9 +151,7 @@
 						  
 						Livewire.dispatch('refreshCompanyDirectorSelect');
 						Livewire.dispatch('refreshCompanyDocuments'); 
-						Livewire.hook('message.updated', (message, component) => {
-							initializeSelect2(); // Reinitialize after Livewire updates the DOM
-						});
+					 
 						$('#company_director_id').val(null).trigger('change');
 						$('#document_type_id').empty().append('<option value=""> Select Document</option>');
 						$('.resetStep3').hide();
@@ -210,7 +208,7 @@
 	// Initialize when the page is loaded
 	document.addEventListener('DOMContentLoaded', () => {
 		initializeFileUpload();  
-		initializeSelect2()  
+		initializeSelect2()   
 	});
 	
 	function initializeFileUpload() {
