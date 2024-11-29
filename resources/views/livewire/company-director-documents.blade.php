@@ -49,7 +49,7 @@
 										{{ $documentType->label }}
 									</span>
 									@if($groupedDocuments->has($key))
-										<a href="javascript:;" id="edit_{{ $companyDirector->id }}_{{ $documentType->id }}" data-company_director_id="{{$companyDirector->id}}" data-document_type_id="{{$documentType->id}}" onclick="editDocument(this, event)">
+										<a href="javascript:;" id="edit_{{ $companyDirector->id }}_{{ $documentType->id }}" data-company_director_id="{{$companyDirector->id}}" data-company_director_name="{{$companyDirector->name}}" data-document_type_id="{{$documentType->id}}"  data-document_type_label="{{$documentType->label}}" onclick="editDocument(this, event)">
 											<i class="bi bi-pencil-square opacity-75 fw-semibold"></i>
 										</a>
 									@else

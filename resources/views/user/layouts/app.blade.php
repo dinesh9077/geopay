@@ -53,8 +53,7 @@
 					</div>
 				</footer>
 			</div>
-		</div>
-		<script src="https://kit.fontawesome.com/ae360af17e.js" ></script>
+		</div> 
 		<script src="{{ asset('assets/js/bootstrap/js/bootstrap.bundle.min.js') }}"></script>   
 		<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script>
 		<script type="text/javascript" src="{{ asset('assets/js/slick/slick.min.js')}}"></script>
@@ -63,14 +62,11 @@
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>  
 		<x-scripts :cryptoKey="$cryptoKey" />	
 		{{-- @livewireScripts --}}
-		<script src="{{ asset('vendor/livewire/livewire.js?id=38dc8241') }}"
+		<script src="{{ asset('vendor/livewire/livewire.js') }}?v={{ \Carbon\Carbon::now()->timestamp }}"
         data-csrf="{{ csrf_token() }}"
-        data-update-uri="livewire/update"
+        data-update-uri="{{ url('livewire/update') }}"
         data-navigate-once="true"></script>
 		<script>
-			/* document.addEventListener('DOMContentLoaded', function () {
-				Livewire.dispatch('refreshRecentTransactions');
-			}); */
 			 
 			// for sidebar collapse
 			var sidebarToggle = document.querySelector("#sidebar-toggle");
@@ -104,20 +100,23 @@
 				});
 			}
 			img2svg();
-
-			// Quick Transfer Slick Slider
+ 
+			document.addEventListener('DOMContentLoaded', function () {
+				//Livewire.dispatch('refreshRecentTransactions');  
+			});
+			
+			// Initial Slick Initialization
 			$(".qt-slick-slider").slick({
 				slidesToShow: 3,
 				infinite: true,
 				slidesToScroll: 1,
 				autoplay: false,
 				responsive: [
-					{ breakpoint: 1024, settings: { slidesToShow: 3, slidesToScroll: 1, infinite: true, } },
-					{ breakpoint: 768, settings: { slidesToShow: 2, slidesToScroll: 1, infinite: true, } },
-					{ breakpoint: 320, settings: { slidesToShow: 1, slidesToScroll: 1, autoplay: true, } }
+					{ breakpoint: 1024, settings: { slidesToShow: 3, slidesToScroll: 1, infinite: true } },
+					{ breakpoint: 768, settings: { slidesToShow: 2, slidesToScroll: 1, infinite: true } },
+					{ breakpoint: 320, settings: { slidesToShow: 1, slidesToScroll: 1, autoplay: true } }
 				]
-			});
- 
+			}); 
 		</script>
 		@stack('js') 
 	</body>

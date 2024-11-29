@@ -1,11 +1,8 @@
 <h5 class="heading-4 fw-normal mb-4 text-center">Please upload all the required documents. </h5>
 <div class="row mb-5">
 	<div class="col-lg-6">
-		<div class="mb-2">
-			<label for="company_director_id" class="required text-black content-3 fw-normal mb-2">Director <span class="text-danger">*</span></label>
-			<select id="company_director_id" name="company_director_id" class="form-control form-control-lg bg-light border-light select2">
-				<option value="">Select Director</option> 
-			</select>    
+		<div class="mb-2">   
+			@livewire('company-director-select', ['companyDetailId' => $companyDetail->id]) 
 		</div>
 		<div class="mb-3">
 			<label for="document_type_id" class="required text-black content-3 fw-normal mb-2">Document <span class="text-danger">*</span></label>
@@ -27,82 +24,14 @@
 					<div class="form__files-container" id="files-list-container"></div> 
 				</div>
 				<div class="d-flex justify-content-end">
-					<button type="button" id="submit-btn" class="btn btn-primary w-fit px-4 d-flex align-items-center">
-						Add 
-					</button>
+					<button type="button" class="btn btn-secondary w-fit px-4 me-2 resetStep3" style="display:none;" onClick="resetForm()">Reset</button>
+					<button type="button" id="submit-btn" class="btn btn-primary w-fit px-4 d-flex align-items-center"> Add </button>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div class="col-lg-6 kyc-document-column">
-	@livewire('company-director-documents', ['companyDetailId' => $companyDetail->id])
-
-	{{-- @if($companyDetail && $companyDetail->companyDirectors->isNotEmpty())
-			@php
-				// Group documents by director ID and document type ID
-				$groupedDocuments = $companyDetail->companyDocuments
-					->groupBy(function ($doc) {
-						return $doc->company_director_id . '_' . $doc->document_type_id;
-					});
-			@endphp
-  
-			@foreach($companyDetail->companyDirectors as $companyDirector)
-				<div class="card card-body">
-					<div class="mb-4">
-						<h5 class="heading-6 fw-normal mb-2">
-							{{ $companyDirector->name }} Documents 
-							@php
-								// Check if all documents are uploaded for this director
-								$allDocumentsUploaded = true;
-								foreach($documentTypes as $documentType) {
-									$key = $companyDirector->id . '_' . $documentType->id;
-									if (!$groupedDocuments->has($key)) {
-										$allDocumentsUploaded = false;
-										break;
-									}
-								}
-							@endphp
-							@if($allDocumentsUploaded)
-								<span class="badge bg-success">Document Uploaded</span>
-							@else
-								<span class="badge bg-warning">Pending</span>
-							@endif
-						</h5>
-						<ul class="p-0">
-							@foreach($documentTypes as $documentType)
-								@php
-									$key = $companyDirector->id . '_' . $documentType->id;
-								@endphp
-								<li class="content-3 text-muted mb-2">
-									<div class="d-flex justify-content-between">
-										<span class="d-flex">
-											@if($groupedDocuments->has($key))
-												<i id="check_{{ $companyDirector->id }}_{{ $documentType->id }}" 
-												   class="bi bi-check-circle-fill text-success me-2"></i>
-											@else
-												<i id="check_{{ $companyDirector->id }}_{{ $documentType->id }}" 
-												   class="bi bi-x-circle-fill text-muted opacity-50 me-2 not_completed"></i>
-											@endif
-											{{ $documentType->label }}
-										</span>
-										@if($groupedDocuments->has($key))
-											<a href="javascript:;" id="edit_{{ $companyDirector->id }}_{{ $documentType->id }}" data-company_director_id="{{$companyDirector->id}}" data-document_type_id="{{$documentType->id}}" onclick="editDocument(this, event)">
-												<i class="bi bi-pencil-square opacity-75 fw-semibold"></i>
-											</a>
-										@else
-											<a href="javascript:;" id="edit_{{ $companyDirector->id }}_{{ $documentType->id }}" data-company_director_id="{{$companyDirector->id}}" data-document_type_id="{{$documentType->id}}" onclick="editDocument(this, event)" style="display:none;">
-												<i class="bi bi-pencil-square opacity-75 fw-semibold"></i>
-											</a>
-										@endif
-									</div>
-								</li>
-							@endforeach
-						</ul>
-					</div>
-				</div>
-			@endforeach
-
-		@endif --}}
+	@livewire('company-director-documents', ['companyDetailId' => $companyDetail->id]) 
 	</div>
 
 </div>
@@ -114,7 +43,17 @@
 	@endif
 </div>
 <script>
-	 
+	
+	function initializeSelect2() {
+		$('.select2').each(function () {
+			if (!$(this).data('select2')) { // Only initialize if not already initialized
+				$(this).select2({
+					width: "100%"
+				});
+			}
+		});
+	} 
+  
 	var selectedFiles = [];  
 	var fileList = [];
 	
@@ -202,30 +141,25 @@
 				success: function(res)
 				{  	
 					$('#submit-btn').html('Add').prop('disabled', false);  
-					$('#check_' + directorSelect.value + '_' + documentSelect.value)
-						.removeClass()
-						.addClass('bi bi-x-circle-fill text-muted opacity-50 me-2 not_completed');
-					$('#edit_' + directorSelect.value + '_' + documentSelect.value).hide();
-					  
 					if (res.status === "success") 
-					{
-						var result = decryptData(res.response);
-						toastrMsg(res.status, res.message);  
-						$('#company_director_id').val(null).trigger('change'); // Reset director dropdown
-						$('#document_type_id').val(null).trigger('change');    // Reset document type dropdown
-						$('#upload-files').val(null);                         // Reset file input
-						$('#files-list-container').html(''); // Clear file previews
-						 
+					{ 
 						fileList = [];
 						selectedFiles  = [];
-						// Update the status icon to success
-						$('#check_' + result.data.company_director_id + '_' + result.data.document_type_id)
-							.removeClass()
-							.addClass('bi bi-check-circle-fill text-success me-2');
-						$('#edit_' + result.data.company_director_id + '_' + result.data.document_type_id).show(); 
-						fetchDirectors("{{ $companyDetail ? $companyDetail->id : '' }}");
-						Livewire.dispatch('refreshCompanyDocuments');
-					} else if (res.status === "validation") {
+						toastrMsg(res.status, res.message);    
+						$('#upload-files').val(null);         
+						$('#files-list-container').html('');
+						  
+						Livewire.dispatch('refreshCompanyDirectorSelect');
+						Livewire.dispatch('refreshCompanyDocuments'); 
+						Livewire.hook('message.updated', (message, component) => {
+							initializeSelect2(); // Reinitialize after Livewire updates the DOM
+						});
+						$('#company_director_id').val(null).trigger('change');
+						$('#document_type_id').empty().append('<option value=""> Select Document</option>');
+						$('.resetStep3').hide();
+					} 
+					else if (res.status === "validation") 
+					{
 						// Display validation errors
 						toastrMsg(res.status, res.errors);
 					} else {
@@ -272,46 +206,11 @@
 			}
 		});
 	};
-	 
-	function fetchDirectors(companyDetailId) {
-		$('#company_director_id').html('<option value="">Select Director</option>');
-
-		// AJAX request to fetch directors
-		$.ajax({
-			url: "{{ url('corporate/director')}}/" + companyDetailId,
-			method: 'GET',
-			success: function (res) {
-				console.log(res);  // Log response to check if it's correct
-
-				// Ensure the response has 'remainingDirectors' as an array
-				if (Array.isArray(res.remainingDirectors)) {
-					// Clear existing options
-					$('#company_director_id').html('<option value="">Select Director</option>');
-
-					// Populate dropdown with directors
-					res.remainingDirectors.forEach(doc => {
-						$('#company_director_id').append(
-							$('<option></option>').val(doc.id).text(doc.name)
-						);
-					});
-				} else {
-					console.error('Expected "remainingDirectors" to be an array, but got:', res.remainingDirectors);
-				}
-			},
-			error: function (xhr, status, error) {
-				console.error('Error fetching directors:', error);
-			}
-		});
-	}
-
-   
+	   
 	// Initialize when the page is loaded
 	document.addEventListener('DOMContentLoaded', () => {
-		initializeFileUpload();
-		fetchDirectors("{{ $companyDetail ? $companyDetail->id : '' }}");
-		$('.select2').select2({
-			width: "100%"
-		});	
+		initializeFileUpload();  
+		initializeSelect2()  
 	});
 	
 	function initializeFileUpload() {
@@ -319,19 +218,10 @@
 		const inputContainer = document.querySelector('#upload-container');
 		var filesListContainer = $('#files-list-container');
 		 
-		/**
-		 * Attach multiple events to an element
-		 * @param {HTMLElement} element - The element to attach events
-		 * @param {string[]} events - Array of event names
-		 * @param {function} listener - The event listener function
-		 */
 		const attachEvents = (element, events, listener) => {
 			events.forEach(event => element.addEventListener(event, listener, false));
 		};
-
-		/**
-		 * Update the preview of uploaded files
-		 */
+ 
 		const updatePreview = () => {
 			filesListContainer.html(''); // Clear existing previews
 
@@ -449,17 +339,30 @@
 			inputFile.addEventListener('change', handleFileUpload);
 		}
 	}
-
-	 
-	
+  
 	function editDocument(obj, event)
 	{
 		event.preventDefault();
 		var companyDirectorId = $(obj).data('company_director_id');
+		var companyDirectorName = $(obj).data('company_director_name');
 		var documentTypeId = $(obj).data('document_type_id');
-		 
-		$('#company_director_id').val(companyDirectorId).trigger('change');
-		$('#document_type_id').val(documentTypeId).trigger('change');
+		var documentTypeName = $(obj).data('document_type_label');
+		
+		$('#company_director_id, #document_type_id').empty(); 
+		$('#company_director_id').append(
+			$('<option></option>').val(companyDirectorId).text(companyDirectorName)
+		);
+		$('#document_type_id').append(
+			$('<option></option>').val(documentTypeId).text(documentTypeName)
+		);  
+		$('.resetStep3').show();
 	}
-
+	
+	function resetForm()
+	{
+		Livewire.dispatch('refreshCompanyDirectorSelect');
+		$('#company_director_id').val(null).trigger('change');
+		$('#document_type_id').empty().append('<option value=""> Select Document</option>');
+		$('.resetStep3').hide();
+	}
 </script>

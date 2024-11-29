@@ -112,14 +112,13 @@
 				</div>
 			</div>
 		</div>
-	</body>  
-	<script src="https://kit.fontawesome.com/ae360af17e.js" ></script>
+	</body>   
 	<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script>
 	<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 	<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
-	<script src="{{ asset('vendor/livewire/livewire.js?id=38dc8241') }}"
+	<script src="{{ asset('vendor/livewire/livewire.js') }}?v={{ \Carbon\Carbon::now()->timestamp }}"
         data-csrf="{{ csrf_token() }}"
-        data-update-uri="livewire/update"
+        data-update-uri="{{ url('livewire/update') }}"
         data-navigate-once="true"></script>
 	<x-scripts :cryptoKey="$cryptoKey" />	
 	<script>  
@@ -168,8 +167,9 @@
 					else
 					{ 
 						toastrMsg(res.status,res.message); 
-						const decryptRes = decryptData(res.response);
-						window.location.href = decryptRes.url; 
+						const decryptRes = decryptData(res.response); 
+						window.location.href = decryptRes.url;
+						//Livewire.navigate(decryptRes.url);
 					}
 				} 
 			});

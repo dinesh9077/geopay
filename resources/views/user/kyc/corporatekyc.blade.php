@@ -27,55 +27,57 @@
 			<div class="row min-vh-100">
 				<!-- Right Form Section -->
 				<div class="d-flex align-items-center justify-content-center position-relative z-1">
-					<div id="container" class="container d-flex align-items-center justify-content-center py-4">
+					<div id="container" class="container d-flex align-items-center justify-content-center py-4"> 
 						<div class="p-4 shadow rounded-4 register-form-container kyc-form-container z-2"> 
-							@if($user->is_company == 1 && $user->is_kyc_verify == 1)
-								
-								<h6 class="fw-semibold text-black text-center mb-3">Your Corporate KYC Is Completed.</h6>
-								<p class="caption text-muted content-3 text-center"> Thank you for completing your KYC submission! Your documents have been reviewed and approved. You can now continue using our services. </p>
-								<div class="text-center">
-									<a href="{{ route('home') }}" class="btn btn-primary btn-sm">Continue to use</a>
-								</div>
-								
-							@else
-								
-							<h6 class="heading-4  text-black text-center mb-3">KYC Process</h6>
-							<p class="caption text-muted content-3 text-center">To ensure a secure and compliant experience, please upload your KYC documents. Quick, secure, and hassle-free verification!</p> 
-							<div>
-								<div class="w-75 mx-auto mt-5 mb-2 stepper-container">
-									<div class="progress px-1" style="height: 3px;">
-										<div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-									</div>
-									<div class="step-container d-flex justify-content-between">
-										<div class="step-circle"><i class="fa-solid fa-circle small"></i></div>
-										<div class="step-circle"><i class="fa-solid fa-circle small"></i></div>
-										<div class="step-circle"><i class="fa-solid fa-circle small"></i></div>
-									</div>
-								</div>
-								
-								<form id="multi-step-form">
-									<!-- Company Form 1 -->
-									<div class="step step-1" style="display:{{ $stepNumber == 1 ? 'show' : 'none' }}"> 
-										@include('user.kyc.step-1')
+							<div > 
+								@if($user->is_company == 1 && $user->is_kyc_verify == 1)
+									
+									<h6 class="fw-semibold text-black text-center mb-3">Your Corporate KYC Is Completed.</h6>
+									<p class="caption text-muted content-3 text-center"> Thank you for completing your KYC submission! Your documents have been reviewed and approved. You can now continue using our services. </p>
+									<div class="text-center">
+										<a href="{{ route('home') }}" class="btn btn-primary btn-sm">Continue to use</a>
 									</div>
 									
-									<!-- Company Form 2 -->
-									<div class="step step-2" style="display:{{ $stepNumber == 2 ? 'show' : 'none' }}">
-										@include('user.kyc.step-2')
+								@else
+									
+								<h6 class="heading-4  text-black text-center mb-3">KYC Process</h6>
+								<p class="caption text-muted content-3 text-center">To ensure a secure and compliant experience, please upload your KYC documents. Quick, secure, and hassle-free verification!</p> 
+								<div>
+									<div class="w-75 mx-auto mt-5 mb-2 stepper-container">
+										<div class="progress px-1" style="height: 3px;">
+											<div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+										</div>
+										<div class="step-container d-flex justify-content-between">
+											<div class="step-circle"><i class="fa-solid fa-circle small"></i></div>
+											<div class="step-circle"><i class="fa-solid fa-circle small"></i></div>
+											<div class="step-circle"><i class="fa-solid fa-circle small"></i></div> 
+										</div>
 									</div>
-									 
-									<div class="step step-3" style="display:{{ $stepNumber == 3 ? 'show' : 'none' }}">
-										@include('user.kyc.step-3') 
-									</div>
-								</form>
+									
+									<form id="multi-step-form">
+										<!-- Company Form 1 -->
+										<div class="step step-1" style="display:{{ $stepNumber == 1 ? 'show' : 'none' }}"> 
+											@include('user.kyc.step-1')
+										</div>
+										
+										<!-- Company Form 2 -->
+										<div class="step step-2" style="display:{{ $stepNumber == 2 ? 'show' : 'none' }}">
+											@include('user.kyc.step-2')
+										</div>
+										 
+										<div class="step step-3" style="display:{{ $stepNumber == 3 ? 'show' : 'none' }}">
+											@include('user.kyc.step-3') 
+										</div>
+										 
+									</form>
+								</div>
+								@endif
 							</div>
-							@endif
 						</div>
 					</div>
 				</div>
 			</div>
-		</div> 
-		<script src="https://kit.fontawesome.com/ae360af17e.js" ></script>
+		</div>  
 		<script src="{{ asset('assets/js/bootstrap/js/bootstrap.bundle.min.js') }}"></script>   
 		<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
@@ -261,8 +263,7 @@
 							{
 								var result = decryptData(res.response); 
 								$('.step-'+parseInt(stepNumber + 1)).html(result.view) 
-								initializeFileUpload(); 
-								fetchDirectors("{{ $companyDetail ? $companyDetail->id : '' }}");
+								initializeFileUpload();  
 								select2()
 								if (!isFinal){
 									showStep(stepNumber + 1); // Move to the next step if not final
