@@ -36,9 +36,11 @@ class CompanyDirectorDocuments extends Component
     {
         // Fetch company details along with directors and their associated documents
         $this->companyDetail = CompanyDetail::with(['companyDirectors','companyDocuments'])->find($this->companyDetailId);
-        $this->companyDirectors = $this->companyDetail->companyDirectors;
-        $this->companyDocuments = $this->companyDetail->companyDocuments;
-        $this->documentTypes = DocumentType::where('status', 1)->get(); // Get active document types
+		if($this->companyDetail)
+			$this->companyDirectors = $this->companyDetail->companyDirectors;
+			$this->companyDocuments = $this->companyDetail->companyDocuments;
+			$this->documentTypes = DocumentType::where('status', 1)->get(); // Get active document types
+		}
     }
 	
 	
