@@ -792,3 +792,11 @@ table.dataTable thead th, table.dataTable tbody td {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
+
+.kyc-result-contents{
+  max-width: 550px;
+  background-image: url('../image/overlays/kyc-result-frame.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: bottom;
+}
