@@ -22,8 +22,8 @@
 			value="{{ $companyDetail->no_of_director ?? 1 }}"  
 			oninput="this.value = this.value.replace(/\D/g, '')" 
 			{{ $user->is_upload_document == 1 ? 'readonly' : '' }}
-			{{ optional($companyDetail->businessTypes)->is_director === 0 ? 'readonly' : '' }}
-		> 
+			{{ $companyDetail && $companyDetail->businessTypes->is_director === 0 ? 'readonly' : '' }} 
+			> 
 	</div> 
 	<div class="col-md-6 mb-3">
 		<label for="business_licence" class="required text-black font-md mb-2">Company Registration Number <span class="text-danger">*</span></label>
