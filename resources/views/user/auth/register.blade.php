@@ -136,7 +136,7 @@
 											<div class="col-md-6 mb-3">
 												<label for="mobile_number" class="required content-3 text-primary">Mobile Number (Without country code) <span class="text-danger">*</span></label>
 												<div class="input-group">
-													<input id="mobile_number" name="mobile_number" type="text" class="form-control form-control-lg bg-light border-light" autocomplete="off"/>
+													<input id="mobile_number" name="mobile_number" type="text" class="form-control form-control-lg bg-light border-light" autocomplete="off"  oninput="this.value = this.value.replace(/\D/g, '')"/>
 													<input id="is_mobile_verify" name="is_mobile_verify" type="hidden" class="form-control form-control-lg bg-light border-light" value="0" >
 													<button type="button" class="input-group-text border-0 btn-secondary text-white content-4" id="mobile_numberVerifyText" onclick="verifyOtp('mobile_number', event, 'individualRegisterForm')">
 														<span class="before-verify">Verify</span>
@@ -221,7 +221,7 @@
 											<div class="col-md-6 mb-3">
 												<label for="mobile_number" class="required content-3 text-primary">Mobile Number (Without country code) <span class="text-danger">*</span></label>
 												<div class="input-group">
-													<input id="mobile_number" name="mobile_number" type="text" class="form-control form-control-lg bg-light border-light" autocomplete="off"/>
+													<input id="mobile_number" name="mobile_number" type="text" class="form-control form-control-lg bg-light border-light" autocomplete="off"  oninput="this.value = this.value.replace(/\D/g, '')"/>
 													<input id="is_mobile_verify" name="is_mobile_verify" type="hidden" class="form-control form-control-lg bg-light border-light" value="0" >
 													<button type="button" class="input-group-text border-0 btn-secondary text-white content-4" id="mobile_numberVerifyText" onclick="verifyOtp('mobile_number', event, 'companyRegisterForm')">
 														<span class="before-verify">Verify</span>
