@@ -105,9 +105,9 @@ class RegisterController extends Controller
 			if ($request->input('email') && $request->input('is_email_verify') == 0) {
 				$validator->errors()->add('email', 'Email verification is required before proceeding.');
 			}
-			if ($request->input('mobile_number') && $request->input('is_mobile_verify') == 0) {
+			/* if ($request->input('mobile_number') && $request->input('is_mobile_verify') == 0) {
 				$validator->errors()->add('mobile_number', 'Mobile verification is required before proceeding.');
-			}
+			} */
 		});
 		
 		// Check if the main validator fails
