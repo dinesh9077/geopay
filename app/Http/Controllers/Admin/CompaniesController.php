@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\CompanyDetail;
+use App\Models\CompanyDocument;
 use DB, Auth, Helper, Hash, Validator;
 use App\Http\Traits\WebResponseTrait; 
 
@@ -243,10 +244,10 @@ class CompaniesController extends Controller
 			
 			if(CompanyDocument::where('company_details_id', $companyDetailsId)->whereStatus(2)->exists())
 			{
-				CompanyDetail::where('id', $companyDetailsId)->update(['is_update_kyc' => 0]);
+				CompanyDetail::where('id', $companyDetailsId)->update(['is_update_kyc' => 0]); 
 			}
 			
-			if(CompanyDocument::where('company_director_id', $companyDirectorId)->whereNotIn('status', [0, 2])->exists())
+			if(!CompanyDocument::where('company_director_id', $companyDirectorId)->whereIn('status', [0, 2])->exists())
 			{
 				echo 'kyc approved';
 			}

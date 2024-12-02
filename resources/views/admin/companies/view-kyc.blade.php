@@ -2,6 +2,7 @@
 @section('title', config('setting.site_name') . ' - View Kyc')
 
 @section('content')
+	<link href="{{asset('assets/css/front-fancybox.css')}}" rel="stylesheet" type="text/css" />
 	<div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
 		<div>
 			<h4 class="mb-3 mb-md-0">View Kyc Details</h4>
@@ -12,6 +13,7 @@
 	</div>
 @endsection 
 @push('js')  
+	<script src="{{asset('assets/js/front-fancybox.js')}}"></script>
 	<script>
 		$('#directorKycForm').submit(function(event) 
 		{

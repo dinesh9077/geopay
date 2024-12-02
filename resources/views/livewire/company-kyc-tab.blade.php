@@ -26,9 +26,11 @@
 								<div class="card">
 									<div class="card-body"> 			
 										<h4 class="card-title">{{ $documents[0]['document_type']['label'] }}</h4>
-										<div class="d-flex align-items-center gap-2 mb-3">
+										<div class="row g-2 mb-3">
 											@foreach($documents as $document)
-												<img class="rounded-4 shadow w-50" id="profileImage" src="{{ url('storage/company_documents/'.$userId, $document['document'])}}" alt="Profile Image" height="100" width="100">
+												<a class="col-6 " href="{{ url('storage/company_documents/'.$userId, $document['document'])}}" data-fancybox="document{{$document['id']}}">
+													<img class="rounded-4 border border-dark shadow w-100" id="profileImage" src="{{ url('storage/company_documents/'.$userId, $document['document'])}}" alt="Profile Image" height="100" width="100"> 
+												</a>
 											@endforeach
 										</div>
 										<select class="form-select mb-3" name="status[{{$documentTypeId}}]" id="status{{$documentTypeId}}" onchange="openReasonText({{$documentTypeId}})">
@@ -36,10 +38,11 @@
 											<option value="1" {{ $documents[0]['status'] == 1 ? 'selected' : '' }}>Approved</option>
 											<option value="2" {{ $documents[0]['status'] == 2 ? 'selected' : '' }}>Rejected</option> 
 										</select>
-										<textarea id="reason{{$documentTypeId}}" class="form-control" name="reason[{{$documentTypeId}}]" style="display:none;"></textarea>
+										<textarea id="reason{{$documentTypeId}}" class="form-control" name="reason[{{$documentTypeId}}]" style="display:{{ $documents[0]['status'] == 2 ? 'block' : 'none' }};">{{ $documents[0]['reason'] }}</textarea>
 										<input type="hidden" class="form-control" name="document_type_id[]" value="{{ $documentTypeId }}">
 										<input type="hidden" class="form-control" name="company_director_id" value="{{ $documents[0]['company_director_id'] }}">
 										<input type="hidden" class="form-control" name="company_details_id" value="{{ $documents[0]['company_details_id'] }}">
+										<input type="hidden" class="form-control" name="user_id" value="{{ $userId }}">
 									</div>
 								</div>
 							</div>

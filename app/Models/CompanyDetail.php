@@ -13,7 +13,7 @@ class CompanyDetail extends Model
 
     protected $table = 'company_details';
 
-    protected $fillable = [
+protected $fillable = [
         'user_id', 
         'business_licence', 
         'tin', 
@@ -25,7 +25,8 @@ class CompanyDetail extends Model
         'bank_code',
         'step_number',
         'business_type_id',
-        'no_of_director'
+        'no_of_director',
+        'is_update_kyc'
     ];
 	
 	protected static $recordEvents = ['created', 'deleted', 'updated'];
