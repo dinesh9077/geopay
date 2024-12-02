@@ -31,14 +31,20 @@
 												<a class="col-6 " href="{{ url('storage/company_documents/'.$userId, $document['document'])}}" data-fancybox="document{{$document['id']}}">
 													<img class="rounded-4 border border-dark shadow w-100" id="profileImage" src="{{ url('storage/company_documents/'.$userId, $document['document'])}}" alt="Profile Image" height="100" width="100"> 
 												</a>
-											@endforeach
+											@endforeach 
 										</div>
-										<select class="form-select mb-3" name="status[{{$documentTypeId}}]" id="status{{$documentTypeId}}" onchange="openReasonText({{$documentTypeId}})">
+										<select 
+											class="form-select mb-3" 
+											name="status[{{ $documentTypeId }}]" 
+											id="status{{ $documentTypeId }}" 
+											onchange="openReasonText({{ $documentTypeId }})"
+										>
 											<option value="0" {{ $documents[0]['status'] == 0 ? 'selected' : '' }}>Pending</option>
 											<option value="1" {{ $documents[0]['status'] == 1 ? 'selected' : '' }}>Approved</option>
-											<option value="2" {{ $documents[0]['status'] == 2 ? 'selected' : '' }}>Rejected</option> 
+											<option value="2" {{ $documents[0]['status'] == 2 ? 'selected' : '' }}>Rejected</option>
 										</select>
-										<textarea id="reason{{$documentTypeId}}" class="form-control" name="reason[{{$documentTypeId}}]" style="display:{{ $documents[0]['status'] == 2 ? 'block' : 'none' }};">{{ $documents[0]['reason'] }}</textarea>
+ 
+										<textarea id="reason{{$documentTypeId}}" class="form-control" name="reason[{{$documentTypeId}}]" style="display:{{ $documents[0]['status'] == '2' ? 'block' : 'none' }};">{{ $documents[0]['reason'] }}</textarea>
 										<input type="hidden" class="form-control" name="document_type_id[]" value="{{ $documentTypeId }}">
 										<input type="hidden" class="form-control" name="company_director_id" value="{{ $documents[0]['company_director_id'] }}">
 										<input type="hidden" class="form-control" name="company_details_id" value="{{ $documents[0]['company_details_id'] }}">

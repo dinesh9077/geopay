@@ -42,8 +42,7 @@
 								<span class="badge bg-success">Approved</span> 
 							@elseif($hasPendingOrRejected)
 								<span class="badge bg-danger">Attention Required</span> 
-							@else   
-								@php $companyDetail->update(['is_update_kyc' => 1]); @endphp	
+							@else    
 								<span class="badge bg-success">Document Uploaded</span> 
 							@endif
 						@else

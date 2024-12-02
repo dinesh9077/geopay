@@ -395,9 +395,13 @@ class KycController extends Controller
 		
 			// Insert new documents into the database if needed
 			if (count($storedFiles) > 0) {
-				DB::table('company_documents')->insert($storedFiles);
+				DB::table('company_documents')->insert($storedFiles);  
 			}
 			
+			if(!CompanyDocument::where('company_details_id', $companyDetail->id)->where('status', 2)->exists())
+			{ 
+				CompanyDetail::where('id', $request->company_details_id)->update(['is_update_kyc' => 1]);
+			}
 			DB::commit();
 			return $this->successResponse('KYC documents processed successfully.', ['data' => $request->only('company_details_id', 'company_director_id', 'document_type_id')]);
 			
