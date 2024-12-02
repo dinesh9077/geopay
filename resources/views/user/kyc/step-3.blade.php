@@ -31,7 +31,7 @@
 		</div>
 	</div>
 	<div class="col-lg-6 kyc-document-column">
-	@livewire('company-director-documents', ['companyDetailId' => $companyDetail->id]) 
+	@livewire('company-director-documents', ['companyDetailId' => $companyDetail->id ?? '']) 
 	</div>
 
 </div>
