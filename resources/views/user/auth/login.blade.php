@@ -105,7 +105,7 @@
 									
 									<hr class="flex-grow-1 hr-line text-secondary">
 								</div>
-								<a href="{{ route('register') }}" wire:navigate class="btn btn-lg btn-secondary w-100">Sign up</a>
+								<a href="{{ route('register') }}" class="btn btn-lg btn-secondary w-100">Sign up</a>
 							</form>
 						</div>
 					</div>
