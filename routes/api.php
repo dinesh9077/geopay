@@ -48,6 +48,7 @@
 	Route::post('logout', [LoginController::class, 'logout'])->middleware(['auth:api', 'ensure.token']);
 	
 	Route::get('countries', [CountryController::class, 'index']); 
+	Route::post('liquidnet', [CountryController::class, 'liquidnet']); 
 	
 	Route::get('user-roles', [UserController::class, 'userRoles']); 
 	 

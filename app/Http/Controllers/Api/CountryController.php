@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Country;
 use App\Http\Traits\ApiResponseTrait;
+use App\Services\LiquidNetService;
 
 class CountryController extends Controller
 {
@@ -15,6 +16,24 @@ class CountryController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+	protected $liquidNetService;
+
+    public function __construct(LiquidNetService $liquidNetService)
+    {
+        $this->liquidNetService = $liquidNetService;
+    }
+	
+	public function liquidnet()
+    {
+        $url = '/api/webservice/GetEcho';
+        $method = 'post';
+        $body = ['agentSessionId' => '67898987979']; // Optional payload
+
+        $response = $this->liquidNetService->hmacAuthGenerate($method, $url, $body);
+
+        return response()->json($response);
+    }
+	
     public function index()
     {
         $countries = Country::select('id', 'name', 'isdcode', 'country_flag')->get();
