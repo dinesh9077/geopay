@@ -28,7 +28,7 @@
 										<h4 class="card-title">{{ $documents[0]['document_type']['label'] }}</h4>
 										<div class="row g-2 mb-3">
 											@foreach($documents as $document)
-												<a class="col-6 " href="{{ url('storage/company_documents/'.$userId, $document['document'])}}" data-fancybox="document{{$document['id']}}">
+												<a class="col-6" href="{{ url('storage/company_documents/'.$userId, $document['document'])}}" data-fancybox="document{{$document['id']}}">
 													<img class="rounded-4 border border-dark shadow w-100" id="profileImage" src="{{ url('storage/company_documents/'.$userId, $document['document'])}}" alt="Profile Image" height="100" width="100"> 
 												</a>
 											@endforeach 
@@ -36,15 +36,14 @@
 										<select 
 											class="form-select mb-3" 
 											name="status[{{ $documentTypeId }}]" 
-											id="status{{ $documentTypeId }}" 
-											onchange="openReasonText({{ $documentTypeId }})"
+											id="status{{ $documentTypeId }}_{{$documents[0]['id']}}" 
+											onchange="openReasonText({{ $documentTypeId }}, {{$documents[0]['id']}})"
 										>
 											<option value="0" {{ $documents[0]['status'] == 0 ? 'selected' : '' }}>Pending</option>
 											<option value="1" {{ $documents[0]['status'] == 1 ? 'selected' : '' }}>Approved</option>
 											<option value="2" {{ $documents[0]['status'] == 2 ? 'selected' : '' }}>Rejected</option>
-										</select>
- 
-										<textarea id="reason{{$documentTypeId}}" class="form-control" name="reason[{{$documentTypeId}}]" style="display:{{ $documents[0]['status'] == '2' ? 'block' : 'none' }};">{{ $documents[0]['reason'] }}</textarea>
+										</select> 
+										<textarea id="reason{{$documentTypeId}}_{{$documents[0]['id']}}" class="form-control" name="reason[{{$documentTypeId}}]" style="display:{{ $documents[0]['status'] == '2' ? 'block' : 'none' }};">{{ $documents[0]['reason'] }}</textarea>
 										<input type="hidden" class="form-control" name="document_type_id[]" value="{{ $documentTypeId }}">
 										<input type="hidden" class="form-control" name="company_director_id" value="{{ $documents[0]['company_director_id'] }}">
 										<input type="hidden" class="form-control" name="company_details_id" value="{{ $documents[0]['company_details_id'] }}">
@@ -71,14 +70,14 @@
 	@endif
 </div>
 <script>
-	function openReasonText(documentId)
+	function openReasonText(documentTypeId, documentId)
 	{
-		var status = $('#status'+documentId).val();
-		$('#reason'+documentId).hide(); 
+		var status = $('#status'+documentTypeId+'_'+documentId).val();
+		$('#reason'+documentTypeId+'_'+documentId).hide(); 
 		if(status == 2)
 		{ 
-			$('#reason'+documentId).val('');
-			$('#reason'+documentId).show();
+			$('#reason'+documentTypeId+'_'+documentId).val('');
+			$('#reason'+documentTypeId+'_'+documentId).show();
 		}    
 	}
 	  

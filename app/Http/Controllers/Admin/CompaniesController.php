@@ -7,8 +7,12 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\CompanyDetail;
 use App\Models\CompanyDocument;
+use App\Models\CompanyDirector;
 use DB, Auth, Helper, Hash, Validator;
 use App\Http\Traits\WebResponseTrait; 
+use App\Mail\KycRejectionMail;
+use App\Mail\DirectorApprovalMail;
+use Illuminate\Support\Facades\Mail;
 
 class CompaniesController extends Controller
 {
@@ -226,6 +230,7 @@ class CompaniesController extends Controller
 			$documentTypeIds = $request->document_type_id;
 			$companyDirectorId = $request->company_director_id;
 			$companyDetailsId = $request->company_details_id;
+			$userId = $request->user_id;
 			
 			// Ensure that documentTypeIds are not empty
 			if (count($documentTypeIds) == 0) {
@@ -245,11 +250,53 @@ class CompaniesController extends Controller
 			if(CompanyDocument::where('company_details_id', $companyDetailsId)->whereStatus(2)->exists())
 			{
 				CompanyDetail::where('id', $companyDetailsId)->update(['is_update_kyc' => 0]); 
+				// Fetch rejected documents for the director
+				$rejectedDocuments = CompanyDocument::where('company_director_id', $companyDirectorId)
+					->where('status', 2) // Rejected status
+					->get(['document_type_id', 'reason']) 
+					->map(function ($doc) {
+						return [
+							'documentType' => $doc->documentType->label, // Assuming documentType relationship exists
+							'reason' => $doc->reason,
+						];
+					})
+					->toArray();
+
+				// Check if two or more documents are rejected
+				if (count($rejectedDocuments) >= 2)
+				{
+					// Fetch director's name and email
+					$director = CompanyDirector::find($companyDirectorId);
+					$user = User::find($userId);
+
+					// Send email
+					Mail::to($user->email)->send(new KycRejectionMail($director->name, $rejectedDocuments));
+				}
 			}
 			
-			if(!CompanyDocument::where('company_director_id', $companyDirectorId)->whereIn('status', [0, 2])->exists())
+			// Check if all documents are approved
+			$allApproved = CompanyDocument::where('company_director_id', $companyDirectorId)
+            ->where('status', '<>', 1)
+            ->doesntExist(); // If no documents exist with a status other than 1, all are approved
+			
+			if($allApproved)
+			{  
+				// Fetch director's name and email
+				$director = CompanyDirector::find($companyDirectorId);
+				$user = User::find($userId);
+				Mail::to($user->email)->send(new DirectorApprovalMail($director));
+			}
+			
+			// Check if all documents are approved
+			$allDirectorApproved = CompanyDocument::where('company_details_id', $companyDetailsId)
+            ->where('status', '<>', 1)
+            ->doesntExist(); // If no documents exist with a status other than 1, all are approved
+			
+			if($allDirectorApproved)
 			{
-				echo 'kyc approved';
+				$user = User::find($userId);
+				$user->update(['is_kyc_verify' => 1]); 
+				CompanyDetail::where('id', $companyDetailsId)->update(['is_update_kyc' => 1]); 
 			}
 			DB::commit(); 
 			return $this->successResponse('The director KYC has been updated successfully.');

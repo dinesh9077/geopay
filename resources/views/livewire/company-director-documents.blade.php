@@ -65,7 +65,7 @@
 											@elseif($groupedDocuments[$key][0]['status'] == 2)
 												<i id="check_{{ $companyDirector->id }}_{{ $documentType->id }}" class="bi bi-x-circle-fill text-danger opacity-50 me-2 not_completed"></i> 
 											@else 
-												<i id="check_{{ $companyDirector->id }}_{{ $documentType->id }}" class="bi bi-file-earmark-check-fill text-success opacity-50 me-2 not_completed"></i>
+												<i id="check_{{ $companyDirector->id }}_{{ $documentType->id }}" class="bi bi-file-earmark-check-fill text-success opacity-50 me-2"></i>
 											@endif 
 										@else
 											<i id="check_{{ $companyDirector->id }}_{{ $documentType->id }}"  class="bi bi-x-circle-fill text-muted opacity-50 me-2 not_completed"></i>

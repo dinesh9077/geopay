@@ -37,10 +37,8 @@
 </div>
 
 <div class="d-flex align-items-center justify-content-between">
-	<button type="button" class="btn btn-secondary prev-step"><i class="bi bi-arrow-left me-1"></i>Previous</button>
-	@if($user->is_upload_document == 0)
-		<button type="button" class="btn btn-primary submit-final">Submit </button>
-	@endif
+	<button type="button" class="btn btn-secondary prev-step"><i class="bi bi-arrow-left me-1"></i>Previous</button>  
+	<button type="button" class="btn btn-primary submit-final">Submit </button> 
 </div>
 <script>
 	
