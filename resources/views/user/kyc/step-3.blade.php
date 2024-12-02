@@ -28,7 +28,7 @@
 					<button type="button" id="submit-btn" class="btn btn-primary w-fit px-4 d-flex align-items-center"> Add </button>
 				</div>
 			</div>
-		</div>
+		</div> 
 	</div>
 	<div class="col-lg-6 kyc-document-column">
 	@livewire('company-director-documents', ['companyDetailId' => $companyDetail->id ?? '']) 
