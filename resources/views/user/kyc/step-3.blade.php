@@ -2,7 +2,7 @@
 <div class="row mb-5">
 	<div class="col-lg-6">
 		<div class="mb-2">   
-			@livewire('company-director-select', ['companyDetailId' => $companyDetail->id]) 
+			@livewire('company-director-select', ['companyDetailId' => $companyDetail->id ?? '']) 
 		</div>
 		<div class="mb-3">
 			<label for="document_type_id" class="required text-black content-3 fw-normal mb-2">Document <span class="text-danger">*</span></label>
