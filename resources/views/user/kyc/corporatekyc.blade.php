@@ -32,7 +32,7 @@
 						@csrf
 					</form>
 					<div id="container" class="container d-flex align-items-center justify-content-center py-4 "> 
-						@if($companyDetail->is_update_kyc == 0)
+					@if(!$companyDetail)
 						<div class="p-4 shadow rounded-4 register-form-container kyc-form-container z-2 position-relative"> 
 							<a href="{{ route('logout') }}"  onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="btn btn-primary position-absolute top-0 end-0 m-3 d-lg-none"><i class="bi bi-power ms-1"></i></a>
 							<div>  
@@ -69,30 +69,69 @@
 								 
 							</div>
 						</div>
-						
-						@else
-						
-							@if($user->is_company == 1 && $user->is_kyc_verify == 1) 
-								<div class="p-4 shadow rounded-4 text-center register-form-container kyc-form-container z-2 position-relative">
-									<img class="mb-xxl-4 mb-3" src="{{ url('storage/setting', config('setting.site_logo')) }}" alt="" style="max-width: 100px;">
-									<div class="card card-body p-4 kyc-result-contents border-opacity-10">
-										<h6 class="heading-4 mb-2 fw-semibold text-success">KYC Verified</h6>
-										<p class="caption text-muted content-3 mb-4">Thank you for completing your KYC submission! Your documents have been reviewed and approved. You can now continue using our services.</p>
-										<div class="d-flex justify-content-center">
-											<a href="{{ route('home') }}" id="submit-btn" class="btn btn-primary w-fit px-4"> Dashabord </a>
+					@else
+						@if($companyDetail->is_update_kyc == 0)
+							<div class="p-4 shadow rounded-4 register-form-container kyc-form-container z-2 position-relative"> 
+								<a href="{{ route('logout') }}"  onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="btn btn-primary position-absolute top-0 end-0 m-3 d-lg-none"><i class="bi bi-power ms-1"></i></a>
+								<div>  
+									<h6 class="heading-4  text-black text-center mb-3">KYC Process</h6>
+									<p class="caption text-muted content-3 text-center">To ensure a secure and compliant experience, please upload your KYC documents. Quick, secure, and hassle-free verification!</p> 
+									<div>
+										<div class="w-75 mx-auto mt-5 mb-2 stepper-container">
+											<div class="progress px-1" style="height: 3px;">
+												<div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+											</div>
+											<div class="step-container d-flex justify-content-between">
+												<div class="step-circle"><i class="fa-solid fa-circle small"></i></div>
+												<div class="step-circle"><i class="fa-solid fa-circle small"></i></div>
+												<div class="step-circle"><i class="fa-solid fa-circle small"></i></div>
+											</div>
 										</div>
+										
+										<form id="multi-step-form">
+											<!-- Company Form 1 -->
+											<div class="step step-1" style="display:{{ $stepNumber == 1 ? 'show' : 'none' }}"> 
+												@include('user.kyc.step-1')
+											</div>
+											
+											<!-- Company Form 2 -->
+											<div class="step step-2" style="display:{{ $stepNumber == 2 ? 'show' : 'none' }}">
+												@include('user.kyc.step-2')
+											</div>
+											 
+											<div class="step step-3" style="display:{{ $stepNumber == 3 ? 'show' : 'none' }}">
+												@include('user.kyc.step-3') 
+											</div>
+										</form>
 									</div>
-								</div> 
+									 
+								</div>
+							</div>
+							
 							@else
-								<div class="p-4 shadow rounded-4 text-center register-form-container kyc-form-container z-2 position-relative">
-									<img class="mb-xxl-4 mb-3" src="{{ url('storage/setting', config('setting.site_logo')) }}" alt="" style="max-width: 100px;">
-									<div class="card card-body p-4 kyc-result-contents border-opacity-10">
-										<h6 class="heading-4 mb-2 fw-semibold text-warning">KYC Underway</h6>
-										<p class="caption text-muted content-3 mb-4">Your KYC process is currently underway. We will keep you updated via email with further details.</p>
-										<h6 class="heading-4  text-black mb-1">Thank You</h6>
-										<p class="caption text-muted content-3">{{ config('setting.site_name') }} Team</p>
-									</div>
-								</div> 
+							
+								@if($user->is_company == 1 && $user->is_kyc_verify == 1) 
+									<div class="p-4 shadow rounded-4 text-center register-form-container kyc-form-container z-2 position-relative">
+										<img class="mb-xxl-4 mb-3" src="{{ url('storage/setting', config('setting.site_logo')) }}" alt="" style="max-width: 100px;">
+										<div class="card card-body p-4 kyc-result-contents border-opacity-10">
+											<h6 class="heading-4 mb-2 fw-semibold text-success">KYC Verified</h6>
+											<p class="caption text-muted content-3 mb-4">Thank you for completing your KYC submission! Your documents have been reviewed and approved. You can now continue using our services.</p>
+											<div class="d-flex justify-content-center">
+												<a href="{{ route('home') }}" id="submit-btn" class="btn btn-primary w-fit px-4"> Dashabord </a>
+											</div>
+										</div>
+									</div> 
+								@else
+									<div class="p-4 shadow rounded-4 text-center register-form-container kyc-form-container z-2 position-relative">
+										<img class="mb-xxl-4 mb-3" src="{{ url('storage/setting', config('setting.site_logo')) }}" alt="" style="max-width: 100px;">
+										<div class="card card-body p-4 kyc-result-contents border-opacity-10">
+											<h6 class="heading-4 mb-2 fw-semibold text-warning">KYC Underway</h6>
+											<p class="caption text-muted content-3 mb-4">Your KYC process is currently underway. We will keep you updated via email with further details.</p>
+											<h6 class="heading-4  text-black mb-1">Thank You</h6>
+											<p class="caption text-muted content-3">{{ config('setting.site_name') }} Team</p>
+										</div>
+									</div> 
+								@endif
 							@endif
 						@endif
 					</div>

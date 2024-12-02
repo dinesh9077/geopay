@@ -120,7 +120,8 @@ class CompaniesController extends Controller
 				if (config('permission.active_company.edit') || config('permission.pending_company.edit') || config('permission.block_company.edit')) {
 					$actions[] = '<a href="' . route('admin.companies.edit', ['id' => $value->id]) . '" onclick="editCompany(this, event)" class="btn btn-sm btn-primary">Edit</a>';
 				} 
-				if (config('permission.active_company.edit') || config('permission.pending_company.edit') || config('permission.block_company.edit')) {
+				if (config('permission.active_company.edit') || config('permission.pending_company.edit') || config('permission.block_company.edit')) 
+				{  
 					$actions[] = '<a href="' . route('admin.companies.view-kyc', ['id' => $value->id]) . '"  class="btn btn-sm btn-warning">View Kyc</a>';
 				} 
 
