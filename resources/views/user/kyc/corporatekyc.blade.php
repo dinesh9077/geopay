@@ -70,7 +70,7 @@
 								</div>
 							</div>
 						@else
-							@if(!$companyDetail->isUploadDocuments() || $companyDetail->is_update_kyc == 0)
+							@if(!$companyDetail->isUploadDocuments() || $companyDetail->is_update_kyc == 0 || $user->is_upload_document == 0)
 								<div class="p-4 shadow rounded-4 register-form-container kyc-form-container z-2 position-relative"> 
 									<a href="{{ route('logout') }}"  onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="btn btn-primary position-absolute top-0 end-0 m-3 d-lg-none"><i class="bi bi-power ms-1"></i></a>
 									<div>  
