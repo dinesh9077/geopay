@@ -293,9 +293,10 @@ class CompaniesController extends Controller
             ->where('status', '<>', 1)
             ->doesntExist(); // If no documents exist with a status other than 1, all are approved
 			
+			$user = User::find($userId);
+			$user->update(['is_kyc_verify' => 0]);
 			if($allDirectorApproved)
-			{
-				$user = User::find($userId);
+			{ 
 				$user->update(['is_kyc_verify' => 1]); 
 				CompanyDetail::where('id', $companyDetailsId)->update(['is_update_kyc' => 1]); 
 			}
