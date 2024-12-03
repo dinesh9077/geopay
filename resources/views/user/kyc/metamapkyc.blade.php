@@ -30,7 +30,7 @@
 						<div class="bg_overlay_3"></div>
 						<div class="bg_overlay_4"></div>
 						<div class="w-100 px-4 register-form-container z-2 kyc-container" id="kyc_response_html">
-							@if(!$userKyc)
+							@if(!$userKyc || ($userKyc && $userKyc->verification_status == "pending"))
 								<h6 class="fw-semibold text-black text-center mb-4">Meta KYC Verification</h6>
 								<p class="caption text-center">Our partner, MetaMap, provides a seamless and secure verification process, ensuring that your data is handled with the utmost care. Simply follow the steps below:</p>
 
