@@ -74,14 +74,14 @@
 			}
 
 			// Ensure event type is correct before proceeding
-			if (!in_array($data['eventName'], ['verification_updated', 'verification_completed', 'step_completed'])) {
+			if (!in_array($data['eventName'], ['verification_started', 'verification_updated', 'verification_completed', 'step_completed'])) {
 				return;
 			}
 			
 			// Get verification ID from resource URL
 			$verificationId = basename($data['resource']);
 			
-			if($data['eventName'] == "step_completed" && isset($data['metadata']['user_id']))
+			if (in_array($data['eventName'], ["step_completed", "verification_started"]) && isset($data['metadata']['user_id'])) {
 			{  
 				$user_id = $data['metadata']['user_id'];
 				$user_email = isset($data['metadata']['user_email']) ? $data['metadata']['user_email'] : null; // Check if 'user_email' exists
