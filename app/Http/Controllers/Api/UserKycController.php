@@ -81,7 +81,7 @@
 			// Get verification ID from resource URL
 			$verificationId = basename($data['resource']);
 			
-			if (in_array($data['eventName'], ["step_completed", "verification_started"]) && isset($data['metadata']['user_id'])) {
+			if (in_array($data['eventName'], ["step_completed", "verification_started"]) && isset($data['metadata']['user_id'])) 
 			{  
 				$user_id = $data['metadata']['user_id'];
 				$user_email = isset($data['metadata']['user_email']) ? $data['metadata']['user_email'] : null; // Check if 'user_email' exists
@@ -175,7 +175,7 @@
 		/**
 		 * Store KYC video and return its URL.
 		 */
-		protected function storeKYCVideo($response, $userId)
+		private function storeKYCVideo($response, $userId)
 		{
 			$videoUrl = $response['steps'][0]['data']['videoUrl'] ?? null;
 			if (!$videoUrl) {
