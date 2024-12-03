@@ -87,7 +87,7 @@
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
 		<x-scripts :cryptoKey="$cryptoKey" /> 
 		<script>
-			@if(!$userKyc)
+			@if(!$userKyc || ($userKyc && $userKyc->verification_status == "pending"))
 				// Securely pass MetaMap data from the backend
 				var encryptedData = @json($encryptedData);
 				const decryptRes = decryptData(encryptedData);
