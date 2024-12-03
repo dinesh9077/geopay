@@ -175,7 +175,7 @@
 		/**
 		 * Store KYC video and return its URL.
 		 */
-		private function storeKYCVideo($response, $userId)
+		protected function storeKYCVideo($response, $userId)
 		{
 			$videoUrl = $response['steps'][0]['data']['videoUrl'] ?? null;
 			if (!$videoUrl) {
