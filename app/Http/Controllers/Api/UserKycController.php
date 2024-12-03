@@ -91,7 +91,7 @@
 				UserKyc::updateOrCreate(
 					['user_id' => $user_id], // Conditions to find existing record
 					[
-						'user_email' => $user_email,
+						'email' => $user_email,
 						'verification_status' => $step_id, // Set the verification status
 						'verification_id' => $verificationId, // Laravel handles null automatically 
 						'meta_response' => json_encode($data), // Assuming meta_response is of JSON type 

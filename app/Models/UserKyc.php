@@ -46,6 +46,6 @@ class UserKyc extends Model
 	
 	public function user()
     {
-        return $this->belongsTo(UserRole::class, 'user_role_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
