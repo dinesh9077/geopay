@@ -41,8 +41,8 @@
 		Route::post('/mobile/resend', [RegisterController::class, 'resendMobileOtp']);
 		Route::post('/verify/otp', [RegisterController::class, 'verifyMobileOtp']);
 		  
-		Route::post('/user-kyc/verify', [UserKycController::class, 'verify']);
-		Route::post('/user-kyc-cron', [UserKYCController::class, 'getKYCVerification']);
+		Route::post('/user-kyc/verify', [UserKycController::class, 'verify'])->withoutMiddleware('webdecrypt.request');
+		Route::post('/user-kyc-cron', [UserKYCController::class, 'getKYCVerification'])->withoutMiddleware('webdecrypt.request');
 	});
 	
 	Route::post('logout', [LoginController::class, 'logout'])->middleware(['auth:api', 'ensure.token']);
