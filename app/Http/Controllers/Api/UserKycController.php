@@ -68,7 +68,7 @@
 		public function getKYCVerification(Request $request)
 		{  
 			$data = $request->all();
-			//Log::error($data);
+			Log::error($data);
 			if (empty($data['flowId']) || $data['flowId'] != config('setting.meta_verification_flow_id')) {
 				return; // Exit if flowId is missing or does not match
 			}
