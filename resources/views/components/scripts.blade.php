@@ -8,11 +8,11 @@
 	};
 		
 	@if(Session::has('info')) 
-		toastr.success("{{ session('info') }}", 'info');
+		toastr.info("{{ session('info') }}", 'info');
 	@endif
 	
 	@if(Session::has('error'))
-		toastr.success("{{ session('error') }}", 'error');
+		toastr.error("{{ session('error') }}", 'error');
 	@endif
 	
     @if(Session::has('success'))
@@ -20,7 +20,7 @@
     @endif
 	
 	@if(Session::has('warning'))
-		toastr.success("{{ session('warning') }}", 'warning');
+		toastr.warning("{{ session('warning') }}", 'warning');
 	@endif
 	
 	function toastrMsg(type, msg) {

@@ -34,7 +34,8 @@ class CompaniesController extends Controller
 	
 	public function companiesAjax(Request $request)
 	{
-		if ($request->ajax()) {
+		if ($request->ajax())
+		{
 			// Define the columns for ordering and searching
 			$columns = ['id', 'name', 'email', 'mobile', 'country.name', 'is_kyc_verify', 'is_email_verify', 'is_mobile_verify', 'status', 'created_at'];
 
@@ -118,11 +119,11 @@ class CompaniesController extends Controller
 				// Manage actions with permission checks
 				$actions = [];
 				if (config('permission.active_company.edit') || config('permission.pending_company.edit') || config('permission.block_company.edit')) {
-					$actions[] = '<a href="' . route('admin.companies.edit', ['id' => $value->id]) . '" onclick="editCompany(this, event)" class="btn btn-sm btn-primary">Edit</a>';
+					$actions[] = '<a href="' . route('admin.companies.edit', ['id' => $value->id]) . '" class="btn btn-sm btn-primary">View Details</a>';
 				} 
 				if (config('permission.active_company.edit') || config('permission.pending_company.edit') || config('permission.block_company.edit')) 
 				{  
-					$actions[] = '<a href="' . route('admin.companies.view-kyc', ['id' => $value->id]) . '"  class="btn btn-sm btn-warning">View Kyc</a>';
+					$actions[] = '<a href="' . route('admin.companies.view-kyc', ['id' => $value->id]) . '"  class="btn btn-sm btn-warning">View Kyc Data</a>';
 				} 
 
 				// Assign actions to the row if permissions exist
@@ -174,10 +175,9 @@ class CompaniesController extends Controller
 		$company = User::find($companyid);
 		if(!$company)
 		{
-			return $this->errorResponse('Company not found.');
+			return back()->withError('Company details not found.');
 		}
-		$view = view('admin.companies.edit', compact('company'))->render();
-		return $this->successResponse('success', ['view' => $view]);
+		return view('admin.companies.edit', compact('company')); 
 	}
 	
 	public function companiesUpdate(Request $request, $companyid)
