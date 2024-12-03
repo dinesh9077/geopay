@@ -68,7 +68,7 @@
 		public function getKYCVerification(Request $request)
 		{  
 			$data = $request->all();
-			Log::error($data);
+			Log::info($data);
 			if (empty($data['flowId']) || $data['flowId'] != config('setting.meta_verification_flow_id')) {
 				return; // Exit if flowId is missing or does not match
 			}
@@ -82,11 +82,7 @@
 			$verificationId = basename($data['resource']);
 			
 			if($data['eventName'] == "step_completed" && isset($data['metadata']['user_id']))
-			{
-				$user_id = $data['metadata']['user_id'];
-				$user_email = $data['metadata']['user_email'];
-				$step_id = $data['step']['id'];
-				
+			{  
 				$user_id = $data['metadata']['user_id'];
 				$user_email = isset($data['metadata']['user_email']) ? $data['metadata']['user_email'] : null; // Check if 'user_email' exists
 				$step_id = $data['step']['id'] ?? 'pending'; // Default to 'pending' if 'step_id' is not present
