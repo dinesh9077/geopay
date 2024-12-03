@@ -800,3 +800,18 @@ table.dataTable thead th, table.dataTable tbody td {
   background-repeat: no-repeat;
   background-position: bottom;
 }
+
+.kyc-result-contents span.number {
+  height: 20px;
+  min-width: 20px;
+  width: 20px;
+  background: var(--primary-color);
+  color: var(--white);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 7px;
+  font-weight: normal;
+  font-size: 11px;
+}

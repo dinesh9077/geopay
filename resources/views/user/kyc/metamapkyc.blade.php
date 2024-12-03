@@ -13,67 +13,66 @@
 		<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css" />
-		<style>
-			.kyc-container {
-				background-color: #fff !important;
-				max-width: 700px;
-			}
-		</style>
 	</head>
+
+	
 	
 	<body>
-		<div class="container-fluid">
+		<div class="container-fluid kyc-page">
 			<div class="row min-vh-100">
 				<!-- Right Form Section -->
-				<div class="d-flex align-items-center justify-content-center position-relative bg-white z-1">
+				<div class="d-flex align-items-center justify-content-center position-relative z-1">
 					<div id="container" class="container d-flex align-items-center justify-content-center py-4"> 
-						<div class="bg_overlay_3"></div>
-						<div class="bg_overlay_4"></div>
-						<div class="w-100 px-4 register-form-container z-2 kyc-container" id="kyc_response_html">
-							@if(!$userKyc || ($userKyc && $userKyc->verification_status == "pending"))
-								<h6 class="fw-semibold text-black text-center mb-4">Meta KYC Verification</h6>
-								<p class="caption text-center">Our partner, MetaMap, provides a seamless and secure verification process, ensuring that your data is handled with the utmost care. Simply follow the steps below:</p>
-
-								<ul class="caption text-center" style="color: gray; font-size: 0.8rem;">
-									<li><b>Upload Documents:</b> Choose and upload clear images of your government-issued ID, such as a passport or driver's license.</li>
-									<li><b>Selfie Capture:</b> Take a quick selfie to match your ID photo for further verification.</li>
-									<li><b>Quick Processing:</b> Once your documents are submitted, MetaMap will process your KYC data securely and quickly, often within minutes.</li>
-								</ul>
-
-								<div class="text-center">
-									<script src="https://web-button.metamap.com/button.js"></script>
-									<div id="metamap-button-container"></div>
-								</div> 
-							@else
-								@if($userKyc->verification_status == "verified")
-									<h6 class="fw-semibold text-black text-center mb-4">Your Meta KYC Is Completed.</h6>
-									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
-										Thank you for completing your KYC submission! Your documents have been reviewed and approved.
-										You can now continue using our services.
-									</p>
-									<div class="text-center">
-										<a href="{{ route('home') }}" class="btn btn-primary btn-sm">Continue to use</a>
-									</div> 
-									{{-- @elseif($userKyc->verification_status == "rejected")
-									<h6 class="fw-semibold text-black text-center mb-4">Your Meta verification was rejected.</h6>
-									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
-										Your verification has been rejected. Please follow the instructions below to reverify.
-									</p>
-									<ul style="color: gray; font-size: 0.8rem; text-align: center;">
-										<li><b>Upload Documents:</b> Upload clear images of a government-issued ID, such as a passport or driver's license.</li>
-										<li><b>Selfie Capture:</b> Take a selfie to match your ID photo for further verification.</li>
-										<li><b>Quick Processing:</b> Once submitted, MetaMap will process your KYC data securely and quickly.</li>
+						<div class="w-100 p-4 shadow rounded-4 register-form-container z-2 kyc-container" id="kyc_response_html">
+							<img class="mb-xxl-4 mb-3" src="{{ url('storage/setting', config('setting.site_logo')) }}" alt="" style="max-width: 100px;">
+							<div class="card card-body mb-0 kyc-result-contents mw-100">
+								@if(!$userKyc || ($userKyc && $userKyc->verification_status == "pending"))
+									<h6 class="fw-semibold text-black text-center mb-4">Meta KYC Verification</h6>
+									<p class="caption text-center px-0">Our partner, MetaMap, provides a seamless and secure verification process, ensuring that your data is handled with the utmost care. Simply follow the steps below:</p>
+	
+									<ul class="caption text-muted content-3 px-0">
+										<li class="d-md-flex align-items-start mb-3"><b class="text-nowrap me-2 text-dark d-flex align-items-center"><span class="number">1</span> Upload Documents:</b> Choose and upload clear images of your government-issued ID, such as a passport or driver's license.</li>
+										<li class="d-md-flex align-items-start mb-3"><b class="text-nowrap me-2 text-dark d-flex align-items-center"><span class="number">2</span> Selfie Capture:</b> Take a quick selfie to match your ID photo for further verification.</li>
+										<li class="d-md-flex align-items-start mb-3"><b class="text-nowrap me-2 text-dark d-flex align-items-center"><span class="number">3</span> Quick Processing:</b> Once your documents are submitted, MetaMap will process your KYC data securely and quickly, often within minutes.</li>
 									</ul>
+	
 									<div class="text-center">
+										<script src="https://web-button.metamap.com/button.js"></script>
 										<div id="metamap-button-container"></div>
-									</div> --}}
+									</div>  
 								@else
-									<h6 class="fw-semibold text-black text-center mb-4">Thank you for Meta KYC</h6>
-									<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
-										Your documents are under review to ensure they meet our verification requirements. We will notify you once the process is complete.
-									</p>
+									@if($userKyc->verification_status == "verified")
+										<h6 class="fw-semibold text-success text-center mb-4">Meta Kyc Verified</h6>
+										<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
+											Thank you for completing your KYC submission! Your documents have been reviewed and approved.
+											You can now continue using our services.
+										</p>
+										<div class="text-center">
+											<a href="{{ route('home') }}" class="btn btn-primary btn-sm">Dashbaord</a>
+										</div> 
+										{{-- @elseif($userKyc->verification_status == "rejected")
+										<h6 class="fw-semibold text-black text-center mb-4">Your Meta verification was rejected.</h6>
+										<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
+											Your verification has been rejected. Please follow the instructions below to reverify.
+										</p>
+										<ul style="color: gray; font-size: 0.8rem; text-align: center;">
+											<li><b>Upload Documents:</b> Upload clear images of a government-issued ID, such as a passport or driver's license.</li>
+											<li><b>Selfie Capture:</b> Take a selfie to match your ID photo for further verification.</li>
+											<li><b>Quick Processing:</b> Once submitted, MetaMap will process your KYC data securely and quickly.</li>
+										</ul>
+										<div class="text-center">
+											<div id="metamap-button-container"></div>
+										</div> --}}
+									@else
+										<h6 class="fw-semibold text-warning text-center mb-4">Thank you for Meta KYC</h6>
+										<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
+											Your documents are under review to ensure they meet our verification requirements. We will notify you once the process is complete.
+										</p>
+										<h6 class="heading-4  text-black mb-1 text-center">Thank You</h6>
+										<p class="caption text-muted content-3 text-center">{{ config('setting.site_name') }} Team</p>
+									@endif
 								@endif
-							@endif
+							</div>
 						</div>
 					</div>
 				</div>

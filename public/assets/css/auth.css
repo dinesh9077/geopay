@@ -282,8 +282,8 @@ main.content::-webkit-scrollbar-thumb:hover {
 
 /* KYC Documents Page Style */
 .kyc-container {
-    background-color: yellowgreen;
-    max-width: 700px;
+    background-color: #fff;
+    max-width: 850px;
 }
 .caption {
     padding: 0px 1.5rem;
