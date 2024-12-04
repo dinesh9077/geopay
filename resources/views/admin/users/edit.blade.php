@@ -78,24 +78,24 @@
 					</div>
 					<div class="card-body">
 						<div class="list-group list-group-flush">
-							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0">
+							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0 px-0">
 								<small class="text-muted">Verification Status</small>
 								<h6>{{ $company->userKyc->verification_status ?? 'N/A' }}</h6>
 							</div>
 							
-							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0">
+							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0 px-0">
 								<small class="text-muted">Identification ID</small>
 								<h6>{{ $company->userKyc->identification_id ?? 'N/A' }}</h6>
 							</div>
 							
-							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0">
+							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0 px-0">
 								<small class="text-muted">Verification ID</small>
 								<h6>{{ $company->userKyc->verification_id ?? 'N/A' }}</h6>
 							</div>
 							
 							<!-- Documents (Handle both images and files) -->
 							<div class="col-md-12 mb-3">
-								<h6>Documents</h6>
+								<h6 class="mb-2">Documents</h6>
 								@if ($company->userKyc && $company->userKyc->document)
 									@php
 										$files = json_decode($company->userKyc->document, true); // Assuming the document column stores a JSON array
@@ -109,7 +109,7 @@
 											<li class="list-group-item">
 												@if (in_array(strtolower($fileExtension), ['jpg', 'jpeg', 'png', 'gif', 'bmp']))
 													<!-- Display Image -->
-													<img src="{{ $fileUrl }}" alt="{{ $fileUrl }}" class="img-fluid" />
+													<img src="{{ $fileUrl }}" alt="{{ $fileUrl }}" class="img-fluid w-100" height="200px"/>
 												@elseif (in_array(strtolower($fileExtension), ['pdf', 'doc', 'docx', 'txt']))
 													<!-- Display Document Link -->
 													<a href="{{ $fileUrl }}" target="_blank">{{ $fileUrl }}</a>
@@ -127,7 +127,7 @@
 
 							<!-- Videos -->
 							<div class="col-md-12">
-								<h6>Videos</h6>
+								<h6 class="mb-2">Videos</h6>
 								@if ($company->userKyc && $company->userKyc->video) 
 									<ul class="list-group"> 
 										<li class="list-group-item">
