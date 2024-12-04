@@ -109,7 +109,7 @@
 											<li class="list-group-item">
 												@if (in_array(strtolower($fileExtension), ['jpg', 'jpeg', 'png', 'gif', 'bmp']))
 													<!-- Display Image -->
-													<img src="{{ $fileUrl }}" alt="{{ $fileUrl }}" class="img-fluid w-100" height="200px"/>
+													<img src="{{ $fileUrl }}" alt="{{ $fileUrl }}" class="img-fluid w-100" style="max-height:200px"/>
 												@elseif (in_array(strtolower($fileExtension), ['pdf', 'doc', 'docx', 'txt']))
 													<!-- Display Document Link -->
 													<a href="{{ $fileUrl }}" target="_blank">{{ $fileUrl }}</a>
