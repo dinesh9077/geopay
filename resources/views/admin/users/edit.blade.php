@@ -62,9 +62,9 @@
 					</div>
 					<div class="card-body text-center"> 
 						@if($company->profile_image) 
-							<img src="{{ url('storage/profile', $company->profile_image) }}" id="profileImagePreview" alt="{{ $company->first_name }}" class="account-holder-image" style="max-width: 100%; width:90%; height:200px;">
+							<img src="{{ url('storage/profile', $company->profile_image) }}" id="profileImagePreview" alt="{{ $company->first_name }}" class="account-holder-image" style="max-width: 100%; width:90%; width:125px;aspect-ratio: 1/1;">
 						@else
-							<img src="{{ url('admin/default-profile.png') }}" id="profileImagePreview" alt="{{ $company->first_name }}" class="account-holder-image"style="max-width: 100%; width:90%; height:200px;">
+							<img src="{{ url('admin/default-profile.png') }}" id="profileImagePreview" alt="{{ $company->first_name }}" class="account-holder-image"style="max-width: 100%; width:90%; width:125px;aspect-ratio: 1/1;">
 						@endif 
 					</div>
 				</div>

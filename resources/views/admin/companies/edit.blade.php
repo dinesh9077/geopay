@@ -62,9 +62,9 @@
 					</div>
 					<div class="card-body text-center"> 
 						@if($company->profile_image) 
-							<img src="{{ url('storage/profile', $company->profile_image) }}" id="profileImagePreview" alt="{{ $company->first_name }}" class="account-holder-image" style="max-width: 100%; width:90%; height:200px;">
+							<img src="{{ url('storage/profile', $company->profile_image) }}" id="profileImagePreview" alt="{{ $company->first_name }}" class="account-holder-image" style="max-width: 100%; width:90%; width:125px;aspect-ratio: 1/1;">
 						@else
-							<img src="{{ url('admin/default-profile.png') }}" id="profileImagePreview" alt="{{ $company->first_name }}" class="account-holder-image"style="max-width: 100%; width:90%; height:200px;">
+							<img src="{{ url('admin/default-profile.png') }}" id="profileImagePreview" alt="{{ $company->first_name }}" class="account-holder-image"style="max-width: 100%; width:90%; width:125px;aspect-ratio: 1/1;">
 						@endif 
 					</div>
 				</div>
@@ -78,47 +78,47 @@
 					</div>
 					<div class="card-body">
 						<div class="list-group list-group-flush">
-							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0">
+							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0 px-0">
 								<small class="text-muted">Company Name</small>
 								<h6>{{ $company->company_name }}</h6>
 							</div>
 							
-							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0">
+							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0 px-0">
 								<small class="text-muted">Business Type</small>
 								<h6>{{ $company->companyDetail && $company->companyDetail->businessTypes ? $company->companyDetail->businessTypes->business_type : 'N/A'}}</h6>
 							</div>
 							
-							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0">
+							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0 px-0">
 								<small class="text-muted">Number of Directors</small>
 								<h6>{{ $company->companyDetail ? $company->companyDetail->no_of_director : 1 }}</h6>
 							</div>
 							
-							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0">
+							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0 px-0">
 								<small class="text-muted">Company Registration Number</small>
 								<h6>{{ $company->companyDetail->business_licence ?? 'N/A' }}</h6>
 							</div>
 							
-							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0">
+							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0 px-0">
 								<small class="text-muted">Legal registered Corporate/Company Address</small>
 								<h6>{{ $company->companyDetail->company_address ?? 'N/A' }}</h6>
 							</div>
 							
-							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0">
+							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0 px-0">
 								<small class="text-muted">Postal Code/Zip Code</small>
 								<h6>{{ $company->companyDetail->postcode ?? 'N/A' }}</h6>
 							</div>
 							
-							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0">
+							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0 px-0">
 								<small class="text-muted">Bank Name</small>
 								<h6>{{ $company->companyDetail->bank_name ?? 'N/A' }}</h6>
 							</div>
 							
-							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0">
+							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0 px-0">
 								<small class="text-muted">Bank Code</small>
 								<h6>{{ $company->companyDetail->bank_code ?? 'N/A' }}</h6>
 							</div>
 							
-							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0">
+							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0 px-0">
 								<small class="text-muted">Account No</small>
 								<h6>{{ $company->companyDetail->account_number ?? 'N/A' }}</h6>
 							</div> 
