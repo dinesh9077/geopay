@@ -114,14 +114,13 @@ class UserController extends Controller
 				// Manage actions with permission checks
 				$actions = [];
 				if (config('permission.active_user.edit') || config('permission.pending_user.edit') || config('permission.block_user.edit')) {
-					$actions[] = '<a href="' . route('admin.user.edit', ['id' => $value->id]) . '" onclick="editUser(this, event)" class="btn btn-sm btn-primary">Edit</a>';
+					$actions[] = '<a href="' . route('admin.user.edit', ['id' => $value->id]) . '" class="btn btn-sm btn-primary">View Details</a>';
 				} 
 				
-				if ($value->is_kyc_verify == 1 && (config('permission.active_user.view') || config('permission.pending_user.view') || config('permission.block_user.view'))) {
+				/* if ($value->is_kyc_verify == 1 && (config('permission.active_user.view') || config('permission.pending_user.view') || config('permission.block_user.view'))) {
 					$actions[] = '<a href="' . route('admin.user.view-kyc', ['id' => $value->id]) . '" onclick="editUser(this, event)" class="btn btn-sm btn-warning">View Kyc</a>';
-				}
-
-
+				} */
+ 
 				// Assign actions to the row if permissions exist
 				$data[$i - $start - 1]['action'] = implode(' ', $actions);
 				$i++;
@@ -136,26 +135,43 @@ class UserController extends Controller
 			]);
 		} 
 	}
-	  
+	 
+	public function userLoginHistory($companyId)
+	{ 
+		return view('admin.companies.login-history', compact('companyId')); 
+	}
+	
 	public function userEdit($companyid)
-	{
-		$user = User::find($companyid);
-		if(!$user)
-		{
-			return $this->errorResponse('User not found.');
-		}
-		$view = view('admin.users.edit', compact('user'))->render();
-		return $this->successResponse('success', ['view' => $view]);
+	{ 
+		$company = User::find($companyid); 
+		return view('admin.users.edit', compact('company')); 
 	}
 	
 	public function userUpdate(Request $request, $companyid)
 	{
 		$validator = Validator::make($request->all(), [
 			'first_name' => 'required|string|max:255',
-			'last_name' => 'required|string|max:255', 
-			'password' => 'nullable|string|max:255', 
-			'balance' => 'required|string', 
-			'status' => 'required|in:1,0', 
+			'last_name' => 'required|string|max:255',  
+			'password' => [
+				'nullable',
+				'string',
+				'confirmed',
+				'min:8',  // Minimum 8 characters 
+				function ($attribute, $value, $fail) {
+					if (!preg_match('/[A-Z]/', $value)) {
+						return $fail('The ' . $attribute . ' must contain at least one uppercase letter.');
+					}
+					if (!preg_match('/[a-z]/', $value)) {
+						return $fail('The ' . $attribute . ' must contain at least one lowercase letter.');
+					}
+					if (!preg_match('/\d/', $value)) {
+						return $fail('The ' . $attribute . ' must contain at least one number.');
+					}
+					if (!preg_match('/[\W_]/', $value)) {
+						return $fail('The ' . $attribute . ' must contain at least one special character.');
+					}
+				},
+			],  
 		]);
 		
 		if ($validator->fails()) {
@@ -165,13 +181,22 @@ class UserController extends Controller
 		try {
 			DB::beginTransaction();
 			
-			$data = $request->except('_token', 'password');
+			$data = $request->except('_token', 'password', 'profile_image');
 			if($request->filled('password'))
 			{
 				$data['password'] = Hash::make($request->password);
 				$data['xps'] = base64_encode($request->password);
 			}
+			
 			$user = User::find($companyid);
+			
+			// Handle profile image upload
+			if ($request->hasFile('profile_image')) {
+				$file = $request->file('profile_image');
+				$storedFile = ImageManager::imgUpdate('profile', $user->profile_image, $file->getClientOriginalExtension(), $file);
+				$data['profile_image'] = $storedFile;
+			}
+			 
 			$user->update($data);
 			  
 			DB::commit();

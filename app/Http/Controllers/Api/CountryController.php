@@ -25,9 +25,9 @@ class CountryController extends Controller
 	
 	public function liquidnet()
     {
-        $url = '/api/webservice/GetEcho';
+        $url = '/api/WebService/GetEcho';
         $method = 'post';
-        $body = ['agentSessionId' => '67898987979']; // Optional payload
+        $body = ['agentSessionId' => '6789898979']; // Optional payload
 
         $response = $this->liquidNetService->hmacAuthGenerate($method, $url, $body);
 

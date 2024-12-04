@@ -32,6 +32,8 @@
 		
 		<link rel="stylesheet" href="{{ asset('admin/vendors/select2/select2.min.css') }}">
 		
+		<link rel="stylesheet" href="{{ asset('admin/vendors/sweetalert2/sweetalert2.min.css') }}">
+		
 		<!-- Layout styles -->  
 		<link rel="stylesheet" href="{{ asset('admin/css/demo1/style.css') }}">
 		<!-- End layout styles -->
@@ -97,6 +99,7 @@
 		<script src="{{ asset('admin/vendors/flatpickr/flatpickr.min.js') }}"></script>
 		
 		<script src="{{ asset('admin/vendors/select2/select2.min.js') }}"></script>
+		<script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.min.js') }}"></script>
 		<!-- End custom js for this page -->
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>

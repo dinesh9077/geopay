@@ -113,13 +113,31 @@ class TransactionController extends Controller
 			$toComment = $user->first_name . ' ' . $user->last_name . ' has sent you ' . $txnAmount . ' USD to your wallet.';
 			
 			// Create a transaction record
-			$transaction = Transaction::create([
+			$creditTransaction = Transaction::create([
 				'user_id' => $user->id,
 				'receiver_id' => $toUser->id,
 				'platform_name' => 'wallet to wallet',
 				'platform_provider' => 'wallet to wallet',
+				'transaction_type' => 'credit', // Indicating that the user is debiting funds
+				'country_id' => $toUser->country_id,
+				'txn_amount' => $txnAmount,
+				'txn_status' => 'success', // Assuming the transaction is successful
+				'comments' => $toComment,
+				'notes' => $notes,
+				'created_at' => now(),
+				'updated_at' => now(),
+			]);
+			
+			Helper::updateLogName($creditTransaction->id, Transaction::class, 'wallet to wallet transaction', $toUser->id);
+			
+			// Create a transaction record
+			$debitTransaction = Transaction::create([
+				'user_id' => $user->id,
+				'receiver_id' => $user->id,
+				'platform_name' => 'wallet to wallet',
+				'platform_provider' => 'wallet to wallet',
 				'transaction_type' => 'debit', // Indicating that the user is debiting funds
-				'country_id' => $countryId,
+				'country_id' => $user->country_id,
 				'txn_amount' => $txnAmount,
 				'txn_status' => 'success', // Assuming the transaction is successful
 				'comments' => $fromComment,
@@ -128,7 +146,7 @@ class TransactionController extends Controller
 				'updated_at' => now(),
 			]);
 			
-			Helper::updateLogName($transaction->id, Transaction::class, 'wallet to wallet transaction', $user->id);
+			Helper::updateLogName($debitTransaction->id, Transaction::class, 'wallet to wallet transaction', $user->id);
 			 
 			Notification::send($user, new WalletTransactionNotification($user, $toUser, $txnAmount, $fromComment, $notes)); // Sender Notification
 			Notification::send($toUser, new WalletTransactionNotification($user, $toUser, $txnAmount, $toComment, $notes)); // Receiver Notification

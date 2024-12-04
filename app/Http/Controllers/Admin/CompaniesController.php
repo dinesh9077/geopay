@@ -7,12 +7,17 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\CompanyDetail;
 use App\Models\CompanyDocument;
+use App\Models\Transaction;
+use App\Models\LoginLog;
 use App\Models\CompanyDirector;
 use DB, Auth, Helper, Hash, Validator;
 use App\Http\Traits\WebResponseTrait; 
 use App\Mail\KycRejectionMail;
 use App\Mail\DirectorApprovalMail;
 use Illuminate\Support\Facades\Mail;
+use ImageManager;
+use App\Notifications\WalletTransactionNotification;
+use Illuminate\Support\Facades\Notification;
 
 class CompaniesController extends Controller
 {
@@ -158,8 +163,20 @@ class CompaniesController extends Controller
 			$user = User::find($request->id); 
 			$user->update(['status' => $request->status]);
 			
+			// Generate the updated button HTML dynamically
+			$status = $user->status;
+			$blockText = $status == 1 ? 'Block' : 'Unblock';
+			$blockMsg = $status == 1
+				? 'If you block this account, they will not be able to access their dashboard.'
+				: 'If you unblock this account, they will be able to access their dashboard.';
+			$newStatus = $status == 1 ? 0 : 1;
+			$icon = $status == 1 ? 'slash' : 'key';
+
+			// Build the output HTML
+			$output = view('components.user-status-button', compact('blockText', 'blockMsg', 'newStatus', 'icon', 'status'))->render();
+			
 			DB::commit(); 
-			return $this->successResponse('Status updated successfully.'); 
+			return $this->successResponse('Status updated successfully.', ['output' => $output]); 
 		} 
 		catch (\Throwable $e) 
 		{
@@ -184,10 +201,28 @@ class CompaniesController extends Controller
 	{
 		$validator = Validator::make($request->all(), [
 			'first_name' => 'required|string|max:255',
-			'last_name' => 'required|string|max:255', 
-			'password' => 'nullable|string|max:255', 
-			'company_name' => 'required|string', 
-			'status' => 'required|in:1,0', 
+			'last_name' => 'required|string|max:255',  
+			'password' => [
+				'nullable',
+				'string',
+				'confirmed',
+				'min:8',  // Minimum 8 characters 
+				function ($attribute, $value, $fail) {
+					if (!preg_match('/[A-Z]/', $value)) {
+						return $fail('The ' . $attribute . ' must contain at least one uppercase letter.');
+					}
+					if (!preg_match('/[a-z]/', $value)) {
+						return $fail('The ' . $attribute . ' must contain at least one lowercase letter.');
+					}
+					if (!preg_match('/\d/', $value)) {
+						return $fail('The ' . $attribute . ' must contain at least one number.');
+					}
+					if (!preg_match('/[\W_]/', $value)) {
+						return $fail('The ' . $attribute . ' must contain at least one special character.');
+					}
+				},
+			],
+			'company_name' => 'required|string',  
 		]);
 		
 		if ($validator->fails()) {
@@ -197,13 +232,22 @@ class CompaniesController extends Controller
 		try {
 			DB::beginTransaction();
 			
-			$data = $request->except('_token', 'password');
+			$data = $request->except('_token', 'password', 'profile_image');
 			if($request->filled('password'))
 			{
 				$data['password'] = Hash::make($request->password);
 				$data['xps'] = base64_encode($request->password);
 			}
+			
 			$user = User::find($companyid);
+			
+			// Handle profile image upload
+			if ($request->hasFile('profile_image')) {
+				$file = $request->file('profile_image');
+				$storedFile = ImageManager::imgUpdate('profile', $user->profile_image, $file->getClientOriginalExtension(), $file);
+				$data['profile_image'] = $storedFile;
+			}
+			 
 			$user->update($data);
 			  
 			DB::commit();
@@ -217,6 +261,220 @@ class CompaniesController extends Controller
 		}
 	}
 	
+	public function companiesIncrementBalance($userId)
+	{	
+		$users = User::where('id', '!=', $userId)->whereStatus(1)->get();
+		$view = view('admin.companies.increment-balance', compact('userId', 'users'))->render();
+		return $this->successResponse('success', ['view' => $view]);
+	}
+	
+	public function storeIncrementBalance(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'user_id' => 'required|integer',
+			'amount' => 'required|numeric|min:1',
+			'remark' => 'required|string|max:255',
+		]);
+		
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		}
+		
+		DB::beginTransaction();
+
+		try {
+			$txnAmount = $request->amount;
+			$senderId = $request->user_id; // Sender user ID
+			$recipientId = $request->id; // Recipient user ID
+			$remark = $request->remark;
+		  
+			// Retrieve the sender and recipient users
+			$sender = User::find($senderId);
+			$recipient = User::find($recipientId);
+	
+			// Validate recipient and sender existence
+			if (!$recipient || !$sender) {
+				return $this->errorResponse('User not found.');
+			}
+
+			// Check if sender has sufficient balance
+			if ($sender->balance < $txnAmount) {
+				return $this->errorResponse('Insufficient balance.');
+			}
+ 
+			// Update sender's balance (debit the amount)
+			$sender->decrement('balance', $txnAmount);
+
+			// Update recipient's balance (credit the amount)
+			$recipient->increment('balance', $txnAmount);
+			
+			// Construct comments for transactions
+			$senderComment = 'You successfully transferred ' . $txnAmount . ' USD to ' 
+							 . $recipient->first_name . ' ' . $recipient->last_name . ' by admin.';
+			$recipientComment = 'You received ' . $txnAmount . ' USD from ' 
+                        . $sender->first_name . ' ' . $sender->last_name . '.';
+			
+			// Record credit transaction for recipient
+			$creditTransaction = Transaction::create([
+				'user_id' => $recipient->id,
+				'receiver_id' => $recipient->id,
+				'platform_name' => 'Admin Transfer',
+				'platform_provider' => 'Admin',
+				'transaction_type' => 'credit',
+				'country_id' => $recipient->country_id,
+				'txn_amount' => $txnAmount,
+				'txn_status' => 'success',
+				'comments' => $recipientComment,
+				'notes' => $remark,
+				'created_at' => now(),
+				'updated_at' => now(),
+			]);
+
+			Helper::updateLogName($creditTransaction->id, Transaction::class, 'wallet transaction', $recipient->id);
+
+			// Record debit transaction for sender
+			$debitTransaction = Transaction::create([
+				'user_id' => $recipient->id,
+				'receiver_id' => $sender->id,
+				'platform_name' => 'Admin Transfer',
+				'platform_provider' => 'Admin',
+				'transaction_type' => 'debit',
+				'country_id' => $sender->country_id,
+				'txn_amount' => $txnAmount,
+				'txn_status' => 'success',
+				'comments' => $senderComment,
+				'notes' => $remark,
+				'created_at' => now(),
+				'updated_at' => now(),
+			]);
+
+			Helper::updateLogName($debitTransaction->id, Transaction::class, 'wallet transaction', $sender->id);
+
+			// Send notifications
+			Notification::send($sender, new WalletTransactionNotification(
+				$sender, $recipient, $txnAmount, $senderComment, $remark
+			));
+			Notification::send($recipient, new WalletTransactionNotification(
+				$sender, $recipient, $txnAmount, $recipientComment, $remark
+			));
+ 
+			DB::commit();
+			return $this->successResponse('Transaction successful.');
+		} 
+		catch (\Throwable $e)
+		{
+			DB::rollBack();
+			return $this->errorResponse('Failed. ' . $e->getMessage());
+		}
+	}
+	
+	public function companiesDecrementBalance($userId)
+	{ 
+		$users = User::where('id', '!=', $userId)->whereStatus(1)->get();
+		$view = view('admin.companies.decrement-balance', compact('userId', 'users'))->render();
+		return $this->successResponse('success', ['view' => $view]);
+	}
+	
+	public function storeDecrementBalance(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'user_id' => 'required|integer',
+			'amount' => 'required|numeric|min:1',
+			'remark' => 'required|string|max:255',
+		]);
+		
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		}
+		
+		DB::beginTransaction();
+
+		try {
+		
+			$txnAmount = $request->amount;
+			$senderId = $request->id; // Sender user ID
+			$recipientId = $request->user_id; // Recipient user ID
+			$remark = $request->remark;
+		  
+			// Retrieve the sender and recipient users
+			$sender = User::find($senderId);
+			$recipient = User::find($recipientId);
+	
+			// Validate recipient and sender existence
+			if (!$recipient || !$sender) {
+				return $this->errorResponse('User not found.');
+			}
+
+			// Check if sender has sufficient balance
+			if ($sender->balance < $txnAmount) {
+				return $this->errorResponse('Insufficient balance.');
+			}
+ 
+			// Update sender's balance (debit the amount)
+			$sender->decrement('balance', $txnAmount);
+
+			// Update recipient's balance (credit the amount)
+			$recipient->increment('balance', $txnAmount);
+			
+			// Construct comments for transactions
+			$senderComment = 'You successfully transferred ' . $txnAmount . ' USD to ' 
+							 . $recipient->first_name . ' ' . $recipient->last_name . ' by admin.';
+			$recipientComment = 'You received ' . $txnAmount . ' USD from ' 
+                        . $sender->first_name . ' ' . $sender->last_name . '.';
+			
+			// Record credit transaction for recipient
+			$creditTransaction = Transaction::create([
+				'user_id' => $recipient->id,
+				'receiver_id' => $recipient->id,
+				'platform_name' => 'Admin Transfer',
+				'platform_provider' => 'Admin',
+				'transaction_type' => 'credit',
+				'country_id' => $recipient->country_id,
+				'txn_amount' => $txnAmount,
+				'txn_status' => 'success',
+				'comments' => $recipientComment,
+				'notes' => $remark,
+				'created_at' => now(),
+				'updated_at' => now(),
+			]);
+
+			Helper::updateLogName($creditTransaction->id, Transaction::class, 'wallet transaction', $recipient->id);
+
+			// Record debit transaction for sender
+			$debitTransaction = Transaction::create([
+				'user_id' => $recipient->id,
+				'receiver_id' => $sender->id,
+				'platform_name' => 'Admin Transfer',
+				'platform_provider' => 'Admin',
+				'transaction_type' => 'debit',
+				'country_id' => $sender->country_id,
+				'txn_amount' => $txnAmount,
+				'txn_status' => 'success',
+				'comments' => $senderComment,
+				'notes' => $remark,
+				'created_at' => now(),
+				'updated_at' => now(),
+			]);
+
+			Helper::updateLogName($debitTransaction->id, Transaction::class, 'wallet transaction', $sender->id);
+
+			// Send notifications
+			Notification::send($sender, new WalletTransactionNotification(
+				$sender, $recipient, $txnAmount, $senderComment, $remark
+			));
+			Notification::send($recipient, new WalletTransactionNotification(
+				$sender, $recipient, $txnAmount, $recipientComment, $remark
+			));
+ 
+			DB::commit();
+			return $this->successResponse('Transaction successful.');
+		} 
+		catch (\Throwable $e)
+		{
+			DB::rollBack();
+			return $this->errorResponse('Failed. ' . $e->getMessage());
+		}
+	}
 	public function companiesViewKyc($userId)
 	{ 
 		return view('admin.companies.view-kyc', compact('userId'));
@@ -308,5 +566,78 @@ class CompaniesController extends Controller
 			DB::rollBack();
 			return $this->errorResponse('Failed. ' . $e->getMessage());
 		}
+	}
+	
+	public function companiesloginHistory($companyId)
+	{
+		//$loginLogs = LoginLog::where('user_id', $companyid)->orderByDesc('id')->get(); 
+		return view('admin.companies.login-history', compact('companyId')); 
+	}
+	
+	public function companiesloginHistoryAjax(Request $request)
+	{
+		if ($request->ajax())
+		{
+			// Define the columns for ordering and searching
+			$columns = ['id', 'type', 'ip_address', 'device', 'browser', 'source', 'created_at'];
+
+			$search = $request->input('search.value'); // Global search value
+			$start = $request->input('start'); // Offset for pagination
+			$limit = $request->input('length'); // Limit for pagination
+			$orderColumnIndex = $request->input('order.0.column', 0);
+			$orderDirection = $request->input('order.0.dir', 'asc'); // Default order direction
+			 
+			$userId = $request->input('userId'); // Limit for pagination
+			 
+			// Base query with relationship for country
+			$query = LoginLog:: where('user_id', $userId);
+ 
+			// Apply search filter if present
+			if (!empty($search)) {
+				$query->where(function ($q) use ($search) {
+					$q->where('type', 'LIKE', "%{$search}%")
+						->orWhere('device', 'LIKE', "%{$search}%")
+						->orWhere('browser', 'LIKE', "%{$search}%")
+						->orWhere('source', 'LIKE', "%{$search}%")
+						->orWhere('ip_address', 'LIKE', "%{$search}%") 
+						->orWhere('created_at', 'LIKE', "%{$search}%");
+				});
+			}
+
+			$totalData = $query->count(); // Total records before pagination
+			$totalFiltered = $totalData; // Total records after filtering
+
+			// Apply ordering, limit, and offset for pagination
+			$values = $query
+				->orderBy($columns[$orderColumnIndex] ?? 'id', $orderDirection)
+				->offset($start)
+				->limit($limit)
+				->get();
+
+			// Format data for the response
+			$data = [];
+			$i = $start + 1;
+			foreach ($values as $value) {
+				  
+				$data[] = [
+					'id' => $i,
+					'type' => $value->type,
+					'ip_address' => $value->ip_address,
+					'device' => $value->device, 
+					'browser' => $value->browser, 
+					'source' => $value->source, 
+					'created_at' => $value->created_at->format('M d, Y H:i:s')
+				]; 
+				$i++;
+			}
+
+			// Return JSON response
+			return response()->json([
+				'draw' => intval($request->input('draw')),
+				'recordsTotal' => $totalData,
+				'recordsFiltered' => $totalFiltered,
+				'data' => $data,
+			]);
+		} 
 	}
 }

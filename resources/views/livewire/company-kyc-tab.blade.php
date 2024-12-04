@@ -79,6 +79,5 @@
 			$('#reason'+documentTypeId+'_'+documentId).val('');
 			$('#reason'+documentTypeId+'_'+documentId).show();
 		}    
-	}
-	  
+	} 
 </script>

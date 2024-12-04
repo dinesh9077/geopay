@@ -14,7 +14,7 @@ class LiquidNetService
     {
         // Set the APP ID and API Key (You can also use environment variables)
         $this->appId = 'geoapi'; // or env('LIQUIDNET_APP_ID')
-        $this->apiKey = 'GUBGMHVpwcTsPFvNNVdG5DKtpv6UwksAfzw5aULcGzgG'; // or env('LIQUIDNET_API_KEY')
+        $this->apiKey = 'ZjM5ZmQzYjUzY2FmNDk4YThlYWJlOTBhOGQ2NWQwYTQ='; // or env('LIQUIDNET_API_KEY')
 		$this->baseUrl = 'https://staging-api-lqn.lightnet.io';
     }
  

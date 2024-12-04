@@ -50,6 +50,7 @@
 		protected $hidden = [
 			'password',
 			'remember_token',
+			'xps',
 		];
 		
 		/**
@@ -107,5 +108,26 @@
 		{
 			return $this->belongsTo(UserLimit::class, 'user_limit_id');
 		}
- 
+		
+		public function calculateTransactionSum($transactionType)
+		{
+			return Transaction::where('receiver_id', $this->id)
+							  ->where('transaction_type', $transactionType)
+							  ->sum('txn_amount');
+		}
+
+		public function depositAmount()
+		{
+			return $this->calculateTransactionSum('credit');
+		}
+
+		public function withdrawAmount()
+		{
+			return $this->calculateTransactionSum('debit');
+		}
+		
+		public function totalTransaction()
+		{
+			return Transaction::where('receiver_id', $this->id)->count();
+		}  
 	}

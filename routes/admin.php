@@ -76,18 +76,22 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 	//Manage Companies 
 	Route::get('/companies/active', [CompaniesController::class, 'companiesActive'])
 	->name('company.active')->middleware('permission:active_company.view'); 
-	
 	Route::get('/companies/pending', [CompaniesController::class, 'companiesPending'])
 	->name('company.pending')->middleware('permission:pending_company.view'); 
-	
 	Route::get('/companies/block', [CompaniesController::class, 'companiesBlock'])
 	->name('company.block')->middleware('permission:block_company.view'); 
 	
 	Route::post('/companies/ajax', [CompaniesController::class, 'companiesAjax'])->withoutMiddleware('webdecrypt.request')->name('companies.ajax');
 	Route::get('/companies/edit/{id}', [CompaniesController::class, 'companiesEdit'])->name('companies.edit');
     Route::post('/companies/update/{id}', [CompaniesController::class, 'companiesUpdate'])->name('companies.update');
+    Route::get('/companies/increment-balance/{id}', [CompaniesController::class, 'companiesIncrementBalance'])->name('companies.increment-balance');
+    Route::post('/companies/store-increment-balance', [CompaniesController::class, 'storeIncrementBalance'])->name('companies.store-increment-balance');
+    Route::get('/companies/decrement-balance/{id}', [CompaniesController::class, 'companiesDecrementBalance'])->name('companies.decrement-balance');
+    Route::post('/companies/store-decrement-balance', [CompaniesController::class, 'storeDecrementBalance'])->name('companies.store-decrement-balance');
 	Route::post('/companies/update-status', [CompaniesController::class, 'companiesUpdateStatus'])->name('companies.update-status');
-	
+	Route::get('/companies/login-history/{id}', [CompaniesController::class, 'companiesloginHistory'])->name('companies.login-history');
+	Route::post('/companies/login-history-ajax', [CompaniesController::class, 'companiesloginHistoryAjax'])->withoutMiddleware('webdecrypt.request')->name('companies.login-history-ajax');
+	 
 	Route::get('/companies/view-kyc/{id}', [CompaniesController::class, 'companiesViewKyc'])->name('companies.view-kyc');
 	Route::post('/companies/kyc-update', [CompaniesController::class, 'companiesKycUpdate'])->name('companies.kyc-update')->withoutMiddleware('webdecrypt.request');
 	
@@ -108,6 +112,6 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
     Route::post('/user/update/{id}', [UserController::class, 'userUpdate'])->name('user.update');
 	Route::post('/user/update-status', [UserController::class, 'userUpdateStatus'])->name('user.update-status');
 	Route::get('/user/view-kyc/{id}', [UserController::class, 'userViewKyc'])->name('user.view-kyc');
-	
+	Route::get('/user/login-history/{id}', [UserController::class, 'userLoginHistory'])->name('user.login-history');
 });
 

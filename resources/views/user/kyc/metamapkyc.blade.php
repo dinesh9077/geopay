@@ -23,7 +23,7 @@
 				<!-- Right Form Section -->
 				<div class="d-flex align-items-center justify-content-center position-relative z-1">
 					<div id="container" class="container d-flex align-items-center justify-content-center py-4"> 
-						<div class="w-100 p-4 shadow rounded-4 register-form-container z-2 kyc-container" id="kyc_response_html">
+						<div class="w-100 p-4 shadow rounded-4 register-form-container z-2 kyc-container text-center" id="kyc_response_html">
 							<img class="mb-xxl-4 mb-3" src="{{ url('storage/setting', config('setting.site_logo')) }}" alt="" style="max-width: 100px;">
 							<div class="card card-body mb-0 kyc-result-contents mw-100">
 								@if(!$userKyc || ($userKyc && $userKyc->verification_status == "pending"))
