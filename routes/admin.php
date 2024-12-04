@@ -75,11 +75,11 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 	
 	//Manage Companies 
 	Route::get('/companies/active', [CompaniesController::class, 'companiesActive'])
-	->name('company.active')->middleware('permission:active_company.view'); 
+	->name('companies.active')->middleware('permission:active_company.view'); 
 	Route::get('/companies/pending', [CompaniesController::class, 'companiesPending'])
-	->name('company.pending')->middleware('permission:pending_company.view'); 
+	->name('companies.pending')->middleware('permission:pending_company.view'); 
 	Route::get('/companies/block', [CompaniesController::class, 'companiesBlock'])
-	->name('company.block')->middleware('permission:block_company.view'); 
+	->name('companies.block')->middleware('permission:block_company.view'); 
 	
 	Route::post('/companies/ajax', [CompaniesController::class, 'companiesAjax'])->withoutMiddleware('webdecrypt.request')->name('companies.ajax');
 	Route::get('/companies/edit/{id}', [CompaniesController::class, 'companiesEdit'])->name('companies.edit');

@@ -54,22 +54,32 @@
 
 			@php
 				$manageCompanies = [
-					'active_company' => ['route' => 'admin.company.active', 'label' => 'Active Company'],
-					'pending_company' => ['route' => 'admin.company.pending', 'label' => 'Pending Company'],
-					'block_company' => ['route' => 'admin.company.block', 'label' => 'Blocked Company'],
+					'active_company' => ['route' => 'admin.companies.active', 'label' => 'Active Company'],
+					'pending_company' => ['route' => 'admin.companies.pending', 'label' => 'Pending Company'],
+					'block_company' => ['route' => 'admin.companies.block', 'label' => 'Blocked Company'],
 				];
+
+				// Define additional routes that should open the dropdown without a menu item
+				$extraRoutes = [
+					'admin.companies.edit',  
+					'admin.companies.view-kyc', 
+					'admin.companies.login-history', 
+				];
+
+				// Combine routes for dropdown open logic
+				$allRoutes = array_merge(array_column($manageCompanies, 'route'), $extraRoutes);
 			@endphp
 
 			@if(collect($manageCompanies)->keys()->some(fn($key) => config("permission.$key.view")))
-			<li class="nav-item {{ collect($manageCompanies)->contains(fn($item) => request()->routeIs($item['route'])) ? 'active' : '' }}">
+			<li class="nav-item {{ collect($allRoutes)->contains(fn($route) => request()->routeIs($route)) ? 'active' : '' }}">
 				<a class="nav-link" data-bs-toggle="collapse" href="#manageCompanies" role="button" 
-				   aria-expanded="{{ collect($manageCompanies)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}" 
+				   aria-expanded="{{ collect($allRoutes)->contains(fn($route) => request()->routeIs($route)) ? 'true' : 'false' }}" 
 				   aria-controls="manageCompanies">
 					<i class="link-icon" data-feather="users"></i>
 					<span class="link-title">Manage Companies</span>
 					<i class="link-arrow" data-feather="chevron-down"></i>
 				</a>
-				<div class="collapse {{ collect($manageCompanies)->contains(fn($item) => request()->routeIs($item['route'])) ? 'show' : '' }}" id="manageCompanies">
+				<div class="collapse {{ collect($allRoutes)->contains(fn($route) => request()->routeIs($route)) ? 'show' : '' }}" id="manageCompanies">
 					<ul class="nav sub-menu">
 						@foreach ($manageCompanies as $key => $item)
 							@if (config("permission.$key.view"))
@@ -85,6 +95,7 @@
 			</li>
 			@endif
 
+
 			@php
 				$manageExchanges = [
 					'exchange_rate' => ['route' => 'admin.exchange-rate', 'label' => 'Manage Exchange Rate'],
@@ -99,25 +110,34 @@
 				</a>
 			</li>
 			@endif
-
+	
 			@php
 				$manageUsers = [
-					'active_user' => ['route' => 'admin.user.active', 'label' => 'Active User'],
-					'pending_user' => ['route' => 'admin.user.pending', 'label' => 'Pending User'],
-					'block_user' => ['route' => 'admin.user.block', 'label' => 'Blocked User'],
+					'active_user' => ['route' => 'admin.user.active', 'label' => 'Active Company'],
+					'pending_user' => ['route' => 'admin.user.pending', 'label' => 'Pending Company'],
+					'block_user' => ['route' => 'admin.user.block', 'label' => 'Blocked Company'],
 				];
+
+				// Define additional routes that should open the dropdown without a menu item
+				$extraRoutes = [
+					'admin.user.edit',  
+					'admin.user.login-history', 
+				];
+
+				// Combine routes for dropdown open logic
+				$allRoutes = array_merge(array_column($manageUsers, 'route'), $extraRoutes);
 			@endphp
 
 			@if(collect($manageUsers)->keys()->some(fn($key) => config("permission.$key.view")))
-			<li class="nav-item {{ collect($manageUsers)->contains(fn($item) => request()->routeIs($item['route'])) ? 'active' : '' }}">
+			<li class="nav-item {{ collect($allRoutes)->contains(fn($route) => request()->routeIs($route)) ? 'active' : '' }}">
 				<a class="nav-link" data-bs-toggle="collapse" href="#manageUsers" role="button" 
-				   aria-expanded="{{ collect($manageUsers)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}" 
+				   aria-expanded="{{ collect($allRoutes)->contains(fn($route) => request()->routeIs($route)) ? 'true' : 'false' }}" 
 				   aria-controls="manageUsers">
 					<i class="link-icon" data-feather="users"></i>
 					<span class="link-title">Manage Users</span>
 					<i class="link-arrow" data-feather="chevron-down"></i>
 				</a>
-				<div class="collapse {{ collect($manageUsers)->contains(fn($item) => request()->routeIs($item['route'])) ? 'show' : '' }}" id="manageUsers">
+				<div class="collapse {{ collect($allRoutes)->contains(fn($route) => request()->routeIs($route)) ? 'show' : '' }}" id="manageUsers">
 					<ul class="nav sub-menu">
 						@foreach ($manageUsers as $key => $item)
 							@if (config("permission.$key.view"))

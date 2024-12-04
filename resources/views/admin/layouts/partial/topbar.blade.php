@@ -116,21 +116,21 @@
 						</div>
 					</div>
 					<ul class="list-unstyled p-1">
-						<li class="dropdown-item py-2">
-							<a href="{{ route('admin.profile') }}" class="text-body ms-0">
+						<a href="{{ route('admin.profile') }}" class="text-body ms-0">
+							<li class="dropdown-item py-2">
 								<i class="me-2 icon-md" data-feather="user"></i>
 								<span>Profile</span>
-							</a>
-						</li> 
-						<li class="dropdown-item py-2">
-							<a href="{{ route('admin.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="text-body ms-0">
+							</li> 
+						</a>
+						<a href="{{ route('admin.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="text-body ms-0">
+							<li class="dropdown-item py-2">
 								<i class="me-2 icon-md" data-feather="log-out"></i>
 								<span>Log Out</span>
-							</a>
-							<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
-								@csrf
-							</form>
-						</li>
+								<form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+									@csrf
+								</form>
+							</li>
+						</a>
 					</ul>
 				</div>
 			</li>

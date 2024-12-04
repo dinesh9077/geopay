@@ -1,7 +1,7 @@
 <div class="border recent-transactions-card mt-3"> 
     <div class="d-flex justify-content-between align-items-center">
 		<h4 class="heading-6">Recent Transactions</h4>
-		<a class="content-4 text-secondary" href="#">View All</a>
+		<a class="content-4 text-secondary" href="javascript:;">View All</a>
 	</div>
     @forelse($transactions as $transaction)
         <div class="d-flex justify-content-between align-items-center my-3">
@@ -18,9 +18,9 @@
         </div>
     @empty
 	<div class="d-flex justify-content-between align-items-center my-3"> 
-			<p class="content-3 m-auto">
-                 No Recent Transaction
-			</p>
+		<p class="content-3 m-auto">
+			No Recent Transaction
+		</p>
     </div>
 	@endforelse
 </div>
