@@ -96,9 +96,9 @@
 							<!-- Documents (Handle both images and files) -->
 							<div class="col-md-12 mb-3">
 								<h6>Documents</h6>
-								@if ($kyc && $kyc->document)
+								@if ($company->userKyc && $company->userKyc->document)
 									@php
-										$files = json_decode($kyc->document, true); // Assuming the document column stores a JSON array
+										$files = json_decode($company->userKyc->document, true); // Assuming the document column stores a JSON array
 									@endphp
 									<ul class="list-group">
 										@foreach ($files as $file)
@@ -128,11 +128,11 @@
 							<!-- Videos -->
 							<div class="col-md-12">
 								<h6>Videos</h6>
-								@if ($kyc && $kyc->video) 
+								@if ($company->userKyc && $company->userKyc->video) 
 									<ul class="list-group"> 
 										<li class="list-group-item">
 											<video controls width="100%">
-												<source src="{{ url($kyc->video) }}" type="video/mp4">
+												<source src="{{ url($company->userKyc->video) }}" type="video/mp4">
 												Your browser does not support the video tag.
 											</video>
 										</li> 
