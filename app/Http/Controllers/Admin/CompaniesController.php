@@ -527,7 +527,7 @@ class CompaniesController extends Controller
 					// Fetch director's name and email
 					$director = CompanyDirector::find($companyDirectorId);
 					$user = User::find($userId);
-
+					$user->update(['is_upload_document' => 0]); 
 					// Send email
 					Mail::to($user->email)->send(new KycRejectionMail($director->name, $rejectedDocuments));
 				}
