@@ -522,13 +522,12 @@ class CompaniesController extends Controller
 					->toArray();
 
 				// Check if two or more documents are rejected
-				if (count($rejectedDocuments) >= 2)
+				if (count($rejectedDocuments) > 0)
 				{
 					// Fetch director's name and email
 					$director = CompanyDirector::find($companyDirectorId);
 					$user = User::find($userId);
-					$user->update(['is_upload_document' => 0]); 
-					CompanyDetail::where('id', $companyDetailsId)->update(['is_update_kyc' => 0]); 
+					$user->update(['is_upload_document' => 0]);  
 					// Send email
 					Mail::to($user->email)->send(new KycRejectionMail($director->name, $rejectedDocuments));
 				}
