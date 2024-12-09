@@ -93,7 +93,7 @@
 											{{ __('Remember Me') }}
 										</label>
 									</div>
-									<label class="d-flex text-center justify-content-end text-secondary font-md"> <a class="content-3 text-primary" href="{{ route('password.request') }}" wire:navigate>Forgot your password?</a> </label>
+									<label class="d-flex text-center justify-content-end text-secondary font-md"> <a class="content-3 text-primary" href="{{ route('password.request') }}" >Forgot your password?</a> </label>
 								</div>
 								
 								<div class="text-center">

@@ -36,7 +36,7 @@
 					<p class="heading-4 mb-3 text-center">Services</p>
 					<div class="row g-3 gx-xxl-5 mb-3 justify-content-center service-section mw-100 mx-auto">
 						<div class="col-6 col-md-4">
-							<a class="text-primary" href="{{ route('add-money') }}"  wire:navigate>
+							<a class="text-primary" href="{{ route('add-money') }}"  >
 								<div class="text-center h-100 align-content-center service-box m-auto">
 									<img class="in-svg mb-3" src="{{ asset('assets/image/icons/plus-circle.svg') }}" alt="Add Money Icon">
 									<p class="content-2">Add Money</p>
@@ -44,7 +44,7 @@
 							</a>
 						</div>
 						<div class="col-6 col-md-4">
-							<a class="text-primary" href="{{ route('wallet-to-wallet') }}" wire:navigate>
+							<a class="text-primary" href="{{ route('wallet-to-wallet') }}" >
 								<div class="text-center h-100 align-content-center service-box m-auto">
 									<img class="in-svg mb-3" src="{{ asset('assets/image/icons/wallet.svg') }}" alt="Wallet to Wallet Icon">
 									<p class="content-2">Wallet to Wallet</p>
@@ -56,7 +56,7 @@
 					<p class="heading-4 mb-3 text-center">Pay Services</p>
 					<div class="row g-3 gx-xxl-5 justify-content-between pay-service-section mw-100 mx-auto">
 						<div class="col-6 col-md-4">
-							<a class="text-primary" href="{{ route('transfer-to-mobile-money') }}"  wire:navigate>
+							<a class="text-primary" href="{{ route('transfer-to-mobile-money') }}"  >
 								<div class="text-center h-100 align-content-center service-box m-auto">
 									<img class="in-svg mb-3" src="{{ asset('assets/image/icons/expense.svg') }}" alt="Transfer to Mobile Money Icon">
 									<p class="content-2">Transfer to Mobile Money</p>
@@ -64,7 +64,7 @@
 							</a>
 						</div>
 						<div class="col-6 col-md-4">
-							<a class="text-primary" href="{{ route('international-airtime') }}"  wire:navigate>
+							<a class="text-primary" href="{{ route('international-airtime') }}"  >
 								<div class="text-center h-100 align-content-center service-box m-auto">
 									<img class="in-svg mb-3" src="{{ asset('assets/image/icons/globe.svg') }}" alt="International Airtime Icon">
 									<p class="content-2">International Airtime</p>

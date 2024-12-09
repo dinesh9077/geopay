@@ -251,7 +251,7 @@
 									
 									<hr class="flex-grow-1 hr-line text-secondary">
 								</div>
-								<a href="{{ route('login') }}" wire:navigate class="btn btn-lg btn-secondary w-100 mb-4">Login</a>
+								<a href="{{ route('login') }}" class="btn btn-lg btn-secondary w-100 mb-4">Login</a>
 							</div>
 						</div>
 					</div>
