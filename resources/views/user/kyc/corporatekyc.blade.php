@@ -105,10 +105,8 @@
 											</form>
 										</div> 
 									</div>
-								</div>  
-								
-							@else
-							
+								</div>   
+							@else 
 								@if($user->is_company == 1 && $user->is_kyc_verify == 1) 
 									<div class="p-4 shadow rounded-4 text-center register-form-container kyc-form-container z-2 position-relative">
 										<img class="mb-xxl-4 mb-3" src="{{ url('storage/setting', config('setting.site_logo')) }}" alt="" style="max-width: 100px;">
