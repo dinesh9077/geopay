@@ -26,8 +26,8 @@
 					<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
 						@csrf
 					</form>
-					<div id="container" class="container d-flex align-items-center justify-content-center py-4 position-relative">
-						<div class="w-100 p-4 shadow rounded-4 register-form-container z-2 kyc-container text-center" id="kyc_response_html"> 
+					<div id="container" class="container d-flex align-items-center justify-content-center py-4">
+						<div class="w-100 p-4 shadow rounded-4 register-form-container z-2 kyc-container text-center position-relative" id="kyc_response_html"> 
 							<a href="{{ route('logout') }}"  onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="btn btn-primary position-absolute top-0 end-0 m-3 d-lg-none"><i class="bi bi-power ms-1"></i></a>
 							<img class="mb-xxl-4 mb-3" src="{{ url('storage/setting', config('setting.site_logo')) }}" alt="" style="max-width: 100px;">
 							<div class="card card-body mb-0 kyc-result-contents mw-100">
