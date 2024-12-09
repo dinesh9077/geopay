@@ -519,7 +519,6 @@
 			 
 			$('#verifyOtpEmailForm, #verifyOtpMobileForm').submit(function(event) {
 				event.preventDefault();
-				
 				 
 				const $form = $(this); // Cache the current form being submitted
 				$form.find('button').prop('disabled', true); // Disable submit button

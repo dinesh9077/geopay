@@ -13,6 +13,7 @@
 		<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
+		<link rel="stylesheet" href="{{ asset('assets/css/waitMe.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css" />	
 		<style>
 			.select2-container--default .select2-selection--single{
@@ -60,6 +61,7 @@
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>  
+		<script src="{{ asset('assets/js/waitMe.js')}}" ></script>  
 		<x-scripts :cryptoKey="$cryptoKey" />	
 		{{-- @livewireScripts --}}
 		<script src="{{ asset('vendor/livewire/livewire.js') }}?v={{ \Carbon\Carbon::now()->timestamp }}"
@@ -117,6 +119,40 @@
 					{ breakpoint: 320, settings: { slidesToShow: 1, slidesToScroll: 1, autoplay: true } }
 				]
 			}); 
+			
+			function run_waitMe(el, num, effect)
+			{
+				text = 'Please Wait...';
+				fontSize = '';
+				switch (num) {
+					case 1:
+					maxSize = '';
+					textPos = 'vertical';
+					break;
+					case 2:
+					text = '';
+					maxSize = 30;
+					textPos = 'vertical';
+					break;
+					case 3:
+					maxSize = 30;
+					textPos = 'horizontal';
+					fontSize = '18px';
+					break;
+				}
+				el.waitMe({
+					effect: effect,
+					text: text,
+					bg: 'rgba(255,255,255,0.7)',
+					color: '#000',
+					maxSize: maxSize,
+					waitTime: -1,
+					source: "{{asset('assets/loader.gif')}}",
+					textPos: textPos,
+					fontSize: fontSize,
+					onClose: function(el) {}
+				});
+			} 
 		</script>
 		@stack('js') 
 	</body>

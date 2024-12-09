@@ -51,8 +51,7 @@
 	Route::post('liquidnet', [CountryController::class, 'liquidnet']); 
 	
 	Route::get('user-roles', [UserController::class, 'userRoles']); 
-	 
-	
+	  
 	Route::middleware(['auth:api', 'ensure.token', 'decrypt.request'])->group(function () 
 	{ 
 		Route::post('user-details', [LoginController::class, 'userDetails']);

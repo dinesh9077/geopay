@@ -20,6 +20,9 @@
 			<li class="nav-item">
 				<a class="nav-link" id="smsplus-line-tab" data-bs-toggle="tab" href="#line-smsplus" role="tab" aria-controls="line-smsplus" aria-selected="false">SMS Plus</a>
 			</li> 
+			<li class="nav-item">
+				<a class="nav-link" id="dtone-line-tab" data-bs-toggle="tab" href="#line-dtone" role="tab" aria-controls="line-dtone" aria-selected="false">International Airtime (dtone)</a>
+			</li> 
 		</ul>
 		<div class="tab-content mt-3" id="lineTabContent">
 			<div class="tab-pane fade show active" id="line-metamap" role="tabpanel" aria-labelledby="metamap-line-tab"> 
@@ -143,6 +146,42 @@
 						</div>
 					</div>
 				</div>
+			</div>
+			<div class="tab-pane fade" id="line-dtone" role="tabpanel" aria-labelledby="dtone-line-tab">
+				<div class="col-md-12 grid-margin stretch-card">
+					<div class="card">
+						<div class="card-body"> 
+							<form class="forms-sample row" id="dtonePlusForm" action="{{ route('admin.third-party-key.update') }}" method="post" enctype="multipart/form-data">
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">Base Url</label>
+									<input type="url" class="form-control" id="dtone_url" name="dtone_url" autocomplete="off" placeholder="Base Url"  value="{{ config('setting.dtone_url') }}">
+								</div>  
+								
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">Api Key</label>
+									<input type="text" class="form-control" id="dtone_apikey" name="dtone_apikey" autocomplete="off" placeholder="Api Key"  value="{{ config('setting.dtone_apikey') }}">
+								</div>  
+								 
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">Secret Key</label>
+									<input type="text" class="form-control" id="dtone_secretkey" name="dtone_secretkey" autocomplete="off" placeholder="Secret Key"  value="{{ config('setting.dtone_secretkey') }}">
+								</div> 
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">Service Id</label>
+									<input type="text" class="form-control" id="dtone_serviceid" name="dtone_serviceid" autocomplete="off" placeholder="Service Id"  value="{{ config('setting.dtone_serviceid') }}">
+								</div> 
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">Subservice Id</label>
+									<input type="text" class="form-control" id="dtone_subserviceid" name="dtone_subserviceid" autocomplete="off" placeholder="Subservice Id"  value="{{ config('setting.dtone_subserviceid') }}">
+								</div>  
+								 
+								<div class="d-flex justify-content-end">
+									<button type="submit" class="btn btn-primary me-2">Submit</button> 
+								</div>
+							</form> 
+						</div>
+					</div>
+				</div>
 			</div> 
 		</div>
 	</div>
@@ -152,7 +191,7 @@
 
 @push('js')
 <script>
-	var $forms = $('#metaMapForm, #smsPlusForm');
+	var $forms = $('#metaMapForm, #smsPlusForm, #dtonePlusForm');
 	$forms.submit(function(event) 
 	{
 		event.preventDefault();   

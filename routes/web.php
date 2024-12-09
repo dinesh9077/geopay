@@ -71,7 +71,15 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	  
 	Route::get('/wallet-to-wallet', [TransactionController::class, 'walletToWallet'])->name('wallet-to-wallet');  
 	Route::post('/wallet-to-wallet/store', [TransactionController::class, 'walletToWalletStore'])->name('wallet-to-wallet.store');  
-	 
+	
+	// International Airtime
+	Route::get('/international-airtime', [TransactionController::class, 'internationalAirtime'])->name('international-airtime');  
+	Route::post('/international-airtime/operator', [TransactionController::class, 'internationalAirtimeOperator'])->name('international-airtime.operator');  
+	Route::post('/international-airtime/product', [TransactionController::class, 'internationalAirtimeProduct'])->name('international-airtime.product');  
+	Route::post('/international-airtime/validate-phone', [TransactionController::class, 'internationalAirtimeValidatePhone'])->name('international-airtime.validate-phone');  
+	Route::post('/international-airtime/store', [TransactionController::class, 'internationalAirtimeStore'])->name('international-airtime.store');  
+	Route::post('/international-airtime/callback/{txnId}', [TransactionController::class, 'internationalAirtimeCallback'])->withoutMiddleware('webdecrypt.request');
+	
 	Route::get('/add-money', function () {
 		return view('user.transaction.add-money.index');
 	})->name('add-money');  
@@ -79,11 +87,7 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	Route::get('/transfer-to-mobile-money', function () {
 		return view('user.transaction.transfer-to-mobile-money');
 	})->name('transfer-to-mobile-money');
-	
-	Route::get('/international-airtime', function () {
-		return view('user.transaction.international-airtime');
-	})->name('international-airtime');
-	
+	 
 	Route::get('/transaction-list', function () {
 		return view('user.transaction.transaction-list-page');
 	})->name('transaction-list');

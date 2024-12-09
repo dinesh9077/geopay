@@ -1,121 +1,46 @@
 @extends('user.layouts.app')
-@section('title', config('setting.site_name').' - Transfer To Mobile Money')
+@section('title', config('setting.site_name').' - International Airtime')
 @section('content')
 <div class="container-fluid p-0">
 	<div class="row g-4">
 		<!-- Left Column -->
-		<div class="col-lg-9 mb-3 international-airtime-section">
-			<div class="d-flex justify-content-end">
-				@include('user.transaction.modal.add-beneficiary-details-modal')
-			</div>
-
-			<form id="profileForm" class="animate__animated animate__fadeIn g-2">
-				<div class="mb-1">
-					<select id="country_id1" name="country_id" class="form-control form-control-lg default-input mb-3" >
-						<option value="" selected disabled>Select Country*</option>
-						<option value="1">Channel 1</option>
-						<option value="2">Channel 2</option>
-						<option value="3">Channel 3</option>
-					</select>
-					<div class="d-flex align-items-center gap-2">
-						<input id="mobile-number" type="number" class="form-control form-control-lg default-input mobile-number mb-3 px-2" style="max-width: 65px;" placeholder="+91" />
-						<input id="mobile-number" type="number" class="form-control form-control-lg default-input mobile-number mb-3" placeholder="Enter your mobile number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==10) return false;"/>
+		<div class="col-lg-9 mb-3 international-airtime-section"> 
+			<form id="airtimeForm" action="{{ route('international-airtime.store') }}" method="post" class="animate__animated animate__fadeIn g-2">
+				<div class="mb-1 row">
+					<div class="col-12 mb-3"> 
+						<select id="country_code" name="country_code" class="form-control form-control-lg default-input select2">
+							<option value="">Select Country</option> 
+							@foreach($countries as $country)
+								<option value="{{ $country['iso_code'] }}">{{ $country['name'] }}</option> 
+							@endforeach
+						</select>
 					</div>
-					<select id="channel_id" name="channel_id" class="form-control form-control-lg default-input mb-3" >
-						<option value="" selected disabled>Select Operator*</option>
-						<option value="1">Channel 1</option>
-						<option value="2">Channel 2</option>
-						<option value="3">Channel 3</option>
-					</select>
-					<div class="plan-tabs">
-						<ul class="nav nav-pills" id="pills-tab" role="tablist">
-							<li class="nav-item" role="presentation">
-								<button class="nav-link content-3 active" id="top-plans-tab" data-bs-toggle="pill" data-bs-target="#top-plans" type="button" role="tab" aria-controls="top-plans" aria-selected="true">Top Plans</button>
-							</li>
-							<li class="nav-item" role="presentation">
-								<button class="nav-link content-3" id="data-plans-tab" data-bs-toggle="pill" data-bs-target="#data-plans" type="button" role="tab" aria-controls="data-plans" aria-selected="false">Data</button>
-							</li>
-						</ul>
-
-						<div class="tab-content" id="pills-tabContent">
-							<!-- Top Plans Tab -->
-							<div class="tab-pane fade show active" id="top-plans" role="tabpanel" aria-labelledby="top-plans-tab">
-								<div class="d-flex align-items-stretch overflow-auto gap-2 plan-container mb-3">
-									<!-- Card 1 -->
-									<div class="border position-relative rounded-3 card plan d-flex flex-column mb-1" onclick="selectCard(this)">
-										<div class="card-body d-flex flex-column">
-											<input id="checkbox-1" name="checkbox" type="checkbox" class="position-absolute top-0 end-0 m-2 form-check-input" />
-											<div class="card-title">16.31 USD</div>
-											<p class="mb-0 text-muted content-3 text-muted">Topup Plan - 1000 INR</p>
-										</div>
-									</div>
-									<!-- Card 2 -->
-									<div class="border position-relative rounded-3 card plan d-flex flex-column mb-1" onclick="selectCard(this)">
-										<div class="card-body d-flex flex-column">
-											<input id="checkbox-2" name="checkbox" type="checkbox" class="position-absolute top-0 end-0 m-2 form-check-input" />
-											<div class="card-title">20.50 USD</div>
-											<p class="mb-0 text-muted content-3 text-muted">Topup Plan - 2000 INR</p>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<!-- Data Plans Tab -->
-							<div class="tab-pane fade" id="data-plans" role="tabpanel" aria-labelledby="data-plans-tab">
-								<div class="d-flex align-items-stretch overflow-auto gap-2 plan-container mb-3">
-									<!-- Card 3 -->
-									<div class="border position-relative rounded-3 card plan d-flex flex-column mb-1" onclick="selectCard(this)">
-										<div class="card-body d-flex flex-column">
-											<input id="checkbox-3" name="checkbox" type="checkbox" class="position-absolute top-0 end-0 m-2 form-check-input" />
-											<div class="card-title">30.75 USD</div>
-											<p class="mb-0 text-muted content-3 text-muted">Data Plan - 3GB</p>
-										</div>
-									</div>
-									<!-- Card 4 -->
-									<div class="border position-relative rounded-3 card plan d-flex flex-column mb-1" onclick="selectCard(this)">
-										<div class="card-body d-flex flex-column">
-											<input id="checkbox-4" name="checkbox" type="checkbox" class="position-absolute top-0 end-0 m-2 form-check-input" />
-											<div class="card-title">50.00 USD</div>
-											<p class="mb-0 text-muted content-3 text-muted">Data Plan - 5GB</p>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
+					
+					<div class="col-12 mb-3" id="operatorHtml" style="display:none;"> 
+						<select id="operator_id" name="operator_id" class="form-control form-control-lg default-input select2">  
+						</select>
 					</div>
-
-					<input id="amount" type="text" class="form-control form-control-lg default-input mb-3" placeholder="Beneficiary Name">
-					<textarea name="address" id="address" class="form-control form-control-lg default-input mb-3" id="" placeholder="Account Description"></textarea>
-				</div>
-				<div class="d-flex flex-column flex-md-row justify-content-end align-items-start gap-2">
-					<!-- <p class="content-3 text-muted col-md-7"> Once a new amount is entered or payment method is changed, the exchange rate and fees will be recalculated. </p> -->
-					<button type="button" class="btn btn-lg btn-primary rounded-2 text-nowrap" id="addMoney">Add Money</button>
-				</div>
-			</form>
-
-			<div>
-				<p class="content-2 fw-semibold mb-2">My Recharge & Bills</p>
-				<div class="w-100 text-start mb-1 p-2 rounded-2 border g-2">
-					<label class="content-3 text-dark fw-semibold text-nowrap border-bottom w-100 pb-1">Jio</label>
-					<div class="d-flex content-3 justify-content-between align-items-center">
-						<div class="w-100 row pt-2">
-							<div class="col-6 col-md-3">
-								<span class="mb-0 text-dark fw-semibold text-nowrap">Name: <span class="text-muted fw-normal">Tejash Sharma</span></span>
-							</div>
-							<div class="col-6 col-md-3">
-								<span class="mb-0 text-dark fw-semibold text-nowrap">Date: <span class="text-muted fw-normal">25/10/2024</span></span>
-							</div>
-							<div class="col-6 col-md-3">
-								<span class="mb-0 text-dark fw-semibold text-nowrap">Mobile: <span class="text-muted fw-normal">+919874563210</span></span>
-							</div>
-							<div class="col-6 col-md-3">
-								<span class="mb-0 text-dark fw-semibold text-nowrap">Amount: <span class="text-muted fw-normal">16.31 USD</span></span>
-							</div>
-						</div>
-						<img class="in-svg btn btn-secondary p-1 rounded-circle mt-2" src="{{ asset('assets/image/icons/repeate-icon.svg') }}" alt="">
+					
+					<div class="col-12 mb-3" id="productHtml" style="display:none;"> 
+						<select id="product_id" name="product_id" class="form-control form-control-lg default-input select2">  
+						</select> 
 					</div>
+					
+					<div class="col-12 mb-3" id="payableAmountHtml" style="display:none;">  
+					</div>
+					
+					<div class="col-12 mb-3">
+						<input type="number" id="mobile_number" name="mobile_number" class="form-control form-control-lg default-input mobile-number" placeholder="Enter your mobile number with country code"/>
+					</div>
+					 
+					<div class="col-12 mb-3">
+						<textarea name="notes" id="notes" class="form-control form-control-lg default-input" placeholder="Account Description"></textarea>
+					</div> 
 				</div>
-			</div>
+				<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2"> 
+					<button type="submit" class="btn btn-lg btn-primary rounded-2 text-nowrap">Submit</button>
+				</div>
+			</form> 
 		</div>
 		
 		<!-- Quick Transfer Column -->
@@ -124,16 +49,302 @@
 </div>
 @endsection
 
-
+@push('js')
 <script>
-    function selectCard(card) {
-        // Uncheck all checkboxes globally across tabs
-        document.querySelectorAll('.plan input[type="checkbox"]').forEach(input => input.checked = false);
+	$('.select2').select2({
+		width: "100%"
+	});
+	
+	var $airtimeForm = $('#airtimeForm');
+	$('#country_code').change(function ()
+	{
+		if(!$(this).val())
+		{
+			$('#operatorHtml').hide();
+			$('#operator_id').val('').trigger('change');
+			return;
+		}
+		let formData = {};
+		const inputName = $(this).attr('name');
+		const inputValue = $(this).val();
+		formData[inputName] = inputValue;
 
-        // Check the checkbox inside the clicked card
-        const checkbox = card.querySelector('.plan input[type="checkbox"]');
-        if (checkbox) {
-            checkbox.checked = true;
-        }
-    }
+		// Encrypt data before sending
+		const encrypted_data = encryptData(JSON.stringify(formData));
+		
+		run_waitMe($('body'), 1, 'facebook')
+		$.ajax({
+			async: true,
+			type: "POST",
+			url: "{{ route('international-airtime.operator') }}", // Using the dynamic URL passed to the function
+			data: { encrypted_data: encrypted_data, '_token': "{{ csrf_token() }}" },
+			cache: false,
+			dataType: 'json',
+			success: function(res) 
+			{ 
+				$('body').waitMe('hide');
+				if (res.status === "success") 
+				{  
+					// Assuming `res.response` is the encrypted JSON, decrypted into `result`.
+					var result = decryptData(res.response); // Decrypt the response
+					var output = ''; // Initialize an empty string for the dropdown options
+					$('#operatorHtml').show();  
+					if (result.length > 0) {
+						output += '<option value="">Select operators</option>';
+						result.forEach(function(operator) {
+							// Check if the operator data is valid
+							if (operator.name && operator.id) {
+								output += `<option value="${operator.id}">${operator.name}</option>`;
+							}
+						});
+
+						// Populate the dropdown with the generated options 
+						$('#operator_id').html(output);  
+					} else {
+						// Handle the case where no operators are returned
+						output = '<option value="">No operators available</option>';
+						$('#operator_id').html(output);
+					} 
+				} 
+				else {
+					toastrMsg(res.status, res.message)
+				}
+			}
+		});	
+	});
+	
+	$('#operator_id').change(function ()
+	{
+		if(!$(this).val() || !$('#country_code').val())
+		{
+			$('#productHtml').hide();
+			$('#product_id').val('').trigger('change');
+			return;
+		}
+		
+		let formData = {};
+
+		// Collect form data
+		formData[$(this).attr('name')] = $(this).val();
+		formData[$('#country_code').attr('name')] = $('#country_code').val();
+
+		// Encrypt data before sending
+		const encrypted_data = encryptData(JSON.stringify(formData));
+ 
+		run_waitMe($('body'), 1, 'facebook')
+		$.ajax({
+			async: true,
+			type: "POST",
+			url: "{{ route('international-airtime.product') }}", // Using the dynamic URL passed to the function
+			data: { encrypted_data: encrypted_data, '_token': "{{ csrf_token() }}" },
+			cache: false,
+			dataType: 'json',
+			success: function(res) 
+			{ 
+				$('body').waitMe('hide');
+				if (res.status === "success") 
+				{    
+					var result = decryptData(res.response); 
+					var output = '';  
+					$('#productHtml').show();  
+					if (result.length > 0) {
+						output += '<option value="">Select Product</option>';
+						result.forEach(function(product) 
+						{ 
+							if (product.name && product.id) {
+								output += `<option value="${product.id}" data-name="${product.name}" data-unit="${product.unit}" data-rates="${product.rates}" data-unit_amount="${product.unit_amount}" data-unit_convert_currency="${product.unit_convert_currency}" data-unit_convert_amount="${product.unit_convert_amount}" data-unit_convert_exchange="${product.unit_convert_exchange}">${product.name} - ${product.unit_convert_amount.toFixed(2)} ${product.unit_convert_currency}</option>`;
+							}
+						});
+
+						// Populate the dropdown with the generated options 
+						$('#product_id').html(output);  
+					} else {
+						// Handle the case where no operators are returned
+						output = '<option value="">No Products available</option>';
+						$('#product_id').html(output);
+					} 
+				} 
+				else {
+					toastrMsg(res.status, res.message)
+				}
+			}
+		});	
+	});
+	
+	$('#product_id').change(function ()
+	{
+		if(!$(this).val())
+		{
+			$('#payableAmountHtml').html('').hide();
+			return;
+		}
+		var payableAmount = $(this).find(':selected').attr('data-unit_convert_amount')
+		var currency = $(this).find(':selected').attr('data-unit_convert_currency')
+		var output = '';
+		output += `<div class="w-100 text-start p-2 rounded-2 border g-2">
+					<div class="w-100 row m-auto">
+						<div class="col-6 col-md-6">
+							<span class="content-3 mb-0 text-dark fw-semibold text-nowrap">Fee(${currency}) <div class="text-muted fw-normal">0</div></span>
+						</div> 
+						<div class="text-md-end col-6 col-md-6">
+							<span class="content-3 mb-0 text-dark fw-semibold text-nowrap"> Net Payable Amount In ${currency}  
+							<div class="text-muted fw-normal">${parseFloat(payableAmount).toFixed(2)} ${currency}</div></span>
+						</div>
+					</div>
+				</div>`;
+		$('#payableAmountHtml').html(output).show();
+	});
+	
+	let debounceTimer;
+	
+	var mobile_number = document.getElementById('mobile_number');
+
+	mobile_number.addEventListener('input', function() {
+	  let start = this.selectionStart;
+	  let end = this.selectionEnd;
+	  
+	  const current = this.value
+	  const corrected = current.replace(/([^+0-9]+)/gi, '');
+	  this.value = corrected;
+	  
+	  if (corrected.length < current.length) --end;
+	  this.setSelectionRange(start, end);
+	});
+
+	$('#mobile_number').on('input', function () {
+		clearTimeout(debounceTimer); // Clear any previous timer
+		const mobileNumber = $(this).val();
+		const operatorId = $('#operator_id :selected').val(); // Assume there's an operator dropdown
+		if(!operatorId)
+		{
+			return;
+		}
+		if (mobileNumber.length > 0) {
+			debounceTimer = setTimeout(() => {
+				validatePhoneNumber(mobileNumber, operatorId);
+			}, 1000); // Wait 500ms after the last keystroke
+		}
+	});
+
+	function validatePhoneNumber(mobileNumber, operatorId) 
+	{
+		let formData = {};
+
+		// Collect form data
+		formData['mobile_number'] = mobileNumber;
+		formData['operator_id'] = operatorId;
+
+		// Encrypt data before sending
+		const encrypted_data = encryptData(JSON.stringify(formData));
+ 
+		run_waitMe($('body'), 1, 'facebook')
+		$.ajax({
+			async: true,
+			type: "POST",
+			url: "{{ route('international-airtime.validate-phone') }}", // Using the dynamic URL passed to the function
+			data: { encrypted_data: encrypted_data, '_token': "{{ csrf_token() }}" },
+			cache: false,
+			dataType: 'json',
+			success: function(res) 
+			{ 
+				$('body').waitMe('hide'); // Hide the loading spinner
+				$('.error_msg').remove(); // Remove any previous error messages
+
+				// Remove any existing 'is_operator_match' hidden input
+				$airtime.find('input[name="is_operator_match"]').remove();
+
+				if (res.status === "error") {       
+					// Append a hidden input with value 0
+					$airtime.append('<input type="hidden" name="is_operator_match" value="0">');
+					
+					// Find the mobile number input field
+					var inputField = $airtime.find('#mobile_number');
+					
+					// Create and append the error message
+					if (!inputField.parent().find('.error_msg').length) {
+						var errorSpan = $('<span>')
+							.addClass('error_msg text-danger content-4') // Add required classes
+							.text(res.message); // Set the error message text
+						inputField.parent().append(errorSpan); // Append the error message
+					}
+				} else {
+					// If success, append a hidden input with value 1
+					$airtime.append('<input type="hidden" name="is_operator_match" value="1">');
+				} 
+			}
+		});	
+	}
+
+
+	// Attach the submit event handler
+	$airtime = $('#airtimeForm');
+	$airtime.submit(function(event) 
+	{
+		event.preventDefault();    
+		var formData = {};
+		$airtime.find('input, select, textarea, checkbox').each(function() {
+			var inputName = $(this).attr('name');
+
+			if ($(this).is(':checkbox')) {
+				// For checkboxes, store whether it is checked (true or false)
+				formData[inputName] = $(this).is(':checked');
+			} else {
+				// For other inputs, use the value
+				formData[inputName] = $(this).val();
+			}
+		});
+		var unit_convert_amount = $airtime.find('#product_id :selected').attr('data-unit_convert_amount'); 
+		formData['product_name'] = $airtime.find('#product_id :selected').attr('data-name');
+		formData['unit_currency'] = $airtime.find('#product_id :selected').attr('data-unit');
+		formData['rates'] = $airtime.find('#product_id :selected').attr('data-rates');
+		formData['unit_amount'] = $airtime.find('#product_id :selected').attr('data-unit_amount');
+		formData['unit_convert_currency'] = $airtime.find('#product_id :selected').attr('data-unit_convert_currency');
+		formData['unit_convert_exchange'] = $airtime.find('#product_id :selected').attr('data-unit_convert_exchange');
+		formData['unit_convert_amount'] = parseFloat(unit_convert_amount).toFixed(2);
+		console.log(formData)
+		// Encrypt data before sending
+		const encrypted_data = encryptData(JSON.stringify(formData));
+		run_waitMe($('body'), 1, 'facebook') 
+		$.ajax({
+			async: true,
+			type: $(this).attr('method'),
+			url: $(this).attr('action'),
+			data: { encrypted_data: encrypted_data, '_token': "{{ csrf_token() }}" },
+			cache: false, 
+			dataType: 'Json', 
+			success: function (res) 
+			{   
+				$('body').waitMe('hide');
+				$('.error_msg').remove(); 
+				if(res.status === "success")
+				{ 
+					toastrMsg(res.status, res.message); 
+					resetForm($airtime);  
+					Livewire.dispatch('refreshRecentTransactions'); 
+				}
+				else if(res.status == "validation")
+				{  
+					$.each(res.errors, function(key, value) {
+						var inputField = $airtime.find('#' + key);
+						var errorSpan = $('<span>')
+						.addClass('error_msg text-danger content-4') 
+						.attr('id', key + 'Error')
+						.text(value[0]);  
+						inputField.parent().append(errorSpan); 
+					});
+				}
+				else
+				{ 
+					toastrMsg(res.status, res.message);
+				}
+			} 
+		});
+	});
+	
+	function resetForm($form) {
+		$form[0].reset();
+		$form.find('.error_msg').remove();
+		$form.find('select').val(null).trigger('change');
+	}
 </script>
+@endpush

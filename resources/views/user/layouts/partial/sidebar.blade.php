@@ -11,7 +11,7 @@
 		</button>
 		<ul class="sidebar-nav">
 			<li class="sidebar-item">
-				<a href="{{ route('home') }}" wire:navigate class="sidebar-link {{ Request::routeIs('home') ? 'active' : '' }}">
+				<a href="{{ route('home') }}" wire:navigate class="sidebar-link {{ Request::routeIs('home') || Request::routeIs('international-airtime') ? 'active' : '' }}">
 					<img class="in-svg" src="{{ asset('assets/image/icons/home.svg') }}" alt="">
 					Dashboard
 				</a>
