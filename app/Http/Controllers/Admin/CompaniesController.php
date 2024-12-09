@@ -528,6 +528,7 @@ class CompaniesController extends Controller
 					$director = CompanyDirector::find($companyDirectorId);
 					$user = User::find($userId);
 					$user->update(['is_upload_document' => 0]); 
+					CompanyDetail::where('id', $companyDetailsId)->update(['is_update_kyc' => 0]); 
 					// Send email
 					Mail::to($user->email)->send(new KycRejectionMail($director->name, $rejectedDocuments));
 				}
