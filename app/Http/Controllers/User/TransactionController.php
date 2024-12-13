@@ -14,6 +14,7 @@ use App\Http\Traits\WebResponseTrait;
 use App\Notifications\WalletTransactionNotification;
 use Illuminate\Support\Facades\Notification;
 use Helper;
+use Carbon\Carbon;
 use App\Services\AirtimeService;
 
 class TransactionController extends Controller
@@ -26,6 +27,116 @@ class TransactionController extends Controller
         $this->middleware('auth')->except('internationalAirtimeCallback');
     }
 	
+	public function index()
+    {  
+        return view('user.transaction.transaction-list');
+    }
+	
+	public function transactionAjax(Request $request)
+	{
+		if ($request->ajax()) {
+			// Define the columns for ordering and searching
+			$columns = ['id', 'platform_name', 'order_id', 'fees', 'txn_amount', 'unit_convert_exchange', 'comments', 'notes', 'status', 'created_at', 'created_at', 'action'];
+
+			 // Global search value
+			$start = $request->input('start'); // Offset for pagination
+			$limit = $request->input('length'); // Limit for pagination
+			$orderColumnIndex = $request->input('order.0.column', 0);
+			$orderDirection = $request->input('order.0.dir', 'asc'); // Default order direction
+			//$search = $request->input('search.value'); 
+			$search = $request->input('search');
+
+			$query = Transaction::query();
+
+			// Apply filters dynamically based on request inputs
+			if ($request->filled('platform_name')) {
+				$query->where('platform_name', $request->platform_name);
+			}
+
+			if ($request->filled(['start_date', 'end_date'])) {
+				$query->whereBetween('created_at', [$request->start_date, $request->end_date]);
+			}
+
+			if ($request->filled('txn_status')) {
+				$query->where('txn_status', $request->txn_status);
+			}
+
+			// Apply search filter if present
+			if (!empty($search)) {
+				$query->where(function ($q) use ($search) {
+					$q->orWhere('platform_name', 'LIKE', "%{$search}%")
+						->orWhere('order_id', 'LIKE', "%{$search}%")
+						->orWhere('comments', 'LIKE', "%{$search}%")
+						->orWhere('notes', 'LIKE', "%{$search}%")
+						->orWhere('txn_amount', 'LIKE', "%{$search}%")
+						->orWhere('created_at', 'LIKE', "%{$search}%");
+				});
+			}
+ 
+			$totalData = $query->count(); // Total records before pagination
+			$totalFiltered = $totalData; // Total records after filtering
+
+			// Apply ordering, limit, and offset for pagination
+			$values = $query
+				->orderBy($columns[$orderColumnIndex] ?? 'id', $orderDirection)
+				->offset($start)
+				->limit($limit)
+				->get();
+
+			// Format data for the response
+			$data = [];
+			$i = $start + 1;
+			foreach ($values as $value) {
+				
+				switch ($value->txn_status) {
+					case 'pending':
+						$value->txn_status = '<span class="badge badge-warning">Pending</span>';
+						break;
+					case 'process':
+						$value->txn_status = '<span class="badge badge-info">In Process</span>';
+						break;
+					case 'success':
+						$value->txn_status = '<span class="badge badge-success">Success</span>';
+						break; 
+					default:
+						$value->txn_status = '<span class="badge badge-secondary">Unknown</span>';
+						break;
+				}
+				 
+				$data[] = [
+					'id' => $i,
+					'platform_name' => $value->platform_name,
+					'order_id' => $value->order_id,
+					'fees' => Helper::decimalsprint($value->fees, 2).' '.config('setting.default_currency'),
+					'txn_amount' => Helper::decimalsprint($value->txn_amount, 2).' '.config('setting.default_currency') ?? 0,
+					'unit_convert_exchange' => $value->unit_convert_exchange ? Helper::decimalsprint($value->unit_convert_exchange, 2) : "1.00",
+					'comments' => $value->comments ?? 'N/A',
+					'notes' => $value->notes,
+					'status' => $value->txn_status,
+					'created_at' => $value->created_at->format('M d, Y H:i:s'),
+					'action' => '', // Initialize action buttons
+				];
+
+				// Manage actions with permission checks
+				$actions = [];
+				$actions[] = '<a href="' . route('transaction.details', ['id' => $value->id]) . '" class="btn btn-sm btn-primary"><i class="bi bi-info-circle"></i></a>';
+				 
+				// Assign actions to the row if permissions exist
+				$data[$i - $start - 1]['action'] = implode(' ', $actions);
+				$i++;
+			}
+
+			// Return JSON response
+			return response()->json([
+				'draw' => intval($request->input('draw')),
+				'recordsTotal' => $totalData,
+				'recordsFiltered' => $totalFiltered,
+				'data' => $data,
+			]);
+		} 
+	}
+	
+	// geopay to geopay wallet
 	public function walletToWallet()
     { 
 		$countries = Country::select('id', 'name', 'isdcode', 'country_flag')->get();
@@ -187,8 +298,7 @@ class TransactionController extends Controller
 		$operatorId = $request->operator_id;
 		return $this->airtimeService->getProducts($countryCode, $operatorId, true); 
 	}
-	
-
+	 
 	public function internationalAirtimeValidatePhone(Request $request)
 	{ 
 		$mobile_number = '+' . ltrim($request->mobile_number, '+');
@@ -197,9 +307,9 @@ class TransactionController extends Controller
 	}
 	
 	public function internationalAirtimeStore(Request $request)
-	{ 
+	{  
 		$user = auth()->user();
-		
+		 
 		// Validation rules
 		$validator = Validator::make($request->all(), [
 			'product_name' => 'required|string', 
@@ -234,6 +344,32 @@ class TransactionController extends Controller
 		try {
 			
 			DB::beginTransaction();
+			$request['order_id'] = "GPIA-".time();
+			
+			$transactionLimit = $user->is_company == 1 
+				? config('setting.company_pay_monthly_limit', 0) 
+				: ($user->userLimit->daily_pay_limit ?? 0);
+
+			$transactionAmountQuery = Transaction::query();
+
+			// Adjust the date filter based on whether the user is a company or an individual
+			if ($user->is_company == 1) {
+				$transactionAmountQuery->whereMonth('created_at', Carbon::now()->month);
+			} else {
+				$transactionAmountQuery->whereDate('created_at', Carbon::today());
+			}
+
+			// Calculate the total transaction amount
+			$transactionAmount = $transactionAmountQuery->sum('txn_amount');
+
+			// Check if the transaction amount exceeds the limit
+			if ($transactionAmount >= $transactionLimit) {
+				$limitType = $user->is_company == 1 ? 'monthly' : 'daily';
+				return $this->errorResponse(
+					"You have reached your {$limitType} transaction limit of {$transactionLimit}. " .
+					"Current total transactions: {$transactionAmount}."
+				);
+			}
 			 
 			$response = $this->airtimeService->transactionRecord($request, $user, true); 
 			  
@@ -262,8 +398,7 @@ class TransactionController extends Controller
             }
   
 			// Deduct balance
-			$user->decrement('balance', $txnAmount);
-			$orderId = "GPIA-".time();
+			$user->decrement('balance', $txnAmount); 
 			$comments = "You have successfully recharged $txnAmount USD for $productName.";
 			// Create transaction record
 			$transaction = Transaction::create([
@@ -290,7 +425,7 @@ class TransactionController extends Controller
 				'unit_convert_exchange' => $request->input('unit_convert_exchange', 0),
 				'api_request' => json_encode($response['request']),
 				'api_response' => json_encode($response['response']),
-				'order_id' => $orderId,
+				'order_id' => $request->order_id,
 				'created_at' => now(),
 				'updated_at' => now(),
 			]);

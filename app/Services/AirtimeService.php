@@ -250,7 +250,7 @@
 			
 			$mobile_number = '+' . ltrim($request->mobile_number, '+');
 			
-			$txnId = uniqid('ext_', true);
+			$txnId = $request->order_id;
 			// API Request Parameters 
 			$transactionRequest = [
 				"external_id" => $txnId,

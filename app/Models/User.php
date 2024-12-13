@@ -129,5 +129,5 @@
 		public function totalTransaction()
 		{
 			return Transaction::where('receiver_id', $this->id)->count();
-		}  
+		}   
 	}

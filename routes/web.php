@@ -87,14 +87,16 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	Route::get('/transfer-to-mobile-money', function () {
 		return view('user.transaction.transfer-to-mobile-money');
 	})->name('transfer-to-mobile-money');
-	 
-	Route::get('/transaction-list', function () {
-		return view('user.transaction.transaction-list-page');
-	})->name('transaction-list');
+	  
 	
 	Route::get('/transfer-to-bank', function () {
 		return view('user.transaction.transfer-bank');
 	})->name('transfer-to-bank');
+	
+	//Transaction List 
+	Route::get('/transaction-list', [TransactionController::class, 'index'])->name('transaction-list');
+	Route::post('/transaction-ajax', [TransactionController::class, 'transactionAjax'])->name('transaction-ajax')->withoutMiddleware('webdecrypt.request');
+	Route::get('/transaction-details/{id}', [TransactionController::class, 'transactionDetail'])->name('transaction.details');
 	 
 	//Setting
 	Route::get('/setting', [SettingController::class, 'index'])->name('setting');  

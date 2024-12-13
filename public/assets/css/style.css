@@ -815,3 +815,20 @@ table.dataTable thead th, table.dataTable tbody td {
   font-weight: normal;
   font-size: 11px;
 }
+
+.badge-secondary {
+	color: #fff;
+	background-color: #6c757d;
+}
+.badge-success {
+	color: #fff;
+	background-color: #28a745;
+}
+.badge-warning {
+	color: #212529;
+	background-color: #ffc107;
+}
+.badge-info {
+	color: #fff;
+	background-color: #17a2b8;
+}

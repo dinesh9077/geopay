@@ -57,7 +57,7 @@
 								
 								<div class="mb-3 col-md-6">
 									<label for="exampleInputEmail1" class="form-label">Default Currency</label>
-									<input type="text" class="form-control" id="default_currency" name="default_currency" placeholder="Default Currency" value="{{ config('setting.default_currency') }}"> 
+									<input type="text" class="form-control" id="default_currency" name="default_currency" maxlength="3" placeholder="Default Currency" value="{{ config('setting.default_currency') }}"> 
 								</div>
 								 
 								<div class="mb-3 col-md-4">

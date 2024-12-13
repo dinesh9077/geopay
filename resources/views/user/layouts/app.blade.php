@@ -15,6 +15,8 @@
 		<link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/waitMe.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css" />	
+		<link rel="stylesheet" href="{{ asset('admin/vendors/flatpickr/flatpickr.min.css') }}">
+		<link rel="stylesheet" href="{{ asset('assets/datatable/jquery.dataTables.min.css') }}">
 		<style>
 			.select2-container--default .select2-selection--single{
 				background: #acbacf45 !important;
@@ -56,12 +58,19 @@
 			</div>
 		</div> 
 		<script src="{{ asset('assets/js/bootstrap/js/bootstrap.bundle.min.js') }}"></script>   
-		<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script>
+		<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script> 
 		<script type="text/javascript" src="{{ asset('assets/js/slick/slick.min.js')}}"></script>
 		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>  
 		<script src="{{ asset('assets/js/waitMe.js')}}" ></script>  
+		
+		<script src="{{ asset('assets/datatable/jquery.dataTables.min.js')}}" ></script> 
+		
+		<script src="{{ asset('admin/vendors/pickr/pickr.min.js') }}"></script>
+		<script src="{{ asset('admin/vendors/moment/moment.min.js') }}"></script>
+		<script src="{{ asset('admin/vendors/flatpickr/flatpickr.min.js') }}"></script>
+		
 		<x-scripts :cryptoKey="$cryptoKey" />	
 		{{-- @livewireScripts --}}
 		<script src="{{ asset('vendor/livewire/livewire.js') }}?v={{ \Carbon\Carbon::now()->timestamp }}"

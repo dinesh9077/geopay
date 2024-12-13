@@ -17,11 +17,7 @@
 		<!-- core:css -->
 		<link rel="stylesheet" href="{{ asset('admin/vendors/core/core.css') }}">
 		<!-- endinject -->
-		
-		<!-- Plugin css for this page -->
-		<link rel="stylesheet" href="{{ asset('admin/vendors/flatpickr/flatpickr.min.css') }}">
-		<!-- End plugin css for this page -->
-		
+		 
 		<!-- inject:css -->
 		<link rel="stylesheet" href="{{ asset('admin/fonts/feather-font/css/iconfont.css') }}">
 		<!-- endinject -->

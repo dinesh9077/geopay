@@ -34,7 +34,7 @@ return new class extends Migration
             $table->decimal('rates',25,4)->nullable();
             $table->string('unit_convert_currency')->nullable();
             $table->decimal('unit_convert_amount',25,4)->nullable();
-            $table->decimal('unit_convert_exchange',25,4)->nullable();
+            $table->decimal('unit_convert_exchange',25,4)->default(1);
 			$table->json('api_request')->nullable();
 			$table->json('api_response')->nullable();
 			$table->timestamps(); // Auto-created created_at and updated_at columns
