@@ -181,10 +181,11 @@ class TransactionController extends Controller
 	public function internationalAirtimeProduct(Request $request)
 	{ 
 		$countryCode = $request->country_code;
-		$productId = $request->product_id;
+		$productId = $request->operator_id;
 		return $this->airtimeService->getProducts($countryCode, $productId, true); 
 	}
 	
+
 	public function internationalAirtimeValidatePhone(Request $request)
 	{ 
 		$mobile_number = '+' . ltrim($request->mobile_number, '+');

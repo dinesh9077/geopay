@@ -45,6 +45,7 @@
 				$response = Http::withHeaders($headers)->get("{$this->baseUrl}/countries", [
 					'service_id' => $this->serviceId,
 					'subservice_id' => $this->subServiceId,
+				    'per_page' => 100
 				]);
 
 				// Check for success and return data 
