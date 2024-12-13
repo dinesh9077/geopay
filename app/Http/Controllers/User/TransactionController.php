@@ -114,19 +114,20 @@ class TransactionController extends Controller
 			
 			$fromComment = 'You have successfully transferred ' . $txnAmount . ' USD to ' . $toUser->first_name . ' ' . $toUser->last_name . '.';
 			$toComment = $user->first_name . ' ' . $user->last_name . ' has sent you ' . $txnAmount . ' USD to your wallet.';
-			
+			$orderId = "GPWW-".time();
 			// Create a transaction record
 			$creditTransaction = Transaction::create([
 				'user_id' => $user->id,
 				'receiver_id' => $toUser->id,
-				'platform_name' => 'wallet to wallet',
-				'platform_provider' => 'wallet to wallet',
+				'platform_name' => 'geopay to geopay wallet',
+				'platform_provider' => 'geopay to geopay wallet',
 				'transaction_type' => 'credit', // Indicating that the user is debiting funds
 				'country_id' => $toUser->country_id,
 				'txn_amount' => $txnAmount,
 				'txn_status' => 'success', // Assuming the transaction is successful
 				'comments' => $toComment,
 				'notes' => $notes,
+				'order_id' => $orderId,
 				'created_at' => now(),
 				'updated_at' => now(),
 			]);
@@ -137,14 +138,15 @@ class TransactionController extends Controller
 			$debitTransaction = Transaction::create([
 				'user_id' => $user->id,
 				'receiver_id' => $user->id,
-				'platform_name' => 'wallet to wallet',
-				'platform_provider' => 'wallet to wallet',
+				'platform_name' => 'geopay to geopay wallet',
+				'platform_provider' => 'geopay to geopay wallet',
 				'transaction_type' => 'debit', // Indicating that the user is debiting funds
 				'country_id' => $user->country_id,
 				'txn_amount' => $txnAmount,
 				'txn_status' => 'success', // Assuming the transaction is successful
 				'comments' => $fromComment,
 				'notes' => $notes,
+				'order_id' => $orderId,
 				'created_at' => now(),
 				'updated_at' => now(),
 			]);
@@ -258,18 +260,17 @@ class TransactionController extends Controller
                 default:
                     $txnStatus = 'process';
             }
-
-
+  
 			// Deduct balance
 			$user->decrement('balance', $txnAmount);
-			
+			$orderId = "GPIA-".time();
 			$comments = "You have successfully recharged $txnAmount USD for $productName.";
 			// Create transaction record
 			$transaction = Transaction::create([
 				'user_id' => $user->id,
 				'receiver_id' => $user->id,
 				'platform_name' => 'international airtime',
-				'platform_provider' => 'mobile recharge',
+				'platform_provider' => 'airtime',
 				'transaction_type' => 'debit',
 				'country_id' => $user->country_id,
 				'txn_amount' => $txnAmount,
@@ -289,6 +290,7 @@ class TransactionController extends Controller
 				'unit_convert_exchange' => $request->input('unit_convert_exchange', 0),
 				'api_request' => json_encode($response['request']),
 				'api_response' => json_encode($response['response']),
+				'order_id' => $orderId,
 				'created_at' => now(),
 				'updated_at' => now(),
 			]);
@@ -308,11 +310,7 @@ class TransactionController extends Controller
 	}
 	
 	public function internationalAirtimeCallback(Request $request)
-	{
-		// Log the incoming request for debugging
-	//	Log::info('Received International Airtime Callback', $request->all());
-
-		// Validate the required fields in the request
+	{ 
 		if (!isset($request['external_id'], $request['status']['message'])) {
 			return ;
 		}
@@ -332,8 +330,7 @@ class TransactionController extends Controller
             default:
                 $txnStatus = 'process';
         }
-
-		// Update transaction status in the database
+ 
 		$updated = Transaction::where('unique_identifier', $uniqueIdentifier)
 			->update(['txn_status' => $txnStatus]);
 

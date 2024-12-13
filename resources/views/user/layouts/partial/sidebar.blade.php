@@ -11,7 +11,7 @@
 		</button>
 		<ul class="sidebar-nav">
 			<li class="sidebar-item">
-				<a href="{{ route('home') }}"  class="sidebar-link {{ Request::routeIs('home') || Request::routeIs('international-airtime') ? 'active' : '' }}">
+				<a href="{{ route('home') }}"  class="sidebar-link {{ Request::routeIs('home') || Request::routeIs('international-airtime') || Request::routeIs('wallet-to-wallet') ? 'active' : '' }}">
 					<img class="in-svg" src="{{ asset('assets/image/icons/home.svg') }}" alt="">
 					Dashboard
 				</a>

@@ -1,6 +1,6 @@
 @extends('user.layouts.app')
-@section('title', config('setting.site_name').' - Wallet to Wallet')
-@section('header_title', 'Wallet to Wallet')
+@section('title', config('setting.site_name').' - Geopay to Geopay Wallet')
+@section('header_title', 'Geopay to Geopay Wallet')
 @section('content')
  
 <div class="container-fluid p-0">
@@ -96,7 +96,7 @@
 
 			// Encrypt data before sending
 			const encrypted_data = encryptData(JSON.stringify(formData));
-
+			run_waitMe($('body'), 1, 'facebook')
 			$.ajax({
 				async: true,
 				type: $(this).attr('method'),
@@ -106,6 +106,7 @@
 				dataType: 'Json', 
 				success: function (res) 
 				{ 
+					$('body').waitMe('hide'); // Hide the loading spinner
 					$walletForm.find('button').prop('disabled',false);	 
 					$('.error_msg').remove(); 
 					if(res.status === "success")

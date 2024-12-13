@@ -23,6 +23,20 @@ return new class extends Migration
 			$table->string('txn_status')->default('pending')->index()->comment('pending, process, success'); // Default value and index for transaction status
 			$table->longText('comments')->nullable(); // Nullable text for comments
 			$table->longText('notes')->nullable(); // Nullable text for any additional notes
+            $table->string('country_code')->nullable();
+			$table->string('unique_identifier')->nullable();
+            $table->string('product_name')->nullable();
+            $table->integer('operator_id')->nullable();
+            $table->integer('product_id')->nullable();
+            $table->string('mobile_number')->nullable(); 
+            $table->string('unit_currency')->nullable();
+            $table->decimal('unit_amount',25,4)->nullable();
+            $table->decimal('rates',25,4)->nullable();
+            $table->string('unit_convert_currency')->nullable();
+            $table->decimal('unit_convert_amount',25,4)->nullable();
+            $table->decimal('unit_convert_exchange',25,4)->nullable();
+			$table->json('api_request')->nullable();
+			$table->json('api_response')->nullable();
 			$table->timestamps(); // Auto-created created_at and updated_at columns
         });
     }

@@ -38,6 +38,8 @@ class Transaction extends Model
         'unit_convert_exchange',
         'api_request',
         'api_response',
+        'order_id',
+        'fees',
     ]; 
     
 	protected static $recordEvents = ['created', 'deleted', 'updated'];
