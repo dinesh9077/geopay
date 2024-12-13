@@ -39,7 +39,7 @@ class Transaction extends Model
         'api_request',
         'api_response',
     ]; 
-   
+    
 	protected static $recordEvents = ['created', 'deleted', 'updated'];
 	
 	public function getActivitylogOptions(string $logName = 'transaction'): LogOptions
