@@ -8,6 +8,7 @@ use App\Models\Country;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\WebResponseTrait;
 use App\Notifications\WalletTransactionNotification;
@@ -22,7 +23,7 @@ class TransactionController extends Controller
     public function __construct()
     {
 		$this->airtimeService = new AirtimeService();
-        $this->middleware('auth');
+        $this->middleware('auth')->except('internationalAirtimeCallback');
     }
 	
 	public function walletToWallet()
@@ -181,8 +182,8 @@ class TransactionController extends Controller
 	public function internationalAirtimeProduct(Request $request)
 	{ 
 		$countryCode = $request->country_code;
-		$productId = $request->operator_id;
-		return $this->airtimeService->getProducts($countryCode, $productId, true); 
+		$operatorId = $request->operator_id;
+		return $this->airtimeService->getProducts($countryCode, $operatorId, true); 
 	}
 	
 
@@ -238,17 +239,26 @@ class TransactionController extends Controller
 				$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
 				throw new \Exception($errorMsg);
 			}
- 
+            //Log::info($response);
 			// Transaction variables
 			$txnAmount = $request->input('unit_convert_amount');
 			$productName = $request->input('product_name');
 			$mobileNumber = '+' . ltrim($request->input('mobile_number'), '+');
+			
 			$statusMessage = strtoupper($response['response']['status']['message']);
-			$txnStatus = match ($statusMessage) {
-				'COMPLETED' => 'success',
-				'DECLINED' => 'declined',
-				default => 'process',
-			};
+            $txnStatus = '';
+            
+            switch ($statusMessage) {
+                case 'COMPLETED':
+                    $txnStatus = 'success';
+                    break;
+                case 'DECLINED':
+                    $txnStatus = 'declined';
+                    break;
+                default:
+                    $txnStatus = 'process';
+            }
+
 
 			// Deduct balance
 			$user->decrement('balance', $txnAmount);
@@ -300,7 +310,7 @@ class TransactionController extends Controller
 	public function internationalAirtimeCallback(Request $request)
 	{
 		// Log the incoming request for debugging
-		Log::info('Received International Airtime Callback', $request->all());
+	//	Log::info('Received International Airtime Callback', $request->all());
 
 		// Validate the required fields in the request
 		if (!isset($request['external_id'], $request['status']['message'])) {
@@ -309,13 +319,19 @@ class TransactionController extends Controller
 
 		$uniqueIdentifier = $request['external_id'];
 		$statusMessage = strtoupper($request['status']['message']);
-
-		// Determine transaction status
-		$txnStatus = match ($statusMessage) {
-			'COMPLETED' => 'success',
-			'DECLINED' => 'declined',
-			default => 'process',
-		};
+ 
+        $txnStatus = '';
+        
+        switch ($statusMessage) {
+            case 'COMPLETED':
+                $txnStatus = 'success';
+                break;
+            case 'DECLINED':
+                $txnStatus = 'declined';
+                break;
+            default:
+                $txnStatus = 'process';
+        }
 
 		// Update transaction status in the database
 		$updated = Transaction::where('unique_identifier', $uniqueIdentifier)

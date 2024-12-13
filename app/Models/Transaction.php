@@ -21,7 +21,23 @@ class Transaction extends Model
         'txn_amount',
         'txn_status',
         'comments',
-        'notes'
+        'notes',
+        'created_at',
+        'updated_at',
+        'unique_identifier',
+        'country_code',
+        'product_name',
+        'operator_id',
+        'product_id',
+        'mobile_number',
+        'unit_currency',
+        'unit_amount',
+        'rates',
+        'unit_convert_currency',
+        'unit_convert_amount',
+        'unit_convert_exchange',
+        'api_request',
+        'api_response',
     ];
    
 	protected static $recordEvents = ['created', 'deleted', 'updated'];

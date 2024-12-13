@@ -265,13 +265,13 @@
     
 			// API Request
 			$response = Http::withHeaders($headers)->post("{$this->baseUrl}/async/transactions", $transactionRequest);
-
+            
 			// Handle Successful Response
 			if ($response->successful()) {
 				return [
 					'success' => true,
 					'request' => $transactionRequest,
-					'response' => $response->successful()
+					'response' => $response->json()
 				];
 			}
 			return [
