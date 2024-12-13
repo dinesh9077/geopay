@@ -247,7 +247,7 @@
 				'Authorization' => 'Basic ' . $basicAuth,
 				'Content-Type' => 'application/json',
 			];
-			  
+			   
 			$mobile_number = '+' . ltrim($request->mobile_number, '+');
 			
 			$txnId = uniqid('ext_', true);
