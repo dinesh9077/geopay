@@ -347,7 +347,7 @@ class TransactionController extends Controller
 			$request['order_id'] = "GPIA-".time();
 			
 			$transactionLimit = $user->is_company == 1 
-				? config('setting.company_pay_monthly_limit', 0) 
+				? config('setting.company_pay_monthly_limit') 
 				: ($user->userLimit->daily_pay_limit ?? 0);
 
 			$transactionAmountQuery = Transaction::query();
