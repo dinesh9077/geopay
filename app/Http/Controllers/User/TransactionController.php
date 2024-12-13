@@ -119,7 +119,7 @@ class TransactionController extends Controller
 
 				// Manage actions with permission checks
 				$actions = [];
-				$actions[] = '<a href="' . route('transaction.details', ['id' => $value->id]) . '" class="btn btn-sm btn-primary"><i class="bi bi-info-circle"></i></a>';
+				$actions[] = '<a href="' . route('transaction.details', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" onclick="viewDetail(this, event)"><i class="bi bi-info-circle"></i></a>';
 				 
 				// Assign actions to the row if permissions exist
 				$data[$i - $start - 1]['action'] = implode(' ', $actions);

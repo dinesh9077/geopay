@@ -14,6 +14,7 @@
 		<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/waitMe.css') }}">
+		<link rel="stylesheet" href="{{ asset('admin/vendors/sweetalert2/sweetalert2.min.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css" />	
 		<link rel="stylesheet" href="{{ asset('admin/vendors/flatpickr/flatpickr.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/datatable/jquery.dataTables.min.css') }}">
@@ -64,7 +65,7 @@
 		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
 		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>  
 		<script src="{{ asset('assets/js/waitMe.js')}}" ></script>  
-		
+		<script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.min.js') }}"></script>
 		<script src="{{ asset('assets/datatable/jquery.dataTables.min.js')}}" ></script> 
 		
 		<script src="{{ asset('admin/vendors/pickr/pickr.min.js') }}"></script>
