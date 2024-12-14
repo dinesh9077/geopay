@@ -68,13 +68,9 @@ class Transaction extends Model
 		return $this->belongsTo(User::class, 'receiver_id');
 	}
 	
-	public function apiResponseAsArray()
+	public function getApiResponseAsArrayAttribute()
 	{
-		if($this->api_response)
-		{
-			return json_decode($this->api_response, true);
-		}
-		return [];
+		return $this->api_response ? json_decode($this->api_response, true) : [];
 	}
    
 }
