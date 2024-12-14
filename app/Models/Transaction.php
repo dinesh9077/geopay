@@ -42,6 +42,7 @@ class Transaction extends Model
         'fees',
     ]; 
     
+	  
 	protected static $recordEvents = ['created', 'deleted', 'updated'];
 	
 	public function getActivitylogOptions(string $logName = 'transaction'): LogOptions
@@ -64,7 +65,16 @@ class Transaction extends Model
 	
 	public function receive()
 	{
-		return $this->belongsTo(User::class, 'receive_id');
+		return $this->belongsTo(User::class, 'receiver_id');
+	}
+	
+	public function apiResponseAsArray()
+	{
+		if($this->api_response)
+		{
+			return json_decode($this->api_response, true);
+		}
+		return [];
 	}
    
 }

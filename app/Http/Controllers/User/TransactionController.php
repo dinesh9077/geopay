@@ -46,7 +46,7 @@ class TransactionController extends Controller
 			//$search = $request->input('search.value'); 
 			$search = $request->input('search');
 
-			$query = Transaction::query();
+			$query = Transaction::where('user_id', auth()->user()->id);
 
 			// Apply filters dynamically based on request inputs
 			if ($request->filled('platform_name')) {
@@ -134,6 +134,13 @@ class TransactionController extends Controller
 				'data' => $data,
 			]);
 		} 
+	}
+	
+	public function transactionDetail($transactionId)
+	{
+		$transaction = Transaction::find($transactionId);
+		$view = view('user.transaction.transaction_details', compact('transaction'))->render();
+		return $this->successResponse('success', ['view' => $view]);
 	}
 	
 	// geopay to geopay wallet
@@ -228,8 +235,8 @@ class TransactionController extends Controller
 			$orderId = "GPWW-".time();
 			// Create a transaction record
 			$creditTransaction = Transaction::create([
-				'user_id' => $user->id,
-				'receiver_id' => $toUser->id,
+				'user_id' => $toUser->id,
+				'receiver_id' => $user->id,
 				'platform_name' => 'geopay to geopay wallet',
 				'platform_provider' => 'geopay to geopay wallet',
 				'transaction_type' => 'credit', // Indicating that the user is debiting funds
@@ -248,7 +255,7 @@ class TransactionController extends Controller
 			// Create a transaction record
 			$debitTransaction = Transaction::create([
 				'user_id' => $user->id,
-				'receiver_id' => $user->id,
+				'receiver_id' => $toUser->id,
 				'platform_name' => 'geopay to geopay wallet',
 				'platform_provider' => 'geopay to geopay wallet',
 				'transaction_type' => 'debit', // Indicating that the user is debiting funds

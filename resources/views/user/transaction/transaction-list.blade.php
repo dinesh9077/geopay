@@ -158,39 +158,24 @@
 	{
 		event.preventDefault();
 		
-		
-		var featch_detail = `
-			<p>Transaction E-Receipt</p>
-			<table style="text-align: start;">
-				<tr><th class="content-3">SERVICE NAME: </th><td class="content-2">Geopay To Geopay Wallet</td></tr>
-				<tr><th class="content-3">ORDER ID: </th><td class="content-2">GPWW-5487548754</td></tr> 
-				<tr><th class="content-3">TOTAL AMOUNT: </th><td class="content-2">0.19 USD</td></tr> 
-				<tr><th class="content-3">EXCHANGE RATE: </th><td class="content-2">1.00</td></tr> 
-				<tr><th class="content-3">FROM ACCOUNT: </th><td class="content-2">DINESH PATIL (+917507642090) </td></tr> 
-				<tr><th class="content-3">TO ACCOUNT: </th><td class="content-2">NITESH SINGH (+917507642091) </td></tr> 
-				<tr><th class="content-3">COUNTERPARTY NAME: </th><td class="content-2">DINESH PATIL</td></tr> 
-				<tr><th class="content-3">PAYMENT DATE: </th><td class="content-2">2024-05-23</td></tr> 
-				<tr><th class="content-3">DESCRIPTION: </th><td class="content-2">payment transfer to account</td></tr> 
-				<tr><th class="content-3">TRANSACTION STATUS: </th><td class="content-2">Success</td></tr>
-			</table>
-		`;
-
-		Swal.fire({  
-			type: "success",
-			confirmButtonColor: "#188ae2",
-			confirmButtonText: "Close",
-			imageUrl: "{{ url('storage/setting', config('setting.site_logo')) }}",
-			imageWidth: 70,
-			imageHeight: 70,
-			customClass: {
-				image: 'custom-image-class'
-			},
-			html: featch_detail
-		}).then(function(result) {
-			if (result.isConfirmed) {
-				// Action after the close button is clicked (if needed)
-			}
-		});
+		$.get(obj, function(res)
+		{
+			const result = decryptData(res.response);
+			Swal.fire({  
+				type: "success",
+				confirmButtonColor: "#188ae2",
+				confirmButtonText: "Close",
+				imageUrl: "{{ url('storage/setting', config('setting.site_logo')) }}",
+				imageWidth: 70,
+				imageHeight: 70,
+				customClass: {
+					image: 'custom-image-class'
+				},
+				html: result.view
+			}).then(function(result) {
+				if (result.isConfirmed) { }
+			});
+		});  
 	}	
 	 
 </script>
