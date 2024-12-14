@@ -18,7 +18,7 @@ class LiquidNetService
 		$this->baseUrl = 'https://staging-api-lqn.lightnet.io';
     }
  
-    public function hmacAuthGenerate(string $method, string $url, array $body = [])
+    public function hmacAuthGenerate(string $method, string $url, string $timestamp, array $body = [])
     {
 		$url = $this->baseUrl . $url;
 		
@@ -30,10 +30,7 @@ class LiquidNetService
 
         // Step 3: Request URI (Encoded and Lowercase)
         $requestUri = urlencode(strtolower($url));
- 
-        // Step 4: Request Timestamp
-        $timestamp = time();
-
+  
         // Step 5: Base64 Representation of the Request Payload (Body)
         $payloadBase64 = '';
         if (!empty($body)) {
@@ -51,9 +48,6 @@ class LiquidNetService
         // Step 8: Set the Authorization Header
         $authorizationHeader = "hmacauth {$this->appId}:{$hmacSignature}:{$nonce}:{$timestamp}";
 		 
-		/*Step 9: Return the Response
-        return  $authorizationHeader; */
-		
 		// Step 9: Send the HTTP Request
         $response = Http::withHeaders([
             'Authorization' => $authorizationHeader,

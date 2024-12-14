@@ -27,9 +27,10 @@ class CountryController extends Controller
     {
         $url = '/api/WebService/GetEcho';
         $method = 'post';
-        $body = ['agentSessionId' => '6789898979']; // Optional payload
+		$timestamp = time();
+        $body = ['agentSessionId' => $timestamp]; // Optional payload
 
-        $response = $this->liquidNetService->hmacAuthGenerate($method, $url, $body);
+        $response = $this->liquidNetService->hmacAuthGenerate($method, $url, $timestamp, $body);
 
         return response()->json($response);
     }

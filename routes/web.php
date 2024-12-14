@@ -87,8 +87,7 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	Route::get('/transfer-to-mobile-money', function () {
 		return view('user.transaction.transfer-to-mobile-money');
 	})->name('transfer-to-mobile-money');
-	  
-	
+	   
 	Route::get('/transfer-to-bank', function () {
 		return view('user.transaction.transfer-bank');
 	})->name('transfer-to-bank');
