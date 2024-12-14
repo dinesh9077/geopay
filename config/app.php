@@ -170,6 +170,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
         Livewire\LivewireServiceProvider::class, 
+		Barryvdh\DomPDF\ServiceProvider::class, 
     ])->toArray(),
 
     /*
@@ -186,6 +187,7 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
        'Helper' => App\Helpers\Helper::class,
        'ImageManager' => App\Helpers\ImageManager::class,
+	   'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
     ])->toArray(),
 
 ];
