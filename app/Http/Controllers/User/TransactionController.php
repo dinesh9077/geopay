@@ -151,13 +151,12 @@ class TransactionController extends Controller
 		$transaction = Transaction::with(['user', 'receive'])->findOrFail($transactionId);
 		//return view('user.transaction.transaction-receipt-pdf', compact('transaction'));
 		 
-		$pdf = Pdf::loadView('user.transaction.transaction-receipt-pdf', compact('transaction'));
-		$pdf->set_option('isHtml5ParserEnabled', true);
-		$pdf->set_option('isPhpEnabled', true);
-		$pdf->set_option('isHtml5ParserEnabled', true);
-		$pdf->set_option('isPhpEnabled', true);
-		$pdf->set_option('isHtml5ParserEnabled', true);
-		$pdf->set_option('isPhpEnabled', true);
+		$pdf = Pdf::loadView('user.transaction.transaction-receipt-pdf', compact('transaction')); 
+		$pdf->set_option('isHtml5ParserEnabled', true)
+		->set_option('isPhpEnabled', true)
+		->set_option('isHtml5Parse', true)
+		->set_option('isCssFloatEnabled', true)
+		->set_option('isImageEnabled', true);
 		return $pdf->download($transaction->order_id.'-receipt.pdf');
 	}
 	

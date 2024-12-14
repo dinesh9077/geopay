@@ -13,8 +13,8 @@
 					<!-- Company and Transaction Info -->
 					<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin: 10px auto;">
 						<tr>
-							<td style="text-align: center;">
-								<img width="200" src="{{ url('storage/setting', config('setting.site_logo')) }}" alt="">
+							<td style="text-align: center;"> 
+								<img width="200" src="{{ url('storage/setting', config('setting.site_logo')) }}" alt=""> 
 							</td>
 						</tr> 
 						<tr>
