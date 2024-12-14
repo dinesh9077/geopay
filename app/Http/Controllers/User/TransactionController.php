@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Notification;
 use Helper;
 use Carbon\Carbon;
 use App\Services\AirtimeService;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TransactionController extends Controller
 {
@@ -119,7 +120,9 @@ class TransactionController extends Controller
 
 				// Manage actions with permission checks
 				$actions = [];
-				$actions[] = '<a href="' . route('transaction.details', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" onclick="viewDetail(this, event)"><i class="bi bi-info-circle"></i></a>';
+				$actions[] = '<a href="' . route('transaction.receipt', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" onclick="viewReceipt(this, event)" data-toggle="tooltip" data-placement="bottom" title="view receipt"><i class="bi bi-info-circle"></i></a>';
+				 
+				$actions[] = '<a href="' . route('transaction.receipt-pdf', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="bottom" title="download pdf receipt"><i class="bi bi-file-earmark-pdf"></i></a>';
 				 
 				// Assign actions to the row if permissions exist
 				$data[$i - $start - 1]['action'] = implode(' ', $actions);
@@ -136,11 +139,23 @@ class TransactionController extends Controller
 		} 
 	}
 	
-	public function transactionDetail($transactionId)
+	public function transactionReceipt($transactionId)
 	{
-		$transaction = Transaction::find($transactionId);
-		$view = view('user.transaction.transaction_details', compact('transaction'))->render();
+		$transaction = Transaction::with(['user', 'receive'])->findOrFail($transactionId);
+		$view = view('user.transaction.transaction-reciept', compact('transaction'))->render();
 		return $this->successResponse('success', ['view' => $view]);
+	}
+	
+	public function transactionReceiptPdf($transactionId)
+	{
+		// Fetch transaction data
+		$transaction = Transaction::with(['user', 'receive'])->findOrFail($transactionId);
+
+		// Share data with the Blade view
+		$pdf = Pdf::loadView('user.transaction.transaction-receipt-pdf', compact('transaction'));
+
+		// Download the generated PDF
+		return $pdf->download($transaction->order_id.'-receipt.pdf');
 	}
 	
 	// geopay to geopay wallet

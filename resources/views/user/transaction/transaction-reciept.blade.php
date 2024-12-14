@@ -50,11 +50,11 @@
         </tr>
         <tr>
             <th class="content-4 d-flex justify-content-between text-nowrap">PRODUCT NAME <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $transaction->product_name }}</td>
+            <td class="content-4">{{ $transaction->product_name ?? 'N/A' }}</td>
         </tr>
         <tr>
             <th class="content-4 d-flex justify-content-between text-nowrap">MOBILE NO <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $transaction->mobile_number }}</td>
+            <td class="content-4">{{ $transaction->mobile_number ?? 'N/A' }}</td>
         </tr>
     @endif
 

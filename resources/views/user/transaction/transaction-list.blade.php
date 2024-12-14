@@ -38,7 +38,7 @@
 			<input type="text" class="form-control form-control-lg default-input " name="search" id="search" placeholder="Search Item">
 		</div> 
 		<div class="filter-buttons col-md-4 col-lg-2">
-			<button id="applyFilters" class="btn btn-primary btn-lg">Filter</button>
+			<button id="applyFilters" class="btn btn-primary btn-lg" >Filter</button>
 			<button id="resetFilters" class="btn btn-secondary btn-lg">Reset</button>
 		</div>
 	</div>
@@ -133,9 +133,13 @@
 				{ "data": "status" },  
 				{ "data": "created_at" }, 
 				{ "data": "action" }
-			]
+			],
+            drawCallback: function () {
+                // Reinitialize tooltips after each draw
+                $('[data-toggle="tooltip"]').tooltip();
+            }
 		});  
-			
+		 
 		$('#applyFilters').click(function() { // Corrected selector here
 			dataTable.draw();	
 		});
@@ -154,7 +158,7 @@
 		}); 
 	});
 	
-	function viewDetail(obj, event)
+	function viewReceipt(obj, event)
 	{
 		event.preventDefault();
 		
@@ -176,7 +180,7 @@
 				if (result.isConfirmed) { }
 			});
 		});  
-	}	
+	}	 
 	 
 </script>
 @endpush

@@ -96,7 +96,8 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	//Transaction List 
 	Route::get('/transaction-list', [TransactionController::class, 'index'])->name('transaction-list');
 	Route::post('/transaction-ajax', [TransactionController::class, 'transactionAjax'])->name('transaction-ajax')->withoutMiddleware('webdecrypt.request');
-	Route::get('/transaction-details/{id}', [TransactionController::class, 'transactionDetail'])->name('transaction.details');
+	Route::get('/transaction-receipt/{id}', [TransactionController::class, 'transactionReceipt'])->name('transaction.receipt');
+	Route::get('/transaction-receipt-pdf/{id}', [TransactionController::class, 'transactionReceiptPdf'])->name('transaction.receipt-pdf');
 	 
 	//Setting
 	Route::get('/setting', [SettingController::class, 'index'])->name('setting');  
