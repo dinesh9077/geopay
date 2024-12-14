@@ -16,7 +16,7 @@
 	@elseif($transaction->platform_name == "international airtime")
 		<tr><th class="content-4 d-flex justify-content-between text-nowrap">FROM ACCOUNT <span class="mx-1">:</span></th><td class="content-4">{{ $transaction->user ? $transaction->user->first_name.' '.$transaction->user->last_name : '' }} {{ $transaction->user ? '('.$transaction->user->formatted_number.')' : '' }} </td></tr> 
 	
-		<tr><th class="content-4 d-flex justify-content-between text-nowrap">OPERATOR NAME <span class="mx-1">:</span></th><td class="content-4">{{ $transaction->v ? ($transaction->api_response_as_array['product']['operator']['name'] ?? "N/A") : 'N/A'}}</td></tr> 
+		<tr><th class="content-4 d-flex justify-content-between text-nowrap">OPERATOR NAME <span class="mx-1">:</span></th><td class="content-4">{{ $transaction->api_response_as_array ? ($transaction->api_response_as_array['product']['operator']['name'] ?? "N/A") : 'N/A'}}</td></tr> 
 		
 		<tr><th class="content-4 d-flex justify-content-between text-nowrap">PRODUCT NAME <span class="mx-1">:</span></th><td class="content-4">{{ $transaction->product_name }}</td></tr>  
 		
