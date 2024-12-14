@@ -147,14 +147,17 @@ class TransactionController extends Controller
 	}
 	
 	public function transactionReceiptPdf($transactionId)
-	{
-		// Fetch transaction data
+	{ 
 		$transaction = Transaction::with(['user', 'receive'])->findOrFail($transactionId);
-
-		// Share data with the Blade view
+		//return view('user.transaction.transaction-receipt-pdf', compact('transaction'));
+		 
 		$pdf = Pdf::loadView('user.transaction.transaction-receipt-pdf', compact('transaction'));
-
-		// Download the generated PDF
+		$pdf->set_option('isHtml5ParserEnabled', true);
+		$pdf->set_option('isPhpEnabled', true);
+		$pdf->set_option('isHtml5ParserEnabled', true);
+		$pdf->set_option('isPhpEnabled', true);
+		$pdf->set_option('isHtml5ParserEnabled', true);
+		$pdf->set_option('isPhpEnabled', true);
 		return $pdf->download($transaction->order_id.'-receipt.pdf');
 	}
 	
