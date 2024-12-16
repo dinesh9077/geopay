@@ -24,6 +24,7 @@
 		
 		<!-- Plugin css for this page -->
 		<link rel="stylesheet" href="{{ asset('admin/vendors/datatables.net-bs5/dataTables.bootstrap5.css') }}">
+		<link rel="stylesheet" href="{{ asset('admin/vendors/datatables.net-bs5/buttons.dataTables.css') }}">
 		<!-- End plugin css for this page -->
 		
 		<link rel="stylesheet" href="{{ asset('admin/vendors/select2/select2.min.css') }}">
@@ -46,6 +47,21 @@
 				},1000)
 			}
 		</script>
+		<style>
+			.custom-entry {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+			.left-head-deta {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+			.table td, .table th { 
+			  font-size: 0.875rem;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="main-wrapper">
@@ -68,8 +84,7 @@
 				<footer class="footer d-flex flex-row align-items-center justify-content-between px-4 py-3 border-top small">
 					<p class="text-secondary mb-1 mb-md-0">Copyright © {{ date('Y') }} <a href="https://www.softieons.com" target="_blank">Softieons Technologies</a>.</p> 
 				</footer>
-				<!-- partial -->
-				
+				<!-- partial --> 
 			</div>
 		</div> 
 		
@@ -79,6 +94,13 @@
 		<script src="{{ asset('admin/vendors/jquery/jquery.min.js') }}"></script>
 		<script src="{{ asset('admin/vendors/datatables.net/dataTables.js') }}"></script>
 		<script src="{{ asset('admin/vendors/datatables.net-bs5/dataTables.bootstrap5.js') }}"></script>
+		<script src="{{ asset('admin/vendors/datatables.net-bs5/dataTables.buttons.js') }}"></script>
+		<script src="{{ asset('admin/vendors/datatables.net-bs5/buttons.dataTables.js') }}"></script>
+		<script src="{{ asset('admin/vendors/datatables.net-bs5/jszip.min.js') }}"></script>
+		<script src="{{ asset('admin/vendors/datatables.net-bs5/pdfmake.min.js') }}"></script>
+		<script src="{{ asset('admin/vendors/datatables.net-bs5/vfs_fonts.js') }}"></script>
+		<script src="{{ asset('admin/vendors/datatables.net-bs5/buttons.html5.min.js') }}"></script>
+		
 		<!-- core:js -->
 		<script src="{{ asset('admin/vendors/core/core.js') }}"></script>
 		<!-- endinject -->

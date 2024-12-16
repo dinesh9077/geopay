@@ -8,6 +8,7 @@ use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\SettingController;
 use App\Http\Controllers\User\TransactionController;
 use App\Http\Controllers\User\KycController;
+use App\Http\Controllers\FrontController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,14 +19,10 @@ use App\Http\Controllers\User\KycController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-//\Artisan::call('storage:link');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [FrontController::class, 'index']);
 
-//Auth::routes();
-
+//Auth::routes(); 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit')->middleware('webdecrypt.request'); 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

@@ -95,13 +95,9 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 	Route::get('/companies/view-kyc/{id}', [CompaniesController::class, 'companiesViewKyc'])->name('companies.view-kyc');
 	Route::post('/companies/kyc-update', [CompaniesController::class, 'companiesKycUpdate'])->name('companies.kyc-update')->withoutMiddleware('webdecrypt.request');
 	
-	//Manage Exchnage Rate
-	Route::get('/exchange-rate', [ExchangeRateController::class, 'exchangeRate'])
-	->name('exchange-rate')->middleware('permission:exchange_rate.view');
-	Route::post('/exchange-rate/ajax', [ExchangeRateController::class, 'exchangeRateAjax'])->withoutMiddleware('webdecrypt.request')->name('exchange-rate.ajax');
-	Route::get('/exchange-rate/import', [ExchangeRateController::class, 'exchangeRateImport'])->name('exchange-rate.import');
-	Route::post('/exchange-rate/store', [ExchangeRateController::class, 'exchangeRateStore'])->name('exchange-rate.store');
-	Route::post('/exchange-rate/delete/{id}', [ExchangeRateController::class, 'exchangeRateDelete'])->withoutMiddleware('webdecrypt.request')->name('exchange-rate.delete'); 
+	Route::post('/transaction-ajax', [CompaniesController::class, 'transactionAjax'])->name('transaction-ajax')->withoutMiddleware('webdecrypt.request');
+    Route::get('/transaction-receipt/{id}', [CompaniesController::class, 'transactionReceipt'])->name('transaction.receipt');
+	Route::get('/transaction-receipt-pdf/{id}', [CompaniesController::class, 'transactionReceiptPdf'])->name('transaction.receipt-pdf');
 	
 	//Manage Users 
 	Route::get('/user/active', [UserController::class, 'userActive'])->name('user.active')->middleware('permission:active_user.view');  
@@ -113,5 +109,14 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 	Route::post('/user/update-status', [UserController::class, 'userUpdateStatus'])->name('user.update-status');
 	Route::get('/user/view-kyc/{id}', [UserController::class, 'userViewKyc'])->name('user.view-kyc');
 	Route::get('/user/login-history/{id}', [UserController::class, 'userLoginHistory'])->name('user.login-history');
+	
+	 
+	//Manage Exchnage Rate
+	Route::get('/exchange-rate', [ExchangeRateController::class, 'exchangeRate'])
+	->name('exchange-rate')->middleware('permission:exchange_rate.view');
+	Route::post('/exchange-rate/ajax', [ExchangeRateController::class, 'exchangeRateAjax'])->withoutMiddleware('webdecrypt.request')->name('exchange-rate.ajax');
+	Route::get('/exchange-rate/import', [ExchangeRateController::class, 'exchangeRateImport'])->name('exchange-rate.import');
+	Route::post('/exchange-rate/store', [ExchangeRateController::class, 'exchangeRateStore'])->name('exchange-rate.store');
+	Route::post('/exchange-rate/delete/{id}', [ExchangeRateController::class, 'exchangeRateDelete'])->withoutMiddleware('webdecrypt.request')->name('exchange-rate.delete'); 
 });
 

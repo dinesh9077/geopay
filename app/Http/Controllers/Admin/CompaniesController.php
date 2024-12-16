@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Mail;
 use ImageManager;
 use App\Notifications\WalletTransactionNotification;
 use Illuminate\Support\Facades\Notification;
-
+use Pdf;
 class CompaniesController extends Controller
 {
 	use WebResponseTrait;
@@ -640,4 +640,141 @@ class CompaniesController extends Controller
 			]);
 		} 
 	}
+	
+	public function transactionAjax(Request $request)
+    {
+        if ($request->ajax()) {
+            // Define the columns for ordering and searching
+            $columns = ['id', 'platform_name', 'order_id', 'fees', 'txn_amount', 'unit_convert_exchange', 'comments', 'notes', 'status', 'created_at', 'created_at', 'action'];
+
+            // Global search value
+            $start = $request->input('start'); // Offset for pagination
+            $limit = $request->input('length'); // Limit for pagination
+            $orderColumnIndex = $request->input('order.0.column', 0);
+            $orderDirection = $request->input('order.0.dir', 'asc'); // Default order direction
+            //$search = $request->input('search.value');
+            $search = $request->input('search');
+			if(!$request->platform_name)
+			{
+				// Return JSON response
+				return response()->json([
+					'draw' => intval($request->input('draw')),
+					'recordsTotal' => 0,
+					'recordsFiltered' => 0,
+					'data' => [],
+				]);
+			}
+            $query = Transaction::where('user_id', $request->company_id);
+
+            // Apply filters dynamically based on request inputs
+            if ($request->filled('platform_name')) {
+                $query->where('platform_name', $request->platform_name);
+            }
+
+            if ($request->filled(['start_date', 'end_date'])) {
+                $query->whereBetween('created_at', [$request->start_date, $request->end_date]);
+            }
+            if ($request->filled('txn_status')) {
+                $query->where('txn_status', $request->txn_status);
+            }
+
+            // Apply search filter if present
+            if (!empty($search)) {
+                $query->where(function ($q) use ($search) {
+                    $q->orWhere('platform_name', 'LIKE', "%{$search}%")
+                        ->orWhere('order_id', 'LIKE', "%{$search}%")
+                        ->orWhere('comments', 'LIKE', "%{$search}%")
+                        ->orWhere('notes', 'LIKE', "%{$search}%")
+                        ->orWhere('txn_amount', 'LIKE', "%{$search}%")
+                        ->orWhere('created_at', 'LIKE', "%{$search}%");
+                });
+            }
+
+            $totalData = $query->count(); // Total records before pagination
+            $totalFiltered = $totalData; // Total records after filtering
+            // Apply ordering, limit, and offset for pagination
+            $values = $query
+                ->orderBy($columns[$orderColumnIndex] ?? 'id', $orderDirection)
+                ->offset($start)
+                ->limit($limit)
+                ->get();
+
+            // Format data for the response
+            $data = [];
+            $i = $start + 1;
+            foreach ($values as $value) {
+
+                /* switch ($value->txn_status) {
+                    case 'pending':
+                        $value->txn_status = '<span class="badge badge-warning">Pending</span>';
+                        break;
+                    case 'process':
+                        $value->txn_status = '<span class="badge badge-info">In Process</span>';
+                        break;
+                    case 'success':
+                        $value->txn_status = '<span class="badge badge-success">Success</span>';
+                        break;
+                    default:
+                        $value->txn_status = '<span class="badge badge-secondary">Unknown</span>';
+                        break;
+                } */
+
+                $data[] = [
+                    'id' => $i,
+                    'platform_name' => $value->platform_name,
+                    'order_id' => $value->order_id,
+                    'fees' => Helper::decimalsprint($value->fees, 2) . ' ' . config('setting.default_currency'),
+                    'txn_amount' => Helper::decimalsprint($value->txn_amount, 2) . ' ' . config('setting.default_currency') ?? 0,
+                    'unit_convert_exchange' => $value->unit_convert_exchange ? Helper::decimalsprint($value->unit_convert_exchange, 2) : "1.00",
+                    'comments' => $value->comments ?? 'N/A',
+                    'notes' => $value->notes,
+                    'status' => $value->txn_status,
+                    'created_at' => $value->created_at->format('M d, Y H:i:s'),
+                    'action' => '', // Initialize action buttons
+                ];
+
+                // Manage actions with permission checks
+                $actions = [];
+                $actions[] = '<a href="' . route('admin.transaction.receipt', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" onclick="viewReceipt(this, event)" data-toggle="tooltip" data-placement="bottom" title="view receipt"><i class="bi bi-info-circle"></i>View Receipt</a>';
+
+                $actions[] = '<a href="' . route('admin.transaction.receipt-pdf', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="bottom" title="download pdf receipt"><i class="bi bi-file-earmark-pdf"></i>Download Pdf</a>';
+
+                // Assign actions to the row if permissions exist
+                $data[$i - $start - 1]['action'] = implode(' ', $actions);
+                $i++;
+            }
+
+            // Return JSON response
+            return response()->json([
+                'draw' => intval($request->input('draw')),
+                'recordsTotal' => $totalData,
+                'recordsFiltered' => $totalFiltered,
+                'data' => $data,
+            ]);
+        }
+    }
+
+
+    public function transactionReceipt($transactionId)
+    {
+        $transaction = Transaction::with(['user', 'receive'])->findOrFail($transactionId);
+        $view = view('user.transaction.transaction-reciept', compact('transaction'))->render();
+        return $this->successResponse('success', ['view' => $view]);
+    }
+
+    public function transactionReceiptPdf($transactionId)
+    {
+        $transaction = Transaction::with(['user', 'receive'])->findOrFail($transactionId);
+        //return view('user.transaction.transaction-receipt-pdf', compact('transaction'));
+
+        $pdf = Pdf::loadView('user.transaction.transaction-receipt-pdf', compact('transaction'));
+        $pdf->set_option('isHtml5ParserEnabled', true);
+        $pdf->set_option('isPhpEnabled', true);
+        $pdf->set_option('isHtml5ParserEnabled', true);
+        $pdf->set_option('isPhpEnabled', true);
+        $pdf->set_option('isHtml5ParserEnabled', true);
+        $pdf->set_option('isPhpEnabled', true);
+        return $pdf->download($transaction->order_id . '-receipt.pdf');
+    }
+
 }

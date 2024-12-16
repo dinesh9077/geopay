@@ -26,7 +26,7 @@
         $receiveNumber = $receive ? "({$receive->formatted_number})" : '';
     @endphp
 
-    @if ($transaction->platform_name == 'geopay to geopay wallet')
+    @if ($transaction->platform_name == 'geopay to geopay wallet' || $transaction->platform_name == 'admin transfer')
         <tr>
             <th class="content-4 d-flex justify-content-between text-nowrap">FROM ACCOUNT <span class="mx-1">:</span></th>
             <td class="content-4">{{ $userName }} {{ $userNumber }}</td>

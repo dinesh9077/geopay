@@ -29,7 +29,7 @@ class CountryController extends Controller
         $method = 'post';
 		$timestamp = time();
 		$body = [ 
-			"agentSessionId" => $timestamp,
+			"agentSessionId" => "$timestamp",
 			"locationId" => "PHLALL",
 			"payoutCountry" => "PHL",
 			"payoutCurrency" => "PHP",

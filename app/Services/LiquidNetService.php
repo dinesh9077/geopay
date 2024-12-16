@@ -34,14 +34,17 @@ class LiquidNetService
 
         // Step 5: Base64 Representation of the Request Payload (Body)
         $payloadBase64 = '';
-        if (!empty($body)) {
-            $hashedPayload = hash('md5', json_encode($body)); // Hash JSON payload
+        if (!empty($body)) { 
+            $hashedPayload = md5(json_encode($body), true); // Hash JSON payload
             $payloadBase64 = base64_encode($hashedPayload);
         }
 
         // Step 6: Build the Signature Raw Data
         $signatureRawData = $this->appId . $httpMethod . $requestUri . $timestamp . $nonce . $payloadBase64;
-
+		/* echo json_encode($body);
+		echo '<br>';
+		echo $signatureRawData;
+		die; */
         // Step 7: Generate the HMAC Signature
         $apiSecret = base64_decode($this->apiKey);
         $hmacSignature = base64_encode(hash_hmac('sha256', $signatureRawData, $apiSecret, true));
