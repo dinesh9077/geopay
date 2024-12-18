@@ -47,7 +47,10 @@
 			$transactions = Transaction::select('id', 'user_id', 'txn_status', 'platform_provider', 'order_id')->whereIn('platform_provider', ['lightnet'])
 			->whereNotIn('txn_status', ['paid'])
 			->get();
-			 
+			
+			if ($transactions->isEmpty()) {
+				return;
+			}
 			foreach ($transactions as $transaction)
 			{
 				try { 
