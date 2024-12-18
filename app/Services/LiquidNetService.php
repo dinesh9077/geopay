@@ -182,4 +182,41 @@ class LiquidNetService
 			'response' => json_decode($response->body(), true)
 		];	
 	}
+	
+	public function commitTransaction($confirmationId, $remitCurrency)
+    {
+        $apiUrl = $this->baseUrl . '/CommitTransaction'; 
+		$method = 'post'; 
+		$requestTimestamp = time();  
+		 
+		$requestBody = [
+			"agentSessionId" => (string) $requestTimestamp,
+			"confirmationId" => $confirmationId,
+			"remitCurrency" => $remitCurrency
+		]; 
+		
+		$signatureString = $this->hmacAuthGenerate($method, $apiUrl, $requestTimestamp, $requestBody);
+        $response = Http::withHeaders([
+            'Authorization' => "hmacauth {$signatureString}",
+            'Content-Type' => 'application/json',
+        ])
+		->withOptions([
+			'verify' => false,
+		])
+		->{$method}($apiUrl, $requestBody);
+		 
+        // Handle Successful Response
+		if ($response->successful()) {
+			return [
+				'success' => true,  
+				'request' => $requestBody,
+				'response' => $response->json()
+			];
+		}
+		return [
+			'success' => false, 
+			'request' => $requestBody,
+			'response' => json_decode($response->body(), true)
+		];	
+	}
 }

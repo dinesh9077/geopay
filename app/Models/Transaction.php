@@ -40,9 +40,19 @@ class Transaction extends Model
         'api_response',
         'order_id',
         'fees',
+        'beneficiary_request',
+        'api_response_second',
+        'service_charge',
+        'total_charge',
     ]; 
-    
-	  
+	
+	protected $casts = [
+        'api_request' => 'array',
+        'api_response' => 'array',
+        'beneficiary_request' => 'array',
+        'api_response_second' => 'array',
+    ];
+     
 	protected static $recordEvents = ['created', 'deleted', 'updated'];
 	
 	public function getActivitylogOptions(string $logName = 'transaction'): LogOptions

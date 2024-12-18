@@ -12,8 +12,8 @@
 		public function up(): void
 		{
 			Schema::table('transactions', function (Blueprint $table) {
-				$table->json('beneficiary_request')->nullable();
-				$table->json('api_response_second')->nullable(); 
+				$table->decimal('service_charge',25,4)->default(0);
+				$table->decimal('total_charge',25,4)->default(0);
 			});
 		}
 		
@@ -22,8 +22,7 @@
 		*/
 		public function down(): void
 		{
-			Schema::table('transactions', function (Blueprint $table) {
-				//
+			Schema::table('transactions', function (Blueprint $table) { 
 			});
 		}
 	};

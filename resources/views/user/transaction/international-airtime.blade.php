@@ -280,7 +280,10 @@
 	$airtime = $('#airtimeForm');
 	$airtime.submit(function(event) 
 	{
-		event.preventDefault();    
+		event.preventDefault(); 
+		$airtime.find('button').prop('disabled',true);  
+		run_waitMe($('body'), 1, 'facebook');
+		
 		var formData = {};
 		$airtime.find('input, select, textarea, checkbox').each(function() {
 			var inputName = $(this).attr('name');
@@ -301,10 +304,10 @@
 		formData['unit_convert_currency'] = $airtime.find('#product_id :selected').attr('data-unit_convert_currency');
 		formData['unit_convert_exchange'] = $airtime.find('#product_id :selected').attr('data-unit_convert_exchange');
 		formData['unit_convert_amount'] = parseFloat(unit_convert_amount).toFixed(2);
-		console.log(formData)
+		 
 		// Encrypt data before sending
 		const encrypted_data = encryptData(JSON.stringify(formData));
-		run_waitMe($('body'), 1, 'facebook') 
+		 
 		$.ajax({
 			async: true,
 			type: $(this).attr('method'),
@@ -314,6 +317,7 @@
 			dataType: 'Json', 
 			success: function (res) 
 			{   
+				$airtime.find('button').prop('disabled',false);	 
 				$('body').waitMe('hide');
 				$('.error_msg').remove(); 
 				if(res.status === "success")

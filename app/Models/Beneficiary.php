@@ -21,6 +21,10 @@ class Beneficiary extends Model
 	 
 	protected static $recordEvents = ['created', 'deleted', 'updated'];
 	
+	protected $casts = [
+        'data' => 'array',
+    ];
+	
 	public function getActivitylogOptions(string $logName = 'beneficiary'): LogOptions
 	{  
 		$user_name = auth()->user()->name; 
@@ -43,9 +47,7 @@ class Beneficiary extends Model
 	{
 		if (!$this->data) {
 			return [];
-		}
-
-		$decoded = json_decode($this->data, true);
-		return $decoded ?: []; // Return decoded data if successful, otherwise empty array
+		} 
+		return $this->data ?: [];  
 	}
 }

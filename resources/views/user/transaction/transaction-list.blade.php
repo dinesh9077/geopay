@@ -15,8 +15,9 @@
 		<div class=" col-md-4 col-lg-2">
 			<select class="form-control default-input content-3 select2" name="platform_name" id="platform_name">
 				<option value="">ALL</option>
-				<option value="international airtime">International Airtime</option>
 				<option value="geopay to geopay wallet">Geopay To Geopay Wallet</option>
+				<option value="international airtime">International Airtime</option>
+				<option value="transfer to bank">transfer to bank</option>
 				<option value="admin transfer">Admin Transfer</option>
 			</select>
 		</div>
@@ -29,9 +30,9 @@
 		<div class=" col-md-4 col-lg-2">
 			<select class="form-control default-input content-3 select2" name="txn_status" id="txn_status">
 				<option value="">ALL</option>
-				<option value="pending">Pending</option>
-				<option value="process">Process</option>
-				<option value="success">Success</option>
+				@foreach($txnStatuses as $txnStatus)
+					<option value="{{ $txnStatus }}">{{ $txnStatus }}</option>
+				@endforeach
 			</select>
 		</div>
 		<div class="col-md-4 col-lg-2">
@@ -57,7 +58,7 @@
 					<th style="width: 15%;">Notes</th> 
 					<th>Status</th>
 					<th>Created At</th>
-					<th>Action</th>
+					<th >Action</th>
 				</tr>
 			</thead>
 		</table>
@@ -181,6 +182,47 @@
 			});
 		});  
 	}	 
-	 
+	
+	function commitTransaction(obj, event) {
+		event.preventDefault(); 
+
+		// Show SweetAlert confirmation
+		Swal.fire({
+			title: 'Are you sure?',
+			text: "Do you want to commit this transaction?",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes, commit it!',
+			cancelButtonText: 'Cancel'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				// If confirmed, proceed with the transaction
+				$.get(obj, function(res) {
+					// Handle the response
+					if (res.status === "success") {
+						Swal.fire({
+							icon: 'success',
+							title: 'Committed!',
+							text: res.message,
+							timer: 2000,
+							showConfirmButton: false
+						}); 
+						dataTable.draw();
+					} else {
+						Swal.fire({
+							icon: 'error',
+							title: 'Failed!',
+							text: res.message,
+							timer: 2000,
+							showConfirmButton: false
+						}); 
+					}
+				}, 'json');
+			}
+		});
+	}
+ 
 </script>
 @endpush

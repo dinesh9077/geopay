@@ -216,7 +216,7 @@ class TransferBankController extends Controller
 			$data['user_id'] = Auth::id();
 			$data['created_at'] = now();
 			$data['updated_at'] = now();
-			$data['data'] = json_encode($beneficiaryData);
+			$data['data'] = $beneficiaryData;
 			 
 			$beneficiary = Beneficiary::create($data);
 			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to bank beneficiary');
@@ -380,7 +380,7 @@ class TransferBankController extends Controller
 			$data['service_name'] = $beneficiaryData['service_name'];
 			$data['user_id'] = Auth::id(); 
 			$data['updated_at'] = now(); 
-			$data['data'] = json_encode($beneficiaryData);
+			$data['data'] = $beneficiaryData;
 			 
 			$beneficiary = Beneficiary::find($id);
 			$beneficiary->update($data);
@@ -403,7 +403,7 @@ class TransferBankController extends Controller
 
 			// Fetch the beneficiary
 			$beneficiary = Beneficiary::find($id);
-
+			 
 			// Check if the beneficiary exists
 			if (!$beneficiary) {
 				throw new \Exception('Beneficiary not found.');
@@ -492,16 +492,16 @@ class TransferBankController extends Controller
 		$validator = Validator::make($request->all(), [
 			'country_code'   => 'required|string|max:10', // Restrict maximum length
 			'beneficiaryId'  => 'required|integer|exists:beneficiaries,id', // Explicit column for clarity
-			'txnAmount'      => 'required|numeric|gt:0', // Transaction amount must be positive
+			'txnAmount'      => 'required|numeric|gt:0', // Transaction amount must be positive 
 			'notes'          => 'nullable|string|max:255', // Restrict notes to 255 characters
 		]);
 
 		// Custom validation logic
 		$validator->after(function ($validator) use ($request, $user) {
-			$txnAmount = (float) $request->input('txnAmount', 0);
+			$netAmount = (float) $request->input('netAmount', 0);
 			$payoutCurrencyAmount = (float) $request->input('payoutCurrencyAmount', 0);
-
-			if ($txnAmount > $user->balance) {
+			  
+			if ($netAmount > $user->balance) {
 				$validator->errors()->add('txnAmount', 'Insufficient balance to complete this transaction.');
 			}
 
@@ -518,8 +518,8 @@ class TransferBankController extends Controller
 		}
 	 
 		try {
-			DB::beginTransaction();
-			$request['order_id'] = "GPTB-".time();
+			DB::beginTransaction(); 
+			$request['order_id'] = "GPTB-".$user->id."-".time();
 			$request['timestamp'] = time();
 		
 			$beneficiary = Beneficiary::find($request->beneficiaryId);
@@ -541,9 +541,10 @@ class TransferBankController extends Controller
 			}
 			
 			$txnAmount = $request->input('txnAmount');
+			$netAmount = $request->input('netAmount');
 			
 			// Deduct balance
-			$user->decrement('balance', $txnAmount); 
+			$user->decrement('balance', $netAmount); 
 			
 			// Check if necessary fields exist to prevent undefined index warnings
 			$beneficiaryFirstName = $beneficiary->dataArr['beneficiaryFirstName'] ?? '';
@@ -555,14 +556,14 @@ class TransferBankController extends Controller
 			$payoutCurrencyAmount = $request->payoutCurrencyAmount;
 			$exchangeRate = $request->exchangeRate;
 			$remitCurrency = config('setting.default_currency');
-			
+			$confirmationId = $response['response']['confirmationId'];
 			// Concatenate beneficiary name safely
 			$beneficiaryName = trim("$beneficiaryFirstName $beneficiaryLastName"); // Using trim to remove any leading/trailing spaces
 
 			// Build the comment using sprintf for better readability
 			$comments = sprintf(
 				"You have successfully transferred %s USD to %s, of bank: %s.",
-				number_format($txnAmount, 2), // Ensure txnAmount is formatted to 2 decimal places
+				number_format($netAmount, 2), // Ensure txnAmount is formatted to 2 decimal places
 				$beneficiaryName,
 				$bankName
 			);
@@ -572,14 +573,14 @@ class TransferBankController extends Controller
 				'user_id' => $user->id,
 				'receiver_id' => $user->id,
 				'platform_name' => 'transfer to bank',
-				'platform_provider' => 'bank transfer',
+				'platform_provider' => $beneficiary->data['service_name'],
 				'transaction_type' => 'debit',
 				'country_id' => $user->country_id,
-				'txn_amount' => $txnAmount,
-				'txn_status' => "PENDING",
+				'txn_amount' => $netAmount,
+				'txn_status' => "pending",
 				'comments' => $comments,
 				'notes' => $request->input('notes'),
-				'unique_identifier' => $response['response']['confirmationId'],
+				'unique_identifier' => $confirmationId,
 				'product_name' => $bankName, 
 				'product_id' => $bankId,
 				'mobile_number' => $mobileNumber,
@@ -589,24 +590,89 @@ class TransferBankController extends Controller
 				'unit_convert_currency' => $payoutCurrency,
 				'unit_convert_amount' => $payoutCurrencyAmount,
 				'unit_convert_exchange' => $exchangeRate,
-				'beneficiary_request' => json_encode($beneficiary),
-				'api_request' => json_encode($response['request']),
-				'api_response' => json_encode($response['response']),
+				'beneficiary_request' => $beneficiary,
+				'api_request' => $response['request'],
+				'api_response' => $response['response'],
 				'order_id' => $request->order_id,
+				'fees' => $request->platformCharge ?? 0,
+				'service_charge' => $request->serviceCharge ?? 0,
+				'total_charge' => $request->totalCharges ?? 0,
 				'created_at' => now(),
 				'updated_at' => now(),
 			]);
 
 			// Log the transaction creation
 			Helper::updateLogName($transaction->id, Transaction::class, 'transfer to bank transaction', $user->id);
-			
-			DB::commit(); 
-		 
-			return $this->successResponse('The transaction was completed successfully.');
+			 
+			$commitResponse = $this->liquidNetService->commitTransaction($confirmationId, $remitCurrency);
+
+			if (!$commitResponse['success'] || ($commitResponse['response']['code'] ?? 1) != 0) {
+				// Provide a clear and user-friendly error message
+				$errorMsg = "Your transaction has been accepted but couldn't be committed due to a technical issue. Please visit the transaction list to manually commit the transaction.";
+				throw new \Exception($errorMsg);
+			}
+
+			// Safely fetch the transaction and update it
+			if ($transaction) {
+				$commitTransaction = Transaction::find($transaction->id);
+				$commitTransaction->update(['api_response_second' => $commitResponse['response'], 'txn_status' => strtolower($commitResponse['response']['status'])]);
+			}
+ 
+			DB::commit();  
+			return $this->successResponse($commitResponse['response']['message']);
 		} catch (\Throwable $e) {
 			DB::rollBack();  
 			return $this->errorResponse($e->getMessage()); 
 		}  
 	}
- 
+	
+	public function transferToBankCommitTransaction($id)
+	{
+		try {
+			DB::beginTransaction();
+
+			// Fetch the transaction
+			$transaction = Transaction::find($id);
+			if (!$transaction) {
+				return $this->errorResponse('Transaction not found.');
+			}
+
+			if (!$transaction->unique_identifier) {
+				return $this->errorResponse('Transaction confirmation id is missing.');
+			}
+
+			// Call the commitTransaction method
+			$commitResponse = $this->liquidNetService->commitTransaction($transaction->unique_identifier, $transaction->unit_currency);
+
+			// Handle unsuccessful commit response
+			if (!$commitResponse['success']) {
+				$errorMsg = $commitResponse['response']['errors'][0]['message'] ?? 'An error occurred.';
+				throw new \Exception($errorMsg);
+			}
+			
+			// Handle unsuccessful commit response
+			if (($commitResponse['response']['code'] ?? 1) != 0) {
+				$errorMsg = $commitResponse['response']['message'];
+				throw new \Exception($errorMsg);
+			}
+
+			// Update the transaction status
+			$transaction->update([
+				'api_response_second' => $commitResponse['response'],
+				'txn_status' => strtolower($commitResponse['response']['status'] ?? 'pending'),
+			]);
+
+			// Log the transaction update
+			Helper::updateLogName($transaction->id, Transaction::class, 'Transfer to bank commit transaction');
+
+			DB::commit();
+
+			return $this->successResponse($commitResponse['response']['message'] ?? 'Transaction committed successfully.');
+		} catch (\Throwable $e) {
+			DB::rollBack();
+
+			return $this->errorResponse($e->getMessage());
+		}
+	}
+
 }

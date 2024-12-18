@@ -91,8 +91,7 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	Route::post('/transfer-to-bank/beneficiary-update/{id}', [TransferBankController::class, 'transferToBankBeneficiaryUpdate'])->name('transfer-to-bank.beneficiary-update');  
 	Route::get('/transfer-to-bank/beneficiary-delete/{id}', [TransferBankController::class, 'transferToBeneficiaryDelete'])->name('transfer-to-bank.beneficiary-delete');  
 	Route::post('/transfer-to-bank/commission', [TransferBankController::class, 'transferToBankCommission'])->name('transfer-to-bank.commission');  
-	
-	
+   	Route::get('/transfer-to-bank/commit-transaction/{id}', [TransferBankController::class, 'transferToBankCommitTransaction'])->name('transfer-to-bank.commit-transaction');
 	
 	//Add Mobile Money
 	Route::get('/add-money', function () {

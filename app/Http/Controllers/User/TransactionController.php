@@ -30,7 +30,11 @@ class TransactionController extends Controller
 	
 	public function index()
     {  
-        return view('user.transaction.transaction-list');
+		$txnStatuses = Transaction::select('txn_status')
+		->groupBy('txn_status')
+		->pluck('txn_status');
+ 
+        return view('user.transaction.transaction-list', compact('txnStatuses'));
     }
 	
 	public function transactionAjax(Request $request)
@@ -88,21 +92,6 @@ class TransactionController extends Controller
 			$data = [];
 			$i = $start + 1;
 			foreach ($values as $value) {
-				
-				switch ($value->txn_status) {
-					case 'pending':
-						$value->txn_status = '<span class="badge badge-warning">Pending</span>';
-						break;
-					case 'process':
-						$value->txn_status = '<span class="badge badge-info">In Process</span>';
-						break;
-					case 'success':
-						$value->txn_status = '<span class="badge badge-success">Success</span>';
-						break; 
-					default:
-						$value->txn_status = '<span class="badge badge-secondary">Unknown</span>';
-						break;
-				}
 				 
 				$data[] = [
 					'id' => $i,
@@ -120,9 +109,23 @@ class TransactionController extends Controller
 
 				// Manage actions with permission checks
 				$actions = [];
+				$actions[] = '<div class="d-flex align-items-center gap-2">';
+				
 				$actions[] = '<a href="' . route('transaction.receipt', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" onclick="viewReceipt(this, event)" data-toggle="tooltip" data-placement="bottom" title="view receipt"><i class="bi bi-info-circle"></i></a>';
 				 
 				$actions[] = '<a href="' . route('transaction.receipt-pdf', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="bottom" title="download pdf receipt"><i class="bi bi-file-earmark-pdf"></i></a>';
+				
+				if (
+					strtolower($value->platform_name) === "transfer to bank" && 
+					strtolower($value->platform_provider) === "lightnet" && 
+					strtolower($value->txn_status) === "pending"
+				) {
+					$actions[] = sprintf(
+						'<a href="%s" class="btn btn-sm btn-warning" data-toggle="tooltip" data-placement="bottom" title="Commit the required transaction" onclick="commitTransaction(this, event)"><i class="bi bi-arrow-left-right"></i></a>',
+						route('transfer-to-bank.commit-transaction', ['id' => $value->id])
+					);
+				} 
+				$actions[] = '</div>';
 				 
 				// Assign actions to the row if permissions exist
 				$data[$i - $start - 1]['action'] = implode(' ', $actions);
@@ -141,7 +144,7 @@ class TransactionController extends Controller
 	
 	public function transactionReceipt($transactionId)
 	{
-		$transaction = Transaction::with(['user', 'receive'])->findOrFail($transactionId);
+		$transaction = Transaction::with(['user', 'receive'])->findOrFail($transactionId); 
 		$view = view('user.transaction.transaction-reciept', compact('transaction'))->render();
 		return $this->successResponse('success', ['view' => $view]);
 	}
@@ -249,7 +252,8 @@ class TransactionController extends Controller
 			
 			$fromComment = 'You have successfully transferred ' . $txnAmount . ' USD to ' . $toUser->first_name . ' ' . $toUser->last_name . '.';
 			$toComment = $user->first_name . ' ' . $user->last_name . ' has sent you ' . $txnAmount . ' USD to your wallet.';
-			$orderId = "GPWW-".time();
+		 
+			$orderId = "GPWW-".$user->id."-".time();
 			// Create a transaction record
 			$creditTransaction = Transaction::create([
 				'user_id' => $toUser->id,
@@ -290,7 +294,6 @@ class TransactionController extends Controller
 			 
 			Notification::send($user, new WalletTransactionNotification($user, $toUser, $txnAmount, $fromComment, $notes)); // Sender Notification
 			Notification::send($toUser, new WalletTransactionNotification($user, $toUser, $txnAmount, $toComment, $notes)); // Receiver Notification
-
  
 			DB::commit();
 
@@ -368,7 +371,7 @@ class TransactionController extends Controller
 		try {
 			
 			DB::beginTransaction();
-			$request['order_id'] = "GPIA-".time();
+			$request['order_id'] = "GPIA-".$user->id."-".time();
 			
 			$transactionLimit = $user->is_company == 1 
 				? config('setting.company_pay_monthly_limit') 
@@ -406,21 +409,9 @@ class TransactionController extends Controller
 			$txnAmount = $request->input('unit_convert_amount');
 			$productName = $request->input('product_name');
 			$mobileNumber = '+' . ltrim($request->input('mobile_number'), '+');
-			
-			$statusMessage = strtoupper($response['response']['status']['message']);
-            $txnStatus = '';
-            
-            switch ($statusMessage) {
-                case 'COMPLETED':
-                    $txnStatus = 'success';
-                    break;
-                case 'DECLINED':
-                    $txnStatus = 'declined';
-                    break;
-                default:
-                    $txnStatus = 'process';
-            }
-  
+			 
+            $txnStatus = strtoupper($response['response']['status']['message']) ?? 'process';
+              
 			// Deduct balance
 			$user->decrement('balance', $txnAmount); 
 			$comments = "You have successfully recharged $txnAmount USD for $productName.";
@@ -447,8 +438,8 @@ class TransactionController extends Controller
 				'unit_convert_currency' => $request->input('unit_convert_currency', ''),
 				'unit_convert_amount' => $txnAmount,
 				'unit_convert_exchange' => $request->input('unit_convert_exchange', 0),
-				'api_request' => json_encode($response['request']),
-				'api_response' => json_encode($response['response']),
+				'api_request' => $response['request'],
+				'api_response' => $response['response'],
 				'order_id' => $request->order_id,
 				'created_at' => now(),
 				'updated_at' => now(),
@@ -475,25 +466,13 @@ class TransactionController extends Controller
 		}
 
 		$uniqueIdentifier = $request['external_id'];
-		$statusMessage = strtoupper($request['status']['message']);
- 
-        $txnStatus = '';
-        
-        switch ($statusMessage) {
-            case 'COMPLETED':
-                $txnStatus = 'success';
-                break;
-            case 'DECLINED':
-                $txnStatus = 'declined';
-                break;
-            default:
-                $txnStatus = 'process';
-        }
- 
+		 
+        $txnStatus = strtoupper($request['status']['message']) ?? 'process';
+          
 		$updated = Transaction::where('unique_identifier', $uniqueIdentifier)
 			->update(['txn_status' => $txnStatus]);
 
-		return true;
+		return $updated;
 	}
 	 
 }

@@ -314,6 +314,7 @@ class CompaniesController extends Controller
 			$recipientComment = 'You received ' . $txnAmount . ' USD from ' 
                         . $sender->first_name . ' ' . $sender->last_name . '.';
 			
+			$orderId = "GPWW-".$sender->id."-".time();
 			// Record credit transaction for recipient
 			$creditTransaction = Transaction::create([
 				'user_id' => $recipient->id,
@@ -326,6 +327,7 @@ class CompaniesController extends Controller
 				'txn_status' => 'success',
 				'comments' => $recipientComment,
 				'notes' => $remark,
+				'order_id' => $orderId,
 				'created_at' => now(),
 				'updated_at' => now(),
 			]);
@@ -344,6 +346,7 @@ class CompaniesController extends Controller
 				'txn_status' => 'success',
 				'comments' => $senderComment,
 				'notes' => $remark,
+				'order_id' => $orderId,
 				'created_at' => now(),
 				'updated_at' => now(),
 			]);
@@ -421,7 +424,7 @@ class CompaniesController extends Controller
 							 . $recipient->first_name . ' ' . $recipient->last_name . ' by admin.';
 			$recipientComment = 'You received ' . $txnAmount . ' USD from ' 
                         . $sender->first_name . ' ' . $sender->last_name . '.';
-			
+			$orderId = "GPWW-".$sender->id."-".time();
 			// Record credit transaction for recipient
 			$creditTransaction = Transaction::create([
 				'user_id' => $recipient->id,
@@ -434,6 +437,7 @@ class CompaniesController extends Controller
 				'txn_status' => 'success',
 				'comments' => $recipientComment,
 				'notes' => $remark,
+				'order_id' => $orderId,
 				'created_at' => now(),
 				'updated_at' => now(),
 			]);
@@ -452,6 +456,7 @@ class CompaniesController extends Controller
 				'txn_status' => 'success',
 				'comments' => $senderComment,
 				'notes' => $remark,
+				'order_id' => $orderId,
 				'created_at' => now(),
 				'updated_at' => now(),
 			]);

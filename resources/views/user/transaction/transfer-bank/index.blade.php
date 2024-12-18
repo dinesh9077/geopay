@@ -297,9 +297,8 @@
 				if(res.status === "success")
 				{ 
 					toastrMsg(res.status, res.message);  
-					$('#editTransferBankBeneficiary').modal('hide');
-					$('#editTransferBankBeneficiary, .modal-backdrop').remove();
-					$('#transferToBankForm #beneficiaryId').trigger('change');
+					resetForm($transferToBankForm);  
+					Livewire.dispatch('refreshRecentTransactions'); 
 				}
 				else if(res.status == "validation")
 				{  
@@ -320,6 +319,19 @@
 			} 
 		});
 	}); 
-	 
+	
+	function resetForm($form) {
+		// Reset the form's values to their default state
+		$form[0].reset();
+		
+		// Remove all elements with the class `error_msg`
+		$form.find('.error_msg').remove();
+		
+		// Remove elements with the class `removeCommission`
+		$form.find('.removeCommission').remove();
+		
+		// Reset all select elements and reinitialize the select2 plugin
+		$form.find('select').val(null).select2();
+	} 
 </script>
 @endpush

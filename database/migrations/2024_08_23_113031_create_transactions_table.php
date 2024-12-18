@@ -39,6 +39,8 @@ return new class extends Migration
 			$table->json('api_response')->nullable();
 			$table->string('order_id')->nullable()->index();
 			$table->decimal('fees', 25,2)->default(0);
+			$table->json('beneficiary_request')->nullable();
+			$table->json('api_response_second')->nullable(); 
 			$table->timestamps(); // Auto-created created_at and updated_at columns
         });
     }

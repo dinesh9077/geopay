@@ -151,6 +151,116 @@
 									</p>
 								</td>
 							</tr>
+						@elseif ($transaction->platform_name == 'transfer to bank') 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">FROM ACCOUNT</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $userName }} {{ $userNumber }}</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Confirmation Id</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->unique_identifier ?? 'N/A' }}</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Bank Location Id</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->product_id ?? 'N/A' }}</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Bank Name</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->product_name ?? 'N/A' }}</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Account Number</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->beneficiary_request['data']['bankAccountNumber'] ?? 'N/A' }}</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Counterparty Name</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ isset($transaction->beneficiary_request['data']['beneficiaryFirstName']) && isset($transaction->beneficiary_request['data']['beneficiaryLastName']) ? 
+										$transaction->beneficiary_request['data']['beneficiaryFirstName'] . ' ' . $transaction->beneficiary_request['data']['beneficiaryLastName'] : 'N/A' }}</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Mobile</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->beneficiary_request['data']['beneficiaryMobile'] ?? 'N/A' }}</p>
+								</td>
+							</tr>
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Platform Fee</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->fees ? Helper::decimalsprint($transaction->fees, 2) : '0.00' }}</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Service Charge</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->service_charge ? Helper::decimalsprint($transaction->service_charge, 2) : '0.00' }}</p>
+								</td>
+							</tr>  
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Total Charge</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->total_charge ? Helper::decimalsprint($transaction->total_charge, 2) : '0.00' }}</p>
+								</td>
+							</tr>  
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Txn Amount</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->unit_amount ? Helper::decimalsprint($transaction->unit_amount, 2) : '0.00' }}</p>
+								</td>
+							</tr>  
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Net Amount</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->txn_amount ? Helper::decimalsprint($transaction->txn_amount, 2) : '0.00' }}</p>
+								</td>
+							</tr> 
 						@endif
 
 						<tr> 
