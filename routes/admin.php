@@ -44,9 +44,14 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
     Route::post('/faqs/delete/{id}', [SettingController::class, 'faqsDelete'])->withoutMiddleware('webdecrypt.request')->name('faqs.delete');
 
     // Third Party Key
-    Route::get('/third-party-key', [SettingController::class, 'ThirdPartyKey'])->name('third-party-key')
+    Route::get('/third-party-key', [SettingController::class, 'thirdPartyKey'])->name('third-party-key')
         ->middleware('permission:third_party_api.view');
-    Route::post('/third-party-key/update', [SettingController::class, 'ThirdPartyKeyUpdate'])->name('third-party-key.update');
+    Route::post('/third-party-key/update', [SettingController::class, 'thirdPartyKeyUpdate'])->name('third-party-key.update');
+    Route::post('/third-party-key/lightnet-update', [SettingController::class, 'thirdPartyKeyLightnetUpdate'])->name('third-party-key.lightnet-update');
+    Route::get('/third-party-key/lightnet-view', [SettingController::class, 'thirdPartyKeyLightnetView'])->name('third-party-key.lightnet-view');
+    Route::get('/third-party-key/sync-catalogue', [SettingController::class, 'thirdPartyKeySyncCatalogue'])->name('third-party-key.sync-catalogue');
+    Route::get('/third-party-key/sync-countries', [SettingController::class, 'thirdPartyKeySyncCountries'])->name('third-party-key.sync-countries');
+    Route::post('/third-party-key/lightnet-country-update', [SettingController::class, 'thirdPartyKeyCountryUpdate'])->name('third-party-key.lightnet-country-update');
 
     // Profile
     Route::get('/profile', [SettingController::class, 'profile'])->name('profile');

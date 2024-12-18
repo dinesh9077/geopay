@@ -24,7 +24,7 @@
 				<a class="nav-link" id="dtone-line-tab" data-bs-toggle="tab" href="#line-dtone" role="tab" aria-controls="line-dtone" aria-selected="false">International Airtime (dtone)</a>
 			</li> 
 			<li class="nav-item">
-				<a class="nav-link" id="lightnet-line-tab" data-bs-toggle="tab" href="#line-lightnet" role="tab" aria-controls="line-lightnet" aria-selected="false">Lightnet (LiquidNet)</a>
+				<a class="nav-link" onclick="getLightNetView(event)" id="lightnet-line-tab" data-bs-toggle="tab" href="#line-lightnet" role="tab" aria-controls="line-lightnet" aria-selected="false">Lightnet (LiquidNet)</a>
 			</li> 
 		</ul>
 		<div class="tab-content mt-3" id="lineTabContent">
@@ -190,7 +190,7 @@
 				<div class="col-md-12 grid-margin stretch-card">
 					<div class="card">
 						<div class="card-body"> 
-							<form class="forms-sample row" id="lightnetPlusForm" action="{{ route('admin.third-party-key.update') }}" method="post" enctype="multipart/form-data">
+							<form class="forms-sample row" id="lightnetPlusForm" action="{{ route('admin.third-party-key.lightnet-update') }}" method="post" enctype="multipart/form-data">
 								<div class="mb-3 col-md-6">
 									<label for="exampleInputUsername1" class="form-label">Base Url</label>
 									<input type="url" class="form-control" id="lightnet_url" name="lightnet_url" autocomplete="off" placeholder="Base Url"  value="{{ config('setting.lightnet_url') }}">
@@ -208,7 +208,9 @@
 								<div class="d-flex justify-content-end">
 									<button type="submit" class="btn btn-primary me-2">Submit</button> 
 								</div>
-							</form> 
+							</form>   
+							<div class="row mt-3" id="lightnetView"> 
+							</div> 
 						</div>
 					</div>
 				</div>
@@ -222,68 +224,89 @@
 @push('js')
 <script>
 	var $forms = $('#metaMapForm, #smsPlusForm, #dtonePlusForm, #lightnetPlusForm');
-	$forms.submit(function(event) 
-	{
-		event.preventDefault();   
-		
-		$(this).find('button').prop('disabled',true);   
-		
-		var formDataInput = {}; 
-		$(this).find("input, select").each(function() {
+
+	$forms.submit(function (event) {
+		event.preventDefault();
+		var $form = $(this); // Reference the current form being submitted
+		 
+		$form.find('button').prop('disabled', true);
+
+		var formDataInput = {};
+
+		// Gather input and select values
+		$form.find("input, select").each(function () {
 			var inputName = $(this).attr('name');
-			
-			if ($(this).attr('type') !== 'file') { 
+
+			if ($(this).attr('type') !== 'file') {
 				formDataInput[inputName] = $(this).val();
 			}
-		}); 
+		});
+
 		const encrypted_data = encryptData(JSON.stringify(formDataInput));
-		
-		var formData = new FormData(); 
-		formData.append('encrypted_data', encrypted_data);  
+
+		var formData = new FormData();
+		formData.append('encrypted_data', encrypted_data);
 		formData.append('_token', "{{ csrf_token() }}");
-		
-		$(this).find("input[type='file']").each(function() {
+
+		// Add file inputs
+		$form.find("input[type='file']").each(function () {
 			var inputName = $(this).attr('name');
 			var files = $(this)[0].files;
-			
-			$.each(files, function(index, file) {
-				formData.append(inputName + '', file);  
+
+			$.each(files, function (index, file) {
+				formData.append(inputName, file);
 			});
 		});
-		
-		$.ajax({ 
-			type: $(this).attr('method'),
-			url: $(this).attr('action'),
+
+		// Use the form's specific action and method attributes
+		$.ajax({
+			type: $form.attr('method'),
+			url: $form.attr('action'),
 			data: formData,
-			processData: false, 
-			contentType: false,  
-			cache: false, 
-			dataType: 'Json', 
-			success: function (res) 
-			{ 
-				$forms.find('button').prop('disabled',false);	 
-				$('.error_msg').remove(); 
-				if(res.status === "success")
-				{ 
-					toastrMsg(res.status,res.message);  
-				}
-				else if(res.status == "validation")
-				{  
-					$.each(res.errors, function(key, value) {
-						var inputField = $('#' + key);
+			processData: false,
+			contentType: false,
+			cache: false,
+			dataType: 'json',
+			success: function (res) {
+				$form.find('button').prop('disabled', false);
+				$form.find('.error_msg').remove();
+
+				if (res.status === "success") 
+				{
+					toastrMsg(res.status, res.message);
+					var formId = $form.attr('id');
+					if(formId == "lightnetPlusForm")
+					{
+						getLightNetView(event)
+					} 
+				} else if (res.status === "validation") {
+					$.each(res.errors, function (key, value) {
+						var inputField = $form.find('[name="' + key + '"]');
 						var errorSpan = $('<span>')
-						.addClass('error_msg text-danger') 
-						.attr('id', key + 'Error')
-						.text(value[0]);  
+							.addClass('error_msg text-danger')
+							.attr('id', key + 'Error')
+							.text(value[0]);
 						inputField.parent().append(errorSpan);
 					});
+				} else {
+					toastrMsg(res.status, res.message);
 				}
-				else
-				{ 
-					toastrMsg(res.status,res.message);
-				}
-			} 
+			},
+			error: function (xhr, textStatus, errorThrown) {
+				$form.find('button').prop('disabled', false);
+				toastrMsg("error", "An unexpected error occurred. Please try again.");
+			}
 		});
-	});
+	}); 
+	
+	function getLightNetView(event)
+	{  
+		event.preventDefault();
+		$.get("{{ route('admin.third-party-key.lightnet-view') }}", function(res)
+		{
+			const result = decryptData(res.response);
+			$('#lightnetView').html(result.view)
+		}, 'Json');  
+	}
 </script>
 @endpush				

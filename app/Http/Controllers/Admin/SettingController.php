@@ -8,12 +8,21 @@
 	use App\Models\Banner;
 	use App\Models\Faq;
 	use App\Models\UserLimit;
+	use App\Models\LightnetCountry;
+	use App\Models\LightnetCatalogue;
 	use App\Http\Traits\WebResponseTrait; 
+	use App\Services\LiquidNetService; 
 	use Validator, DB, Auth, ImageManager, Hash;
 	
 	class SettingController extends Controller
 	{
 		use WebResponseTrait;
+		protected $liquidNetService;
+		
+		public function __construct()
+		{
+			$this->liquidNetService	= new LiquidNetService();
+		}
 		
 		public function generalSetting()
 		{
@@ -25,13 +34,13 @@
 		{   
 			// Define validation rules dynamically for flexibility
 			$validationRules = [
-				'site_name'        => 'nullable|string|max:255',
-				'default_currency' => 'nullable|string|max:3', 
-				'site_logo'        => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048',
-				'fevicon_icon'     => 'nullable|file|mimes:jpg,jpeg,png,ico|max:1024',
-				'login_logo'       => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048',
+			'site_name'        => 'nullable|string|max:255',
+			'default_currency' => 'nullable|string|max:3', 
+			'site_logo'        => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048',
+			'fevicon_icon'     => 'nullable|file|mimes:jpg,jpeg,png,ico|max:1024',
+			'login_logo'       => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048',
 			];
-
+			
 			// Validate the incoming request
 			$validator = Validator::make($request->all(), $validationRules);
 			
@@ -39,7 +48,8 @@
 				return $this->validateResponse($validator->errors());
 			}
 			
-			try {
+			try
+			{
 				DB::beginTransaction();
 				
 				$data = $request->except('_token', 'fevicon_icon', 'login_logo', 'site_logo');
@@ -59,31 +69,274 @@
 					{
 						$fileName = $this->handleFileUpload($request, $key, 'setting'); 
 						Setting::updateOrCreate(
-							['name' => $key],
-							['value' => $fileName, 'updated_at' => now()]
+						['name' => $key],
+						['value' => $fileName, 'updated_at' => now()]
 						);
 					}
 				}
 				
-				
-				DB::commit();
-				
+				DB::commit(); 
 				return $this->successResponse('Settings have been successfully updated.');
-				} catch (\Throwable $e) {
+			}
+			catch (\Throwable $e) 
+			{
 				DB::rollBack();
 				return $this->errorResponse('Failed to update settings. ' . $e->getMessage());
 			}
 		}
 		
+		public function thirdPartyKeyLightnetUpdate(Request $request)
+		{ 
+			$validationRules = [
+			'lightnet_url'       => 'required|string|max:255', 
+			'lightnet_apikey'    => 'required|string|max:255', 
+			'lightnet_secretkey' => 'required|string|max:255', 
+			];
+			
+			// Validate the incoming request
+			$validator = Validator::make($request->all(), $validationRules);
+			
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors());
+			}
+			
+			try
+			{
+				DB::beginTransaction();
+				
+				$data = $request->except('_token');
+				
+				$response = $this->liquidNetService->getEcho($data);
+				
+				if (!$response['success']) {
+					$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
+					throw new \Exception($errorMsg);
+				}
+				
+				if(($response['response']['code'] ?? -1) != 0)
+				{
+					$errorMsg = $response['response']['message'] ?? 'An error occurred.';
+					throw new \Exception($errorMsg);
+				} 
+				// Bulk update or create for general settings
+				foreach ($data as $key => $value) {
+					Setting::updateOrCreate(
+					['name' => $key],
+					['value' => $value, 'updated_at' => now()]
+					);
+				}
+				
+				Setting::updateOrCreate(
+				['name' => 'lightnet'],
+				['value' => 1, 'updated_at' => now()]
+				);
+				
+				DB::commit(); 
+				return $this->successResponse('Settings have been successfully updated.');
+			}
+			catch (\Throwable $e) 
+			{
+				DB::rollBack();
+				return $this->errorResponse('Failed to connect api. ' . $e->getMessage());
+			}
+		}
+		
+		public function thirdPartyKeyLightnetView()
+		{	 
+			if (!config('setting.lightnet')) {
+				return $this->successResponse('success', ['view' => '']);
+			}
+			
+			// Check for existing LightnetCountry records
+			$lightnetCountries = LightnetCountry::where('service_name', 'lightnet')->get();
+		
+			if ($lightnetCountries->isEmpty())  
+			{
+				$timestamp = time();
+				$body =  [
+					'agentSessionId' => (string) $timestamp,
+					'catalogueType' => 'CTY',
+				];
+				
+				$response = $this->liquidNetService->serviceApi('post', '/GetCatalogue', $timestamp, $body);
+				
+				if ($response['success'] && $response['response']['code'] == 0) {
+					// Process the API result
+					$countries = $response['response']['result'] ?? [];
+
+					if (!empty($countries)) {
+						// Add 'service_name' and 'status' to each element dynamically
+						$countries = array_map(function($country) {
+							$country['service_name'] = 'lightnet';
+							$country['status'] = 1;
+							$country['created_at'] = now(); // Adding timestamp
+							$country['updated_at'] = now(); // Adding timestamp
+							return $country;
+						}, $countries);
+
+						// Insert the countries into the database
+						LightnetCountry::insert($countries);
+
+						// Re-fetch the data to include the newly inserted records
+						$lightnetCountries = LightnetCountry::where('service_name', 'lightnet')->get();
+					}
+				}
+			}    
+			
+			$view = view('admin.setting.lightnet-view', compact('lightnetCountries'))->render();
+			return $this->successResponse('success', ['view' => $view]);
+		}
+		
+		public function thirdPartyKeyCountryUpdate(Request $request)
+		{
+			try
+			{
+				DB::beginTransaction();
+				
+				$lightnetCountry = LightnetCountry::findOrFail($request->id);
+
+				// Update the status and label
+				$lightnetCountry->update([
+					'status' => $request->status,
+					'label' => $request->label,
+					'updated_at' => now(),
+				]);
+
+				DB::commit(); 
+				return $this->successResponse('Country information updated successfully.');
+			}
+			catch (\Throwable $e) 
+			{
+				DB::rollBack();
+				return $this->errorResponse('An error occurred while updating the country information.');
+			} 
+		}
+		
+		public function thirdPartyKeySyncCatalogue()
+		{	
+			try
+			{
+				DB::beginTransaction();
+				
+				// Define catalogues with keys and descriptions
+				$catalogues = [
+					'OCC' => 'Get Occupation',
+					'SOF' => 'Get Source of Fund',
+					'REL' => 'Get Relationship List',
+					'POR' => 'Get Purpose of Remittance',
+					'DOC' => 'Get Customer Document ID Type',
+				];
+				
+				foreach($catalogues as $key => $catalogue)
+				{ 
+					$timestamp = time();
+					$body =  [
+						'agentSessionId' => (string) $timestamp,
+						'catalogueType' => (string) $key,
+					];
+					
+					$response = $this->liquidNetService->serviceApi('post', '/GetCatalogue', $timestamp, $body);
+					
+					if (!$response['success']) {
+						$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
+						throw new \Exception($errorMsg);
+					}
+					
+					if(($response['response']['code'] ?? -1) != 0)
+					{
+						$errorMsg = $response['response']['message'] ?? 'An error occurred.';
+						throw new \Exception($errorMsg);
+					} 
+					
+					// Update or create the catalogue record in the database
+					LightnetCatalogue::updateOrCreate(
+						['service_name' => 'lightnet', 'catalogue_type' => $key],
+						[
+							'category_name' => 'transfer to bank',
+							'service_name' => 'lightnet',
+							'catalogue_type' => $key,
+							'catalogue_description' => $catalogue,
+							'data' => $response['response']['result'],
+							'updated_at' => now(),
+						]
+					);
+				}
+				
+				DB::commit(); 
+				return $this->successResponse('Catalogues synced successfully.');
+			}
+			catch (\Throwable $e) 
+			{
+				DB::rollBack();
+				return $this->errorResponse('Failed to sync catalogues. ' . $e->getMessage());
+			} 
+		}
+		
+		public function thirdPartyKeySyncCountries()
+		{	
+			try
+			{
+				DB::beginTransaction();
+				
+				$timestamp = time();
+				$body =  [
+					'agentSessionId' => (string) $timestamp,
+					'catalogueType' => 'CTY',
+				];
+				
+				$response = $this->liquidNetService->serviceApi('post', '/GetCatalogue', $timestamp, $body);
+				if (!$response['success']) {
+					$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
+					throw new \Exception($errorMsg);
+				}
+				
+				if(($response['response']['code'] ?? -1) != 0)
+				{
+					$errorMsg = $response['response']['message'] ?? 'An error occurred.';
+					throw new \Exception($errorMsg);
+				} 
+				 
+				// Process the API result
+				$countries = $response['response']['result'] ?? [];
+
+				if (!empty($countries)) {
+					// Add 'service_name' and 'status' to each element dynamically
+					$countries = array_map(function($country) {
+						$country['service_name'] = 'lightnet';
+						$country['status'] = 1;
+						$country['created_at'] = now(); // Adding timestamp
+						$country['updated_at'] = now(); // Adding timestamp
+						return $country;
+					}, $countries);
+					
+					foreach($countries as $country)
+					{	
+						LightnetCountry::updateOrCreate(
+							['service_name' => 'lightnet', 'value' => $country['value']],
+							['data' => $country['data'], 'updated_at' => now()]
+						);
+					}
+				}
+				
+				DB::commit(); 
+				return $this->successResponse('Country synced successfully.');
+			}
+			catch (\Throwable $e) 
+			{
+				DB::rollBack();
+				return $this->errorResponse('Failed to sync Country. ' . $e->getMessage());
+			} 
+		}
+		
 		public function UserLimitUpdate(Request $request)
 		{    
 			$validationRules = [
-				'id' => 'required|numeric',
-				'name' => 'required|string|max:255',
-				'daily_add_limit' => 'required|string',
-				'daily_pay_limit' => 'required|string'
+			'id' => 'required|numeric',
+			'name' => 'required|string|max:255',
+			'daily_add_limit' => 'required|string',
+			'daily_pay_limit' => 'required|string'
 			];
-
+			
 			// Validate the incoming request
 			$validator = Validator::make($request->all(), $validationRules);
 			
@@ -95,7 +348,7 @@
 				DB::beginTransaction();
 				
 				$data = $request->only('name', 'daily_add_limit', 'daily_pay_limit');
-				 
+				
 				$userLimit = UserLimit::find($request->id);
 				$userLimit->update($data);
 				
@@ -129,7 +382,7 @@
 			if ($request->ajax())
 			{
 				$columns = ['id', 'title', 'image', 'status', 'created_at', 'action'];
-				  
+				
 				$search = $request->input('search.value');
 				$start = $request->input('start');
 				$limit = $request->input('length');
@@ -159,17 +412,17 @@
 				foreach ($values as $key => $value) {
 					$statusClass = $value->status == 1 ? 'success' : 'danger';
 					$statusText = $value->status == 1 ? 'Active' : 'In-Active';
-
+					
 					// Initialize the row data
 					$data[] = [
-						'id' => $i, // Use $key for indexing
-						'title' => $value->title,
-						'image' => '<img src="' . url('storage/banner', $value->image) . '" style="height:70px;width:70px">',
-						'status' => "<span class=\"badge bg-{$statusClass}\">{$statusText}</span>",
-						'created_at' => $value->created_at->format('Y-m-d H:i:s'),
-						'action' => '', // Initialize action
+					'id' => $i, // Use $key for indexing
+					'title' => $value->title,
+					'image' => '<img src="' . url('storage/banner', $value->image) . '" style="height:70px;width:70px">',
+					'status' => "<span class=\"badge bg-{$statusClass}\">{$statusText}</span>",
+					'created_at' => $value->created_at->format('Y-m-d H:i:s'),
+					'action' => '', // Initialize action
 					];
-
+					
 					// Manage actions with permission checks
 					$actions = [];
 					if (config('permission.banner.edit')) {
@@ -178,18 +431,18 @@
 					if (config('permission.banner.delete')) {
 						$actions[] = '<a href="javascript:;" data-url="' . route('admin.banner.delete', ['id' => $value->id]) . '" data-message="Are you sure you want to delete this item?" onclick="deleteConfirmModal(this, event)" class="btn btn-sm btn-danger">Delete</a>';
 					}
-
+					
 					// Assign actions to the row if available
 					$data[$key]['action'] = implode(' ', $actions);
 					$i++;
 				}
-
+				
 				
 				return response()->json([
-					'draw' => intval($request->input('draw')),
-					'recordsTotal' => $totalData,
-					'recordsFiltered' => $totalFiltered,
-					'data' => $data,
+				'draw' => intval($request->input('draw')),
+				'recordsTotal' => $totalData,
+				'recordsFiltered' => $totalFiltered,
+				'data' => $data,
 				]);
 			}
 		}
@@ -203,15 +456,15 @@
 		public function bannerStore(Request $request)
 		{  
 			$validator = Validator::make($request->all(), [
-				'title' => 'required|string|max:255', 
-				'image' => 'required|file|mimes:jpg,jpeg,png|max:2048', 
-				'status' => 'required|in:1,0', 
+			'title' => 'required|string|max:255', 
+			'image' => 'required|file|mimes:jpg,jpeg,png|max:2048', 
+			'status' => 'required|in:1,0', 
 			]);
 			
 			if ($validator->fails()) {
 				return $this->validateResponse($validator->errors());
 			}
-			 
+			
 			try {
 				DB::beginTransaction();
 				
@@ -223,7 +476,7 @@
 				}
 				
 				Banner::create($data);
-				 
+				
 				DB::commit();
 				
 				return $this->successResponse('The banner has been created successfully.');
@@ -245,15 +498,15 @@
 		public function bannerUpdate(Request $request, $id)
 		{  
 			$validator = Validator::make($request->all(), [
-				'title' => 'required|string|max:255', 
-				'image' => 'nullable|file|mimes:jpg,jpeg,png|max:2048', 
-				'status' => 'required|in:1,0', 
+			'title' => 'required|string|max:255', 
+			'image' => 'nullable|file|mimes:jpg,jpeg,png|max:2048', 
+			'status' => 'required|in:1,0', 
 			]);
 			
 			if ($validator->fails()) {
 				return $this->validateResponse($validator->errors());
 			}
-			 
+			
 			try {
 				DB::beginTransaction();
 				
@@ -266,7 +519,7 @@
 				
 				$banner = Banner::find($id);
 				$banner->update($data);
-				 
+				
 				DB::commit();
 				
 				return $this->successResponse('The banner have been update successfully.');
@@ -277,12 +530,12 @@
 				return $this->errorResponse('Failed to update settings. ' . $e->getMessage());
 			}
 		}
-		 
+		
 		public function bannerDelete($id)
 		{   
 			try {
 				DB::beginTransaction();
-				 
+				
 				$banner = Banner::find($id);
 				if(!$banner)
 				{
@@ -316,7 +569,7 @@
 			if ($request->ajax())
 			{
 				$columns = ['id', 'title', 'description', 'status', 'created_at', 'action'];
-				  
+				
 				$search = $request->input('search.value');
 				$start = $request->input('start');
 				$limit = $request->input('length');
@@ -347,17 +600,17 @@
 				foreach ($values as $key => $value) {
 					$statusClass = $value->status == 1 ? 'success' : 'danger';
 					$statusText = $value->status == 1 ? 'Active' : 'In-Active';
-
+					
 					// Build the row data
 					$data[] = [
-						'id' => $i, // Use $key for dynamic indexing
-						'title' => $value->title,
-						'description' => $value->description,
-						'status' => "<span class=\"badge bg-{$statusClass}\">{$statusText}</span>",
-						'created_at' => $value->created_at->format('Y-m-d H:i:s'),
-						'action' => '', // Initialize action
+					'id' => $i, // Use $key for dynamic indexing
+					'title' => $value->title,
+					'description' => $value->description,
+					'status' => "<span class=\"badge bg-{$statusClass}\">{$statusText}</span>",
+					'created_at' => $value->created_at->format('Y-m-d H:i:s'),
+					'action' => '', // Initialize action
 					];
-
+					
 					// Initialize actions with permission checks
 					$actions = [];
 					if (config('permission.faqs.edit')) {
@@ -366,18 +619,18 @@
 					if (config('permission.faqs.delete')) {
 						$actions[] = '<a href="javascript:;" data-url="' . route('admin.faqs.delete', ['id' => $value->id]) . '" data-message="Are you sure you want to delete this item?" onclick="deleteConfirmModal(this, event)" class="btn btn-sm btn-danger">Delete</a>';
 					}
-
+					
 					// Assign actions to the row if available
 					$data[$key]['action'] = implode(' ', $actions);
 					$i++;
 				}
-
+				
 				
 				return response()->json([
-					'draw' => intval($request->input('draw')),
-					'recordsTotal' => $totalData,
-					'recordsFiltered' => $totalFiltered,
-					'data' => $data,
+				'draw' => intval($request->input('draw')),
+				'recordsTotal' => $totalData,
+				'recordsFiltered' => $totalFiltered,
+				'data' => $data,
 				]);
 			}
 		}
@@ -391,15 +644,15 @@
 		public function faqsStore(Request $request)
 		{  
 			$validator = Validator::make($request->all(), [
-				'title' => 'required|string|max:255', 
-				'description' => 'required|string', 
-				'status' => 'required|in:1,0', 
+			'title' => 'required|string|max:255', 
+			'description' => 'required|string', 
+			'status' => 'required|in:1,0', 
 			]);
 			
 			if ($validator->fails()) {
 				return $this->validateResponse($validator->errors());
 			}
-			 
+			
 			try {
 				DB::beginTransaction();
 				
@@ -426,22 +679,22 @@
 		public function faqsUpdate(Request $request, $id)
 		{  
 			$validator = Validator::make($request->all(), [
-				'title' => 'required|string|max:255', 
-				'description' => 'required|string', 
-				'status' => 'required|in:1,0', 
+			'title' => 'required|string|max:255', 
+			'description' => 'required|string', 
+			'status' => 'required|in:1,0', 
 			]);
 			
 			if ($validator->fails()) {
 				return $this->validateResponse($validator->errors());
 			}
-			 
+			
 			try {
 				DB::beginTransaction();
 				
 				$data = $request->only('title', 'description', 'status');   
 				$faq = Faq::find($id);
 				$faq->update($data);
-				 
+				
 				DB::commit();
 				
 				return $this->successResponse('The faq have been update successfully.');
@@ -452,7 +705,7 @@
 				return $this->errorResponse('Failed to update settings. ' . $e->getMessage());
 			}
 		}
-		 
+		
 		public function faqsDelete($id)
 		{   
 			try {
@@ -488,15 +741,15 @@
 			$rules = collect($request->all())->mapWithKeys(function ($value, $key) {
 				return [$key => 'nullable|string']; // Adjust rules dynamically as needed
 			})->toArray();
-
+			
 			// Validate the request
 			$validator = Validator::make($request->all(), $rules);
-
+			
 			// Check if validation fails
 			if ($validator->fails()) {
 				return $this->validateResponse($validator->errors());
 			}
-			 
+			
 			try 
 			{
 				DB::beginTransaction();
@@ -506,11 +759,11 @@
 				// Bulk update or create for general settings
 				foreach ($data as $key => $value) {
 					Setting::updateOrCreate(
-						['name' => $key],
-						['value' => $value, 'updated_at' => now()]
+					['name' => $key],
+					['value' => $value, 'updated_at' => now()]
 					);
 				}
-				 
+				
 				DB::commit();
 				
 				return $this->successResponse('The data have been added or update successfully.');
@@ -534,18 +787,18 @@
 			$admin = auth()->guard('admin')->user();
 			
 			$validator = Validator::make($request->all(), [
-				'name' => 'required|string|max:255', 
-				'email' => 'required|email|unique:admins,email,' . $admin->id, 
-				'mobile' => 'required|string|unique:admins,mobile,' . $admin->id
+			'name' => 'required|string|max:255', 
+			'email' => 'required|email|unique:admins,email,' . $admin->id, 
+			'mobile' => 'required|string|unique:admins,mobile,' . $admin->id
 			]);
 			
 			if ($validator->fails()) {
 				return $this->validateResponse($validator->errors());
 			}
-			 
+			
 			try {
 				DB::beginTransaction();
-
+				
 				// Collect only the necessary fields
 				$data = $request->except(['_token', 'profile', 'password']);
 				$data['dob'] = $data['dob'] ? $data['dob'] : null;
@@ -564,9 +817,9 @@
 				$admin->update($data);
 				
 				DB::commit();
-
+				
 				return $this->successResponse('The profile has been updated successfully.');
-			} catch (\Throwable $e) {
+				} catch (\Throwable $e) {
 				DB::rollBack();
 				return $this->errorResponse('Failed to update profile. ' . $e->getMessage());
 			}

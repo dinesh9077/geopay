@@ -10,6 +10,7 @@ use App\Models\Beneficiary;
 use App\Models\User;
 use App\Models\LightnetCatalogue;
 use App\Models\ExchangeRate;
+use App\Models\LightnetCountry;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -39,87 +40,14 @@ class TransferBankController extends Controller
 	
 	public function countries()
 	{
-		$countries = [
-			[
-				"data" => "BGD",
-				"value" => "BDT",
-				"label" => "Bangladesh",
-				"service_name" => "lightnet"
-			],
-			[
-				"data" => "IDN",
-				"value" => "IDR",
-				"label" => "Indonesia",
-				"service_name" => "lightnet"
-			],
-			[
-				"data" => "LKA",
-				"value" => "LKR",
-				"label" => "Sri Lanka",
-				"service_name" => "lightnet"
-			],
-			[
-				"data" => "MYS",
-				"value" => "MYR",
-				"label" => "Malaysia",
-				"service_name" => "lightnet"
-			],
-			[
-				"data" => "NPL",
-				"value" => "NPR",
-				"label" => "Nepal",
-				"service_name" => "lightnet"
-			],
-			[
-				"data" => "PHL",
-				"value" => "PHP",
-				"label" => "Philippines",
-				"service_name" => "lightnet"
-			],
-			[
-				"data" => "VNM",
-				"value" => "VND",
-				"label" => "Vietnam",
-				"service_name" => "lightnet"
-			]
-		];
-		return $countries;
+		return LightnetCountry::where('status', 1)
+			->whereNotNull('label')
+			->get()
+			->toArray();
 	}
+ 
 	public function transferToBankBeneficiary()
-	{ 
-		/* $catalogues = [
-			'OCC' => 'Get Occupation',
-			'SOF' => 'Get Source of Fund',
-			'REL' => 'Get Relationship list',
-			'POR' => 'Get Purpose of Remittance',
-			'DOC' => 'Get Customer Document ID Type'
-		];  
-		$data = [];
-		foreach($catalogues as $key => $catalogue)
-		{ 
-			$timestamp = time();
-			$body = [
-				'agentSessionId' => (string) $timestamp,
-				'catalogueType' => (string) $key, 
-			];
-			
-			$response = $this->liquidNetService->serviceApi('post', '/GetCatalogue', $timestamp, $body);
-			if($response['success'] && $response['response']['code'] == 0)
-			{ 
-				$data[] = [
-					'category_name' => 'transfer to bank',
-					'service_name' => 'lightnet',
-					'catalogue_type' => $key,
-					'catalogue_description' => $catalogue,
-					'data' => json_encode($response['response']['result']),
-					'created_at' => now(),
-					'updated_at' => now() 
-				]; 
-			}  
-		}
-		
-		LightnetCatalogue::insert($data); */
-		
+	{  
 		$countries = $this->countries();
 		$catalogues = LightnetCatalogue::where('category_name', 'transfer to bank')
 		->where('service_name', 'lightnet')
@@ -128,21 +56,20 @@ class TransferBankController extends Controller
 		->keyBy('catalogue_type');
 		 
 		$relationships = $catalogues->has('REL')
-        ? json_decode($catalogues->get('REL')->data, true)
+        ? $catalogues->get('REL')->data
         : [];
 		 
 		$purposeRemittances = $catalogues->has('POR')
-        ? json_decode($catalogues->get('POR')->data, true)
+        ? $catalogues->get('POR')->data
         : [];
 		 
 		$sourceOfFunds = $catalogues->has('SOF')
-        ? json_decode($catalogues->get('SOF')->data, true)
+        ? $catalogues->get('SOF')->data
         : [];
 		
 		$documentOfCustomers = $catalogues->has('DOC')
-        ? json_decode($catalogues->get('DOC')->data, true)
+        ? $catalogues->get('DOC')->data
         : [];
-		
 		 
 		$view = view('user.transaction.modal.transfer-bank-beneficiary', compact('catalogues', 'countries', 'relationships', 'purposeRemittances', 'sourceOfFunds', 'documentOfCustomers'))->render();
 		return $this->successResponse('success', ['view' => $view]);
@@ -312,19 +239,19 @@ class TransferBankController extends Controller
 		->keyBy('catalogue_type');
 		 
 		$relationships = $catalogues->has('REL')
-        ? json_decode($catalogues->get('REL')->data, true)
+        ? $catalogues->get('REL')->data
         : [];
 		 
 		$purposeRemittances = $catalogues->has('POR')
-        ? json_decode($catalogues->get('POR')->data, true)
+        ? $catalogues->get('POR')->data
         : [];
 		 
 		$sourceOfFunds = $catalogues->has('SOF')
-        ? json_decode($catalogues->get('SOF')->data, true)
+        ? $catalogues->get('SOF')->data
         : [];
 		
 		$documentOfCustomers = $catalogues->has('DOC')
-        ? json_decode($catalogues->get('DOC')->data, true)
+        ? $catalogues->get('DOC')->data
         : [];
 		
 		$beneficiary = Beneficiary::find($id);

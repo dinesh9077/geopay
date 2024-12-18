@@ -253,4 +253,74 @@ class LiquidNetService
 			'response' => json_decode($response->body(), true)
 		];	
 	}
+	
+	public function getEcho($data)
+	{
+		$apiUrl = $data['lightnet_url'] . '/GetEcho';
+		$method = 'post';
+		$requestTimestamp = time(); // Use this for consistent timestamp
+		 
+		$requestBody = [
+			"agentSessionId" => (string) $requestTimestamp
+		];
+
+		$jsonRequestBody = json_encode($requestBody);
+		$requestUri = strtolower(urlencode($apiUrl));
+
+		$requestHttpMethod = strtoupper($method);
+
+		$nonce = Str::uuid()->toString();
+
+		$requestContentBase64String = '';
+		if (!empty($jsonRequestBody)) {
+			$requestContentHash = md5($jsonRequestBody, true);
+			$requestContentBase64String = base64_encode($requestContentHash);
+		}
+
+		// Corrected $requestTimestamp usage
+		$signatureRawData = sprintf(
+			'%s%s%s%s%s%s',
+			$data['lightnet_apikey'],
+			$requestHttpMethod,
+			$requestUri,
+			$requestTimestamp, // Corrected here
+			$nonce,
+			$requestContentBase64String
+		);
+
+		$secretKeyByteArray = base64_decode($data['lightnet_secretkey']);
+		$signatureBytes = hash_hmac('sha256', $signatureRawData, $secretKeyByteArray, true);
+		$requestSignatureBase64String = base64_encode($signatureBytes);
+
+		$signatureString = sprintf(
+			'%s:%s:%s:%s',
+			$data['lightnet_apikey'],
+			$requestSignatureBase64String,
+			$nonce,
+			$requestTimestamp // Corrected here
+		);
+
+		$response = Http::withHeaders([
+			'Authorization' => "hmacauth {$signatureString}",
+			'Content-Type' => 'application/json',
+		])
+		->withOptions([
+			'verify' => false, // Avoid SSL verification issues
+		])
+		->{$method}($apiUrl, $requestBody);
+
+		// Handle Successful Response
+		if ($response->successful()) {
+			return [
+				'success' => true,
+				'response' => $response->json()
+			];
+		}
+
+		return [
+			'success' => false,
+			'response' => json_decode($response->body(), true)
+		];
+	}
+
 }

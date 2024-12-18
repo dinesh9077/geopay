@@ -50,7 +50,7 @@
 				},1000)
 			}
 		</script>
-	</head>
+		</head>
 	
 	<body>
 		<div class="wrapper">
