@@ -74,7 +74,7 @@
 				</a>
 				<div class="d-flex flex-column me-3" data-bs-toggle="dropdown">
 					<span class="fw-semibold">{{ auth()->user()->first_name. ' ' . auth()->user()->last_name }}</span>
-					<span class="text-muted small">ID #{{ auth()->user()->id }}</span>
+					<span class="text-muted small">USER ID #{{ auth()->user()->id }}</span>
 				</div> 
 			</li>
 		</ul>

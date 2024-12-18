@@ -161,6 +161,9 @@
 			</li>
 			<li class="nav-item" role="presentation">
 				<button class="nav-link" id="admin-transfer-tab" data-bs-toggle="tab" data-bs-target="#admin-transfer-tab" data-platform="admin transfer" type="button" role="tab" aria-controls="admin-transfer-tab" aria-selected="true"> Admin Transfer </button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" id="transfer-to-bank-tab" data-bs-toggle="tab" data-bs-target="#transfer-to-bank-tab" data-platform="transfer to bank" type="button" role="tab" aria-controls="transfer-to-bank-tab" aria-selected="true"> Transfer To Bank </button>
 			</li> 
 		</ul>
 		
@@ -180,9 +183,9 @@
 						<select class="form-control default-input content-3 select2" name="txn_status"
 						id="txn_status">
 							<option value="">ALL</option>
-							<option value="pending">Pending</option>
-							<option value="process">Process</option>
-							<option value="success">Success</option>
+							@foreach($txnStatuses as $txnStatus)
+								<option value="{{ $txnStatus }}">{{ $txnStatus }}</option>
+							@endforeach
 						</select>
 					</div>
 					<div class="col-md-4 col-lg-2">
@@ -329,6 +332,10 @@
 @endsection 
 @push('js')    
 <script>
+	$('.select2').select2({
+		width: "100%"
+	});
+	
 	// JavaScript to handle image preview
 	var input = document.getElementById('profile_image');
 	var preview = document.getElementById('profileImagePreview');
@@ -529,6 +536,7 @@
 	const airtimeTab = document.getElementById('airtime-tab');
 	const geopayTab = document.getElementById('geopay-tab');
 	const adminTransferTab = document.getElementById('admin-transfer-tab');
+	const transferToBankTab = document.getElementById('transfer-to-bank-tab');
 	const informationCard = document.getElementById('informations');
 	const transactionCard = document.getElementById('transaction');
 	
@@ -546,10 +554,10 @@
 		airtimeTab.addEventListener('click', () => switchTab(airtimeTab, transactionCard));
 		geopayTab.addEventListener('click', () => switchTab(geopayTab, transactionCard));
 		adminTransferTab.addEventListener('click', () => switchTab(adminTransferTab, transactionCard));
+		transferToBankTab.addEventListener('click', () => switchTab(transferToBankTab, transactionCard));
 		switchTab(informationTab, informationCard); // Set default active tab
 	});
-	
-	  
+	 
 	const flatpickrStartDate = document.querySelector('#start_date');
 	const flatpickrEndDate = document.querySelector('#end_date');
 	
@@ -642,9 +650,9 @@
 				$('[data-toggle="tooltip"]').tooltip();
 			} 
 		});
-		
+		  
 		// Handle tab clicks
-		$('#airtime-tab, #geopay-tab, #admin-transfer-tab').off('click').on('click', function() {
+		$('#airtime-tab, #geopay-tab, #admin-transfer-tab, #transfer-to-bank-tab').off('click').on('click', function() {
 			platformName = $(this).data('platform') || $(this).val(); 
 			$('#transactionType').text(platformName ? platformName.toUpperCase() + ' Transaction' : 'Transaction')
 			transactionTable.draw();
@@ -701,6 +709,47 @@
                 }).then(function(result) {
 				if (result.isConfirmed) {}
 			});
+		});
+	}
+	
+	function commitTransaction(obj, event) {
+		event.preventDefault(); 
+
+		// Show SweetAlert confirmation
+		Swal.fire({
+			title: 'Are you sure?',
+			text: "Do you want to commit this transaction?",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes, commit it!',
+			cancelButtonText: 'Cancel'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				// If confirmed, proceed with the transaction
+				$.get(obj, function(res) {
+					// Handle the response
+					if (res.status === "success") {
+						Swal.fire({
+							icon: 'success',
+							title: 'Committed!',
+							text: res.message,
+							timer: 2000,
+							showConfirmButton: false
+						}); 
+						transactionTable.draw();
+					} else {
+						Swal.fire({
+							icon: 'error',
+							title: 'Failed!',
+							text: res.message,
+							timer: 2000,
+							showConfirmButton: false
+						}); 
+					}
+				}, 'json');
+			}
 		});
 	}
 </script>

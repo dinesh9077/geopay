@@ -98,6 +98,7 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
     Route::post('/transaction-ajax', [CompaniesController::class, 'transactionAjax'])->name('transaction-ajax')->withoutMiddleware('webdecrypt.request');
     Route::get('/transaction-receipt/{id}', [CompaniesController::class, 'transactionReceipt'])->name('transaction.receipt');
     Route::get('/transaction-receipt-pdf/{id}', [CompaniesController::class, 'transactionReceiptPdf'])->name('transaction.receipt-pdf');
+    Route::get('/commit-transaction/{id}', [CompaniesController::class, 'transferToBankCommitTransaction'])->name('transaction.commit-transaction');
 
     //Manage Users
     Route::get('/user/active', [UserController::class, 'userActive'])->name('user.active')->middleware('permission:active_user.view');
@@ -120,10 +121,12 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
     Route::post('/exchange-rate/delete/{id}', [ExchangeRateController::class, 'exchangeRateDelete'])->withoutMiddleware('webdecrypt.request')->name('exchange-rate.delete');
 
     // Reports
-    Route::prefix('reports')->group(function () {
-        Route::get('/transaction-history', [ReportController::class, 'transactionHistory'])->name('transaction-history')->middleware('permission:transaction_history.view');
-        Route::post('/transaction-report-ajax', [ReportController::class, 'transactionReportAjax'])->name('transaction-report-ajax')->withoutMiddleware('webdecrypt.request');
-
-    });
-
+    Route::prefix('reports')->as('report.')->group(function () 
+	{
+        Route::get('/transaction-history', [ReportController::class, 'transactionHistory'])->name('transaction-history')
+		->middleware('permission:transaction_history.view');
+        Route::post('/transaction-history-ajax', [ReportController::class, 'transactionReportAjax'])
+		->name('transaction-history-ajax')->withoutMiddleware('webdecrypt.request');
+		 
+    }); 
 });

@@ -22,12 +22,14 @@ class ReportController extends Controller
     public function transactionHistory()
     {
         $users = $this->masterService->getUsers();
-        return view('Admin.report.transaction-history',compact('users'));
+		$txnStatuses = Transaction::select('txn_status')
+		->groupBy('txn_status')
+		->pluck('txn_status');
+        return view('Admin.report.transaction-history', compact('users', 'txnStatuses'));
     }
 
     public function transactionReportAjax(Request $request)
-    {
-
+    { 
         if ($request->ajax()) {
             $columns = ['id', 'platform_name', 'order_id', 'fees', 'txn_amount', 'unit_convert_exchange', 'comments', 'notes', 'status', 'created_at', 'created_at', 'action'];
 
@@ -95,8 +97,14 @@ class ReportController extends Controller
                 ];
 
                 $actions = [];
-                $actions[] = '<a href="' . route('admin.transaction.receipt', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" onclick="viewReceipt(this, event)" data-toggle="tooltip" data-placement="bottom" title="view receipt"><i class="bi bi-info-circle"></i>View Receipt</a>';
-                $actions[] = '<a href="' . route('admin.transaction.receipt-pdf', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="bottom" title="download pdf receipt"><i class="bi bi-file-earmark-pdf"></i>Download Pdf</a>';
+				$actions[] = '<div class="d-flex align-items-center gap-2">';
+				
+                $actions[] = '<a href="' . route('admin.transaction.receipt', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" onclick="viewReceipt(this, event)" data-toggle="tooltip" data-placement="bottom" title="view receipt">View Receipt</a>';
+				
+                $actions[] = '<a href="' . route('admin.transaction.receipt-pdf', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="bottom" title="download pdf receipt">Download Pdf</a>';
+				
+				$actions[] = '</div>';
+				
                 $data[$i - $start - 1]['action'] = implode(' ', $actions);
                 $i++;
             }

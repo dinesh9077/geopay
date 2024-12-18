@@ -19,9 +19,17 @@ use ImageManager;
 use App\Notifications\WalletTransactionNotification;
 use Illuminate\Support\Facades\Notification;
 use Pdf;
+use App\Services\LiquidNetService;
+
 class CompaniesController extends Controller
 {
 	use WebResponseTrait;
+	protected $liquidNetService;
+    public function __construct()
+    {
+		$this->liquidNetService = new LiquidNetService();  
+    }	
+	
     public function companiesActive()
 	{
 		return view('admin.companies.active');
@@ -194,7 +202,12 @@ class CompaniesController extends Controller
 		{
 			return back()->withError('Company details not found.');
 		}
-		return view('admin.companies.edit', compact('company')); 
+		
+		$txnStatuses = Transaction::select('txn_status')
+		->groupBy('txn_status')
+		->pluck('txn_status');
+		
+		return view('admin.companies.edit', compact('company', 'txnStatuses')); 
 	}
 	
 	public function companiesUpdate(Request $request, $companyid)
@@ -708,22 +721,7 @@ class CompaniesController extends Controller
             $data = [];
             $i = $start + 1;
             foreach ($values as $value) {
-
-                /* switch ($value->txn_status) {
-                    case 'pending':
-                        $value->txn_status = '<span class="badge badge-warning">Pending</span>';
-                        break;
-                    case 'process':
-                        $value->txn_status = '<span class="badge badge-info">In Process</span>';
-                        break;
-                    case 'success':
-                        $value->txn_status = '<span class="badge badge-success">Success</span>';
-                        break;
-                    default:
-                        $value->txn_status = '<span class="badge badge-secondary">Unknown</span>';
-                        break;
-                } */
-
+ 
                 $data[] = [
                     'id' => $i,
                     'platform_name' => $value->platform_name,
@@ -739,11 +737,25 @@ class CompaniesController extends Controller
                 ];
 
                 // Manage actions with permission checks
-                $actions = [];
-                $actions[] = '<a href="' . route('admin.transaction.receipt', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" onclick="viewReceipt(this, event)" data-toggle="tooltip" data-placement="bottom" title="view receipt"><i class="bi bi-info-circle"></i>View Receipt</a>';
+				$actions = [];
+				$actions[] = '<div class="d-flex align-items-center gap-2">';
+                $actions[] = '<a href="' . route('admin.transaction.receipt', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" onclick="viewReceipt(this, event)" data-toggle="tooltip" data-placement="bottom" title="view receipt">View Receipt</a>';
 
-                $actions[] = '<a href="' . route('admin.transaction.receipt-pdf', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="bottom" title="download pdf receipt"><i class="bi bi-file-earmark-pdf"></i>Download Pdf</a>';
-
+                $actions[] = '<a href="' . route('admin.transaction.receipt-pdf', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="bottom" title="download pdf receipt"></i>Download Pdf</a>';
+				
+				if (
+					strtolower($value->platform_name) === "transfer to bank" && 
+					strtolower($value->platform_provider) === "lightnet" && 
+					strtolower($value->txn_status) === "pending"
+				) {
+					$actions[] = sprintf(
+						'<a href="%s" class="btn btn-sm btn-warning" data-toggle="tooltip" data-placement="bottom" title="Commit the required transaction" onclick="commitTransaction(this, event)">Commit Transaction</a>',
+						route('admin.transaction.commit-transaction', ['id' => $value->id])
+					);
+				} 
+				 
+				$actions[] = '</div>';
+				
                 // Assign actions to the row if permissions exist
                 $data[$i - $start - 1]['action'] = implode(' ', $actions);
                 $i++;
@@ -781,5 +793,53 @@ class CompaniesController extends Controller
         $pdf->set_option('isPhpEnabled', true);
         return $pdf->download($transaction->order_id . '-receipt.pdf');
     }
+	
+	public function transferToBankCommitTransaction($id)
+	{
+		try {
+			DB::beginTransaction();
 
+			// Fetch the transaction
+			$transaction = Transaction::find($id);
+			if (!$transaction) {
+				return $this->errorResponse('Transaction not found.');
+			}
+
+			if (!$transaction->unique_identifier) {
+				return $this->errorResponse('Transaction confirmation id is missing.');
+			}
+
+			// Call the commitTransaction method
+			$commitResponse = $this->liquidNetService->commitTransaction($transaction->unique_identifier, $transaction->unit_currency);
+
+			// Handle unsuccessful commit response
+			if (!$commitResponse['success']) {
+				$errorMsg = $commitResponse['response']['errors'][0]['message'] ?? 'An error occurred.';
+				throw new \Exception($errorMsg);
+			}
+			
+			// Handle unsuccessful commit response
+			if (($commitResponse['response']['code'] ?? 1) != 0) {
+				$errorMsg = $commitResponse['response']['message'];
+				throw new \Exception($errorMsg);
+			}
+
+			// Update the transaction status
+			$transaction->update([
+				'api_response_second' => $commitResponse['response'],
+				'txn_status' => strtolower($commitResponse['response']['status'] ?? 'pending'),
+			]);
+
+			// Log the transaction update
+			Helper::updateLogName($transaction->id, Transaction::class, 'Transfer to bank admin commit transaction');
+
+			DB::commit();
+
+			return $this->successResponse($commitResponse['response']['message'] ?? 'Transaction committed successfully.');
+		} catch (\Throwable $e) {
+			DB::rollBack();
+
+			return $this->errorResponse($e->getMessage());
+		}
+	}
 }

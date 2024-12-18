@@ -219,4 +219,38 @@ class LiquidNetService
 			'response' => json_decode($response->body(), true)
 		];	
 	}
+	
+	public function getTXNStatus($orderId)
+    {
+		$apiUrl = $this->baseUrl . '/QueryTXNStatus'; 
+		$method = 'post'; 
+		$requestTimestamp = time();  
+		 
+		$requestBody = [
+			"agentSessionId" => (string) $requestTimestamp,
+			"agentTxnId" => $orderId
+		]; 
+		
+		$signatureString = $this->hmacAuthGenerate($method, $apiUrl, $requestTimestamp, $requestBody);
+        $response = Http::withHeaders([
+            'Authorization' => "hmacauth {$signatureString}",
+            'Content-Type' => 'application/json',
+        ])
+		->withOptions([
+			'verify' => false,
+		])
+		->{$method}($apiUrl, $requestBody);
+		 
+        // Handle Successful Response
+		if ($response->successful()) {
+			return [
+				'success' => true,   
+				'response' => $response->json()
+			];
+		}
+		return [
+			'success' => false,  
+			'response' => json_decode($response->body(), true)
+		];	
+	}
 }

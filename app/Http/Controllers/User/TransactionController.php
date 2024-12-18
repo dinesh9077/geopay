@@ -115,7 +115,7 @@ class TransactionController extends Controller
 				 
 				$actions[] = '<a href="' . route('transaction.receipt-pdf', ['id' => $value->id]) . '" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="bottom" title="download pdf receipt"><i class="bi bi-file-earmark-pdf"></i></a>';
 				
-				if (
+				/* if (
 					strtolower($value->platform_name) === "transfer to bank" && 
 					strtolower($value->platform_provider) === "lightnet" && 
 					strtolower($value->txn_status) === "pending"
@@ -124,7 +124,7 @@ class TransactionController extends Controller
 						'<a href="%s" class="btn btn-sm btn-warning" data-toggle="tooltip" data-placement="bottom" title="Commit the required transaction" onclick="commitTransaction(this, event)"><i class="bi bi-arrow-left-right"></i></a>',
 						route('transfer-to-bank.commit-transaction', ['id' => $value->id])
 					);
-				} 
+				}  */
 				$actions[] = '</div>';
 				 
 				// Assign actions to the row if permissions exist

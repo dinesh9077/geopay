@@ -14,7 +14,7 @@
         <div class="row g-2">
 
             <div class=" col-md-3 col-lg-1">
-                <select id="userDropdown" name="user_id" class="form-control default-input content-3 select2">
+                <select id="userDropdown" name="user_id" class="form-control content-3 select2">
                     <option value="">All</option>
                     @foreach ($users as $user)
                         <option value="{{ $user->id }}">
@@ -33,28 +33,28 @@
                 </select>
             </div>
             <div class=" col-md-3 col-lg-2">
-                <input type="text" class="form-control form-control-lg default-input " id="start_date" name="start_date"
+                <input type="text" class="form-control default-input " id="start_date" name="start_date"
                     placeholder="Start date" value="{{ Carbon\Carbon::now()->startOfMonth()->format('Y-m-d') }}">
             </div>
             <div class=" col-md-3 col-lg-2">
-                <input type="text" class="form-control form-control-lg default-input" id="end_date" name="end_date"
+                <input type="text" class="form-control default-input" id="end_date" name="end_date"
                     placeholder="End date" value="{{ Carbon\Carbon::now()->endOfMonth()->format('Y-m-d') }}">
             </div>
             <div class=" col-md-3 col-lg-1">
                 <select class="form-control default-input content-3 select2" name="txn_status" id="txn_status">
                     <option value="">ALL</option>
-                    <option value="pending">Pending</option>
-                    <option value="process">Process</option>
-                    <option value="success">Success</option>
+                    @foreach($txnStatuses as $txnStatus)
+						<option value="{{ $txnStatus }}">{{ $txnStatus }}</option>
+					@endforeach
                 </select>
             </div>
             <div class="col-md-3 col-lg-2">
-                <input type="text" class="form-control form-control-lg default-input " name="search" id="search"
+                <input type="text" class="form-control default-input" name="search" id="search"
                     placeholder="Search Item">
             </div>
-            <div class="filter-buttons col-md-3 col-lg-2">
-                <button id="applyFilters" class="btn btn-primary btn-lg">Filter</button>
-                <button id="resetFilters" class="btn btn-secondary btn-lg">Reset</button>
+            <div class="filter-buttons col-md-4 col-lg-2">
+                <button id="applyFilters" class="btn btn-primary">Filter</button>
+                <button id="resetFilters" class="btn btn-secondary">Reset</button>
             </div>
         </div>
         <hr>
@@ -171,7 +171,7 @@
                 ],
                 bAutoWidth: false,
                 "ajax": {
-                    "url": "{{ route('admin.transaction-report-ajax') }}",
+                    "url": "{{ route('admin.report.transaction-history-ajax') }}",
                     "dataType": "json",
                     "type": "POST",
                     "data": function(d) {
@@ -221,8 +221,7 @@
                         "data": "action"
                     }
                 ],
-                drawCallback: function() {
-                    // Reinitialize tooltips after each draw
+                drawCallback: function() { 
                     $('[data-toggle="tooltip"]').tooltip();
                 }
             });
@@ -243,7 +242,7 @@
             });
 
             $('#resetFilters').click(function() {
-                $('#txn_status, #platform_name,#userDropdown').val('').trigger('change');
+                $('#txn_status, #platform_name, #userDropdown').val('').trigger('change');
                 $('#search').val('');
 
                 const startOfMonth = "{{ Carbon\Carbon::now()->startOfMonth()->format('Y-m-d') }}";

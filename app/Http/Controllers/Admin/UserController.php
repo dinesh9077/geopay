@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Transaction;
 use DB, Auth, Helper, Hash, Validator;
 use App\Http\Traits\WebResponseTrait; 
 
@@ -144,7 +145,11 @@ class UserController extends Controller
 	public function userEdit($companyid)
 	{ 
 		$company = User::find($companyid); 
-		return view('admin.users.edit', compact('company')); 
+		$txnStatuses = Transaction::select('txn_status')
+		->groupBy('txn_status')
+		->pluck('txn_status');
+		
+		return view('admin.users.edit', compact('company', 'txnStatuses')); 
 	}
 	
 	public function userUpdate(Request $request, $companyid)

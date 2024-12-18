@@ -158,7 +158,7 @@
 
             @php
                 $Reports = [
-                    'transaction_history' => ['route' => 'admin.transaction-history', 'label' => 'Transaction History'],
+                    'transaction_history' => ['route' => 'admin.report.transaction-history', 'label' => 'Transaction History'],
                 ];
             @endphp
 
