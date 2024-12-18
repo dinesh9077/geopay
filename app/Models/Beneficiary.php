@@ -10,61 +10,42 @@ use Spatie\Activitylog\LogOptions;
 class Beneficiary extends Model
 {
     use HasFactory, LogsActivity;
+	
+    // Fillable attributes (fields that can be mass assigned)
     protected $fillable = [
         'user_id',
-        'type',
-        'country_id',
-        'bank_name',
-        'account_number',
-        'b_first_name',
-        'b_middle_name',
-        'b_last_name',
-        'b_address',
-        'b_state',
-        'b_mobile',
-        'b_email',
-        'relations',
-        'other_remarks',
-        'remittance_purpose',
-        'beneficiary_id',
-        'receiver_id_expiry',
-        'receiver_dob',
+        'category_name',
+        'service_name',
+        'data',
     ];
-    /**
-     * The name of the log.
-     *
-     * @var string
-     */
-    protected static $logName = 'benificiary';
+	 
+	protected static $recordEvents = ['created', 'deleted', 'updated'];
+	
+	public function getActivitylogOptions(string $logName = 'beneficiary'): LogOptions
+	{  
+		$user_name = auth()->user()->name; 
+		return LogOptions::defaults()
+		->logOnly(['*', 'user.first_name'])
+		->logOnlyDirty()
+		->dontSubmitEmptyLogs()
+		->useLogName($logName)
+		->setDescriptionForEvent(function (string $eventName) use ($logName, $user_name) {
+			return "The {$logName} has been {$eventName} by {$user_name}";
+		});
+	}
+	
+	public function user()
+	{
+		return $this->belongsTo(User::class, 'user_id');
+	}
+	
+	public function getDataArrAttribute()
+	{
+		if (!$this->data) {
+			return [];
+		}
 
-    /**
-     * Whether to log only dirty attributes.
-     *
-     * @var bool
-     */
-    protected static $logOnlyDirty = true;
-
-    /**
-     * Custom description for the log.
-     *
-     * @param string $eventName
-     * @return string
-     */
-    public function getDescriptionForEvent(string $eventName): string
-    {
-        return "Banificiary model has been {$eventName}";
-    }
-
-    /**
-     * Get the activity log options for the model.
-     *
-     * @return LogOptions
-     */
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logAll()
-            ->useLogName('benificiary')
-            ->logOnlyDirty();
-    }
+		$decoded = json_decode($this->data, true);
+		return $decoded ?: []; // Return decoded data if successful, otherwise empty array
+	}
 }

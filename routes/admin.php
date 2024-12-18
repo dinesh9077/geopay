@@ -118,5 +118,8 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 	Route::get('/exchange-rate/import', [ExchangeRateController::class, 'exchangeRateImport'])->name('exchange-rate.import');
 	Route::post('/exchange-rate/store', [ExchangeRateController::class, 'exchangeRateStore'])->name('exchange-rate.store');
 	Route::post('/exchange-rate/delete/{id}', [ExchangeRateController::class, 'exchangeRateDelete'])->withoutMiddleware('webdecrypt.request')->name('exchange-rate.delete'); 
+	
+	// Reports
+	Route::get('/transaction-report', [ReportController::class, 'transactionReport'])->name('transaction-report')->middleware('permission:transaction_report.view');
 });
 

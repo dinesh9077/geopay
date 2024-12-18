@@ -12,8 +12,8 @@
 		public function up(): void
 		{
 			Schema::table('transactions', function (Blueprint $table) {
-				$table->string('order_id')->nullable()->index();
-				$table->decimal('fees', 25,2)->default(0);
+				$table->json('beneficiary_request')->nullable();
+				$table->json('api_response_second')->nullable(); 
 			});
 		}
 		

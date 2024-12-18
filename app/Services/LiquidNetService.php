@@ -5,7 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt; // Remove Crypt facade if not used
-
+use Auth;
 class LiquidNetService
 {
     protected $appId;
@@ -14,55 +14,172 @@ class LiquidNetService
 
     public function __construct()
     {
-        $this->appId = 'geoapi';
-        $this->apiKey = 'ZjM5ZmQzYjUzY2FmNDk4YThlYWJlOTBhOGQ2NWQwYTQ='; // Assuming API key is stored in environment variable
-        $this->baseUrl = 'https://staging-api-lqn.lightnet.io';
+        $this->appId = config('setting.lightnet_apikey');
+        $this->apiKey = config('setting.lightnet_secretkey');
+        $this->baseUrl = config('setting.lightnet_url');
     }
 
-    public function hmacAuthGenerate(string $method, string $url, string $timestamp, array $body = [])
+    public function hmacAuthGenerate(string $method, string $apiUrl, string $requestTimeStamp, array $requestBody = [])
+    { 
+		$jsonRequestBody = json_encode($requestBody);
+        $requestUri = strtolower(urlencode($apiUrl));
+
+        $requestHttpMethod = strtoupper($method);
+
+        $nonce = Str::uuid()->toString();
+
+        $requestContentBase64String = '';
+        if (!empty($jsonRequestBody)) {
+            $requestContentHash = md5($jsonRequestBody, true);
+            $requestContentBase64String = base64_encode($requestContentHash);
+        }
+
+        $signatureRawData = sprintf('%s%s%s%s%s%s', $this->appId, $requestHttpMethod, $requestUri, $requestTimeStamp, $nonce, $requestContentBase64String);
+        $secretKeyByteArray = base64_decode($this->apiKey);
+
+        $signatureBytes = hash_hmac('sha256', $signatureRawData, $secretKeyByteArray, true);
+
+        $requestSignatureBase64String = base64_encode($signatureBytes);
+
+        $signatureString = sprintf('%s:%s:%s:%s', $this->appId, $requestSignatureBase64String, $nonce, $requestTimeStamp);
+		  
+        return $signatureString;
+	} 
+	
+	public function serviceApi(string $method, string $url, string $requestTimeStamp, array $requestBody = [])
     {
-        $url = $this->baseUrl . $url;
+        $apiUrl = $this->baseUrl . $url; 
+		$signatureString = $this->hmacAuthGenerate($method, $apiUrl, $requestTimeStamp, $requestBody);
+        $response = Http::withHeaders([
+            'Authorization' => "hmacauth {$signatureString}",
+            'Content-Type' => 'application/json',
+        ])
+		->withOptions([
+			'verify' => false,
+		])
+		->{$method}($apiUrl, $requestBody);
 
-        // Step 1: HTTP Method (Uppercase)
-        $httpMethod = strtoupper($method);
-
-        // Step 2: Nonce (Unique identifier for each request)
-        $nonce = $timestamp;
-
-        // Step 3: Request URI (Encoded and Lowercase)
-        $requestUri = urlencode(strtolower($url));
-
-        // Step 5: Base64 Representation of the Request Payload (Body)
-        $payloadBase64 = '';
-        if (!empty($body)) { 
-            $hashedPayload = md5(json_encode($body), true); // Hash JSON payload
-            $payloadBase64 = base64_encode($hashedPayload);
-        }
-
-        // Step 6: Build the Signature Raw Data
-        $signatureRawData = $this->appId . $httpMethod . $requestUri . $timestamp . $nonce . $payloadBase64;
-		/* echo json_encode($body);
-		echo '<br>';
-		echo $signatureRawData;
-		die; */
-        // Step 7: Generate the HMAC Signature
-        $apiSecret = base64_decode($this->apiKey);
-        $hmacSignature = base64_encode(hash_hmac('sha256', $signatureRawData, $apiSecret, true));
-
-        // Step 8: Set the Authorization Header
-        $authorizationHeader = "hmacauth {$this->appId}:{$hmacSignature}:{$nonce}:{$timestamp}";
-
-        // Step 9: Send the HTTP Request
-        try { 
-            $response = Http::withHeaders([
-                'Authorization' => $authorizationHeader,
-                'Content-Type' => 'application/json',
-            ])->{$method}($url, $body);
-
-            return $response->json();
-        } catch (\Exception $e) {
-            // Handle request error
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
+        // Handle Successful Response
+		if ($response->successful()) {
+			return [
+				'success' => true, 
+				'response' => $response->json()
+			];
+		}
+		return [
+			'success' => false, 
+			'response' => json_decode($response->body(), true)
+		];	
+	}
+	
+	public function sendTransaction($request, $beneficiary)
+    {
+        $apiUrl = $this->baseUrl . '/SendTransaction'; 
+		$method = 'post'; 
+		$requestTimestamp = $request->timestamp;
+		$orderId = $request->order_id;
+		$user = Auth::user();
+		
+		$payoutCurrencyAmount = (int) $request->payoutCurrencyAmount;
+		 
+		$requestBody = [
+			"agentSessionId" => (string) $requestTimestamp,
+			"agentTxnId" => $orderId,
+			"locationId" => $beneficiary['bankId'],
+			"remitterType" => "B",
+			"senderFirstName" => $user->first_name,
+			"senderMiddleName" => "",
+			"senderLastName" => $user->last_name,
+			"senderGender" => "",
+			"senderAddress" => $beneficiary['beneficiaryAddress'],
+			"senderCity" => "",
+			"senderState" => "",
+			"senderZipCode" => "",
+			"senderCountry" => $beneficiary['payoutCountry'],
+			"senderMobile" => ltrim(trim($user->formatted_number), '+'),
+			"SenderNationality" => $beneficiary['payoutCountry'],
+			"senderIdType" => $beneficiary['receiverIdType'],
+			"senderIdTypeRemarks" => $beneficiary['receiverIdTypeRemarks'],
+			"senderIdNumber" => "",
+			"senderIdIssueCountry" => $beneficiary['payoutCountry'],
+			"senderIdIssueDate" => "",
+			"senderIdExpireDate" => "",
+			"senderDateOfBirth" => "",
+			"senderOccupation" => "",
+			"senderOccupationRemarks" => "",
+			"senderSourceOfFund" => $beneficiary['senderSourceOfFund'],
+			"senderSourceOfFundRemarks" => $beneficiary['senderSourceOfFundRemarks'],
+			"senderEmail" =>  $user->email,
+			"senderNativeFirstname" => "",
+			"senderBeneficiaryRelationship" => $beneficiary['senderBeneficiaryRelationship'],
+			"senderBeneficiaryRelationshipRemarks" => $beneficiary['senderBeneficiaryRelationshipRemarks'],
+			"purposeOfRemittance" => $beneficiary['purposeOfRemittance'],
+			"purposeOfRemittanceRemark" => $beneficiary['purposeOfRemittanceRemark'],
+			"beneficiaryType" => $beneficiary['beneficiaryType'],
+			"receiverFirstName" => $beneficiary['beneficiaryFirstName'],
+			"receiverMiddleName" => "",
+			"receiverLastName" => $beneficiary['beneficiaryLastName'],
+			"receiverAddress" => $beneficiary['beneficiaryAddress'],
+			"receiverContactNumber" => $beneficiary['beneficiaryMobile'],
+			"receiverState" => $beneficiary['beneficiaryState'],
+			"receiverAreaTown" => "",
+			"receiverCity" => "",
+			"receiverCountry" => $beneficiary['payoutCountry'],
+			"receiverIdType" => $beneficiary['receiverIdType'],
+			"receiverIdTypeRemarks" => $beneficiary['receiverIdTypeRemarks'],
+			"receiverOccupation" => "",
+			"receiverOccupationRemark" => "",
+			"receiverIdNumber" => "",
+			"receiverEmail" => $beneficiary['beneficiaryEmail'],
+			"receiverNativeFirstname" => "",
+			"receiverNativeMiddleName" => "",
+			"receiverNativeLastname" => "",
+			"senderSecondaryIdType" => "",
+			"senderSecondaryIdNumber" => "",
+			"senderNativeLastname" => "",
+			"calcBy" => "P",
+			"transferAmount" => (string) $payoutCurrencyAmount,
+			"remitCurrency" => Config('setting.default_currency'),
+			"payoutCurrency" => $beneficiary['payoutCurrency'],
+			"paymentMode" => "B",
+			"bankName" => $beneficiary['bankName'],
+			"bankBranchName" => "",
+			"bankBranchCode" => "",
+			"bankAccountNumber" => $beneficiary['bankAccountNumber'],
+			"swiftCode" => "",
+			"promotionCode" => "",
+			"SenderNativeAddress" => "",
+			"ReceiverNationality" => $beneficiary['payoutCountry'],
+			"receiverIdIssueDate" => "",
+			"receiverIdExpireDate" => $beneficiary['receiverIdExpireDate'],
+			"receiverDistrict" => "",
+			"receiptCpf" => "",
+			"remarks" => $request->notes,
+			"receiverDateOfBirth" => $beneficiary['receiverDateOfBirth'],
+			"receiverAccountType" => ""
+		]; 
+		$signatureString = $this->hmacAuthGenerate($method, $apiUrl, $requestTimestamp, $requestBody);
+        $response = Http::withHeaders([
+            'Authorization' => "hmacauth {$signatureString}",
+            'Content-Type' => 'application/json',
+        ])
+		->withOptions([
+			'verify' => false,
+		])
+		->{$method}($apiUrl, $requestBody);
+		 
+        // Handle Successful Response
+		if ($response->successful()) {
+			return [
+				'success' => true,  
+				'request' => $requestBody,
+				'response' => $response->json()
+			];
+		}
+		return [
+			'success' => false, 
+			'request' => $requestBody,
+			'response' => json_decode($response->body(), true)
+		];	
+	}
 }

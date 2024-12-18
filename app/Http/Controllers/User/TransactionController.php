@@ -160,7 +160,7 @@ class TransactionController extends Controller
 		return $pdf->download($transaction->order_id.'-receipt.pdf');
 	}
 	
-	// geopay to geopay wallet
+	// Geopay To Geopay Wallet
 	public function walletToWallet()
     { 
 		$countries = Country::select('id', 'name', 'isdcode', 'country_flag')->get();
@@ -495,5 +495,5 @@ class TransactionController extends Controller
 
 		return true;
 	}
-
+	 
 }

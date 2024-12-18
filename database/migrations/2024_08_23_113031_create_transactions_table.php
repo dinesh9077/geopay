@@ -26,8 +26,8 @@ return new class extends Migration
             $table->string('country_code')->nullable();
 			$table->string('unique_identifier')->nullable();
             $table->string('product_name')->nullable();
-            $table->integer('operator_id')->nullable();
-            $table->integer('product_id')->nullable();
+            $table->string('operator_id')->nullable();
+            $table->string('product_id')->nullable();
             $table->string('mobile_number')->nullable(); 
             $table->string('unit_currency')->nullable();
             $table->decimal('unit_amount',25,4)->nullable();
@@ -37,6 +37,8 @@ return new class extends Migration
             $table->decimal('unit_convert_exchange',25,4)->default(1);
 			$table->json('api_request')->nullable();
 			$table->json('api_response')->nullable();
+			$table->string('order_id')->nullable()->index();
+			$table->decimal('fees', 25,2)->default(0);
 			$table->timestamps(); // Auto-created created_at and updated_at columns
         });
     }

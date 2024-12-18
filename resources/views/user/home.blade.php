@@ -72,10 +72,12 @@
 							</a>
 						</div>
 						<div class="col-6 col-md-4">
-							<div class="text-center h-100 align-content-center service-box m-auto" >
-								<img class="in-svg mb-3" src="{{ asset('assets/image/icons/bank.svg') }}" alt="Transfer to Mobile Money Icon">
-								<p class="content-2">Transfer to Bank</p>
-							</div>
+							<a class="text-primary" href="{{ route('transfer-to-bank') }}"  >
+								<div class="text-center h-100 align-content-center service-box m-auto" >
+									<img class="in-svg mb-3" src="{{ asset('assets/image/icons/bank.svg') }}" alt="Transfer to Mobile Money Icon">
+									<p class="content-2">Transfer to Bank</p>
+								</div>
+							</a>
 						</div>
 					</div>
 				</div>

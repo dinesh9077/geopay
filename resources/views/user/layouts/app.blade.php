@@ -39,7 +39,17 @@
 				border-radius: .5rem;
 			}
 		</style>
-		 @livewireStyles
+		@livewireStyles
+		<script> 
+            let modalOpen = false;
+            function closemodal()
+            {
+                setTimeout(function()
+                {
+                    modalOpen = false;
+				},1000)
+			}
+		</script>
 	</head>
 	
 	<body>
@@ -58,6 +68,7 @@
 				</footer>
 			</div>
 		</div> 
+		<div id="modal-view-render"></div>
 		<script src="{{ asset('assets/js/bootstrap/js/bootstrap.bundle.min.js') }}"></script>   
 		<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script> 
 		<script type="text/javascript" src="{{ asset('assets/js/slick/slick.min.js')}}"></script>

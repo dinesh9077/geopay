@@ -8,6 +8,7 @@ use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\SettingController;
 use App\Http\Controllers\User\TransactionController;
 use App\Http\Controllers\User\KycController;
+use App\Http\Controllers\User\TransferBankController;
 use App\Http\Controllers\FrontController;
 /*
 |--------------------------------------------------------------------------
@@ -65,7 +66,8 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	Route::get('/home', [HomeController::class, 'index'])->name('home');   
 	
 	Route::get('/notifications', [HomeController::class, 'notifications'])->name('notifications');   
-	  
+	 
+	// Wallet To Wallet
 	Route::get('/wallet-to-wallet', [TransactionController::class, 'walletToWallet'])->name('wallet-to-wallet');  
 	Route::post('/wallet-to-wallet/store', [TransactionController::class, 'walletToWalletStore'])->name('wallet-to-wallet.store');  
 	
@@ -77,18 +79,31 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	Route::post('/international-airtime/store', [TransactionController::class, 'internationalAirtimeStore'])->name('international-airtime.store');  
 	Route::post('/international-airtime/callback/{txnId}', [TransactionController::class, 'internationalAirtimeCallback'])->withoutMiddleware('webdecrypt.request');
 	
+	// Transfer To Bank
+	Route::get('/transfer-to-bank', [TransferBankController::class, 'transferToBank'])->name('transfer-to-bank');  
+	Route::post('/transfer-to-bank/store', [TransferBankController::class, 'transferToBankStore'])->name('transfer-to-bank.store');  
+	Route::get('/transfer-to-bank/beneficiary', [TransferBankController::class, 'transferToBankBeneficiary'])->name('transfer-to-bank.beneficiary');  
+	Route::post('/transfer-to-bank/beneficiary-store', [TransferBankController::class, 'transferToBankBeneficiaryStore'])->name('transfer-to-bank.beneficiary-store');  
+	Route::post('/transfer-to-bank/bank-list', [TransferBankController::class, 'transferToBankList'])->name('transfer-to-bank.bank-list');  
+	Route::post('/transfer-to-bank/beneficiary-list', [TransferBankController::class, 'transferToBeneficiaryList'])->name('transfer-to-bank.beneficiary-list');  
+	Route::post('/transfer-to-bank/beneficiary-detail', [TransferBankController::class, 'transferToBeneficiaryDetail'])->name('transfer-to-bank.beneficiary-detail');  
+	Route::get('/transfer-to-bank/beneficiary-edit/{id}', [TransferBankController::class, 'transferToBankBeneficiaryEdit']);  
+	Route::post('/transfer-to-bank/beneficiary-update/{id}', [TransferBankController::class, 'transferToBankBeneficiaryUpdate'])->name('transfer-to-bank.beneficiary-update');  
+	Route::get('/transfer-to-bank/beneficiary-delete/{id}', [TransferBankController::class, 'transferToBeneficiaryDelete'])->name('transfer-to-bank.beneficiary-delete');  
+	Route::post('/transfer-to-bank/commission', [TransferBankController::class, 'transferToBankCommission'])->name('transfer-to-bank.commission');  
+	
+	
+	
+	//Add Mobile Money
 	Route::get('/add-money', function () {
 		return view('user.transaction.add-money.index');
 	})->name('add-money');  
   
+	// Transfer To Mobile Money
 	Route::get('/transfer-to-mobile-money', function () {
 		return view('user.transaction.transfer-to-mobile-money');
 	})->name('transfer-to-mobile-money');
-	   
-	Route::get('/transfer-to-bank', function () {
-		return view('user.transaction.transfer-bank');
-	})->name('transfer-to-bank');
-	
+	    
 	//Transaction List 
 	Route::get('/transaction-list', [TransactionController::class, 'index'])->name('transaction-list');
 	Route::post('/transaction-ajax', [TransactionController::class, 'transactionAjax'])->name('transaction-ajax')->withoutMiddleware('webdecrypt.request');

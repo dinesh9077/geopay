@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('beneficiaries', function (Blueprint $table) {
+        Schema::create('lightnet_catalogues', function (Blueprint $table) {
             $table->id();
-            $table->unsignedTinyInteger('user_id')->index(); 
             $table->string('category_name')->index();
-            $table->string('service_name')->index();
-            $table->json('data')->nullable(); 
+            $table->string('service_name')->index(); 
+            $table->string('catalogue_type')->index(); 
+            $table->string('catalogue_description')->nullable(); 
+            $table->json('data'); 
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('beneficiaries');
+        Schema::dropIfExists('lightnet_catalogues');
     }
 };

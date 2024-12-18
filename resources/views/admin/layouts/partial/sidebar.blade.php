@@ -94,8 +94,7 @@
 				</div>
 			</li>
 			@endif
-
-
+ 
 			@php
 				$manageExchanges = [
 					'exchange_rate' => ['route' => 'admin.exchange-rate', 'label' => 'Manage Exchange Rate'],
@@ -152,7 +151,7 @@
 				</div>
 			</li>
 			@endif
-
+			
 			@php
 				$settings = [
 					'general_setting' => ['route' => 'admin.general-setting', 'label' => 'General'],
@@ -186,8 +185,7 @@
 				</div>
 			</li>
 			@endif
-
-			
+ 
 			<li class="nav-item">
 				<a href="{{ route('admin.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-link">
 					<i class="link-icon" data-feather="log-out"></i>

@@ -23,6 +23,9 @@
 			<li class="nav-item">
 				<a class="nav-link" id="dtone-line-tab" data-bs-toggle="tab" href="#line-dtone" role="tab" aria-controls="line-dtone" aria-selected="false">International Airtime (dtone)</a>
 			</li> 
+			<li class="nav-item">
+				<a class="nav-link" id="lightnet-line-tab" data-bs-toggle="tab" href="#line-lightnet" role="tab" aria-controls="line-lightnet" aria-selected="false">Lightnet (LiquidNet)</a>
+			</li> 
 		</ul>
 		<div class="tab-content mt-3" id="lineTabContent">
 			<div class="tab-pane fade show active" id="line-metamap" role="tabpanel" aria-labelledby="metamap-line-tab"> 
@@ -183,6 +186,33 @@
 					</div>
 				</div>
 			</div> 
+			<div class="tab-pane fade" id="line-lightnet" role="tabpanel" aria-labelledby="lightnet-line-tab">
+				<div class="col-md-12 grid-margin stretch-card">
+					<div class="card">
+						<div class="card-body"> 
+							<form class="forms-sample row" id="lightnetPlusForm" action="{{ route('admin.third-party-key.update') }}" method="post" enctype="multipart/form-data">
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">Base Url</label>
+									<input type="url" class="form-control" id="lightnet_url" name="lightnet_url" autocomplete="off" placeholder="Base Url"  value="{{ config('setting.lightnet_url') }}">
+								</div>  
+								
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">Api Key</label>
+									<input type="text" class="form-control" id="lightnet_apikey" name="lightnet_apikey" autocomplete="off" placeholder="Api Key"  value="{{ config('setting.lightnet_apikey') }}">
+								</div>  
+								 
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">Api Secret</label>
+									<input type="text" class="form-control" id="lightnet_secretkey" name="lightnet_secretkey" autocomplete="off" placeholder="Secret Key"  value="{{ config('setting.lightnet_secretkey') }}">
+								</div>  
+								<div class="d-flex justify-content-end">
+									<button type="submit" class="btn btn-primary me-2">Submit</button> 
+								</div>
+							</form> 
+						</div>
+					</div>
+				</div>
+			</div> 
 		</div>
 	</div>
 </div>
@@ -191,7 +221,7 @@
 
 @push('js')
 <script>
-	var $forms = $('#metaMapForm, #smsPlusForm, #dtonePlusForm');
+	var $forms = $('#metaMapForm, #smsPlusForm, #dtonePlusForm, #lightnetPlusForm');
 	$forms.submit(function(event) 
 	{
 		event.preventDefault();   

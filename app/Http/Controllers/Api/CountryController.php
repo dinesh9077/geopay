@@ -24,20 +24,19 @@ class CountryController extends Controller
     }
 	
 	public function liquidnet()
-    {
-        $url = '/api/WebService/GetFieldInfo';
+    { 
+        $url = '/GetCatalogue';
         $method = 'post';
 		$timestamp = time();
-		$body = [ 
-			"agentSessionId" => "$timestamp",
-			"locationId" => "PHLALL",
-			"payoutCountry" => "PHL",
-			"payoutCurrency" => "PHP",
-			"paymentMode" => "B",
-			"transferAmount" => "1000"
-		];
+		$body = [
+            'agentSessionId' => (string) $timestamp,
+            'catalogueType' => 'PTY',
+            'additionalField1' => 'PHL',
+            'additionalField2' => '',
+            'additionalField3' => ''
+        ];
 	 
-        $response = $this->liquidNetService->hmacAuthGenerate($method, $url, $timestamp, $body);
+        $response = $this->liquidNetService->serviceApi($method, $url, $timestamp, $body);
 
         return response()->json($response);
     }
