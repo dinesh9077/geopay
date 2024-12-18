@@ -25,7 +25,7 @@ class ReportController extends Controller
 		$txnStatuses = Transaction::select('txn_status')
 		->groupBy('txn_status')
 		->pluck('txn_status');
-        return view('Admin.report.transaction-history', compact('users', 'txnStatuses'));
+        return view('admin.report.transaction-history', compact('users', 'txnStatuses'));
     }
 
     public function transactionReportAjax(Request $request)
@@ -47,7 +47,7 @@ class ReportController extends Controller
             }
             if ($request->filled('user_id')) {
                 $query->where('user_id', $request->user_id);
-            }
+				}
 
             if ($request->filled(['start_date', 'end_date'])) {
                 $query->whereBetween('created_at', [$request->start_date, $request->end_date]);
