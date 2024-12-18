@@ -6,9 +6,10 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\CompaniesController;
 use App\Http\Controllers\Admin\ExchangeRateController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\UserController;
-use Illuminate\Support\Facades\Route; 
- 
+use Illuminate\Support\Facades\Route;
+
 // Admin authentication routes
 Route::get('login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
 Route::post('login', [AdminAuthController::class, 'login'])->name('admin.login.submit')->middleware(['webdecrypt.request']);
@@ -16,110 +17,113 @@ Route::post('logout', [AdminAuthController::class, 'logout'])->name('admin.logou
 
 // Protected admin routes
 
-Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(function () 
-{ 
+Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
-	
-	// Settings
+
+    // Settings
     Route::get('/general-setting', [SettingController::class, 'generalSetting'])->name('general-setting')->middleware('permission:general_setting.view');
     Route::post('/general-setting/update', [SettingController::class, 'generalSettingUpdate'])->name('general-setting.update');
     Route::post('/user-limit/update', [SettingController::class, 'UserLimitUpdate'])->name('user-limit.update');
-	
-	// Banners
+
+    // Banners
     Route::get('/banner', [SettingController::class, 'banner'])->name('banner')->middleware('permission:banner.view');
     Route::post('/banner/ajax', [SettingController::class, 'bannerAjax'])->withoutMiddleware('webdecrypt.request')->name('banner.ajax');
-	Route::get('/banner/create', [SettingController::class, 'bannerCreate'])->name('banner.create');
-	Route::post('/banner/store', [SettingController::class, 'bannerStore'])->name('banner.store');
-	Route::get('/banner/edit/{id}', [SettingController::class, 'bannerEdit'])->name('banner.edit');
+    Route::get('/banner/create', [SettingController::class, 'bannerCreate'])->name('banner.create');
+    Route::post('/banner/store', [SettingController::class, 'bannerStore'])->name('banner.store');
+    Route::get('/banner/edit/{id}', [SettingController::class, 'bannerEdit'])->name('banner.edit');
     Route::post('/banner/update/{id}', [SettingController::class, 'bannerUpdate'])->name('banner.update');
     Route::post('/banner/delete/{id}', [SettingController::class, 'bannerDelete'])->withoutMiddleware('webdecrypt.request')->name('banner.delete');
 
-	// Faqs
+    // Faqs
     Route::get('/faqs', [SettingController::class, 'faqs'])->name('faqs')->middleware('permission:faqs.view');
     Route::post('/faqs/ajax', [SettingController::class, 'faqsAjax'])->withoutMiddleware('webdecrypt.request')->name('faqs.ajax');
-	Route::get('/faqs/create', [SettingController::class, 'faqsCreate'])->name('faqs.create');
-	Route::post('/faqs/store', [SettingController::class, 'faqsStore'])->name('faqs.store');
-	Route::get('/faqs/edit/{id}', [SettingController::class, 'faqsEdit'])->name('faqs.edit');
+    Route::get('/faqs/create', [SettingController::class, 'faqsCreate'])->name('faqs.create');
+    Route::post('/faqs/store', [SettingController::class, 'faqsStore'])->name('faqs.store');
+    Route::get('/faqs/edit/{id}', [SettingController::class, 'faqsEdit'])->name('faqs.edit');
     Route::post('/faqs/update/{id}', [SettingController::class, 'faqsUpdate'])->name('faqs.update');
     Route::post('/faqs/delete/{id}', [SettingController::class, 'faqsDelete'])->withoutMiddleware('webdecrypt.request')->name('faqs.delete');
-	
-	// Third Party Key
+
+    // Third Party Key
     Route::get('/third-party-key', [SettingController::class, 'ThirdPartyKey'])->name('third-party-key')
-	->middleware('permission:third_party_api.view');
-    Route::post('/third-party-key/update', [SettingController::class, 'ThirdPartyKeyUpdate'])->name('third-party-key.update'); 
-    
-	// Profile
-	Route::get('/profile', [SettingController::class, 'profile'])->name('profile');
-	Route::post('/profile/update', [SettingController::class, 'profileUpdate'])->name('profile-update'); 
-  
-	//Roles
-	Route::get('/roles', [StaffController::class, 'roles'])->name('roles')->middleware('permission:role.view');
+        ->middleware('permission:third_party_api.view');
+    Route::post('/third-party-key/update', [SettingController::class, 'ThirdPartyKeyUpdate'])->name('third-party-key.update');
+
+    // Profile
+    Route::get('/profile', [SettingController::class, 'profile'])->name('profile');
+    Route::post('/profile/update', [SettingController::class, 'profileUpdate'])->name('profile-update');
+
+    //Roles
+    Route::get('/roles', [StaffController::class, 'roles'])->name('roles')->middleware('permission:role.view');
     Route::post('/roles/ajax', [StaffController::class, 'rolesAjax'])->withoutMiddleware('webdecrypt.request')->name('roles.ajax');
-	Route::get('/roles/create', [StaffController::class, 'rolesCreate'])->name('roles.create');
-	Route::post('/roles/store', [StaffController::class, 'rolesStore'])->name('roles.store');
-	Route::get('/roles/edit/{id}', [StaffController::class, 'rolesEdit'])->name('roles.edit');
+    Route::get('/roles/create', [StaffController::class, 'rolesCreate'])->name('roles.create');
+    Route::post('/roles/store', [StaffController::class, 'rolesStore'])->name('roles.store');
+    Route::get('/roles/edit/{id}', [StaffController::class, 'rolesEdit'])->name('roles.edit');
     Route::post('/roles/update/{id}', [StaffController::class, 'rolesUpdate'])->name('roles.update');
-    Route::post('/roles/delete/{id}', [StaffController::class, 'rolesDelete'])->withoutMiddleware('webdecrypt.request')->name('roles.delete'); 
-	Route::get('roles/groups/{id}', [StaffController::class, 'rolesGroups']);
-	
-	//staffs
-	Route::get('/staff', [StaffController::class, 'staff'])->name('staff')->middleware('permission:staff.view');
+    Route::post('/roles/delete/{id}', [StaffController::class, 'rolesDelete'])->withoutMiddleware('webdecrypt.request')->name('roles.delete');
+    Route::get('roles/groups/{id}', [StaffController::class, 'rolesGroups']);
+
+    //staffs
+    Route::get('/staff', [StaffController::class, 'staff'])->name('staff')->middleware('permission:staff.view');
     Route::post('/staff/ajax', [StaffController::class, 'staffAjax'])->withoutMiddleware('webdecrypt.request')->name('staff.ajax');
-	Route::get('/staff/create', [StaffController::class, 'staffCreate'])->name('staff.create');
-	Route::post('/staff/store', [StaffController::class, 'staffStore'])->name('staff.store');
-	Route::get('/staff/edit/{id}', [StaffController::class, 'staffEdit'])->name('staff.edit');
+    Route::get('/staff/create', [StaffController::class, 'staffCreate'])->name('staff.create');
+    Route::post('/staff/store', [StaffController::class, 'staffStore'])->name('staff.store');
+    Route::get('/staff/edit/{id}', [StaffController::class, 'staffEdit'])->name('staff.edit');
     Route::post('/staff/update/{id}', [StaffController::class, 'staffUpdate'])->name('staff.update');
-    Route::post('/staff/delete/{id}', [StaffController::class, 'staffDelete'])->withoutMiddleware('webdecrypt.request')->name('staff.delete'); 
-	Route::get('/staff/permission/{id}', [StaffController::class, 'staffPermission'])->name('staff.permission');
-	Route::post('/staff/permission/{id}', [StaffController::class, 'staffPermissionUpdate'])->name('staff.permission-update');
-	
-	//Manage Companies 
-	Route::get('/companies/active', [CompaniesController::class, 'companiesActive'])
-	->name('companies.active')->middleware('permission:active_company.view'); 
-	Route::get('/companies/pending', [CompaniesController::class, 'companiesPending'])
-	->name('companies.pending')->middleware('permission:pending_company.view'); 
-	Route::get('/companies/block', [CompaniesController::class, 'companiesBlock'])
-	->name('companies.block')->middleware('permission:block_company.view'); 
-	
-	Route::post('/companies/ajax', [CompaniesController::class, 'companiesAjax'])->withoutMiddleware('webdecrypt.request')->name('companies.ajax');
-	Route::get('/companies/edit/{id}', [CompaniesController::class, 'companiesEdit'])->name('companies.edit');
+    Route::post('/staff/delete/{id}', [StaffController::class, 'staffDelete'])->withoutMiddleware('webdecrypt.request')->name('staff.delete');
+    Route::get('/staff/permission/{id}', [StaffController::class, 'staffPermission'])->name('staff.permission');
+    Route::post('/staff/permission/{id}', [StaffController::class, 'staffPermissionUpdate'])->name('staff.permission-update');
+
+    //Manage Companies
+    Route::get('/companies/active', [CompaniesController::class, 'companiesActive'])
+        ->name('companies.active')->middleware('permission:active_company.view');
+    Route::get('/companies/pending', [CompaniesController::class, 'companiesPending'])
+        ->name('companies.pending')->middleware('permission:pending_company.view');
+    Route::get('/companies/block', [CompaniesController::class, 'companiesBlock'])
+        ->name('companies.block')->middleware('permission:block_company.view');
+
+    Route::post('/companies/ajax', [CompaniesController::class, 'companiesAjax'])->withoutMiddleware('webdecrypt.request')->name('companies.ajax');
+    Route::get('/companies/edit/{id}', [CompaniesController::class, 'companiesEdit'])->name('companies.edit');
     Route::post('/companies/update/{id}', [CompaniesController::class, 'companiesUpdate'])->name('companies.update');
     Route::get('/companies/increment-balance/{id}', [CompaniesController::class, 'companiesIncrementBalance'])->name('companies.increment-balance');
     Route::post('/companies/store-increment-balance', [CompaniesController::class, 'storeIncrementBalance'])->name('companies.store-increment-balance');
     Route::get('/companies/decrement-balance/{id}', [CompaniesController::class, 'companiesDecrementBalance'])->name('companies.decrement-balance');
     Route::post('/companies/store-decrement-balance', [CompaniesController::class, 'storeDecrementBalance'])->name('companies.store-decrement-balance');
-	Route::post('/companies/update-status', [CompaniesController::class, 'companiesUpdateStatus'])->name('companies.update-status');
-	Route::get('/companies/login-history/{id}', [CompaniesController::class, 'companiesloginHistory'])->name('companies.login-history');
-	Route::post('/companies/login-history-ajax', [CompaniesController::class, 'companiesloginHistoryAjax'])->withoutMiddleware('webdecrypt.request')->name('companies.login-history-ajax');
-	 
-	Route::get('/companies/view-kyc/{id}', [CompaniesController::class, 'companiesViewKyc'])->name('companies.view-kyc');
-	Route::post('/companies/kyc-update', [CompaniesController::class, 'companiesKycUpdate'])->name('companies.kyc-update')->withoutMiddleware('webdecrypt.request');
-	
-	Route::post('/transaction-ajax', [CompaniesController::class, 'transactionAjax'])->name('transaction-ajax')->withoutMiddleware('webdecrypt.request');
-    Route::get('/transaction-receipt/{id}', [CompaniesController::class, 'transactionReceipt'])->name('transaction.receipt');
-	Route::get('/transaction-receipt-pdf/{id}', [CompaniesController::class, 'transactionReceiptPdf'])->name('transaction.receipt-pdf');
-	
-	//Manage Users 
-	Route::get('/user/active', [UserController::class, 'userActive'])->name('user.active')->middleware('permission:active_user.view');  
-	Route::get('/user/pending', [UserController::class, 'userPending'])->name('user.pending')->middleware('permission:pending_user.view');
-	Route::get('/user/block', [UserController::class, 'userBlock'])->name('user.block')->middleware('permission:block_user.view');  
-	Route::post('/user/ajax', [UserController::class, 'userAjax'])->withoutMiddleware('webdecrypt.request')->name('user.ajax');
-	Route::get('/user/edit/{id}', [UserController::class, 'userEdit'])->name('user.edit');
-    Route::post('/user/update/{id}', [UserController::class, 'userUpdate'])->name('user.update');
-	Route::post('/user/update-status', [UserController::class, 'userUpdateStatus'])->name('user.update-status');
-	Route::get('/user/view-kyc/{id}', [UserController::class, 'userViewKyc'])->name('user.view-kyc');
-	Route::get('/user/login-history/{id}', [UserController::class, 'userLoginHistory'])->name('user.login-history');
-	
-	 
-	//Manage Exchnage Rate
-	Route::get('/exchange-rate', [ExchangeRateController::class, 'exchangeRate'])
-	->name('exchange-rate')->middleware('permission:exchange_rate.view');
-	Route::post('/exchange-rate/ajax', [ExchangeRateController::class, 'exchangeRateAjax'])->withoutMiddleware('webdecrypt.request')->name('exchange-rate.ajax');
-	Route::get('/exchange-rate/import', [ExchangeRateController::class, 'exchangeRateImport'])->name('exchange-rate.import');
-	Route::post('/exchange-rate/store', [ExchangeRateController::class, 'exchangeRateStore'])->name('exchange-rate.store');
-	Route::post('/exchange-rate/delete/{id}', [ExchangeRateController::class, 'exchangeRateDelete'])->withoutMiddleware('webdecrypt.request')->name('exchange-rate.delete'); 
-	
-	// Reports
-	Route::get('/transaction-report', [ReportController::class, 'transactionReport'])->name('transaction-report')->middleware('permission:transaction_report.view');
-});
+    Route::post('/companies/update-status', [CompaniesController::class, 'companiesUpdateStatus'])->name('companies.update-status');
+    Route::get('/companies/login-history/{id}', [CompaniesController::class, 'companiesloginHistory'])->name('companies.login-history');
+    Route::post('/companies/login-history-ajax', [CompaniesController::class, 'companiesloginHistoryAjax'])->withoutMiddleware('webdecrypt.request')->name('companies.login-history-ajax');
 
+    Route::get('/companies/view-kyc/{id}', [CompaniesController::class, 'companiesViewKyc'])->name('companies.view-kyc');
+    Route::post('/companies/kyc-update', [CompaniesController::class, 'companiesKycUpdate'])->name('companies.kyc-update')->withoutMiddleware('webdecrypt.request');
+
+    Route::post('/transaction-ajax', [CompaniesController::class, 'transactionAjax'])->name('transaction-ajax')->withoutMiddleware('webdecrypt.request');
+    Route::get('/transaction-receipt/{id}', [CompaniesController::class, 'transactionReceipt'])->name('transaction.receipt');
+    Route::get('/transaction-receipt-pdf/{id}', [CompaniesController::class, 'transactionReceiptPdf'])->name('transaction.receipt-pdf');
+
+    //Manage Users
+    Route::get('/user/active', [UserController::class, 'userActive'])->name('user.active')->middleware('permission:active_user.view');
+    Route::get('/user/pending', [UserController::class, 'userPending'])->name('user.pending')->middleware('permission:pending_user.view');
+    Route::get('/user/block', [UserController::class, 'userBlock'])->name('user.block')->middleware('permission:block_user.view');
+    Route::post('/user/ajax', [UserController::class, 'userAjax'])->withoutMiddleware('webdecrypt.request')->name('user.ajax');
+    Route::get('/user/edit/{id}', [UserController::class, 'userEdit'])->name('user.edit');
+    Route::post('/user/update/{id}', [UserController::class, 'userUpdate'])->name('user.update');
+    Route::post('/user/update-status', [UserController::class, 'userUpdateStatus'])->name('user.update-status');
+    Route::get('/user/view-kyc/{id}', [UserController::class, 'userViewKyc'])->name('user.view-kyc');
+    Route::get('/user/login-history/{id}', [UserController::class, 'userLoginHistory'])->name('user.login-history');
+
+
+    //Manage Exchnage Rate
+    Route::get('/exchange-rate', [ExchangeRateController::class, 'exchangeRate'])
+        ->name('exchange-rate')->middleware('permission:exchange_rate.view');
+    Route::post('/exchange-rate/ajax', [ExchangeRateController::class, 'exchangeRateAjax'])->withoutMiddleware('webdecrypt.request')->name('exchange-rate.ajax');
+    Route::get('/exchange-rate/import', [ExchangeRateController::class, 'exchangeRateImport'])->name('exchange-rate.import');
+    Route::post('/exchange-rate/store', [ExchangeRateController::class, 'exchangeRateStore'])->name('exchange-rate.store');
+    Route::post('/exchange-rate/delete/{id}', [ExchangeRateController::class, 'exchangeRateDelete'])->withoutMiddleware('webdecrypt.request')->name('exchange-rate.delete');
+
+    // Reports
+    Route::prefix('reports')->group(function () {
+        Route::get('/transaction-history', [ReportController::class, 'transactionHistory'])->name('transaction-history')->middleware('permission:transaction_history.view');
+        Route::post('/transaction-report-ajax', [ReportController::class, 'transactionReportAjax'])->name('transaction-report-ajax')->withoutMiddleware('webdecrypt.request');
+
+    });
+
+});
