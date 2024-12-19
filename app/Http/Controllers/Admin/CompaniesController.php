@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Mail;
 use ImageManager;
 use App\Notifications\WalletTransactionNotification;
 use Illuminate\Support\Facades\Notification;
-use Pdf;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Services\LiquidNetService;
 
 class CompaniesController extends Controller

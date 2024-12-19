@@ -10,7 +10,7 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
-// Admin authentication routes
+// Admin authentication routes 
 Route::get('login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
 Route::post('login', [AdminAuthController::class, 'login'])->name('admin.login.submit')->middleware(['webdecrypt.request']);
 Route::post('logout', [AdminAuthController::class, 'logout'])->name('admin.logout');

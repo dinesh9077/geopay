@@ -169,7 +169,7 @@
                     <a class="nav-link" data-bs-toggle="collapse" href="#reports" role="button"
                         aria-expanded="{{ collect($Reports)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}"
                         aria-controls="reports">
-                        <i class="link-icon" data-feather="anchor"></i>
+                        <i class="link-icon" data-feather="file"></i>
                         <span class="link-title">Reports</span>
                         <i class="link-arrow" data-feather="chevron-down"></i>
                     </a>

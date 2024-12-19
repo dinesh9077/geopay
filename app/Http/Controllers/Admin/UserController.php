@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Transaction;
 use DB, Auth, Helper, Hash, Validator;
-use App\Http\Traits\WebResponseTrait; 
+use App\Http\Traits\WebResponseTrait;  
 
 class UserController extends Controller
 {

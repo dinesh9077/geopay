@@ -1,0 +1,198 @@
+<?php
+
+namespace App\Http\Controllers\User;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Country;
+use App\Models\Transaction;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Traits\WebResponseTrait;
+use App\Notifications\WalletTransactionNotification;
+use Illuminate\Support\Facades\Notification;
+use Helper;
+use Carbon\Carbon;
+use App\Services\AirtimeService;
+use Barryvdh\DomPDF\Facade\Pdf;
+
+class AirtimeController extends Controller
+{
+	use WebResponseTrait;
+	protected $airtimeService;
+    public function __construct()
+    {
+		$this->airtimeService = new AirtimeService();
+        $this->middleware('auth')->except('internationalAirtimeCallback');
+    }
+	
+    public function internationalAirtime()
+	{ 
+		$countries = $this->airtimeService->getCountries(); 
+		return view('user.transaction.international-airtime', compact('countries'));
+	}
+	
+	public function internationalAirtimeOperator(Request $request)
+	{ 
+		$countryCode = $request->country_code;
+		return $this->airtimeService->getOperators($countryCode, true); 
+	}
+	
+	public function internationalAirtimeProduct(Request $request)
+	{ 
+		$countryCode = $request->country_code;
+		$operatorId = $request->operator_id;
+		return $this->airtimeService->getProducts($countryCode, $operatorId, true); 
+	}
+	 
+	public function internationalAirtimeValidatePhone(Request $request)
+	{ 
+		$mobile_number = '+' . ltrim($request->mobile_number, '+');
+		$operator_id = $request->operator_id;
+		return $this->airtimeService->getValidatePhoneByOperator($mobile_number, $operator_id, true); 
+	}
+	
+	public function internationalAirtimeStore(Request $request)
+	{  
+		$user = auth()->user();
+		 
+		// Validation rules
+		$validator = Validator::make($request->all(), [
+			'product_name' => 'required|string', 
+			'unit_convert_amount' => 'required|numeric', 
+			'unit_convert_exchange' => 'required|numeric', 
+			'country_code' => 'required|string', 
+			'operator_id' => 'required|integer',
+			'product_id' => 'required|integer',
+			'mobile_number' => 'required|integer', 
+			'is_operator_match' => 'required|integer|in:0,1', 
+			'notes' => 'nullable|string',
+		]);
+		 
+		// Custom validation logic
+		$validator->after(function ($validator) use ($request, $user)
+		{
+			// Check if user has sufficient balance
+			if ($request->input('unit_convert_amount') > $user->balance) {
+				$validator->errors()->add('product_id', 'Insufficient balance to complete this transaction.');
+			}
+			
+			if($request->input('is_operator_match') == 0)
+			{
+				$validator->errors()->add('mobile_number', 'The operator is not identified for this mobile number.');
+			}
+		});
+		 
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		}
+			
+		try {
+			
+			DB::beginTransaction();
+			$request['order_id'] = "GPIA-".$user->id."-".time();
+			
+			$transactionLimit = $user->is_company == 1 
+				? config('setting.company_pay_monthly_limit') 
+				: ($user->userLimit->daily_pay_limit ?? 0);
+
+			$transactionAmountQuery = Transaction::query();
+
+			// Adjust the date filter based on whether the user is a company or an individual
+			if ($user->is_company == 1) {
+				$transactionAmountQuery->whereMonth('created_at', Carbon::now()->month);
+			} else {
+				$transactionAmountQuery->whereDate('created_at', Carbon::today());
+			}
+
+			// Calculate the total transaction amount
+			$transactionAmount = $transactionAmountQuery->sum('txn_amount');
+
+			// Check if the transaction amount exceeds the limit
+			if ($transactionAmount >= $transactionLimit) {
+				$limitType = $user->is_company == 1 ? 'monthly' : 'daily';
+				return $this->errorResponse(
+					"You have reached your {$limitType} transaction limit of {$transactionLimit}. " .
+					"Current total transactions: {$transactionAmount}."
+				);
+			}
+			 
+			$response = $this->airtimeService->transactionRecord($request, $user, true); 
+			  
+			if (!$response['success']) {
+				$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
+				throw new \Exception($errorMsg);
+			}
+            //Log::info($response);
+			// Transaction variables
+			$txnAmount = $request->input('unit_convert_amount');
+			$productName = $request->input('product_name');
+			$mobileNumber = '+' . ltrim($request->input('mobile_number'), '+');
+			 
+            $txnStatus = strtoupper($response['response']['status']['message']) ?? 'process';
+              
+			// Deduct balance
+			$user->decrement('balance', $txnAmount); 
+			$comments = "You have successfully recharged $txnAmount USD for $productName.";
+			// Create transaction record
+			$transaction = Transaction::create([
+				'user_id' => $user->id,
+				'receiver_id' => $user->id,
+				'platform_name' => 'international airtime',
+				'platform_provider' => 'airtime',
+				'transaction_type' => 'debit',
+				'country_id' => $user->country_id,
+				'txn_amount' => $txnAmount,
+				'txn_status' => $txnStatus,
+				'comments' => $comments,
+				'notes' => $request->input('notes'),
+				'unique_identifier' => $response['response']['external_id'],
+				'product_name' => $productName,
+				'operator_id' => $request->input('operator_id'),
+				'product_id' => $request->input('product_id'),
+				'mobile_number' => $mobileNumber,
+				'unit_currency' => $request->input('unit_currency', ''),
+				'unit_amount' => $request->input('unit_amount', ''),
+				'rates' => $request->input('rates', ''),
+				'unit_convert_currency' => $request->input('unit_convert_currency', ''),
+				'unit_convert_amount' => $txnAmount,
+				'unit_convert_exchange' => $request->input('unit_convert_exchange', 0),
+				'api_request' => $response['request'],
+				'api_response' => $response['response'],
+				'order_id' => $request->order_id,
+				'created_at' => now(),
+				'updated_at' => now(),
+			]);
+
+			// Log the transaction creation
+			Helper::updateLogName($transaction->id, Transaction::class, 'international airtime transaction', $user->id);
+			  
+			DB::commit(); 
+			// Success response
+			return $this->successResponse('The transaction was completed successfully.');
+        } 
+		catch (\Throwable $e)
+		{ 
+            DB::rollBack();
+            return $this->errorResponse($e->getMessage());
+        } 
+	}
+	
+	public function internationalAirtimeCallback(Request $request)
+	{ 
+		if (!isset($request['external_id'], $request['status']['message'])) {
+			return ;
+		}
+
+		$uniqueIdentifier = $request['external_id'];
+		 
+        $txnStatus = strtoupper($request['status']['message']) ?? 'process';
+          
+		$updated = Transaction::where('unique_identifier', $uniqueIdentifier)
+			->update(['txn_status' => $txnStatus]);
+
+		return $updated;
+	}
+}

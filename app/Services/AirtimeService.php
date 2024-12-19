@@ -74,8 +74,7 @@
 
 				// API Request Parameters
 				$queryParams = [
-					'country_iso_code' => $countryCode,
-					//'country_iso_code' => 'IND',
+					'country_iso_code' => $countryCode, 
 					'service_id' => $this->serviceId,
 					'subservice_id' => $this->subServiceId,
 				];

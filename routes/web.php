@@ -9,6 +9,7 @@ use App\Http\Controllers\User\SettingController;
 use App\Http\Controllers\User\TransactionController;
 use App\Http\Controllers\User\KycController;
 use App\Http\Controllers\User\TransferBankController;
+use App\Http\Controllers\User\AirtimeController;
 use App\Http\Controllers\FrontController;
 /*
 |--------------------------------------------------------------------------
@@ -72,12 +73,12 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	Route::post('/wallet-to-wallet/store', [TransactionController::class, 'walletToWalletStore'])->name('wallet-to-wallet.store');  
 	
 	// International Airtime
-	Route::get('/international-airtime', [TransactionController::class, 'internationalAirtime'])->name('international-airtime');  
-	Route::post('/international-airtime/operator', [TransactionController::class, 'internationalAirtimeOperator'])->name('international-airtime.operator');  
-	Route::post('/international-airtime/product', [TransactionController::class, 'internationalAirtimeProduct'])->name('international-airtime.product');  
-	Route::post('/international-airtime/validate-phone', [TransactionController::class, 'internationalAirtimeValidatePhone'])->name('international-airtime.validate-phone');  
-	Route::post('/international-airtime/store', [TransactionController::class, 'internationalAirtimeStore'])->name('international-airtime.store');  
-	Route::post('/international-airtime/callback/{txnId}', [TransactionController::class, 'internationalAirtimeCallback'])->withoutMiddleware('webdecrypt.request');
+	Route::get('/international-airtime', [AirtimeController::class, 'internationalAirtime'])->name('international-airtime');  
+	Route::post('/international-airtime/operator', [AirtimeController::class, 'internationalAirtimeOperator'])->name('international-airtime.operator');  
+	Route::post('/international-airtime/product', [AirtimeController::class, 'internationalAirtimeProduct'])->name('international-airtime.product');  
+	Route::post('/international-airtime/validate-phone', [AirtimeController::class, 'internationalAirtimeValidatePhone'])->name('international-airtime.validate-phone');  
+	Route::post('/international-airtime/store', [AirtimeController::class, 'internationalAirtimeStore'])->name('international-airtime.store');  
+	Route::post('/international-airtime/callback/{txnId}', [AirtimeController::class, 'internationalAirtimeCallback'])->withoutMiddleware('webdecrypt.request');
 	
 	// Transfer To Bank
 	Route::get('/transfer-to-bank', [TransferBankController::class, 'transferToBank'])->name('transfer-to-bank');  
