@@ -36,15 +36,41 @@ class AirtimeController extends Controller
 	
 	public function internationalAirtimeOperator(Request $request)
 	{ 
-		$countryCode = $request->country_code;
-		return $this->airtimeService->getOperators($countryCode, true); 
+		try 
+		{ 
+			$countryCode = $request->country_code;
+			$response = $this->airtimeService->getOperators($countryCode); 
+			if (!$response['success']) {
+				$errorMsg = 'Operator not found.';
+				throw new \Exception($errorMsg);
+			}
+	 
+			return $this->successResponse('Operator fetched successfully.', $response['response']);
+        } 
+		catch (\Throwable $e)
+		{ 
+            return $this->errorResponse($e->getMessage());
+        } 
 	}
 	
 	public function internationalAirtimeProduct(Request $request)
 	{ 
-		$countryCode = $request->country_code;
-		$operatorId = $request->operator_id;
-		return $this->airtimeService->getProducts($countryCode, $operatorId, true); 
+		try
+		{
+			$countryCode = $request->country_code;
+			$operatorId = $request->operator_id;
+			$response = $this->airtimeService->getProducts($countryCode, $operatorId); 
+			if (!$response['success']) {
+				$errorMsg = 'Product not found.';
+				throw new \Exception($errorMsg);
+			}
+		
+			return $this->successResponse('product fetched successfully.', $response['response']);
+        } 
+		catch (\Throwable $e)
+		{ 
+            return $this->errorResponse($e->getMessage());
+        } 
 	}
 	 
 	public function internationalAirtimeValidatePhone(Request $request)
@@ -119,7 +145,7 @@ class AirtimeController extends Controller
 				);
 			}
 			 
-			$response = $this->airtimeService->transactionRecord($request, $user, true); 
+			$response = $this->airtimeService->transactionRecord($request, $user); 
 			  
 			if (!$response['success']) {
 				$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';

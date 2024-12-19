@@ -62,50 +62,35 @@
 			}
 		}
 		
-		public function getOperators($countryCode, $isWeb = false)
-		{
-			try {
-				// Basic Authorization Header
-				$basicAuth = base64_encode("{$this->apiKey}:{$this->secretKey}");
-				$headers = [
-					'Authorization' => 'Basic ' . $basicAuth,
-					'Content-Type' => 'application/json',
+		public function getOperators($countryCode)
+		{ 
+			// Basic Authorization Header
+			$basicAuth = base64_encode("{$this->apiKey}:{$this->secretKey}");
+			$headers = [
+				'Authorization' => 'Basic ' . $basicAuth,
+				'Content-Type' => 'application/json',
+			];
+
+			// API Request Parameters
+			$queryParams = [
+				'country_iso_code' => $countryCode, 
+				'service_id' => $this->serviceId,
+				'subservice_id' => $this->subServiceId,
+			];
+
+			// API Request
+			$response = Http::withHeaders($headers)->get("{$this->baseUrl}/operators", $queryParams);
+			
+			if ($response->successful()) {
+				return [
+					'success' => true, 
+					'response' => $response->json()
 				];
-
-				// API Request Parameters
-				$queryParams = [
-					'country_iso_code' => $countryCode, 
-					'service_id' => $this->serviceId,
-					'subservice_id' => $this->subServiceId,
-				];
-
-				// API Request
-				$response = Http::withHeaders($headers)->get("{$this->baseUrl}/operators", $queryParams);
-
-				// Handle Successful Response
-				if ($response->successful()) {
-					$responseType = $isWeb ? 'webSuccessResponse' : 'successResponse';
-					return $this->{$responseType}('Operator fetched successfully.', $response->json());
-				}
-
-				// Handle API Errors
-				$errorMessage = 'Operator not found.'; 
-				$responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
-				return $this->{$responseType}($errorMessage);
-			} 
-			catch (\Throwable $e) 
-			{
-				// Log Exception
-				Log::error('Operator API failed with exception:', [
-					'operator_code' => $countryCode,
-					'exception' => $e->getMessage(),
-				]);
-
-				// Handle Exception
-				$errorMessage = 'Operator API failed due to an exception.'. $e->getMessage();
-				$responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
-				return $this->{$responseType}($errorMessage);
 			}
+			return [
+				'success' => false, 
+				'response' => json_decode($response->body(), true)
+			];	  
 		}
 		
 		public function getValidatePhoneByOperator($mobileNumber, $operatorId, $isWeb = false)
@@ -163,82 +148,69 @@
 		}
 
 		
-		public function getProducts($countryCode, $operatorId, $isWeb = false)
-		{
-			try {
-				// Basic Authorization Header
-				$basicAuth = base64_encode("{$this->apiKey}:{$this->secretKey}");
-				$headers = [
-					'Authorization' => 'Basic ' . $basicAuth,
-					'Content-Type' => 'application/json',
-				];
+		public function getProducts($countryCode, $operatorId)
+		{ 
+			$basicAuth = base64_encode("{$this->apiKey}:{$this->secretKey}");
+			$headers = [
+				'Authorization' => 'Basic ' . $basicAuth,
+				'Content-Type' => 'application/json',
+			];
 
-				// API Request Parameters
-				$queryParams = [
-					'type' => 'FIXED_VALUE_RECHARGE',
-					'country_iso_code' => $countryCode,
-					'operator_id' => $operatorId,
-					'service_id' => $this->serviceId,
-					'subservice_id' => $this->subServiceId,
-				];
+			// API Request Parameters
+			$queryParams = [
+				'type' => 'FIXED_VALUE_RECHARGE',
+				'country_iso_code' => $countryCode,
+				'operator_id' => $operatorId,
+				'service_id' => $this->serviceId,
+				'subservice_id' => $this->subServiceId,
+			];
 
-				// API Request
-				$response = Http::withHeaders($headers)->get("{$this->baseUrl}/products", $queryParams);
+			// API Request
+			$response = Http::withHeaders($headers)->get("{$this->baseUrl}/products", $queryParams);
 
-				// Handle Successful Response
-				if ($response->successful()) {
-					$products = $response->json();
-					$productData = [];
+			// Handle Successful Response
+			if ($response->successful()) {
+				$products = $response->json();
+				$productData = [];
 
-					if (!empty($products)) {
-						$exchangeRates = ExchangeRate::whereType(2)->get()->keyBy('currency');
-						
-						foreach ($products as $product) {
-							$unitAmount = $product['prices']['retail']['amount'] ?? 0;
-							$unit = $product['prices']['retail']['unit'] ?? '';
-							$rates = $product['rates']['retail'] ?? [];
-							$exchangeRate = $exchangeRates[$unit]['exchange_rate'] ?? null;
+				if (!empty($products)) {
+					$exchangeRates = ExchangeRate::whereType(2)->get()->keyBy('currency');
+					
+					foreach ($products as $product) {
+						$unitAmount = $product['prices']['retail']['amount'] ?? 0;
+						$unit = $product['prices']['retail']['unit'] ?? '';
+						$rates = $product['rates']['retail'] ?? [];
+						$exchangeRate = $exchangeRates[$unit]['exchange_rate'] ?? null;
 
-							if ($exchangeRate) {
-								$productData[] = [
-									'id' => $product['id'] ?? null,
-									'name' => $product['name'] ?? 'Unknown Product',
-									'unit' => $unit,
-									'rates' => $rates,
-									'unit_amount' => $unitAmount,
-									'unit_convert_currency' => config('setting.default_currency'),
-									'unit_convert_exchange' => $exchangeRate,
-									'unit_convert_amount' => $unitAmount * $exchangeRate
-								];
-							}
+						if ($exchangeRate) {
+							$productData[] = [
+								'id' => $product['id'] ?? null,
+								'name' => $product['name'] ?? 'Unknown Product',
+								'unit' => $unit,
+								'rates' => $rates,
+								'unit_amount' => $unitAmount,
+								'unit_convert_currency' => config('setting.default_currency'),
+								'unit_convert_exchange' => $exchangeRate,
+								'unit_convert_amount' => $unitAmount * $exchangeRate
+							];
 						}
 					}
-
-					$responseType = $isWeb ? 'webSuccessResponse' : 'successResponse';
-					return $this->{$responseType}('Products fetched successfully.', $productData);
 				}
 
-				// Handle API Errors
-				$errorMessage = 'Operator not found.'; 
-				$responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
-				return $this->{$responseType}($errorMessage);
-			} 
-			catch (\Throwable $e) 
-			{
-				// Log Exception
-				Log::error('Operator API failed with exception:', [
-					'operator_code' => $operatorCode,
-					'exception' => $e->getMessage(),
-				]);
-
-				// Handle Exception
-				$errorMessage = 'Operator API failed due to an exception.'. $e->getMessage();
-				$responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
-				return $this->{$responseType}($errorMessage);
+				return [
+					'success' => true, 
+					'response' => $productData
+				];
 			}
+			
+			return [
+				'success' => false, 
+				'response' => json_decode($response->body(), true)
+			];	  
+  
 		} 
 		
-		public function transactionRecord($request, $user, $isWeb = false)
+		public function transactionRecord($request, $user)
 		{
 			// Basic Authorization Header
 			$basicAuth = base64_encode("{$this->apiKey}:{$this->secretKey}");
