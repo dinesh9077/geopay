@@ -94,60 +94,48 @@
 		}
 		
 		public function getValidatePhoneByOperator($mobileNumber, $operatorId, $isWeb = false)
-		{
-			try {
-				// Basic Authorization Header
-				$basicAuth = base64_encode("{$this->apiKey}:{$this->secretKey}");
-				$headers = [
-					'Authorization' => 'Basic ' . $basicAuth,
-					'Content-Type' => 'application/json',
-				];
+		{  
+			// Basic Authorization Header
+			$basicAuth = base64_encode("{$this->apiKey}:{$this->secretKey}");
+			$headers = [
+				'Authorization' => 'Basic ' . $basicAuth,
+				'Content-Type' => 'application/json',
+			];
 
-				// API Request Parameters
-				$postParams = [
-					'mobile_number' => $mobileNumber,
-				];
+			// API Request Parameters
+			$postParams = [
+				'mobile_number' => $mobileNumber,
+			];
 
-				// API Request
-				$response = Http::withHeaders($headers)->post("{$this->baseUrl}/lookup/mobile-number", $postParams);
+			// API Request
+			$response = Http::withHeaders($headers)->post("{$this->baseUrl}/lookup/mobile-number", $postParams);
 
-				// Handle Successful Response
-				if ($response->successful()) {
-					$operators = $response->json();
-					
-					// Check if the operator exists and is identified
-					$matchedOperator = collect($operators)->firstWhere('id', $operatorId);
-				 
-					if ($matchedOperator && $matchedOperator['identified']) {
-						$responseType = $isWeb ? 'webSuccessResponse' : 'successResponse';
-						return $this->{$responseType}('Operator matched successfully.', $matchedOperator);
-					}
-
-					// Operator ID not found or not identified
-					$errorMessage = 'The operator is not identified for this mobile number.';
-					$responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
-					return $this->{$responseType}($errorMessage);
-				}
+			// Handle Successful Response
+			if ($response->successful()) {
+				$operators = $response->json();
 				
-				$errors = json_decode($response->body(), true);  
-				$responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
-				return $this->{$responseType}($errors['errors'][0]['message']);
-			} catch (\Throwable $e) {
-				// Log Exception
-				Log::error('Operator API failed with exception:', [
-					'mobile_number' => $mobileNumber,
-					'operator_id' => $operatorId,
-					'exception' => $e->getMessage(),
-				]);
-
-				// Handle Exception
-				$errorMessage = 'Operator API failed due to an exception: ' . $e->getMessage();
-				$responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
-				return $this->{$responseType}($errorMessage);
+				// Check if the operator exists and is identified
+				$matchedOperator = collect($operators)->firstWhere('id', $operatorId);
+			 
+				if ($matchedOperator && $matchedOperator['identified']) {
+					return [
+						'success' => true, 
+						'response' => $matchedOperator
+					]; 
+				}
+ 
+				return [
+					'success' => false, 
+					'response' => 'The operator is not identified for this mobile number.'
+				]; 
 			}
+			
+			return [
+				'success' => false, 
+				'response' => json_decode($response->body(), true)
+			]; 
 		}
-
-		
+ 
 		public function getProducts($countryCode, $operatorId)
 		{ 
 			$basicAuth = base64_encode("{$this->apiKey}:{$this->secretKey}");

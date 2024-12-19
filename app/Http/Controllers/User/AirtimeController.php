@@ -75,9 +75,24 @@ class AirtimeController extends Controller
 	 
 	public function internationalAirtimeValidatePhone(Request $request)
 	{ 
-		$mobile_number = '+' . ltrim($request->mobile_number, '+');
-		$operator_id = $request->operator_id;
-		return $this->airtimeService->getValidatePhoneByOperator($mobile_number, $operator_id, true); 
+		try
+		{
+			$mobile_number = '+' . ltrim($request->mobile_number, '+');
+			$operator_id = $request->operator_id;
+			$response =  $this->airtimeService->getValidatePhoneByOperator($mobile_number, $operator_id, true); 
+			
+			if (!$response['success']) 
+			{	 
+				$errorMsg = is_array($response['response']) ? $response['response']['errors'][0]['message'] : 'The operator is not identified for this mobile number.';
+				throw new \Exception($errorMsg);
+			}
+			
+			return $this->successResponse('product fetched successfully.', $response['response']);
+        } 
+		catch (\Throwable $e)
+		{ 
+            return $this->errorResponse($e->getMessage());
+        } 
 	}
 	
 	public function internationalAirtimeStore(Request $request)

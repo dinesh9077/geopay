@@ -1,5 +1,6 @@
 @extends('user.layouts.app')
 @section('title', config('setting.site_name').' - International Airtime')
+@section('header_title', 'International Airtime')
 @section('content')
 <div class="container-fluid p-0">
 	<div class="row g-4">
