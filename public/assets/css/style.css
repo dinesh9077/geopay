@@ -426,7 +426,7 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
   border-bottom-width: 3px;
 }
 .setting-section .nav-link:focus, .nav-link:hover {
-  color: var(--primary-color);
+	color: var(--primary-color);
 }
 .setting-section .nav-underline{
   border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color)!important;
@@ -831,4 +831,12 @@ table.dataTable thead th, table.dataTable tbody td {
 .badge-info {
 	color: #fff;
 	background-color: #17a2b8;
+}
+
+.loading-span{
+	display: flex;
+	align-items: center;
+	width: fit-content !important;
+	cursor: not-allowed;
+	transition: background-color 0.3s ease;
 }

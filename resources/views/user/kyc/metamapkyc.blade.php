@@ -14,9 +14,7 @@
 		<link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css" />
 	</head>
-
-	
-	
+ 
 	<body>
 		<div class="container-fluid kyc-page">
 			<div class="row min-vh-100">

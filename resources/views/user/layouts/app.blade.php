@@ -37,7 +37,7 @@
 			}
 			.select2-container--default .select2-selection--single { 
 				border-radius: .5rem;
-			}
+			} 
 		</style>
 		@livewireStyles
 		<script> 

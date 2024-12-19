@@ -12,7 +12,7 @@
 		<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css" /> 
 	</head> 
 	<body>
 		<div class="container-fluid">
@@ -160,7 +160,7 @@
 												<label for="terms" class="d-flex text-secondary content-3"> I have read the User agreement and I accept it</label>
 											</div> 
 										</div> 
-										<div class="text-center">
+										<div class="text-center d-flex justify-content-center">
 											<button type="submit" class="btn btn-lg btn-primary w-100 font-md">Register</button>
 										</div>
 									</form>
@@ -240,7 +240,7 @@
 												<label for="terms" class="d-flex text-secondary content-3"> I have read the User agreement and I accept it</label>
 											</div> 
 										</div> 
-										<div class="text-center">
+										<div class="text-center d-flex justify-content-center">
 											<button type="submit" class="btn btn-lg btn-primary w-100 font-md">Register</button>
 										</div> 
 									</form>
@@ -277,10 +277,10 @@
 								<input type="text" class="form-control form-control-lg bg-light border-light" id="email" name="email" placeholder="Enter Email">
 							</div>
 							<div class="mb-3"> 
-								<input type="text" class="form-control form-control-lg bg-light border-light" id="otp" name="otp" placeholder="Enter OTP">
-								<span id="resendemailotp" class="content-3 text-secondary"></span>
+								<input type="text" class="form-control form-control-lg bg-light border-light" id="otp" name="otp" placeholder="Enter OTP" oninput="this.value = this.value.replace(/\D/g, '')"> 
 							</div>
-							<div class="text-center">
+							<span id="resendemailotp" class="content-3 text-secondary"></span>
+							<div class="text-center d-flex justify-content-center mt-3">
 								<button type="submit" class="btn btn-lg btn-primary w-100">Verify Otp</button>
 							</div>
 						</form>
@@ -306,10 +306,10 @@
 								<input type="text" class="form-control form-control-lg bg-light border-light" id="mobile_number" name="mobile_number" placeholder="Enter Mobile">
 							</div>
 							<div class="mb-4"> 
-								<input type="text" class="form-control form-control-lg bg-light border-light" id="otp" name="otp" placeholder="Enter OTP">
-								<span id="resendmobile_numberotp" class="content-3 text-secondary"></span>
+								<input type="text" class="form-control form-control-lg bg-light border-light" id="otp" name="otp" placeholder="Enter OTP" oninput="this.value = this.value.replace(/\D/g, '')">
 							</div>
-							<div class="text-center">
+							<span id="resendmobile_numberotp" class="content-3 text-secondary"></span>
+							<div class="text-center d-flex justify-content-center mt-3">
 								<button type="submit" class="btn btn-lg btn-primary w-100">Verify Otp</button>
 							</div>
 						</form>
@@ -391,8 +391,12 @@
 			$individualForm.submit(function(event) 
 			{
 				event.preventDefault();   
-				
-				$(this).find('button').prop('disabled',true);   
+				 
+				$individualForm.find('[type="submit"]')
+				.prop('disabled', true) 
+				.addClass('loading-span') 
+				.html('<span class="spinner-border"></span>');
+  
 				var formData = {};
 				$(this).find('input, select, checkbox').each(function() {
 					var inputName = $(this).attr('name');
@@ -418,7 +422,11 @@
 					dataType: 'Json', 
 					success: function (res) 
 					{ 
-						$individualForm.find('button').prop('disabled',false);	 
+						$individualForm.find('[type="submit"]')
+						.prop('disabled', false)  
+						.removeClass('loading-span') 
+						.html('Register'); 
+						
 						$('.error_msg').remove(); 
 						if(res.status === "success")
 						{ 
@@ -457,7 +465,11 @@
 			{
 				event.preventDefault();   
 				
-				$(this).find('button').prop('disabled',true);   
+				$companyForm.find('[type="submit"]')
+				.prop('disabled', true) 
+				.addClass('loading-span') 
+				.html('<span class="spinner-border"></span>'); 
+				
 				var formData = {};
 				$(this).find('input, select, checkbox').each(function() {
 					var inputName = $(this).attr('name');
@@ -483,8 +495,12 @@
 					dataType: 'Json', 
 					success: function (res) 
 					{ 
-						$companyForm.find('button').prop('disabled',false);	 
+						$companyForm.find('[type="submit"]')
+						.prop('disabled', false)  
+						.removeClass('loading-span') 
+						.html('Register'); 
 						$('.error_msg').remove(); 
+						
 						if(res.status === "success")
 						{ 
 							toastrMsg(res.status, res.message); 
@@ -521,7 +537,10 @@
 				event.preventDefault();
 				 
 				const $form = $(this); // Cache the current form being submitted
-				$form.find('button').prop('disabled', true); // Disable submit button
+				$form.find('[type="submit"]')
+				.prop('disabled', true) 
+				.addClass('loading-span') 
+				.html('<span class="spinner-border"></span>');
 
 				// Create a JSON object from form data
 				let formData = {};
@@ -542,7 +561,11 @@
 					cache: false,
 					dataType: 'json',
 					success: function(res) {
-						$form.find('button').prop('disabled', false); // Enable the submit button
+						$form.find('[type="submit"]')
+						.prop('disabled', false)  
+						.removeClass('loading-span') 
+						.html('Verify Otp'); 
+						
 						$form.find('.error_msg').remove(); // Remove any previous error messages
 
 						if (res.status === "success") 
@@ -775,6 +798,11 @@
 
 					// Attach event listener to trigger OTP resend functionality
 					document.getElementById('resendLink').addEventListener('click', function(event) {
+						 // Disable the link and change text to "Sending..."
+						var resendLink = document.getElementById('resendLink');
+						resendLink.innerHTML = 'Sending OTP, please wait...';
+						resendLink.classList.add('disabled'); // Optionally add a 'disabled' class for styling (if necessary)
+						resendLink.style.pointerEvents = 'none'; // Disable click events
 						resendOtp(keyId, resendId, resendUrl, commonForm); // Call the function to resend OTP
 					});
 
