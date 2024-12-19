@@ -332,7 +332,7 @@
 		
 		<script>  
 			var timer;
-			var countdown = 60; // Set the countdown duration in seconds
+			var countdown = 10; // Set the countdown duration in seconds
 			var $individualForm = $('#individualRegisterForm'); 
 			var $companyForm = $('#companyRegisterForm');  
 			 
@@ -684,7 +684,7 @@
 								mobile_number: "{{ route('mobile.resend') }}", 
 							};
 							
-							countdown = 60;
+							countdown = 10;
 							clearInterval(timer);
 							const resendUrl = resendRoutes[keyId];
 							timer = setInterval(function() {
@@ -718,10 +718,14 @@
 				clearInterval(timer);
 
 				let formData = {};
+				
 				const inputName = commonForm.find('#' + keyId).attr('name');
 				const inputValue = commonForm.find('#' + keyId).val();
 				formData[inputName] = inputValue;
-
+				if(keyId == 'mobile_number')
+				{ 
+					formData['country_id'] = commonForm.find('[name="country_id"]').val(); 
+				}
 				// Encrypt data before sending
 				const encrypted_data = encryptData(JSON.stringify(formData));
 
@@ -735,7 +739,7 @@
 					success: function(res) {
 						$('.error_msg').remove();
 						if (res.status === "success") { 
-							countdown = 60; // Reset countdown after successful OTP resend
+							countdown = 10; // Reset countdown after successful OTP resend
 							clearInterval(timer);
 							timer = setInterval(function() {
 								updateTimer(keyId, resendId, resendUrl, commonForm);
