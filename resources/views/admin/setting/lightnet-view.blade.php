@@ -1,8 +1,10 @@
 <hr>
 <div class="d-flex justify-content-between align-items-center">
 	<h4 class="mb-3 mb-md-0">Available Countries</h4>
-	<a href="{{ route('admin.third-party-key.sync-countries') }}" onclick="syncLightNet(this, event)" class="btn btn-sm btn-info">Sync Countries</a>
-	<a href="{{ route('admin.third-party-key.sync-catalogue') }}" onclick="syncLightNet(this, event)" class="btn btn-sm btn-primary">Sync Catalogue</a>
+	<div class="d-flex align-items-center gap-2">
+		<a href="{{ route('admin.third-party-key.sync-countries') }}" onclick="syncLightNet(this, event)" class="btn btn-sm btn-info">Sync Countries</a>
+		<a href="{{ route('admin.third-party-key.sync-catalogue') }}" onclick="syncLightNet(this, event)" class="btn btn-sm btn-primary">Sync Catalogue</a>
+	</div>
 </div>
 <div class="data-table-container">
 	<table class="table mb-4">

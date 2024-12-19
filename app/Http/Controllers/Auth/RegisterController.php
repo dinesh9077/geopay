@@ -99,6 +99,8 @@ class RegisterController extends Controller
 			'country_id' => 'required|integer',
 			'terms' => 'required|integer|in:1',
 			'mobile_number' => 'required|integer',  
+		],[
+			'terms.integer' => 'You must agree to the terms and conditions to proceed.'
 		]);
 		
 		$validator->after(function ($validator) use ($request) {
@@ -180,6 +182,8 @@ class RegisterController extends Controller
 			'terms' => 'required|integer|in:1',
 			'mobile_number' => 'required|integer',  
 			'company_name' => 'required|string',  
+		],[
+			'terms.integer' => 'You must agree to the terms and conditions to proceed.'
 		]);
 		
 		$validator->after(function ($validator) use ($request) {
