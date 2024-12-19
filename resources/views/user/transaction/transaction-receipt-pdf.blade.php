@@ -93,23 +93,14 @@
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
 									{{ $userName }} {{ $userNumber }}</p>
 								</td>
-							</tr>
-							<tr> 
-								<td style="width: 40%;">
-									<p style="margin-top: 0;"><span style="font-weight: 600;">TO ACCOUNT</span></p>
-								</td> 
-								<td> 
-									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
-									{{ $receiveName }} {{ $receiveNumber }}</p>
-								</td>
-							</tr>
+							</tr> 
 							<tr> 
 								<td style="width: 40%;">
 									<p style="margin-top: 0;"><span style="font-weight: 600;">COUNTERPARTY NAME</span></p>
 								</td> 
 								<td> 
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
-									{{ $receiveNumber }}</p>
+									{{ $receiveName }} {{ $receiveNumber }}</p>
 								</td>
 							</tr>
 						@elseif ($transaction->platform_name == 'international airtime')

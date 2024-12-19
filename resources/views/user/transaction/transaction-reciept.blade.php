@@ -30,14 +30,10 @@
         <tr>
             <th class="content-4 d-flex justify-content-between text-nowrap">FROM ACCOUNT <span class="mx-1">:</span></th>
             <td class="content-4">{{ $userName }} {{ $userNumber }}</td>
-        </tr>
-        <tr>
-            <th class="content-4 d-flex justify-content-between text-nowrap">TO ACCOUNT <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $receiveName }} {{ $receiveNumber }}</td>
-        </tr>
+        </tr> 
         <tr>
             <th class="content-4 d-flex justify-content-between text-nowrap">COUNTERPARTY NAME <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $receiveName }}</td>
+            <td class="content-4">{{ $receiveName }} {{ $receiveNumber }}</td>
         </tr>
     @elseif ($transaction->platform_name == 'international airtime')
         <tr>
