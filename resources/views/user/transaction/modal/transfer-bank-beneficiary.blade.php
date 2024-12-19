@@ -133,7 +133,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="return $('#addTransferBankBeneficiary').remove();">Close</button>
-				<button type="submit" form="transferBankBeneficiaryForm" class="btn btn-primary">Submit</button>
+				<button type="submit" form="transferBankBeneficiaryForm" id="beneficiaryStore" class="btn btn-primary">Submit</button>
 			</div>
 		</div>
 	</div>
@@ -182,8 +182,11 @@
 	$beneficiaryForm.submit(function(event) 
 	{
 		event.preventDefault();   
-		$beneficiaryForm.find('button').prop('disabled',true);  
-		run_waitMe($('#transferBankBeneficiaryForm'), 1, 'facebook');
+		$('#beneficiaryStore')
+		.prop('disabled', true) 
+		.addClass('loading-span') 
+		.html('<span class="spinner-border"></span>');
+		
 		var formData = {};
 		$(this).find('input, select, checkbox').each(function() {
 			var inputName = $(this).attr('name');
@@ -218,8 +221,11 @@
 			dataType: 'Json', 
 			success: function (res) 
 			{ 
-				$beneficiaryForm.find('button').prop('disabled',false);	 
-				$('#transferBankBeneficiaryForm').waitMe('hide');
+				$('#beneficiaryStore')
+				.prop('disabled', false)  
+				.removeClass('loading-span') 
+				.html('Submit'); 
+				
 				$('.error_msg').remove(); 
 				if(res.status === "success")
 				{ 

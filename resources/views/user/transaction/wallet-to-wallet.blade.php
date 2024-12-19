@@ -25,7 +25,7 @@
 					</div> 
 				</div>
 				<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2"> 
-					<button type="submit" class="btn btn-lg btn-primary rounded-2 text-nowrap" >Pay Money</button>
+					<button type="submit" class="btn btn-primary rounded-2 text-nowrap" >Pay Money</button>
 				</div>
 			</form>
 		</div>   
@@ -80,7 +80,10 @@
 		{
 			event.preventDefault();   
 			
-			$walletForm.find('button').prop('disabled',true);   
+			$walletForm.find('[type="submit"]')
+			.prop('disabled', true) 
+			.addClass('loading-span') 
+			.html('<span class="spinner-border"></span>');
 			var formData = {};
 			$walletForm.find('input, select, textarea, checkbox').each(function() {
 				var inputName = $(this).attr('name');
@@ -95,8 +98,7 @@
 			});
 
 			// Encrypt data before sending
-			const encrypted_data = encryptData(JSON.stringify(formData));
-			run_waitMe($('body'), 1, 'facebook')
+			const encrypted_data = encryptData(JSON.stringify(formData)); 
 			$.ajax({
 				async: true,
 				type: $(this).attr('method'),
@@ -105,10 +107,13 @@
 				cache: false, 
 				dataType: 'Json', 
 				success: function (res) 
-				{ 
-					$('body').waitMe('hide'); // Hide the loading spinner
-					$walletForm.find('button').prop('disabled',false);	 
+				{  
+					$walletForm.find('[type="submit"]')
+					.prop('disabled', false)  
+					.removeClass('loading-span') 
+					.html('Pay Money'); 
 					$('.error_msg').remove(); 
+					
 					if(res.status === "success")
 					{ 
 						toastrMsg(res.status, res.message); 

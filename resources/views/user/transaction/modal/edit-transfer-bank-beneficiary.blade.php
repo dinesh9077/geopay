@@ -137,7 +137,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="return $('#editTransferBankBeneficiary, .modal-backdrop').remove();">Close</button>
-				<button type="submit" form="editTransferBankBeneficiaryForm" class="btn btn-primary">Update</button>
+				<button type="submit" form="editTransferBankBeneficiaryForm" id="beneficiaryUpdate" class="btn btn-primary">Update</button>
 			</div>
 		</div>
 	</div>
@@ -186,8 +186,11 @@
 	$beneficiaryForm.submit(function(event) 
 	{
 		event.preventDefault();   
-		$beneficiaryForm.find('button').prop('disabled',true);  
-		run_waitMe($('#editTransferBankBeneficiaryForm'), 1, 'facebook');
+		$('#beneficiaryUpdate')
+		.prop('disabled', true) 
+		.addClass('loading-span') 
+		.html('<span class="spinner-border"></span>');
+
 		var formData = {};
 		$(this).find('input, select, checkbox').each(function() {
 			var inputName = $(this).attr('name');
@@ -222,8 +225,11 @@
 			dataType: 'Json', 
 			success: function (res) 
 			{ 
-				$beneficiaryForm.find('button').prop('disabled',false);	 
-				$('#editTransferBankBeneficiaryForm').waitMe('hide');
+				$('#beneficiaryUpdate')
+				.prop('disabled', false)  
+				.removeClass('loading-span') 
+				.html('Register'); 
+				
 				$('.error_msg').remove(); 
 				if(res.status === "success")
 				{ 

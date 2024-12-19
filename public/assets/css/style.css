@@ -215,11 +215,12 @@ a.sidebar-link[data-bs-toggle=collapse].collapsed::after {
 .btn-primary {
   background-color: var(--primary-color) !important;
   border-color: var(--primary-color) !important;
+  min-height: 38px;
 }
 
 .btn-primary:hover {
   background-color: var(--primary-color-hover) !important;
-  border-color: var(--primary-color-hover) !important;
+  border-color: var(--primary-color-hover) !important; 
 }
 
 .btn-secondary {

@@ -6,7 +6,7 @@
 		<!-- Left Column -->
 		<div class="col-lg-9 mb-3 add-money-section">
 			<div class="d-flex justify-content-end">
-				<button type="button" class="btn btn-lg btn-primary mb-4" onclick="addTransferBankBeneficiary(this, event)">Add Beneficiary Details</button>
+				<button type="button" class="btn btn-primary mb-4" onclick="addTransferBankBeneficiary(this, event)">Add Beneficiary Details</button>
 			</div>
 
 			<form id="transferToBankForm" action="{{ route('transfer-to-bank.store') }}" method="post" class="animate__animated animate__fadeIn g-2">
@@ -37,7 +37,7 @@
 					</div> 
 				</div>
 				<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2"> 
-					<button type="submit" class="btn btn-lg btn-primary rounded-2 text-nowrap">Submit</button>
+					<button type="submit" class="btn btn-primary rounded-2 text-nowrap">Submit</button>
 				</div>
 			</form> 
 		</div>
@@ -266,8 +266,11 @@
 	$transferToBankForm.submit(function(event) 
 	{
 		event.preventDefault();   
-		$transferToBankForm.find('button').prop('disabled',true);  
-		run_waitMe($('body'), 1, 'facebook');
+		$transferToBankForm.find('[type="submit"]')
+		.prop('disabled', true) 
+		.addClass('loading-span') 
+		.html('<span class="spinner-border"></span>');
+
 		var formData = {};
 		$(this).find('input, select, textarea').each(function() {
 			var inputName = $(this).attr('name'); 
@@ -291,8 +294,11 @@
 			dataType: 'Json', 
 			success: function (res) 
 			{ 
-				$transferToBankForm.find('button').prop('disabled',false);	 
-				$('body').waitMe('hide');
+				$transferToBankForm.find('[type="submit"]')
+				.prop('disabled', false)  
+				.removeClass('loading-span') 
+				.html('Submit'); 
+				
 				$('.error_msg').remove(); 
 				if(res.status === "success")
 				{ 

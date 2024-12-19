@@ -38,7 +38,7 @@
 					</div> 
 				</div>
 				<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2"> 
-					<button type="submit" class="btn btn-lg btn-primary rounded-2 text-nowrap">Submit</button>
+					<button type="submit" class="btn btn-primary rounded-2 text-nowrap">Submit</button>
 				</div>
 			</form> 
 		</div>
@@ -222,7 +222,7 @@
 		if (mobileNumber.length > 0) {
 			debounceTimer = setTimeout(() => {
 				validatePhoneNumber(mobileNumber, operatorId);
-			}, 1000); // Wait 500ms after the last keystroke
+			}, 700); // Wait 500ms after the last keystroke
 		}
 	});
 
@@ -281,8 +281,10 @@
 	$airtime.submit(function(event) 
 	{
 		event.preventDefault(); 
-		$airtime.find('button').prop('disabled',true);  
-		run_waitMe($('body'), 1, 'facebook');
+		$airtime.find('[type="submit"]')
+		.prop('disabled', true) 
+		.addClass('loading-span') 
+		.html('<span class="spinner-border"></span>');
 		
 		var formData = {};
 		$airtime.find('input, select, textarea, checkbox').each(function() {
@@ -317,8 +319,11 @@
 			dataType: 'Json', 
 			success: function (res) 
 			{   
-				$airtime.find('button').prop('disabled',false);	 
-				$('body').waitMe('hide');
+				$airtime.find('[type="submit"]')
+				.prop('disabled', false)  
+				.removeClass('loading-span') 
+				.html('Submit'); 
+				
 				$('.error_msg').remove(); 
 				if(res.status === "success")
 				{ 
