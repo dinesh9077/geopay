@@ -14,6 +14,6 @@
 </div> 
 
 <div class="d-flex align-items-center justify-content-between">
-	<button type="button" class="btn btn-secondary prev-step"><i class="bi bi-arrow-left me-1"></i>Previous</button>
-	<button type="button" class="btn btn-primary next-step">Next <i class="bi bi-arrow-right ms-1"></i></button>
+	<button type="button" class="btn btn-secondary btn-lg prev-step"><i class="bi bi-arrow-left me-1"></i>Previous</button>
+	<button type="button" class="btn btn-primary btn-lg next-step">Next <i class="bi bi-arrow-right ms-1"></i></button>
 </div>

@@ -252,7 +252,11 @@
 				function submitFormStep(stepNumber, isFinal = false) 
 				{ 
 					var stepFields = $(".step-" + stepNumber) 
-					stepFields.find('button').prop('disabled',true);   
+					var buttonClass = isFinal ? '.submit-final' : '.next-step';
+					stepFields.find(buttonClass)
+					.prop('disabled', true) 
+					.addClass('loading-span') 
+					.html('<span class="spinner-border"></span>');
 					 
 					var formDataInput = {}; 
 					stepFields.find("input, select").each(function () {
@@ -314,7 +318,12 @@
 						cache: false, 
 						success: function(res)
 						{
-							stepFields.find('button').prop('disabled',false);	 
+							var buttontext = isFinal ? 'Submit' : 'Next <i class="bi bi-arrow-right ms-1"></i>';
+							stepFields.find('[type="button"]')
+							.prop('disabled', false)  
+							.removeClass('loading-span') 
+							.html(buttontext);  
+							 
 							$('.error_msg').remove(); 
 							if (res.status === "success")
 							{

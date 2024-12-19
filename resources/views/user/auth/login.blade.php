@@ -96,7 +96,7 @@
 									<label class="d-flex text-center justify-content-end text-secondary font-md"> <a class="content-3 text-primary" href="{{ route('password.request') }}" >Forgot your password?</a> </label>
 								</div>
 								
-								<div class="text-center">
+								<div class="text-center d-flex justify-content-center">
 									<button type="submit" class="btn btn-lg btn-primary w-100">Login</button>
 								</div>
 								<div class="d-flex align-items-center justify-content-center my-3">
@@ -122,11 +122,16 @@
         data-navigate-once="true"></script>
 	<x-scripts :cryptoKey="$cryptoKey" />	
 	<script>  
-		$('#loginForm').submit(function(event) 
+		var $loginForm = $('#loginForm');
+		$loginForm.submit(function(event) 
 		{
 			event.preventDefault();   
 			
-			$(this).find('button').prop('disabled',true);   
+			$loginForm.find('[type="submit"]')
+			.prop('disabled', true) 
+			.addClass('loading-span') 
+			.html('<span class="spinner-border"></span>');
+			
 			// Create a JSON object from form data
 			var formData = {};
 			$(this).find('input').each(function() {
@@ -146,12 +151,18 @@
 				cache: false, 
 				dataType: 'Json', 
 				success: function (res) 
-				{ 
-					$('#loginForm').find('button').prop('disabled',false);	 
+				{  
+					$loginForm.find('[type="submit"]')
+					.prop('disabled', false)  
+					.removeClass('loading-span') 
+					.html('Login');  
+					
 					$('.error_msg').remove(); 
-					if(res.status === "error")
+					if(res.status === "success")
 					{ 
-						toastrMsg(res.status,res.message);
+						toastrMsg(res.status,res.message); 
+						const decryptRes = decryptData(res.response); 
+						window.location.href = decryptRes.url;  
 					}
 					else if(res.status == "validation")
 					{  
@@ -166,11 +177,8 @@
 					}
 					else
 					{ 
-						toastrMsg(res.status,res.message); 
-						const decryptRes = decryptData(res.response); 
-						window.location.href = decryptRes.url;
-						//Livewire.navigate(decryptRes.url);
-					}
+						toastrMsg(res.status,res.message);
+					} 
 				} 
 			});
 		});

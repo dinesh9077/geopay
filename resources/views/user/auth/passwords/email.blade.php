@@ -9,7 +9,7 @@
 			<input type="text" class="form-control form-control-lg border-0 bg-light" id="email" name="email" placeholder="Enter your email">
 		</div> 
 	</div>
-	<div class="text-center">
+	<div class="text-center d-flex justify-content-center">
 		<button type="submit" class="btn btn-lg btn-primary w-100">Send</button>
 	</div>
 </form>

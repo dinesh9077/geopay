@@ -12,21 +12,26 @@
 	<div class="mb-4">
 		<label for="otp" class="required content-3 text-primary mb-2">Enter OTP</label>
 		<div class="input-group mb-3">
-			<input type="text" class="form-control form-control-lg border-0 bg-light" id="otp" name="otp" placeholder="Enter your OTP">
-			<span id="resendOtp" class="content-3 text-secondary"></span>
-		</div> 
+			<input type="text" class="form-control form-control-lg border-0 bg-light" id="otp" name="otp" placeholder="Enter your OTP"> 
+		</div>  
 	</div>
-	<div class="text-center">
+	<span id="resendOtp" class="content-3 text-secondary"></span>
+	<div class="text-center d-flex justify-content-center mt-3">
 		<button type="submit" class="btn btn-lg btn-primary w-100">Verify OTP</button>
 	</div>
 </form>
 
 <script>
-	$('#verifyOtpForm').submit(function(event) 
+	var $verifyOtpForm = $('#verifyOtpForm');
+	$verifyOtpForm.submit(function(event) 
 	{
 		event.preventDefault();   
 		
-		$(this).find('button').prop('disabled',true);   
+		$verifyOtpForm.find('[type="submit"]')
+		.prop('disabled', true) 
+		.addClass('loading-span') 
+		.html('<span class="spinner-border"></span>');
+
 		// Create a JSON object from form data
 		var formData = {};
 		$(this).find('input').each(function() {
@@ -47,11 +52,18 @@
 			dataType: 'Json', 
 			success: function (res) 
 			{ 
-				$('#verifyOtpForm').find('button').prop('disabled',false);	 
+				$verifyOtpForm.find('[type="submit"]')
+				.prop('disabled', false)  
+				.removeClass('loading-span') 
+				.html('Verify OTP'); 
+
 				$('.error_msg').remove(); 
-				if(res.status === "error")
+				if(res.status === "success")
 				{ 
 					toastrMsg(res.status,res.message);
+					const result = decryptData(res.response); 
+					$('#response-view').html(result.view);
+					$('#email').val(result.email); 
 				}
 				else if(res.status == "validation")
 				{  
@@ -66,10 +78,7 @@
 				}
 				else
 				{ 
-					toastrMsg(res.status,res.message); 
-					const result = decryptData(res.response); 
-					$('#response-view').html(result.view);
-					$('#email').val(result.email); 
+					toastrMsg(res.status,res.message);  
 				}
 			} 
 		});

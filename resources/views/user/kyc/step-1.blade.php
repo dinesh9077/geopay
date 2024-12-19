@@ -48,6 +48,6 @@
 	@endif
 </div> 
 <div class="d-flex justify-content-end">
-	<button type="button" class="btn btn-primary next-step">Next <i class="bi bi-arrow-right ms-1"></i></button>
+	<button type="button" class="btn btn-primary btn-lg next-step">Next <i class="bi bi-arrow-right ms-1"></i></button>
 </div>
  

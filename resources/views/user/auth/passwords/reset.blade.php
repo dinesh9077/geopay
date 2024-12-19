@@ -84,12 +84,17 @@
 	
 		let timer;
 		let countdown = 60; // Set the countdown duration in seconds
-
-		$('#resetFormMail').submit(function(event) 
+		
+		var $resetFormMail = $('#resetFormMail');
+		$resetFormMail.submit(function(event) 
 		{
 			event.preventDefault();   
 			
-			$(this).find('button').prop('disabled',true);   
+			$resetFormMail.find('[type="submit"]')
+			.prop('disabled', true) 
+			.addClass('loading-span') 
+			.html('<span class="spinner-border"></span>');
+			
 			// Create a JSON object from form data
 			var formData = {};
 			$(this).find('input').each(function() {
@@ -110,11 +115,20 @@
 				dataType: 'Json', 
 				success: function (res) 
 				{ 
-					$('#resetFormMail').find('button').prop('disabled',false);	 
-					$('.error_msg').remove(); 
-					if(res.status === "error")
+					$resetFormMail.find('[type="submit"]')
+					.prop('disabled', false)  
+					.removeClass('loading-span') 
+					.html('Send');   
+					$('.error_msg').remove();  
+					
+					if(res.status === "success")
 					{ 
-						toastrMsg(res.status,res.message);
+						toastrMsg(res.status,res.message); 
+						const result = decryptData(res.response); 
+						$('#response-view').html(result.view);
+						$('#email').val(result.email);
+						timer = setInterval(updateTimer, 1000);
+						
 					}
 					else if(res.status == "validation")
 					{  
@@ -129,11 +143,7 @@
 					}
 					else
 					{ 
-						toastrMsg(res.status,res.message); 
-						const result = decryptData(res.response); 
-						$('#response-view').html(result.view);
-						$('#email').val(result.email);
-						timer = setInterval(updateTimer, 1000);
+						toastrMsg(res.status,res.message);
 					}
 				} 
 			});
@@ -161,9 +171,10 @@
 				success: function (res) 
 				{  	 
 					$('.error_msg').remove(); 
-					if(res.status === "error")
+					if(res.status === "success")
 					{ 
 						toastrMsg(res.status,res.message);
+						timer = setInterval(updateTimer, 1000); 
 					}
 					else if(res.status == "validation")
 					{  
@@ -173,7 +184,7 @@
 							.addClass('error_msg text-danger content-4') 
 							.attr('id', key + 'Error')
 							.text(value[0]);  
-							inputField.parent().parent().append(errorSpan);
+							inputField.parent().append(errorSpan);
 						});
 					}
 					else
@@ -197,7 +208,11 @@
 				
 				// Attach event listener to trigger OTP resend functionality
 				document.getElementById('resendLink').addEventListener('click', function(event) {
-					event.preventDefault();
+					event.preventDefault(); 
+					var resendLink = document.getElementById('resendLink');
+					resendLink.innerHTML = 'Sending OTP, please wait...';
+					resendLink.classList.add('disabled'); // Optionally add a 'disabled' class for styling (if necessary)
+					resendLink.style.pointerEvents = 'none'; // Disable click events
 					resendOtp();  // Call the function to resend OTP
 				});
 

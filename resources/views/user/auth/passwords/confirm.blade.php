@@ -21,17 +21,22 @@
 			<input type="text" class="form-control border-0 bg-light" id="password_confirmation" name="password_confirmation" placeholder="Enter your Password Confirmation">
 		</div>  
 	</div>
-	<div class="text-center">
+	<div class="text-center d-flex justify-content-center">
 		<button type="submit" class="btn btn-primary w-100">Reset Password</button>
 	</div>
 </form>
 
 <script>
+	var $resetPasswordForm = $('#resetPasswordForm');
 	$('#resetPasswordForm').submit(function(event) 
 	{
 		event.preventDefault();   
 		
-		$(this).find('button').prop('disabled',true);   
+		$resetPasswordForm.find('[type="submit"]')
+		.prop('disabled', true) 
+		.addClass('loading-span') 
+		.html('<span class="spinner-border"></span>');
+		
 		// Create a JSON object from form data
 		var formData = {};
 		$(this).find('input').each(function() {
@@ -52,11 +57,17 @@
 			dataType: 'Json', 
 			success: function (res) 
 			{ 
-				$('#resetPasswordForm').find('button').prop('disabled',false);	 
+				$resetPasswordForm.find('[type="submit"]')
+				.prop('disabled', false)  
+				.removeClass('loading-span') 
+				.html('Register');  
 				$('.error_msg').remove(); 
-				if(res.status === "error")
+				if(res.status === "success")
 				{ 
 					toastrMsg(res.status,res.message);
+					setTimeout(function() {
+						window.location.href = "{{ route('login') }}";
+					}, 1000); 
 				}
 				else if(res.status == "validation")
 				{  
@@ -71,10 +82,7 @@
 				}
 				else
 				{ 
-					toastrMsg(res.status,res.message);  
-					setTimeout(function() {
-						window.location.href = "{{ route('login') }}";
-					}, 1000);  
+					toastrMsg(res.status,res.message);   
 				}
 			} 
 		});

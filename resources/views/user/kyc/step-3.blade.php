@@ -37,8 +37,8 @@
 </div>
 
 <div class="d-flex align-items-center justify-content-between">
-	<button type="button" class="btn btn-secondary prev-step"><i class="bi bi-arrow-left me-1"></i>Previous</button>  
-	<button type="button" class="btn btn-primary submit-final">Submit </button> 
+	<button type="button" class="btn btn-secondary btn-lg prev-step"><i class="bi bi-arrow-left me-1"></i>Previous</button>  
+	<button type="button" class="btn btn-primary btn-lg submit-final">Submit </button> 
 </div>
 <script>
 	
