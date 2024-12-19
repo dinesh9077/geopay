@@ -349,7 +349,7 @@ class RegisterController extends Controller
 		$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
 
 		// Check if the mobile number already exists in the database
-		if (User::where('formatted_number', $formatted_number)->exists()) {
+		if (User::where('formatted_number', $formattedNumber)->exists()) {
 			return $this->errorResponse('The mobile number you provided already exists.');
 		}
 			 
