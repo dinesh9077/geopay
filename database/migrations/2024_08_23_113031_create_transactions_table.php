@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('mobile_number')->nullable(); 
             $table->string('unit_currency')->nullable();
             $table->decimal('unit_amount',25,4)->nullable();
+			$table->decimal('unit_rates', 25, 4)->default(0);
             $table->decimal('rates',25,4)->nullable();
             $table->string('unit_convert_currency')->nullable();
             $table->decimal('unit_convert_amount',25,4)->nullable();

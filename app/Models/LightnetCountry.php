@@ -9,13 +9,15 @@ class LightnetCountry extends Model
 {
     use HasFactory;
 	
-	 // Define fillable fields to allow mass assignment
+	// Define fillable fields to allow mass assignment
     protected $fillable = [
         'data', 
         'value', 
         'label', 
         'service_name', 
         'status',
+        'markdown_type',
+        'markdown_charge',
         'updated_at'
     ];
 
