@@ -161,27 +161,39 @@
 				$products = $response->json();
 				$productData = [];
 
-				if (!empty($products)) {
-					$exchangeRates = ExchangeRate::whereType(2)->get()->keyBy('currency');
+				if (!empty($products)) 
+				{
+					//$exchangeRates = ExchangeRate::whereType(2)->get()->keyBy('currency');
 					
 					foreach ($products as $product) {
-						$unitAmount = $product['prices']['retail']['amount'] ?? 0;
-						$unit = $product['prices']['retail']['unit'] ?? '';
-						$rates = $product['rates']['retail'] ?? [];
-						$exchangeRate = $exchangeRates[$unit]['exchange_rate'] ?? null;
+						$retailUnitCurrency = $product['prices']['retail']['unit'] ?? '';
+						$retailUnitAmount = $product['prices']['retail']['amount'] ?? 0;
+						$wholesaleUnitCurrency = $product['prices']['wholesale']['unit'] ?? '';
+						$wholesaleUnitAmount = $product['prices']['wholesale']['amount'] ?? 0;
+						$destinationAmount = $product['destination']['amount'] ?? 0;
+						$retailRates = $product['rates']['retail'] ?? 0;
+						$wholesaleRates = $product['rates']['wholesale'] ?? 0;
+						$validity = $product['validity']['quantity'] ?? 0;
+						$validityUnit = $product['validity']['unit'] ?? 'DAY';
+						$destinationCurrency = $product['operator']['country']['iso_code'] ?? '';
+						
+						//$exchangeRate = $exchangeRates[$unit]['exchange_rate'] ?? null;
 
-						if ($exchangeRate) {
-							$productData[] = [
-								'id' => $product['id'] ?? null,
-								'name' => $product['name'] ?? 'Unknown Product',
-								'unit' => $unit,
-								'rates' => $rates,
-								'unit_amount' => $unitAmount,
-								'unit_convert_currency' => config('setting.default_currency'),
-								'unit_convert_exchange' => $exchangeRate,
-								'unit_convert_amount' => $unitAmount * $exchangeRate
-							];
-						}
+						$productData[] = [
+							'id' => $product['id'] ?? null,
+							'name' => $product['name'] ?? 'Unknown Product',
+							'retail_unit_currency' => $retailUnitCurrency,
+							'retail_unit_amount' => $retailUnitAmount,
+							'wholesale_unit_currency' => $wholesaleUnitCurrency,
+							'wholesale_unit_amount' => $wholesaleUnitAmount,
+							'retail_rates' => $retailRates,
+							'wholesale_rates' => $wholesaleRates,
+							'destination_rates' => $destinationAmount,
+							'destination_currency' => $destinationCurrency,
+							'validity' => $validity,
+							'validity_unit' => $validityUnit,
+							'product_response' => json_encode($product),
+						];
 					}
 				}
 
@@ -194,8 +206,42 @@
 			return [
 				'success' => false, 
 				'response' => json_decode($response->body(), true)
-			];	  
-  
+			];	   
+		} 
+		
+		public function getProductById($productId)
+		{  
+			if (empty($productId)) {
+				return [
+					'success' => false,
+					'response' => ['message' => 'Product ID is required.']
+				];
+			}
+			$basicAuth = base64_encode("{$this->apiKey}:{$this->secretKey}");
+			$headers = [
+				'Authorization' => 'Basic ' . $basicAuth,
+				'Content-Type' => 'application/json',
+			];
+ 
+			// API Request
+			$response = Http::withHeaders($headers)->get("{$this->baseUrl}/products/{$productId}");
+
+			// Handle Successful Response
+			if ($response->successful()) {
+				return [
+					'success' => true,
+					'response' => $response->json()
+				];
+			}
+			
+			// Handle Client or Server Errors
+			return [
+				'success' => false,
+				'response' => [
+					'status' => $response->status(),
+					'message' => $response->json()['message'] ?? 'An error occurred.'
+				]
+			]; 
 		} 
 		
 		public function transactionRecord($request, $user)

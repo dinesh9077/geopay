@@ -151,10 +151,33 @@
 					if (result.length > 0) {
 						output += '<option value="">Select Product</option>';
 						result.forEach(function(product) 
-						{ 
-							if (product.name && product.id) {
-								output += `<option value="${product.id}" data-name="${product.name}" data-unit="${product.unit}" data-rates="${product.rates}" data-unit_amount="${product.unit_amount}" data-unit_convert_currency="${product.unit_convert_currency}" data-unit_convert_amount="${product.unit_convert_amount}" data-unit_convert_exchange="${product.unit_convert_exchange}">${product.name} - ${product.unit_convert_amount.toFixed(2)} ${product.unit_convert_currency}</option>`;
-							}
+						{   
+							if (product.name && product.id) 
+							{
+								// Validate wholesale and retail prices  
+								const attributes = [
+									{ key: "name", value: product.name },
+									{ key: "retail_unit_currency", value: product.retail_unit_currency },
+									{ key: "retail_unit_amount", value: product.retail_unit_amount },
+									{ key: "wholesale_unit_currency", value: product.wholesale_unit_currency },
+									{ key: "wholesale_unit_amount", value: product.wholesale_unit_amount },
+									{ key: "retail_rates", value: product.retail_rates },
+									{ key: "wholesale_rates", value: product.wholesale_rates },
+									{ key: "destination_currency", value: product.destination_currency },
+									{ key: "destination_rates", value: product.destination_rates }
+								];
+
+								const dataAttributes = attributes
+									.map(attr => `data-${attr.key}="${attr.value}"`)
+									.join(" ");
+
+								const formattedAmount = parseFloat(product.retail_unit_amount).toFixed(2);
+
+								output += `<option value="${product.id}" ${dataAttributes}>
+									${product.name} - ${formattedAmount} ${product.retail_unit_currency}
+								</option>`;
+							} 
+
 						});
 
 						// Populate the dropdown with the generated options 
@@ -179,8 +202,8 @@
 			$('#payableAmountHtml').html('').hide();
 			return;
 		}
-		var payableAmount = $(this).find(':selected').attr('data-unit_convert_amount')
-		var currency = $(this).find(':selected').attr('data-unit_convert_currency')
+		var payableAmount = $(this).find(':selected').attr('data-retail_unit_amount')
+		var currency = $(this).find(':selected').attr('data-retail_unit_currency')
 		var output = '';
 		output += `<div class="w-100 text-start p-2 rounded-2 border g-2">
 					<div class="w-100 row m-auto">
@@ -299,14 +322,21 @@
 				formData[inputName] = $(this).val();
 			}
 		});
-		var unit_convert_amount = $airtime.find('#product_id :selected').attr('data-unit_convert_amount'); 
-		formData['product_name'] = $airtime.find('#product_id :selected').attr('data-name');
-		formData['unit_currency'] = $airtime.find('#product_id :selected').attr('data-unit');
-		formData['rates'] = $airtime.find('#product_id :selected').attr('data-rates');
-		formData['unit_amount'] = $airtime.find('#product_id :selected').attr('data-unit_amount');
-		formData['unit_convert_currency'] = $airtime.find('#product_id :selected').attr('data-unit_convert_currency');
-		formData['unit_convert_exchange'] = $airtime.find('#product_id :selected').attr('data-unit_convert_exchange');
-		formData['unit_convert_amount'] = parseFloat(unit_convert_amount).toFixed(2);
+		var retail_unit_amount = $airtime.find('#product_id :selected').attr('data-retail_unit_amount');  
+		var wholesale_unit_amount = $airtime.find('#product_id :selected').attr('data-wholesale_unit_amount');  
+		var retail_rates = $airtime.find('#product_id :selected').attr('data-retail_rates');  
+		var wholesale_rates = $airtime.find('#product_id :selected').attr('data-wholesale_rates');  
+		var destination_rates = $airtime.find('#product_id :selected').attr('data-destination_rates');  
+		 
+		formData['product_name'] = $airtime.find('#product_id :selected').attr('data-name'); 
+		formData['retail_unit_currency'] = $airtime.find('#product_id :selected').attr('data-retail_unit_currency'); 
+		formData['wholesale_unit_currency'] = $airtime.find('#product_id :selected').attr('data-wholesale_unit_currency');  
+		formData['retail_unit_amount'] = parseFloat(retail_unit_amount).toFixed(2);
+		formData['wholesale_unit_amount'] = parseFloat(wholesale_unit_amount).toFixed(2);
+		formData['retail_rates'] = parseFloat(retail_rates).toFixed(2);
+		formData['wholesale_rates'] = parseFloat(wholesale_rates).toFixed(2);
+		formData['destination_rates'] = parseFloat(destination_rates).toFixed(2); 
+		formData['destination_currency'] = $airtime.find('#product_id :selected').attr('data-destination_currency'); 
 		 
 		// Encrypt data before sending
 		const encrypted_data = encryptData(JSON.stringify(formData));
