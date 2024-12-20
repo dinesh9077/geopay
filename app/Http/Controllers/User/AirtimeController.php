@@ -171,7 +171,7 @@ class AirtimeController extends Controller
 			}
             //Log::info($response);
 			// Transaction variables
-			$txnAmount = $request->input('retail_unit_amount');
+			$txnAmount = $request->input('retail_unit_amount') + $request->input('platform_fees');
 			$productName = $request->input('product_name');
 			$mobileNumber = '+' . ltrim($request->input('mobile_number'), '+');
 			 
@@ -215,6 +215,7 @@ class AirtimeController extends Controller
 				'api_response' => $response['response'],
 				'api_response_second' => $productRes,
 				'order_id' => $request->order_id,
+				'fees' => $request->input('platform_fees'),
 				'created_at' => now(),
 				'updated_at' => now(),
 			]);

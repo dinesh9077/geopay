@@ -28,6 +28,8 @@
 			$this->secretKey = config('setting.dtone_secretkey');
 			$this->serviceId = config('setting.dtone_serviceid');
 			$this->subServiceId = config('setting.dtone_subserviceid');
+			$this->commissionType = config('setting.dtone_commission_type') ?? 'flat';
+			$this->commissionCharge = config('setting.dtone_commission_charge') ?? 0;
 		} 
 		
 		public function getCountries($isWeb = false)
@@ -178,6 +180,12 @@
 						$destinationCurrency = $product['operator']['country']['iso_code'] ?? '';
 						
 						//$exchangeRate = $exchangeRates[$unit]['exchange_rate'] ?? null;
+						  
+						$platformFees = $this->commissionType === "flat"
+						? max($this->commissionCharge, 0) // Ensure flat fee is not negative
+						: max(($retailUnitAmount * $this->commissionCharge / 100), 0); // Ensure percentage fee is not negative
+
+
 
 						$productData[] = [
 							'id' => $product['id'] ?? null,
@@ -190,9 +198,10 @@
 							'wholesale_rates' => $wholesaleRates,
 							'destination_rates' => $destinationAmount,
 							'destination_currency' => $destinationCurrency,
+							'platform_fees' => $platformFees,
 							'validity' => $validity,
-							'validity_unit' => $validityUnit,
-							'product_response' => json_encode($product),
+							'validity_unit' => $validityUnit, 
+							'remit_currency' => config('setting.default_currency'),
 						];
 					}
 				}

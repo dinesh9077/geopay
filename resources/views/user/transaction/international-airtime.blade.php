@@ -164,7 +164,9 @@
 									{ key: "retail_rates", value: product.retail_rates },
 									{ key: "wholesale_rates", value: product.wholesale_rates },
 									{ key: "destination_currency", value: product.destination_currency },
-									{ key: "destination_rates", value: product.destination_rates }
+									{ key: "platform_fees", value: product.platform_fees },
+									{ key: "destination_rates", value: product.destination_rates },
+									{ key: "remit_currency", value: product.remit_currency }
 								];
 
 								const dataAttributes = attributes
@@ -202,20 +204,36 @@
 			$('#payableAmountHtml').html('').hide();
 			return;
 		}
-		var payableAmount = $(this).find(':selected').attr('data-retail_unit_amount')
-		var currency = $(this).find(':selected').attr('data-retail_unit_currency')
-		var output = '';
-		output += `<div class="w-100 text-start p-2 rounded-2 border g-2">
-					<div class="w-100 row m-auto">
-						<div class="col-6 col-md-6">
-							<span class="content-3 mb-0 text-dark fw-semibold text-nowrap">Fee(${currency}) <div class="text-muted fw-normal">0</div></span>
-						</div> 
-						<div class="text-md-end col-6 col-md-6">
-							<span class="content-3 mb-0 text-dark fw-semibold text-nowrap"> Net Payable Amount In ${currency}  
-							<div class="text-muted fw-normal">${parseFloat(payableAmount).toFixed(2)} ${currency}</div></span>
-						</div>
-					</div>
-				</div>`;
+		var payableAmount = $(this).find(':selected').attr('data-retail_unit_amount');
+		var currency = $(this).find(':selected').attr('data-retail_unit_currency');
+		var platformFees = parseFloat($(this).find(':selected').attr('data-platform_fees'));
+		var remitCurrency = $(this).find(':selected').attr('data-remit_currency');
+		var destinationCurrency = $(this).find(':selected').attr('data-destination_currency');
+		var destinationRates =  parseFloat($(this).find(':selected').attr('data-destination_rates'));
+		var	netAmount = parseFloat(platformFees) + parseFloat(payableAmount);
+		var output = ''; 
+		output += `<div class="w-100 text-start mb-3 p-2 rounded-2 border g-2 removeCommission">
+			<div class="w-100 row m-auto">
+				<div class="col-6 col-md-4">
+					<span class="content-3 mb-0 text-dark fw-semibold text-nowrap">
+						Processing Charges (${remitCurrency})
+						<div class="text-muted fw-normal">${platformFees.toFixed(2)}</div>
+					</span>
+				</div>
+				<div class="col-6 col-md-4">
+					<span class="content-3 mb-0 text-dark fw-semibold text-nowrap">
+						Net Amount In ${remitCurrency}
+						<div class="text-muted fw-normal">${netAmount.toFixed(2)}</div>
+					</span>
+				</div>
+				<div class="text-md-end col-6 col-md-4">
+					<span class="content-3 mb-0 text-dark fw-semibold text-nowrap">
+						Receivable Amount In ${destinationCurrency}
+						<div class="text-muted fw-normal">${destinationRates.toFixed(2)}</div>
+					</span>
+				</div>
+			</div> 
+		</div>`;
 		$('#payableAmountHtml').html(output).show();
 	});
 	
@@ -327,6 +345,7 @@
 		var retail_rates = $airtime.find('#product_id :selected').attr('data-retail_rates');  
 		var wholesale_rates = $airtime.find('#product_id :selected').attr('data-wholesale_rates');  
 		var destination_rates = $airtime.find('#product_id :selected').attr('data-destination_rates');  
+		var platform_fees = $airtime.find('#product_id :selected').attr('data-platform_fees');  
 		 
 		formData['product_name'] = $airtime.find('#product_id :selected').attr('data-name'); 
 		formData['retail_unit_currency'] = $airtime.find('#product_id :selected').attr('data-retail_unit_currency'); 
@@ -336,6 +355,7 @@
 		formData['retail_rates'] = parseFloat(retail_rates).toFixed(2);
 		formData['wholesale_rates'] = parseFloat(wholesale_rates).toFixed(2);
 		formData['destination_rates'] = parseFloat(destination_rates).toFixed(2); 
+		formData['platform_fees'] = parseFloat(platform_fees).toFixed(2); 
 		formData['destination_currency'] = $airtime.find('#product_id :selected').attr('data-destination_currency'); 
 		 
 		// Encrypt data before sending
