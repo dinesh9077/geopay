@@ -80,7 +80,7 @@ class Transaction extends Model
 	
 	public function getApiResponseAsArrayAttribute()
 	{
-		return $this->api_response ? json_decode($this->api_response, true) : [];
+		return $this->api_response ?? [];
 	}
    
 }
