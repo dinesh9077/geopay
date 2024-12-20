@@ -207,6 +207,7 @@ class AirtimeController extends Controller
 				'mobile_number' => $mobileNumber,
 				'unit_currency' => $request->input('destination_currency', ''),
 				'unit_amount' => $request->input('destination_rates', 0),
+				'unit_rates' => $request->input('retail_unit_amount', 0),
 				'rates' => $request->input('retail_rates', 0),
 				'unit_convert_currency' => $request->input('wholesale_unit_currency', ''),
 				'unit_convert_amount' => $request->input('wholesale_unit_amount', ''),

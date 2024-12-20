@@ -41,6 +41,8 @@ return new class extends Migration
 			$table->decimal('fees', 25,2)->default(0);
 			$table->json('beneficiary_request')->nullable();
 			$table->json('api_response_second')->nullable(); 
+			$table->decimal('service_charge',25,4)->default(0);
+			$table->decimal('total_charge',25,4)->default(0);
 			$table->timestamps(); // Auto-created created_at and updated_at columns
         });
     }

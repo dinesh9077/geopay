@@ -8,15 +8,7 @@
         <th class="content-4 d-flex justify-content-between text-nowrap">ORDER ID <span class="mx-1">:</span></th>
         <td class="content-4">{{ $transaction->order_id }}</td>
     </tr>
-    <tr>
-        <th class="content-4 d-flex justify-content-between text-nowrap">TOTAL AMOUNT <span class="mx-1">:</span></th>
-        <td class="content-4">{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</td>
-    </tr>
-    <tr>
-        <th class="content-4 d-flex justify-content-between text-nowrap">EXCHANGE RATE <span class="mx-1">:</span></th>
-        <td class="content-4">{{ $transaction->unit_convert_exchange ?? '1.00' }}</td>
-    </tr>
-
+     
     @php
         $user = $transaction->user;
         $receive = $transaction->receive;
@@ -27,6 +19,11 @@
     @endphp
 
     @if ($transaction->platform_name == 'geopay to geopay wallet' || $transaction->platform_name == 'admin transfer')
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">TOTAL AMOUNT <span class="mx-1">:</span></th>
+			<td class="content-4">{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</td>
+		</tr>
+		
         <tr>
             <th class="content-4 d-flex justify-content-between text-nowrap">FROM ACCOUNT <span class="mx-1">:</span></th>
             <td class="content-4">{{ $userName }} {{ $userNumber }}</td>
@@ -36,6 +33,29 @@
             <td class="content-4">{{ $receiveName }} {{ $receiveNumber }}</td>
         </tr>
     @elseif ($transaction->platform_name == 'international airtime')
+	
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">Unit Amount <span class="mx-1">:</span></th>
+			<td class="content-4">{{ $transaction->unit_rates}}</td>
+		</tr>
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">Platform Fees <span class="mx-1">:</span></th>
+			<td class="content-4">{{ $transaction->fees }}</td>
+		</tr>
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">EXCHANGE RATE <span class="mx-1">:</span></th>
+			<td class="content-4">{{ $transaction->rates }}</td>
+		</tr>
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">TOTAL AMOUNT <span class="mx-1">:</span></th>
+			<td class="content-4">{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</td>
+		</tr>
+		
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">Destination Amount <span class="mx-1">:</span></th>
+			<td class="content-4">{{ Helper::decimalsprint($transaction->unit_amount, 2) }} {{ $transaction->unit_currency }}</td>
+		</tr>
+		
         <tr>
             <th class="content-4 d-flex justify-content-between text-nowrap">FROM ACCOUNT <span class="mx-1">:</span></th>
             <td class="content-4">{{ $userName }} {{ $userNumber }}</td>

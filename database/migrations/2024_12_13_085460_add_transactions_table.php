@@ -11,9 +11,8 @@
 		*/
 		public function up(): void
 		{
-			Schema::table('transactions', function (Blueprint $table) {
-				$table->decimal('service_charge',25,4)->default(0);
-				$table->decimal('total_charge',25,4)->default(0);
+			Schema::table('transactions', function (Blueprint $table) { 
+				$table->decimal('unit_rates', 25, 4)->default(0)->after('unit_amount'); 
 			});
 		}
 		

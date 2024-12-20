@@ -56,25 +56,7 @@
 								{{ $transaction->order_id }}</p>
 							</td>
 						</tr>
-						<tr> 
-							<td style="width: 40%;">
-								<p style="margin-top: 0;"><span style="font-weight: 600;">TOTAL AMOUNT</span></p>
-							</td> 
-							<td>
-								<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
-								{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</p>
-							</td>
-						</tr>
-						<tr> 
-							<td style="width: 40%;">
-								<p style="margin-top: 0;"><span style="font-weight: 600;">EXCHANGE RATE</span></p>
-							</td> 
-							<td>
-								<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
-								{{ $transaction->unit_convert_exchange ?? '1.00' }}</p>
-							</td>
-						</tr>
-
+						 
 						@php
 							$user = $transaction->user;
 							$receive = $transaction->receive;
@@ -85,6 +67,15 @@
 						@endphp
 
 						@if ($transaction->platform_name == 'geopay to geopay wallet')
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">TOTAL AMOUNT</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</p>
+								</td>
+							</tr>
 							<tr> 
 								<td style="width: 40%;">
 									<p style="margin-top: 0;"><span style="font-weight: 600;">FROM ACCOUNT</span></p>
@@ -104,6 +95,56 @@
 								</td>
 							</tr>
 						@elseif ($transaction->platform_name == 'international airtime')
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Unit Amount</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->unit_rates }}</p>
+								</td>
+							</tr>
+							
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Platform Fees</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->fees }}</p>
+								</td>
+							</tr>
+							
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">EXCHANGE RATE</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->rates }}</p>
+								</td>
+							</tr>
+							
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">TOTAL AMOUNT</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</p>
+								</td>
+							</tr>
+							
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Destination Amount</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ Helper::decimalsprint($transaction->unit_amount, 2) }} {{ $transaction->unit_currency }}</p>
+								</td>
+							</tr>
+						
 							<tr> 
 								<td style="width: 40%;">
 									<p style="margin-top: 0;"><span style="font-weight: 600;">FROM ACCOUNT</span></p>
