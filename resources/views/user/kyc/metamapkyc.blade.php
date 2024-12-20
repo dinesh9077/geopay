@@ -153,8 +153,7 @@
 							} 
 						});
 					} catch (error) { 
-						console.error('Error during API request:', error);
-						toastrMsg('error', 'An error occurred during the verification process. Please try again later.') 
+						window.location.href = "{{ route('metamap.kyc') }}";
 					}
 				});
 				
