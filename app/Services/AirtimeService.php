@@ -177,7 +177,7 @@
 						$wholesaleRates = $product['rates']['wholesale'] ?? 0;
 						$validity = $product['validity']['quantity'] ?? 0;
 						$validityUnit = $product['validity']['unit'] ?? 'DAY';
-						$destinationCurrency = $product['operator']['country']['iso_code'] ?? '';
+						$destinationCurrency = $product['destination']['unit'] ?? '';
 						
 						//$exchangeRate = $exchangeRates[$unit]['exchange_rate'] ?? null;
 						  
@@ -185,8 +185,7 @@
 						? max($this->commissionCharge, 0) // Ensure flat fee is not negative
 						: max(($retailUnitAmount * $this->commissionCharge / 100), 0); // Ensure percentage fee is not negative
 
-
-
+ 
 						$productData[] = [
 							'id' => $product['id'] ?? null,
 							'name' => $product['name'] ?? 'Unknown Product',
