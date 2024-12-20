@@ -118,10 +118,11 @@
 	{
 		if(!$(this).val() || !$('#country_code').val())
 		{
-			$('#productHtml').hide();
+			$('#productHtml').hide(); 
 			$('#product_id').val('').trigger('change');
 			return;
 		}
+		$('#payableAmountHtml').html('').hide();
 		
 		let formData = {};
 
