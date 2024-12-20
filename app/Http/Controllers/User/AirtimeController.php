@@ -175,7 +175,7 @@ class AirtimeController extends Controller
 			$productName = $request->input('product_name');
 			$mobileNumber = '+' . ltrim($request->input('mobile_number'), '+');
 			 
-            $txnStatus = strtoupper($response['response']['status']['message']) ?? 'process';
+            $txnStatus = strtolower($response['response']['status']['message']) ?? 'process';
             
 			$productId = $request->input('product_id');
 			
@@ -216,6 +216,7 @@ class AirtimeController extends Controller
 				'api_response_second' => $productRes,
 				'order_id' => $request->order_id,
 				'fees' => $request->input('platform_fees'),
+				'total_charge' => $txnAmount,
 				'created_at' => now(),
 				'updated_at' => now(),
 			]);
@@ -242,7 +243,7 @@ class AirtimeController extends Controller
 
 		$uniqueIdentifier = $request['external_id'];
 		 
-        $txnStatus = strtoupper($request['status']['message']) ?? 'process';
+        $txnStatus = strtolower($request['status']['message']) ?? 'process';
           
 		$updated = Transaction::where('unique_identifier', $uniqueIdentifier)
 			->update(['txn_status' => $txnStatus]);

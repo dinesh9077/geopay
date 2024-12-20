@@ -217,7 +217,7 @@
 			<div class="w-100 row m-auto">
 				<div class="col-6 col-md-4">
 					<span class="content-3 mb-0 text-dark fw-semibold text-nowrap">
-						Processing Charges (${remitCurrency})
+						Processing Fees (${remitCurrency})
 						<div class="text-muted fw-normal">${platformFees.toFixed(2)}</div>
 					</span>
 				</div>
