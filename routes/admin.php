@@ -115,15 +115,18 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
     Route::post('/user/update-status', [UserController::class, 'userUpdateStatus'])->name('user.update-status');
     Route::get('/user/view-kyc/{id}', [UserController::class, 'userViewKyc'])->name('user.view-kyc');
     Route::get('/user/login-history/{id}', [UserController::class, 'userLoginHistory'])->name('user.login-history');
-
-
-    //Manage Exchnage Rate
-    Route::get('/exchange-rate', [ExchangeRateController::class, 'exchangeRate'])
-        ->name('exchange-rate')->middleware('permission:exchange_rate.view');
-    Route::post('/exchange-rate/ajax', [ExchangeRateController::class, 'exchangeRateAjax'])->withoutMiddleware('webdecrypt.request')->name('exchange-rate.ajax');
-    Route::get('/exchange-rate/import', [ExchangeRateController::class, 'exchangeRateImport'])->name('exchange-rate.import');
-    Route::post('/exchange-rate/store', [ExchangeRateController::class, 'exchangeRateStore'])->name('exchange-rate.store');
-    Route::post('/exchange-rate/delete/{id}', [ExchangeRateController::class, 'exchangeRateDelete'])->withoutMiddleware('webdecrypt.request')->name('exchange-rate.delete');
+ 
+    //Manual Exchange Rate
+    Route::get('/manual-exchange-rate', [ExchangeRateController::class, 'manualExchangeRate'])->name('manual.exchange-rate')->middleware('permission:manual_exchange_rate.view');
+    Route::post('/manual-exchange-rate/ajax', [ExchangeRateController::class, 'manualExchangeRateAjax'])->withoutMiddleware('webdecrypt.request')->name('manual.exchange-rate.ajax');
+    Route::get('/manual-exchange-rate/import', [ExchangeRateController::class, 'manualExchangeRateImport'])->name('manual.exchange-rate.import');
+    Route::post('/manual-exchange-rate/store', [ExchangeRateController::class, 'manualExchangeRateStore'])->name('manual.exchange-rate.store');
+    Route::post('/manual-exchange-rate/delete/{id}', [ExchangeRateController::class, 'manualExchangeRateDelete'])->withoutMiddleware('webdecrypt.request')->name('manual.exchange-rate.delete');
+	
+    //Live Exchange Rate
+    Route::get('/live-exchange-rate', [ExchangeRateController::class, 'liveExchangeRate'])->name('live.exchange-rate')->middleware('permission:live_exchange_rate.view');
+    Route::post('/live-exchange-rate/ajax', [ExchangeRateController::class, 'liveExchangeRateAjax'])->withoutMiddleware('webdecrypt.request')->name('live.exchange-rate.ajax'); 
+    Route::post('/live-exchange-rate/fetch', [ExchangeRateController::class, 'liveExchangeRateFetch'])->name('live.exchange-rate.fetch'); 
 
     // Reports
     Route::prefix('reports')->as('report.')->group(function () 

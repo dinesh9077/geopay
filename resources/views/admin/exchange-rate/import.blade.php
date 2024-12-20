@@ -5,7 +5,7 @@
 				<h5 class="modal-title" id="varyingModalLabel">Import Exchange Rate</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
 			</div>
-			<form id="importRateForm" action="{{ route('admin.exchange-rate.store') }}" method="post" enctype="multipart/form-data">
+			<form id="importRateForm" action="{{ route('admin.manual.exchange-rate.store') }}" method="post" enctype="multipart/form-data">
 				<div class="modal-body">
 					<div class="mb-3">
 						<label for="recipient-name" class="form-label">Exchange Type <span class="text-danger">*</span></label>

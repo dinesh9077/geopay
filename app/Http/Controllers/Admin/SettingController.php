@@ -199,6 +199,8 @@
 				$lightnetCountry->update([
 					'status' => $request->status,
 					'label' => $request->label,
+					'markdown_type' => $request->markdown_type,
+					'markdown_charge' => $request->markdown_charge ?? 0,
 					'updated_at' => now(),
 				]);
 

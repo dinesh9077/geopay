@@ -100,16 +100,32 @@
 
             @php
                 $manageExchanges = [
-                    'exchange_rate' => ['route' => 'admin.exchange-rate', 'label' => 'Manage Exchange Rate'],
+                    'manual_exchange_rate' => ['route' => 'admin.manual.exchange-rate', 'label' => 'Manual Exchange Rate'],
                 ];
             @endphp
 
             @if (collect($manageExchanges)->keys()->some(fn($key) => config("permission.$key.view")))
                 <li class="nav-item">
-                    <a href="{{ route('admin.exchange-rate') }}"
-                        class="nav-link {{ request()->routeIs('admin.exchange-rate') ? 'active' : '' }}">
+                    <a href="{{ route('admin.manual.exchange-rate') }}"
+                        class="nav-link {{ request()->routeIs('admin.manual.exchange-rate') ? 'active' : '' }}">
                         <i class="link-icon" data-feather="box"></i>
-                        <span class="link-title">Manage Exchange Rate</span>
+                        <span class="link-title">Manual Exchange Rate</span>
+                    </a>
+                </li>
+            @endif
+
+            @php
+                $liveExchanges = [
+                    'live_exchange_rate' => ['route' => 'admin.live.exchange-rate', 'label' => 'Live Exchange Rate'],
+                ];
+            @endphp
+
+            @if (collect($liveExchanges)->keys()->some(fn($key) => config("permission.$key.view")))
+                <li class="nav-item">
+                    <a href="{{ route('admin.live.exchange-rate') }}"
+                        class="nav-link {{ request()->routeIs('admin.live.exchange-rate') ? 'active' : '' }}">
+                        <i class="link-icon" data-feather="box"></i>
+                        <span class="link-title">Live Exchange Rate</span>
                     </a>
                 </li>
             @endif

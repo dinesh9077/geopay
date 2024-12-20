@@ -141,14 +141,15 @@
 							dataType: 'Json', 
 							success: function (res) 
 							{   
-								if(res.status === "error")
+								if(res.status === "success")
 								{ 
 									toastrMsg(res.status, res.message);
+									window.location.href = "{{ route('metamap.kyc') }}";
 								} 
 								else
 								{ 
 									toastrMsg(res.status, res.message); 
-									window.location.href = "{{ route('metamap.kyc') }}";
+									
 								}
 							} 
 						});

@@ -254,6 +254,42 @@ class LiquidNetService
 		];	
 	}
 	
+	public function getRateHistory($payoutCountry, $payoutCurrency, $currentDate)
+    {
+		$apiUrl = $this->baseUrl . '/getratehistory'; 
+		$method = 'post'; 
+		$requestTimestamp = time();  
+		 
+		$requestBody = [
+			"agentSessionId" => (string) $requestTimestamp,
+			"payoutCountry" => (string) $payoutCountry,
+			"payoutCurrency" => (string) $payoutCurrency,
+			"date" => (string) $currentDate
+		]; 
+		
+		$signatureString = $this->hmacAuthGenerate($method, $apiUrl, $requestTimestamp, $requestBody);
+        $response = Http::withHeaders([
+            'Authorization' => "hmacauth {$signatureString}",
+            'Content-Type' => 'application/json',
+        ])
+		->withOptions([
+			'verify' => false,
+		])
+		->{$method}($apiUrl, $requestBody);
+		 
+        // Handle Successful Response
+		if ($response->successful()) {
+			return [
+				'success' => true,   
+				'response' => $response->json()
+			];
+		}
+		return [
+			'success' => false,  
+			'response' => json_decode($response->body(), true)
+		];	
+	}
+	
 	public function getEcho($data)
 	{
 		$apiUrl = $data['lightnet_url'] . '/GetEcho';

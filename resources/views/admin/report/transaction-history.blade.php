@@ -235,7 +235,7 @@
                 $(".buttons-pdf").trigger("click");
             });
             $('#page_length').change(function() {
-                transactionTable.page.len($(this).val()).draw();
+                dataTable.page.len($(this).val()).draw();
             })
             $('#applyFilters').click(function() { // Corrected selector here
                 dataTable.draw();

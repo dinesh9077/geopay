@@ -40,7 +40,7 @@
 						
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Bank Account Number <span class="text-danger">*</span></label>
-							<input id="bankAccountNumber" name="bankAccountNumber" placeholder="Enter Bank Account Number" type="text" class="form-control form-control-lg content-3" value="{{ $edit['bankAccountNumber'] }}"/>
+							<input id="bankAccountNumber" name="bankAccountNumber" placeholder="Enter Bank Account Number" type="text" class="form-control form-control-lg content-3" value="{{ $edit['bankAccountNumber'] }}" oninput="this.value = this.value.replace(/\D/g, '')"/>
 						</div>
 						
 						<div class="mb-4 col-md-6">
@@ -75,7 +75,7 @@
 						
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Beneficiary Mobile Number (eg:+265244476305) <span class="text-danger">*</span></label>
-							<input id="beneficiaryMobile" name="beneficiaryMobile" placeholder="Enter Beneficiary Mobile No" type="tel" class="form-control form-control-lg content-3" value="{{ $edit['beneficiaryMobile'] }}"/>
+							<input id="beneficiaryMobile" name="beneficiaryMobile" placeholder="Enter Beneficiary Mobile No" type="tel" class="form-control form-control-lg content-3" value="{{ $edit['beneficiaryMobile'] }}" oninput="this.value = this.value.replace(/\D/g, '')"/>
 						</div>
 						
 						<div class="mb-4 col-md-6">

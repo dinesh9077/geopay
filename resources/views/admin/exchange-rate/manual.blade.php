@@ -1,12 +1,12 @@
 @extends('admin.layouts.app')
-@section('title', config('setting.site_name') . ' - Exchange Rate')
+@section('title', config('setting.site_name') . ' - Manual Exchange Rate')
 
 @section('content')
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
 	<div>
-		<h4 class="mb-3 mb-md-0">Exchange Rate</h4>
+		<h4 class="mb-3 mb-md-0">Manual Exchange Rate</h4>
 	</div> 
-	@if(config('permission.exchange_rate.add'))
+	@if(config('permission.manual_exchange_rate.add'))
 	<div class="d-flex align-items-center flex-wrap text-nowrap"> 
 		<button type="button" onclick="addExchangeRate(this, event)" class="btn btn-primary btn-icon-text mb-2 mb-md-0" style="margin-right: 5px;">
 			<i class="btn-icon-prepend" data-feather="upload"></i>
@@ -41,7 +41,7 @@
 										<tr>
 											<th>#</th>
 											<th>Currency</th>
-											<th>Dollar Rate</th> 
+											<th>Exchange Rate</th> 
 											<th>Created By</th>
 											<th>Created At</th> 
 											<th>Action</th> 
@@ -63,7 +63,7 @@
 										<tr>
 											<th>#</th>
 											<th>Currency</th>
-											<th>Dollar Rate</th> 
+											<th>Exchange Rate</th> 
 											<th>Created By</th>
 											<th>Created At</th>
 											<th>Action</th> 
@@ -96,36 +96,36 @@
 			bLengthChange: true,
 			searching: true,
 			bFilter: true,
-		responsive: true,  // Make table responsive
-		bInfo: true,
-		iDisplayLength: 10,
-		order: [[0, 'desc']],
-		bAutoWidth: false,
-		deferRender: true,  // Improves performance for large datasets
-		ajax: {
-			url: "{{ route('admin.exchange-rate.ajax') }}",
-			dataType: "json",
-			type: "POST",
-			data: function (d) {
-				d._token = "{{ csrf_token() }}";
-				d.type = type;
-			}
-		},
-		columns: [
+			responsive: true,  // Make table responsive
+			bInfo: true,
+			iDisplayLength: 10,
+			order: [[0, 'desc']],
+			bAutoWidth: false,
+			deferRender: true,  // Improves performance for large datasets
+			ajax: {
+				url: "{{ route('admin.manual.exchange-rate.ajax') }}",
+				dataType: "json",
+				type: "POST",
+				data: function (d) {
+					d._token = "{{ csrf_token() }}";
+					d.type = type;
+				}
+			},
+			columns: [
 			{ data: "id" },
 			{ data: "currency" },
 			{ data: "exchange_rate" },
 			{ data: "created_by" },
 			{ data: "created_at" },
 			{ data: "action" }
-		]
+			]
 		});
 	}
 	
 	// Initialize DataTables with shared AJAX URL
 	var addServiceTable = initializeDataTable('#addServiceDatatable', 1);
 	var payServiceTable = initializeDataTable('#payServiceDatatable', 2);
-	  
+	
 	function addExchangeRate(obj, event)
 	{
 		event.preventDefault();
@@ -133,7 +133,7 @@
 		{
 			modalOpen = true;
 			closemodal(); 
-			$.get("{{route('admin.exchange-rate.import')}}", function(res)
+			$.get("{{route('admin.manual.exchange-rate.import')}}", function(res)
 			{
 				const result = decryptData(res.response);
 				$('body').find('#modal-view-render').html(result.view);
