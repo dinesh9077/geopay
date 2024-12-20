@@ -35,11 +35,11 @@
     @elseif ($transaction->platform_name == 'international airtime')
 	
 		<tr>
-			<th class="content-4 d-flex justify-content-between text-nowrap">Unit Amount <span class="mx-1">:</span></th>
+			<th class="content-4 d-flex justify-content-between text-nowrap">UNIT AMOUNT <span class="mx-1">:</span></th>
 			<td class="content-4">{{ $transaction->unit_rates}}</td>
 		</tr>
 		<tr>
-			<th class="content-4 d-flex justify-content-between text-nowrap">Platform Fees <span class="mx-1">:</span></th>
+			<th class="content-4 d-flex justify-content-between text-nowrap">PLATFORM FEES <span class="mx-1">:</span></th>
 			<td class="content-4">{{ $transaction->fees }}</td>
 		</tr>
 		<tr>
@@ -52,7 +52,7 @@
 		</tr>
 		
 		<tr>
-			<th class="content-4 d-flex justify-content-between text-nowrap">Destination Amount <span class="mx-1">:</span></th>
+			<th class="content-4 d-flex justify-content-between text-nowrap">DESTINATION AMOUNT <span class="mx-1">:</span></th>
 			<td class="content-4">{{ Helper::decimalsprint($transaction->unit_amount, 2) }} {{ $transaction->unit_currency }}</td>
 		</tr>
 		

@@ -97,7 +97,7 @@
 						@elseif ($transaction->platform_name == 'international airtime')
 							<tr> 
 								<td style="width: 40%;">
-									<p style="margin-top: 0;"><span style="font-weight: 600;">Unit Amount</span></p>
+									<p style="margin-top: 0;"><span style="font-weight: 600;">UNIT AMOUNT</span></p>
 								</td> 
 								<td>
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
@@ -107,7 +107,7 @@
 							
 							<tr> 
 								<td style="width: 40%;">
-									<p style="margin-top: 0;"><span style="font-weight: 600;">Platform Fees</span></p>
+									<p style="margin-top: 0;"><span style="font-weight: 600;">PLATFORM FEES</span></p>
 								</td> 
 								<td>
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
@@ -137,7 +137,7 @@
 							
 							<tr> 
 								<td style="width: 40%;">
-									<p style="margin-top: 0;"><span style="font-weight: 600;">Destination Amount</span></p>
+									<p style="margin-top: 0;"><span style="font-weight: 600;">DESTINATION AMOUNT</span></p>
 								</td> 
 								<td>
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
