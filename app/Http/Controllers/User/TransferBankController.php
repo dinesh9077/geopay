@@ -464,12 +464,39 @@ class TransferBankController extends Controller
 			DB::beginTransaction(); 
 			$request['order_id'] = "GPTB-".$user->id."-".time();
 			$request['timestamp'] = time();
-		
+			
+			$remitCurrency = config('setting.default_currency');
+			
+			$transactionLimit = $user->is_company == 1 
+				? config('setting.company_pay_monthly_limit') 
+				: ($user->userLimit->daily_pay_limit ?? 0);
+
+			$transactionAmountQuery = Transaction::whereIn('platform_name', ['international airtime', 'transfer to bank']);
+
+			// Adjust the date filter based on whether the user is a company or an individual
+			if ($user->is_company == 1) {
+				$transactionAmountQuery->whereMonth('created_at', Carbon::now()->month);
+			} else {
+				$transactionAmountQuery->whereDate('created_at', Carbon::today());
+			}
+
+			// Calculate the total transaction amount
+			$transactionAmount = $transactionAmountQuery->sum('txn_amount');
+
+			// Check if the transaction amount exceeds the limit
+			if ($transactionAmount >= $transactionLimit) {
+				$limitType = $user->is_company == 1 ? 'monthly' : 'daily';
+				return $this->errorResponse(
+					"You have reached your {$limitType} transaction limit of {$remitCurrency} {$transactionLimit}. " .
+					"Current total transactions: {$remitCurrency} {$transactionAmount}."
+				);
+			}
+			
 			$beneficiary = Beneficiary::find($request->beneficiaryId);
 			if (!$beneficiary || empty($beneficiary->dataArr)) {
 				return $this->errorResponse('Something went wrong.');
 			}
-
+			
 			$response = $this->liquidNetService->sendTransaction($request, $beneficiary->dataArr);
 			
 			if (!$response['success']) {
@@ -498,8 +525,7 @@ class TransferBankController extends Controller
 			$payoutCurrency = $beneficiary->dataArr['payoutCurrency'] ?? '';
 			$payoutCurrencyAmount = $request->payoutCurrencyAmount;
 			$aggregatorCurrencyAmount = $request->aggregatorCurrencyAmount;
-			$exchangeRate = $request->exchangeRate;
-			$remitCurrency = config('setting.default_currency');
+			$exchangeRate = $request->exchangeRate; 
 			$confirmationId = $response['response']['confirmationId'];
 			// Concatenate beneficiary name safely
 			$beneficiaryName = trim("$beneficiaryFirstName $beneficiaryLastName"); // Using trim to remove any leading/trailing spaces

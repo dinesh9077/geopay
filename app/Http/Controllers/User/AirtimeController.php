@@ -143,7 +143,7 @@ class AirtimeController extends Controller
 				? config('setting.company_pay_monthly_limit') 
 				: ($user->userLimit->daily_pay_limit ?? 0);
 
-			$transactionAmountQuery = Transaction::query();
+			$transactionAmountQuery = Transaction::whereIn('platform_name', ['international airtime', 'transfer to bank']);
 
 			// Adjust the date filter based on whether the user is a company or an individual
 			if ($user->is_company == 1) {
@@ -159,8 +159,8 @@ class AirtimeController extends Controller
 			if ($transactionAmount >= $transactionLimit) {
 				$limitType = $user->is_company == 1 ? 'monthly' : 'daily';
 				return $this->errorResponse(
-					"You have reached your {$limitType} transaction limit of {$transactionLimit}. " .
-					"Current total transactions: {$transactionAmount}."
+					"You have reached your {$limitType} transaction limit of {$remitCurrency} {$transactionLimit}. " .
+					"Current total transactions: {$remitCurrency} {$transactionAmount}."
 				);
 			}
 			 
