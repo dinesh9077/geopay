@@ -121,13 +121,18 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
     Route::post('/manual-exchange-rate/ajax', [ExchangeRateController::class, 'manualExchangeRateAjax'])->withoutMiddleware('webdecrypt.request')->name('manual.exchange-rate.ajax');
     Route::get('/manual-exchange-rate/import', [ExchangeRateController::class, 'manualExchangeRateImport'])->name('manual.exchange-rate.import');
     Route::post('/manual-exchange-rate/store', [ExchangeRateController::class, 'manualExchangeRateStore'])->name('manual.exchange-rate.store');
+	Route::get('/manual-exchange-rate/edit/{id}', [ExchangeRateController::class, 'manualExchangeRateEdit'])->name('manual.exchange-rate.edit');
+	Route::post('/manual-exchange-rate/update/{id}', [ExchangeRateController::class, 'manualExchangeRateUpdate'])->name('manual.exchange-rate.update');
     Route::post('/manual-exchange-rate/delete/{id}', [ExchangeRateController::class, 'manualExchangeRateDelete'])->withoutMiddleware('webdecrypt.request')->name('manual.exchange-rate.delete');
 	
     //Live Exchange Rate
     Route::get('/live-exchange-rate', [ExchangeRateController::class, 'liveExchangeRate'])->name('live.exchange-rate')->middleware('permission:live_exchange_rate.view');
     Route::post('/live-exchange-rate/ajax', [ExchangeRateController::class, 'liveExchangeRateAjax'])->withoutMiddleware('webdecrypt.request')->name('live.exchange-rate.ajax'); 
     Route::post('/live-exchange-rate/fetch', [ExchangeRateController::class, 'liveExchangeRateFetch'])->name('live.exchange-rate.fetch'); 
-
+	Route::get('/live-exchange-rate/edit/{id}', [ExchangeRateController::class, 'liveExchangeRateEdit'])->name('live.exchange-rate.edit');
+	Route::post('/live-exchange-rate/update/{id}', [ExchangeRateController::class, 'liveExchangeRateUpdate'])->name('live.exchange-rate.update');
+	Route::post('/live-exchange-rate/bulk-update', [ExchangeRateController::class, 'liveExchangeRateBulkUpdate'])->name('live.exchange-rate.bulk-update');
+	  
     // Reports
     Route::prefix('reports')->as('report.')->group(function () 
 	{

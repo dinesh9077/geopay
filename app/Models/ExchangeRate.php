@@ -14,6 +14,10 @@ class ExchangeRate extends Model
 		'type', 
 		'currency', 
 		'exchange_rate', 
+		'aggregator_rate', 
+		'markdown_type', 
+		'markdown_charge', 
+		'status'
 	];
 	
 	public function createdBy()

@@ -11,7 +11,7 @@
 	use App\Http\Traits\WebResponseTrait; 
 	use PhpOffice\PhpSpreadsheet\Shared\Date; 
 	use Maatwebsite\Excel\Facades\Excel;
-	use PhpOffice\PhpSpreadsheet\IOFactory;
+	use PhpOffice\PhpSpreadsheet\IOFactory; 
 	use App\Services\LiquidNetService;
 	
 	class ExchangeRateController extends Controller
@@ -33,7 +33,7 @@
 		{
 			if ($request->ajax()) {
 				// Define the columns for ordering and searching
-				$columns = ['id', 'currency', 'exchange_rate', 'created_by', 'created_at'];
+				$columns = ['id', 'created_by', 'currency', 'exchange_rate', 'aggregator_rate',  'markdown_charge', 'updated_at', 'action'];
 				
 				$search = $request->input('search.value'); // Global search value
 				$start = $request->input('start'); // Offset for pagination
@@ -51,10 +51,13 @@
 				if (!empty($search)) {
 					$query->where(function ($q) use ($search) {
 						$q->where('currency', 'LIKE', "%{$search}%") 
+						->where('exchange_rate', 'LIKE', "%{$search}%") 
+						->where('aggregator_rate', 'LIKE', "%{$search}%") 
+						->where('markdown_charge', 'LIKE', "%{$search}%") 
 						->orWhereHas('createdBy', function ($q) use ($search) {
 							$q->where('name', 'LIKE', "%{$search}%");
 						})
-						->orWhere('created_at', 'LIKE', "%{$search}%");
+						->orWhere('updated_at', 'LIKE', "%{$search}%");
 					});
 				}
 				
@@ -77,15 +80,21 @@
 					
 					$data[] = [
 					'id' => $i,
-					'currency' => $value->currency,
-					'exchange_rate' => $value->exchange_rate, 
-					'created_by' => $value->createdBy ? $value->createdBy->name : 'N/A', 
-					'created_at' => $value->created_at->format('M d, Y H:i:s'),
-					'action' => ''
+						'created_by' => $value->createdBy ? $value->createdBy->name : 'N/A', 
+						'currency' => $value->currency,
+						'exchange_rate' => $value->exchange_rate, 
+						'aggregator_rate' => $value->aggregator_rate, 
+						'markdown_charge' => $value->markdown_charge,  
+						'updated_at' => $value->updated_at->format('M d, Y H:i:s'),
+						'action' => ''
 					];
 					
 					// Manage actions with permission checks
 					$actions = [];
+					if (config('permission.manual_exchange_rate.edit'))
+					{ 
+						$actions[] = '<a href="'.route('admin.manual.exchange-rate.edit', ['id' => $value->id]).'" onclick="editManualRate(this, event)" class="btn btn-sm btn-primary">Edit</a>';
+					} 
 					if (config('permission.manual_exchange_rate.delete'))
 					{ 
 						$actions[] = '<a href="javascript:;" data-url="' . route('admin.manual.exchange-rate.delete', ['id' => $value->id]) . '" data-message="Are you sure you want to delete this item?" onclick="deleteConfirmModal(this, event)" class="btn btn-sm btn-danger">Delete</a>';
@@ -137,7 +146,7 @@
 				
 				// Get all rows as an array
 				$rows = $sheet->toArray();
-				
+				 
 				// Extract headings from the first row
 				$headings = array_shift($rows);
 				
@@ -145,34 +154,49 @@
 				$data = [];
 				$type = $request->type;	
 				
-				foreach ($rows as $row) {
+				foreach ($rows as $key => $row) {
 					// Combine headings with row data
 					$rowData = array_combine($headings, $row);
-					
+					 
 					$currency = $rowData['currency'];
-					$exchangeRate = $rowData['exchange_rate'];
+					$markdown_type = $rowData['markdown_type'] ?? $rowData['markdown_type (flat/percentage)'];
+					$markdown_charge = $rowData['markdown_charge'];
 					
+					$rate = $rowData['aggregator_rate'];
+					
+					$markdownCharge = $markdown_type === "flat"
+							? max($markdown_charge, 0) // Ensure flat fee is non-negative
+							: max(($rate * $markdown_charge / 100), 0); // Ensure percentage fee is non-negative
+					
+					$markdownRate = $rate - $markdownCharge; 
+					 
 					// Prepare data for upsert
 					$data[] = [
-					'type' => $type,
-					'currency' => $currency,
-					'exchange_rate' => $exchangeRate,
-					'admin_id' => $admin->id,
-					'created_at' => now(),
-					'updated_at' => now(),
+						'type' => $type,
+						'currency' => $currency,
+						'exchange_rate' => $markdownRate,
+						'admin_id' => $admin->id,
+						'aggregator_rate' => $rate,
+						'markdown_type' => $markdown_type,
+						'markdown_charge' => $markdown_charge,
+						'status' => 1, 
+						'updated_at' => now(),
 					];
 				}
 				
 				// Process each row and either insert or update based on the combination of currency and type
 				foreach ($data as $row) {
 					ExchangeRate::updateOrInsert(
-					['currency' => $row['currency'], 'type' => $row['type']], // Unique key to check for existing records
-					[
-					'exchange_rate' => $row['exchange_rate'],
-					'admin_id' => $row['admin_id'],
-					'updated_at' => now(),
-					'created_at' => $row['created_at'],
-					]
+						['currency' => $row['currency'], 'type' => $row['type']], // Unique key to check for existing records
+						[
+						'exchange_rate' => $row['exchange_rate'],
+						'admin_id' => $row['admin_id'],
+						'aggregator_rate' => $row['aggregator_rate'],
+						'markdown_type' => $row['markdown_type'],
+						'markdown_charge' => $row['markdown_charge'],
+						'status' => $row['status'],
+						'updated_at' => $row['updated_at'], 
+						]
 					);
 				}
 				
@@ -185,6 +209,65 @@
 				DB::rollBack(); 
 				// Return error response with the exception message
 				return $this->errorResponse('Failed to update status. ' . $e->getMessage());
+			}
+		}
+		
+		public function manualExchangeRateEdit($id)
+		{
+			$manualRate = ExchangeRate::find($id);
+			if(!$manualRate)
+			{
+				return $this->errorResponse('Exchange rate not found!');
+			}
+			
+			$view = view('admin.exchange-rate.manual-rate-edit', compact('manualRate'))->render();
+			return $this->successResponse('success', ['view' => $view]);
+		}
+		
+		public function manualExchangeRateUpdate(Request $request, $id)
+		{
+			$validator = Validator::make($request->all(), [
+				'markdown_type' => 'required|in:flat,percentage',
+				'markdown_charge' => 'required|numeric',
+				'aggregator_rate' => 'required|numeric',
+			]);
+
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors()); // Returns the first validation error
+			}
+			
+			try {
+				DB::beginTransaction();
+				 
+				// Upsert the record
+				$liveRate = ExchangeRate::find($id);
+				if(!$liveRate)
+				{
+					return $this->errorResponse('Exchange rate not found!');
+				}
+				
+				$rate = $request->aggregator_rate;
+				 
+				$markdownCharge = $request->markdown_type === "flat"
+						? max($request->markdown_charge, 0) // Ensure flat fee is non-negative
+						: max(($rate * $request->markdown_charge / 100), 0); // Ensure percentage fee is non-negative
+				
+				$markdownRate = $rate - $markdownCharge;
+				$data = [
+					'exchange_rate' => $markdownRate,
+					'aggregator_rate' => $rate,
+					'markdown_type' => $request->markdown_type,
+					'markdown_charge' => $request->markdown_charge,
+					'status' => 1,
+					'updated_at' => now(),
+				];
+				
+				$liveRate->update($data);
+				DB::commit();
+				return $this->successResponse('Exchange rates updated successfully.');
+			} catch (\Throwable $e) {
+				DB::rollBack();
+				return $this->errorResponse('Failed to fetch rates. Error: ' . $e->getMessage());
 			}
 		}
 		
@@ -220,7 +303,7 @@
 		{
 			if ($request->ajax()) {
 				// Define the columns for ordering and searching
-				$columns = ['id', 'channel', 'currency', 'markdown_rate', 'aggregator_rate', 'markdown_charge', 'created_at'];
+				$columns = ['id', 'channel', 'currency', 'markdown_rate', 'aggregator_rate', 'markdown_charge', 'updated_at', 'action'];
 				
 				$search = $request->input('search.value'); // Global search value
 				$start = $request->input('start'); // Offset for pagination
@@ -239,7 +322,7 @@
 					$query->where(function ($q) use ($search) {
 						$q->where('currency', 'LIKE', "%{$search}%") 
 						->where('channel', 'LIKE', "%{$search}%")  
-						->orWhere('created_at', 'LIKE', "%{$search}%");
+						->orWhere('updated_at', 'LIKE', "%{$search}%");
 					});
 				}
 				
@@ -249,8 +332,7 @@
 				// Apply ordering, limit, and offset for pagination
 				$values = $query
 				->orderBy($columns[$orderColumnIndex] ?? 'id', $orderDirection)
-				->offset($start)
-				->limit($limit)
+				 
 				->get();
 				
 				// Format data for the response
@@ -259,14 +341,25 @@
 				foreach ($values as $value) {
 					 
 					$data[] = [
-						'id' => $i,
+						'id' => '<input type="checkbox" class="rowCheckbox" data-id="'.$value->id.'">',
 						'channel' => $value->channel,
 						'currency' => $value->currency,
 						'markdown_rate' => $value->markdown_rate, 
 						'aggregator_rate' => $value->aggregator_rate, 
 						'markdown_charge' => $value->markdown_charge,  
-						'created_at' => $value->created_at->format('M d, Y')
-					]; 
+						'updated_at' => $value->updated_at->format('M d, Y'),
+						'action' => ''
+					];
+					
+					// Manage actions with permission checks
+					$actions = [];
+					if (config('permission.live_exchange_rate.edit'))
+					{ 
+						$actions[] = '<a href="'.route('admin.live.exchange-rate.edit', ['id' => $value->id]).'" onclick="editLiveRate(this, event)" class="btn btn-sm btn-primary">Edit</a>';
+					} 
+					
+					// Assign actions to the row if permissions exist
+					$data[$i - $start - 1]['action'] = implode(' ', $actions);
 					
 					$i++;
 				}
@@ -299,12 +392,13 @@
 					);
 					 
 					// Validate response
-					if (!$response['success']) {
+					if (!$response['success']) 
+					{ 
 						continue;
 					}
-
-					$rateHistory = $response['rateHistory'][0] ?? null;
-			
+				  
+					$rateHistory = $response['response']['rateHistory'][0] ?? null;
+					
 					if (!$rateHistory) {
 						continue; // Skip if no rate history is available
 					}
@@ -343,5 +437,123 @@
 				return $this->errorResponse('Failed to fetch rates. Error: ' . $e->getMessage());
 			}
 		}
+		
+		public function liveExchangeRateEdit($id)
+		{
+			$liverate = LiveExchangeRate::find($id);
+			if(!$liverate)
+			{
+				return $this->errorResponse('Exchange rate not found!');
+			}
+			
+			$view = view('admin.exchange-rate.edit-rate', compact('liverate'))->render();
+			return $this->successResponse('success', ['view' => $view]);
+		}
+		
+		public function liveExchangeRateUpdate(Request $request, $id)
+		{
+			$validator = Validator::make($request->all(), [
+				'markdown_type' => 'required|in:flat,percentage',
+				'markdown_charge' => 'required|numeric',
+				'aggregator_rate' => 'required|numeric',
+			]);
 
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors()); // Returns the first validation error
+			}
+			
+			try {
+				DB::beginTransaction();
+				 
+				// Upsert the record
+				$liveRate = LiveExchangeRate::find($id);
+				if(!$liveRate)
+				{
+					return $this->errorResponse('Exchange rate not found!');
+				}
+				
+				$rate = $request->aggregator_rate;
+				 
+				$markdownCharge = $request->markdown_type === "flat"
+						? max($request->markdown_charge, 0) // Ensure flat fee is non-negative
+						: max(($rate * $request->markdown_charge / 100), 0); // Ensure percentage fee is non-negative
+				
+				$markdownRate = $rate - $markdownCharge;
+				$data = [
+					'markdown_rate' => $markdownRate,
+					'aggregator_rate' => $rate,
+					'markdown_type' => $request->markdown_type,
+					'markdown_charge' => $request->markdown_charge,
+					'status' => 1,
+					'updated_at' => now(),
+				];
+				
+				$liveRate->update($data);
+				DB::commit();
+				return $this->successResponse('Live exchange rates updated successfully.');
+			} catch (\Throwable $e) {
+				DB::rollBack();
+				return $this->errorResponse('Failed to fetch rates. Error: ' . $e->getMessage());
+			}
+		}
+		
+		public function liveExchangeRateBulkUpdate(Request $request)
+		{
+			$validator = Validator::make($request->all(), [
+				'markdown_type' => 'required|in:flat,percentage',
+				'markdown_charge' => 'required|numeric', 
+				'ids' => 'required|array',
+			]);
+
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors()); // Returns the first validation error
+			}
+
+			try {
+				DB::beginTransaction();
+
+				$ids = $request->ids;
+
+				// Fetch exchange rates by IDs
+				$exchangeRates = LiveExchangeRate::whereIn('id', $ids)->get()->keyBy('id');
+
+				$data = [];
+				foreach ($ids as $id) {
+					if (!$exchangeRates->has($id)) {
+						continue;
+					}
+
+					$rate = $exchangeRates->get($id)->aggregator_rate;
+
+					// Calculate markdown charge based on type
+					$markdownCharge = $request->markdown_type === "flat"
+						? $request->markdown_charge
+						: ($rate * $request->markdown_charge / 100);
+
+					$markdownRate = $rate - $markdownCharge;
+ 
+					$data = [
+						'id' => $id,
+						'markdown_rate' => $markdownRate,
+						'aggregator_rate' => $rate,
+						'markdown_type' => $request->markdown_type,
+						'markdown_charge' => $request->markdown_charge,
+						'status' => 1,
+						'updated_at' => now(),
+					];
+					LiveExchangeRate::updateOrCreate(
+						['id' => $data['id']], // Match based on primary key
+						$data // Update with this data
+					);
+				}
+ 
+				DB::commit();
+
+				return $this->successResponse('Rate margins updated successfully.');
+			} catch (\Throwable $e) {
+				DB::rollBack(); 
+				return $this->errorResponse('Failed to update rates. Please try again later.');
+			}
+		}
+ 
 	}

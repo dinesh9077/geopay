@@ -105,7 +105,7 @@
             @endphp
 
             @if (collect($manageExchanges)->keys()->some(fn($key) => config("permission.$key.view")))
-                <li class="nav-item">
+                <li class="nav-item {{ request()->routeIs('admin.manual.exchange-rate') ? 'active' : '' }}">
                     <a href="{{ route('admin.manual.exchange-rate') }}"
                         class="nav-link {{ request()->routeIs('admin.manual.exchange-rate') ? 'active' : '' }}">
                         <i class="link-icon" data-feather="box"></i>
@@ -121,7 +121,7 @@
             @endphp
 
             @if (collect($liveExchanges)->keys()->some(fn($key) => config("permission.$key.view")))
-                <li class="nav-item">
+                <li class="nav-item {{ request()->routeIs('admin.live.exchange-rate') ? 'active' : '' }}">
                     <a href="{{ route('admin.live.exchange-rate') }}"
                         class="nav-link {{ request()->routeIs('admin.live.exchange-rate') ? 'active' : '' }}">
                         <i class="link-icon" data-feather="box"></i>

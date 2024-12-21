@@ -39,11 +39,13 @@
 								<table id="addServiceDatatable" class="table">
 									<thead>
 										<tr>
-											<th>#</th>
+											<th>#</th> 
+											<th>Created By</th>  
 											<th>Currency</th>
-											<th>Exchange Rate</th> 
-											<th>Created By</th>
-											<th>Created At</th> 
+											<th>Exchange Rate Against 1 USD</th>
+											<th>Exchange Rate Aggregator</th> 
+											<th>Margin Percentage(Flat / %)</th> 
+											<th>Date</th> 
 											<th>Action</th> 
 										</tr>
 									</thead> 
@@ -62,10 +64,12 @@
 									<thead>
 										<tr>
 											<th>#</th>
+											<th>Created By</th>  
 											<th>Currency</th>
-											<th>Exchange Rate</th> 
-											<th>Created By</th>
-											<th>Created At</th>
+											<th>Exchange Rate Against 1 USD</th>
+											<th>Exchange Rate Aggregator</th> 
+											<th>Margin Percentage(Flat / %)</th> 
+											<th>Date</th> 
 											<th>Action</th> 
 										</tr>
 									</thead> 
@@ -112,12 +116,14 @@
 				}
 			},
 			columns: [
-			{ data: "id" },
-			{ data: "currency" },
-			{ data: "exchange_rate" },
-			{ data: "created_by" },
-			{ data: "created_at" },
-			{ data: "action" }
+				{ data: "id" },
+				{ data: "created_by" },
+				{ data: "currency" },
+				{ data: "exchange_rate" },
+				{ data: "aggregator_rate" },
+				{ data: "markdown_charge" },
+				{ data: "updated_at" },
+				{ data: "action" }
 			]
 		});
 	}
@@ -138,6 +144,22 @@
 				const result = decryptData(res.response);
 				$('body').find('#modal-view-render').html(result.view);
 				$('#importRateModal').modal('show');  
+			});
+		} 
+	}
+	
+	function editManualRate(obj, event)
+	{
+		event.preventDefault();
+		if (!modalOpen)
+		{
+			modalOpen = true;
+			closemodal(); 
+			$.get(obj, function(res)
+			{
+				const result = decryptData(res.response); 
+				$('body').find('#modal-view-render').html(result.view);
+				$('#editManualRateModal').modal('show');  
 			});
 		} 
 	}
