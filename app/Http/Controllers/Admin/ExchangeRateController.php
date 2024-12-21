@@ -12,8 +12,7 @@
 	use PhpOffice\PhpSpreadsheet\Shared\Date; 
 	use Maatwebsite\Excel\Facades\Excel;
 	use PhpOffice\PhpSpreadsheet\IOFactory; 
-	use App\Services\LiquidNetService;
-	use ZipArchive;
+	use App\Services\LiquidNetService; 
 	
 	class ExchangeRateController extends Controller
 	{
