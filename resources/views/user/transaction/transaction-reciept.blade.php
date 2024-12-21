@@ -20,7 +20,7 @@
 
     @if ($transaction->platform_name == 'geopay to geopay wallet' || $transaction->platform_name == 'admin transfer')
 		<tr>
-			<th class="content-4 d-flex justify-content-between text-nowrap">TOTAL AMOUNT <span class="mx-1">:</span></th>
+			<th class="content-4 d-flex justify-content-between text-nowrap">NET AMOUNT <span class="mx-1">:</span></th>
 			<td class="content-4">{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</td>
 		</tr>
 		
@@ -43,14 +43,14 @@
 			<td class="content-4">{{ $transaction->fees }}</td>
 		</tr>
 		<tr>
-			<th class="content-4 d-flex justify-content-between text-nowrap">EXCHANGE RATE <span class="mx-1">:</span></th>
-			<td class="content-4">{{ $transaction->rates }}</td>
-		</tr>
-		<tr>
-			<th class="content-4 d-flex justify-content-between text-nowrap">TOTAL AMOUNT <span class="mx-1">:</span></th>
+			<th class="content-4 d-flex justify-content-between text-nowrap">NET AMOUNT <span class="mx-1">:</span></th>
 			<td class="content-4">{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</td>
 		</tr>
 		
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">EXCHANGE RATE <span class="mx-1">:</span></th>
+			<td class="content-4">{{ $transaction->rates }}</td>
+		</tr>
 		<tr>
 			<th class="content-4 d-flex justify-content-between text-nowrap">DESTINATION AMOUNT <span class="mx-1">:</span></th>
 			<td class="content-4">{{ Helper::decimalsprint($transaction->unit_amount, 2) }} {{ $transaction->unit_currency }}</td>
@@ -105,25 +105,25 @@
             <td class="content-4">{{ $transaction->beneficiary_request['data']['beneficiaryMobile'] ?? 'N/A' }}</td>
         </tr> 
         <tr>
-            <th class="content-4 d-flex justify-content-between text-nowrap">Platform Fee <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $transaction->fees ? Helper::decimalsprint($transaction->fees, 2) : '0.00' }}</td>
-        </tr>
-        <tr>
-            <th class="content-4 d-flex justify-content-between text-nowrap">Service Charge <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $transaction->service_charge ? Helper::decimalsprint($transaction->service_charge, 2) : '0.00' }}</td>
-        </tr>
-        <tr>
-            <th class="content-4 d-flex justify-content-between text-nowrap">Total Charge <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $transaction->total_charge ? Helper::decimalsprint($transaction->total_charge, 2) : '0.00' }}</td>
-        </tr>
-        <tr>
-            <th class="content-4 d-flex justify-content-between text-nowrap">Txn Amount <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $transaction->unit_amount ? Helper::decimalsprint($transaction->unit_amount, 2) : '0.00' }}</td>
-        </tr>
-        <tr>
-            <th class="content-4 d-flex justify-content-between text-nowrap">Net Amount <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $transaction->txn_amount ? Helper::decimalsprint($transaction->txn_amount, 2) : '0.00' }}</td>
-        </tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">UNIT AMOUNT <span class="mx-1">:</span></th>
+			<td class="content-4">{{ $transaction->unit_rates}}</td>
+		</tr>
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">PLATFORM FEES <span class="mx-1">:</span></th>
+			<td class="content-4">{{ $transaction->fees }}</td>
+		</tr> 
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">NET AMOUNT <span class="mx-1">:</span></th>
+			<td class="content-4">{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</td>
+		</tr>
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">EXCHANGE RATE <span class="mx-1">:</span></th>
+			<td class="content-4">{{ $transaction->rates }}</td>
+		</tr>
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">DESTINATION AMOUNT <span class="mx-1">:</span></th>
+			<td class="content-4">{{ Helper::decimalsprint($transaction->unit_amount, 2) }} {{ $transaction->unit_currency }}</td>
+		</tr>
     @endif
 
     <tr>

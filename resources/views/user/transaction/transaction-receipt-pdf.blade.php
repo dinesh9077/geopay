@@ -69,7 +69,7 @@
 						@if ($transaction->platform_name == 'geopay to geopay wallet')
 							<tr> 
 								<td style="width: 40%;">
-									<p style="margin-top: 0;"><span style="font-weight: 600;">TOTAL AMOUNT</span></p>
+									<p style="margin-top: 0;"><span style="font-weight: 600;">NET AMOUNT</span></p>
 								</td> 
 								<td>
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
@@ -114,7 +114,16 @@
 									{{ $transaction->fees }}</p>
 								</td>
 							</tr>
-							
+							 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">NET AMOUNT</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</p>
+								</td>
+							</tr>
 							<tr> 
 								<td style="width: 40%;">
 									<p style="margin-top: 0;"><span style="font-weight: 600;">EXCHANGE RATE</span></p>
@@ -122,16 +131,6 @@
 								<td>
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
 									{{ $transaction->rates }}</p>
-								</td>
-							</tr>
-							
-							<tr> 
-								<td style="width: 40%;">
-									<p style="margin-top: 0;"><span style="font-weight: 600;">TOTAL AMOUNT</span></p>
-								</td> 
-								<td>
-									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
-									{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</p>
 								</td>
 							</tr>
 							
@@ -250,49 +249,54 @@
 							</tr>
 							<tr> 
 								<td style="width: 40%;">
-									<p style="margin-top: 0;"><span style="font-weight: 600;">Platform Fee</span></p>
+									<p style="margin-top: 0;"><span style="font-weight: 600;">UNIT AMOUNT</span></p>
 								</td> 
 								<td>
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
-									{{ $transaction->fees ? Helper::decimalsprint($transaction->fees, 2) : '0.00' }}</p>
+									{{ $transaction->unit_rates }}</p>
 								</td>
-							</tr> 
+							</tr>
+							
 							<tr> 
 								<td style="width: 40%;">
-									<p style="margin-top: 0;"><span style="font-weight: 600;">Service Charge</span></p>
+									<p style="margin-top: 0;"><span style="font-weight: 600;">PLATFORM FEES</span></p>
 								</td> 
 								<td>
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
-									{{ $transaction->service_charge ? Helper::decimalsprint($transaction->service_charge, 2) : '0.00' }}</p>
+									{{ $transaction->fees }}</p>
 								</td>
-							</tr>  
+							</tr>
+							 
 							<tr> 
 								<td style="width: 40%;">
-									<p style="margin-top: 0;"><span style="font-weight: 600;">Total Charge</span></p>
+									<p style="margin-top: 0;"><span style="font-weight: 600;">NET AMOUNT</span></p>
 								</td> 
 								<td>
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
-									{{ $transaction->total_charge ? Helper::decimalsprint($transaction->total_charge, 2) : '0.00' }}</p>
+									{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</p>
 								</td>
-							</tr>  
+							</tr>
+							
 							<tr> 
 								<td style="width: 40%;">
-									<p style="margin-top: 0;"><span style="font-weight: 600;">Txn Amount</span></p>
+									<p style="margin-top: 0;"><span style="font-weight: 600;">EXCHANGE RATE</span></p>
 								</td> 
 								<td>
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
-									{{ $transaction->unit_amount ? Helper::decimalsprint($transaction->unit_amount, 2) : '0.00' }}</p>
+									{{ $transaction->rates }}</p>
 								</td>
-							</tr>  
+							</tr>
+							
 							<tr> 
 								<td style="width: 40%;">
-									<p style="margin-top: 0;"><span style="font-weight: 600;">Net Amount</span></p>
+									<p style="margin-top: 0;"><span style="font-weight: 600;">DESTINATION AMOUNT</span></p>
 								</td> 
 								<td>
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
-									{{ $transaction->txn_amount ? Helper::decimalsprint($transaction->txn_amount, 2) : '0.00' }}</p>
+									{{ Helper::decimalsprint($transaction->unit_amount, 2) }} {{ $transaction->unit_currency }}</p>
 								</td>
-							</tr> 
+							</tr>
+						
 						@endif
 
 						<tr> 

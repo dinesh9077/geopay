@@ -53,8 +53,15 @@ class TransactionController extends Controller
 			}
 
 			if ($request->filled(['start_date', 'end_date'])) {
-				$query->whereBetween('created_at', [$request->start_date, $request->end_date]);
+				if ($request->start_date === $request->end_date) {
+					// If both dates are the same, use 'whereDate' for exact match
+					$query->whereDate('created_at', $request->start_date);
+				} else {
+					// Otherwise, use 'whereBetween' for the range
+					$query->whereBetween('created_at', [$request->start_date, $request->end_date]);
+				}
 			}
+
 
 			if ($request->filled('txn_status')) {
 				$query->where('txn_status', $request->txn_status);
@@ -93,7 +100,7 @@ class TransactionController extends Controller
 					'order_id' => $value->order_id,
 					'fees' => Helper::decimalsprint($value->fees, 2).' '.config('setting.default_currency'),
 					'txn_amount' => Helper::decimalsprint($value->txn_amount, 2).' '.config('setting.default_currency') ?? 0,
-					'unit_convert_exchange' => $value->unit_convert_exchange ? Helper::decimalsprint($value->unit_convert_exchange, 2) : "1.00",
+					'unit_convert_exchange' => $value->rates ? Helper::decimalsprint($value->rates, 2) : "1.00",
 					'comments' => $value->comments ?? 'N/A',
 					'notes' => $value->notes,
 					'status' => $value->txn_status,

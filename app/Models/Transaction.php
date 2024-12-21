@@ -32,6 +32,7 @@ class Transaction extends Model
         'mobile_number',
         'unit_currency',
         'unit_amount',
+        'unit_rates',
         'rates',
         'unit_convert_currency',
         'unit_convert_amount',

@@ -70,8 +70,13 @@
 		} 
 	}
 	
-	$('#transferToBankForm #country_code').on('change', function() { 
+	$('#transferToBankForm #country_code').on('change', function() 
+	{ 
 		// Retrieve selected country payout data
+		if(!$(this).val())
+		{
+			return;
+		}
 		const payoutCountry = $(this).find(':selected').data('payout-country');
 		const serviceName = $(this).find(':selected').data('service-name');
 		 
@@ -194,7 +199,7 @@
 				$('body').waitMe('hide'); 
 				// Remove old commission elements
 				$('.removeCommission').remove();
-				$('#transferToBankForm').find('#netAmount, #totalCharges, #platformCharge, #serviceCharge, #payoutCurrencyAmount, #exchangeRate').remove();
+				$('#transferToBankForm').find('#netAmount, #totalCharges, #platformCharge, #serviceCharge, #payoutCurrencyAmount, #aggregatorCurrencyAmount, #exchangeRate, #aggregatorRate').remove();
 
 				if (response.status === "success") {
 					const result = decryptData(response.response);
@@ -203,9 +208,11 @@
 					const platformCharge = parseFloat(result.platformCharge) || 0;
 					const serviceCharge = parseFloat(result.serviceCharge) || 0;
 					const payoutCurrencyAmount = parseFloat(result.payoutCurrencyAmount) || 0;
+					const aggregatorCurrencyAmount = parseFloat(result.aggregatorCurrencyAmount) || 0;
 					const txnAmountFloat = parseFloat(txnAmount) || 0;
 
 					// Calculate totals
+					const aggregatorRate = parseFloat(result.aggregatorRate) || 0;
 					const exchangeRate = parseFloat(result.exchangeRate) || 0;
 					const totalCharges = platformCharge + serviceCharge;
 					const netAmount = totalCharges + txnAmountFloat;
@@ -218,10 +225,12 @@
 					const hiddenFields = `
 						<input type="hidden" id="netAmount" name="netAmount" value="${netAmount}">
 						<input type="hidden" id="exchangeRate" name="exchangeRate" value="${exchangeRate}">
+						<input type="hidden" id="aggregatorRate" name="aggregatorRate" value="${aggregatorRate}">
 						<input type="hidden" id="totalCharges" name="totalCharges" value="${totalCharges}">
 						<input type="hidden" id="platformCharge" name="platformCharge" value="${platformCharge}">
 						<input type="hidden" id="serviceCharge" name="serviceCharge" value="${serviceCharge}">
 						<input type="hidden" id="payoutCurrencyAmount" name="payoutCurrencyAmount" value="${payoutCurrencyAmount}">
+						<input type="hidden" id="aggregatorCurrencyAmount" name="aggregatorCurrencyAmount" value="${aggregatorCurrencyAmount}">
 					`;
 
 					// Append all hidden fields at once
@@ -233,7 +242,7 @@
 							<div class="w-100 row m-auto">
 								<div class="col-6 col-md-4">
 									<span class="content-3 mb-0 text-dark fw-semibold text-nowrap">
-										Service Charges + Platform Charges (${remitCurrency})
+										Processing Fee (${remitCurrency})
 										<div class="text-muted fw-normal">${totalCharges.toFixed(2)}</div>
 									</span>
 								</div>

@@ -80,7 +80,7 @@ class LiquidNetService
 		$orderId = $request->order_id;
 		$user = Auth::user();
 		
-		$payoutCurrencyAmount = (int) $request->payoutCurrencyAmount;
+		$aggregatorCurrencyAmount = (int) round($request->aggregatorCurrencyAmount);
 		 
 		$requestBody = [
 			"agentSessionId" => (string) $requestTimestamp,
@@ -138,7 +138,7 @@ class LiquidNetService
 			"senderSecondaryIdNumber" => "",
 			"senderNativeLastname" => "",
 			"calcBy" => "P",
-			"transferAmount" => (string) $payoutCurrencyAmount,
+			"transferAmount" => (string) $aggregatorCurrencyAmount,
 			"remitCurrency" => Config('setting.default_currency'),
 			"payoutCurrency" => $beneficiary['payoutCurrency'],
 			"paymentMode" => "B",

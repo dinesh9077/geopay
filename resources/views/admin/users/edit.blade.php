@@ -247,13 +247,7 @@
 						<div class="mb-3 col-md-6">
 							<label for="recipient-name" class="form-label">Profile </label>
 							<input type="file" class="form-control" id="profile_image" name="profile_image">
-						</div>
-						<div class="mb-3 col-md-6">
-							<label for="recipient-name" class="form-label">Company Name <span
-							class="text-danger">*</span></label>
-							<input type="text" class="form-control" id="company_name" name="company_name"
-							value="{{ $company->company_name }}">
-						</div>
+						</div> 
 						<div class="mb-3 col-md-6">
 							<label for="recipient-name" class="form-label">First Name <span
 							class="text-danger">*</span></label>

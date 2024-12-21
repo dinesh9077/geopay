@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\Beneficiary;
 use App\Models\User;
 use App\Models\LightnetCatalogue;
+use App\Models\LiveExchangeRate;
 use App\Models\ExchangeRate;
 use App\Models\LightnetCountry;
 use Illuminate\Support\Facades\DB;
@@ -357,26 +358,41 @@ class TransferBankController extends Controller
 		
 		$beneficiary = Beneficiary::find($beneficiaryId);
 		if (!$beneficiary || empty($beneficiary->dataArr)) {
-			return $this->errorResponse('Something went wrong.');
+			return $this->errorResponse('Beneficiary not found.');
 		}
 		
-		$exhnageRate = ExchangeRate::where('type', 2)->where('currency', $beneficiary->dataArr['payoutCurrency'])->first();
-		if (!$exhnageRate) {
-			return $this->errorResponse('Something went wrong.');
+		$liveExchangeRate = LiveExchangeRate::select('markdown_rate', 'aggregator_rate')->where('channel', $beneficiary->dataArr['service_name'])->where('currency', $beneficiary->dataArr['payoutCurrency'])->first(); 
+		if(!$liveExchangeRate)
+		{
+			$liveExchangeRate = ExchangeRate::select('exchange_rate as markdown_rate', 'aggregator_rate')->where('type', 2)->where('currency', $beneficiary->dataArr['payoutCurrency'])->first();
+			if (!$liveExchangeRate) {
+				return $this->errorResponse('A technical issue has occurred. Please try again later.'); 
+			}
 		}
 		
-		$exchangeRate = $exhnageRate->exchange_rate ?? 0;
+		$aggregatorRate = $liveExchangeRate->aggregator_rate ?? 0;
+		$aggregatorCurrencyAmount = ($txnAmount * $aggregatorRate);
+		
+		$exchangeRate = $liveExchangeRate->markdown_rate ?? 0;
 		$payoutCurrencyAmount = ($txnAmount * $exchangeRate);
-		$serviceCharge = $this->serviceCharge((int)$payoutCurrencyAmount, $beneficiary->dataArr);
+		$serviceCharge = 0;
+		$commissionType = config('setting.lightnet_commission_type') ?? 'flat';
+		$commissionCharge = config('setting.lightnet_commission_charge') ?? 0;
 		
+		$platformFees = $commissionType === "flat"
+		? max($commissionCharge, 0) // Ensure flat fee is not negative
+		: max(($txnAmount * $commissionCharge / 100), 0); // Ensure percentage fee is not negative
+						
 		$comissions = [
 			'payoutCurrency' => $beneficiary->dataArr['payoutCurrency'],
 			'payoutCountry' => $beneficiary->dataArr['payoutCountry'],
 			'txnAmount' => $txnAmount,
+			'aggregatorRate' => $aggregatorRate,
+			'aggregatorCurrencyAmount' => $aggregatorCurrencyAmount,
 			'exchangeRate' => $exchangeRate,
 			'payoutCurrencyAmount' => $payoutCurrencyAmount,
 			'remitCurrency' => config('setting.default_currency'),
-			'platformCharge' => 0,
+			'platformCharge' => $platformFees,
 			'serviceCharge' => $serviceCharge,
 		];
 		return $this->successResponse('success', $comissions);
@@ -426,15 +442,15 @@ class TransferBankController extends Controller
 		// Custom validation logic
 		$validator->after(function ($validator) use ($request, $user) {
 			$netAmount = (float) $request->input('netAmount', 0);
-			$payoutCurrencyAmount = (float) $request->input('payoutCurrencyAmount', 0);
+			$aggregatorCurrencyAmount = (float) $request->input('aggregatorCurrencyAmount', 0);
 			  
 			if ($netAmount > $user->balance) {
 				$validator->errors()->add('txnAmount', 'Insufficient balance to complete this transaction.');
 			}
 
-			if (!$request->filled('payoutCurrencyAmount')) {
+			if (!$request->filled('aggregatorCurrencyAmount')) {
 				$validator->errors()->add('txnAmount', 'The payout currency amount field is required.');
-			} elseif ($payoutCurrencyAmount <= 0) {
+			} elseif ($aggregatorCurrencyAmount <= 0) {
 				$validator->errors()->add('txnAmount', 'The payout currency amount must be greater than 0.');
 			}
 		});
@@ -481,6 +497,7 @@ class TransferBankController extends Controller
 			$mobileNumber = $beneficiary->dataArr['beneficiaryMobile'] ?? '';
 			$payoutCurrency = $beneficiary->dataArr['payoutCurrency'] ?? '';
 			$payoutCurrencyAmount = $request->payoutCurrencyAmount;
+			$aggregatorCurrencyAmount = $request->aggregatorCurrencyAmount;
 			$exchangeRate = $request->exchangeRate;
 			$remitCurrency = config('setting.default_currency');
 			$confirmationId = $response['response']['confirmationId'];
@@ -511,12 +528,13 @@ class TransferBankController extends Controller
 				'product_name' => $bankName, 
 				'product_id' => $bankId,
 				'mobile_number' => $mobileNumber,
-				'unit_currency' => $remitCurrency,
-				'unit_amount' => $txnAmount,
+				'unit_currency' => $payoutCurrency,
+				'unit_amount' => $payoutCurrencyAmount,
+				'unit_rates' => $txnAmount,
 				'rates' => $exchangeRate,
 				'unit_convert_currency' => $payoutCurrency,
-				'unit_convert_amount' => $payoutCurrencyAmount,
-				'unit_convert_exchange' => $exchangeRate,
+				'unit_convert_amount' => $aggregatorCurrencyAmount,
+				'unit_convert_exchange' => $request->aggregatorRate ?? 0,
 				'beneficiary_request' => $beneficiary,
 				'api_request' => $response['request'],
 				'api_response' => $response['response'],

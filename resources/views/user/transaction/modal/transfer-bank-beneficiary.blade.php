@@ -230,6 +230,7 @@
 				if(res.status === "success")
 				{ 
 					toastrMsg(res.status, res.message);  
+					$('#transferToBankForm #country_code').trigger('change');
 					$('#addTransferBankBeneficiary').modal('hide');
 				}
 				else if(res.status == "validation")
