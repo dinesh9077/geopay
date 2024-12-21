@@ -92,7 +92,7 @@ class UserController extends Controller
 					'email' => $value->email,
 					'mobile' => $value->formatted_number,
 					'country' => $value->country ? $value->country->name : 'N/A',
-					'balance' => $value->balance ?? 0,
+					'balance' => Helper::decimalsprint(($value->balance ?? 0), 2) ,
 					'is_kyc_verify' => $value->is_kyc_verify ? '<span class="badge bg-success">Verified</span>' : '<span class="badge bg-danger">Not Verified</span>',
 					'is_email_verify' => $value->is_email_verify ? '<span class="badge bg-success">Verified</span>' : '<span class="badge bg-danger">Not Verified</span>',
 					'is_mobile_verify' => $value->is_mobile_verify ? '<span class="badge bg-success">Verified</span>' : '<span class="badge bg-danger">Not Verified</span>', 

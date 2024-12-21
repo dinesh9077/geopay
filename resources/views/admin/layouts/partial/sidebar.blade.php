@@ -132,9 +132,9 @@
 
             @php
                 $manageUsers = [
-                    'active_user' => ['route' => 'admin.user.active', 'label' => 'Active Company'],
-                    'pending_user' => ['route' => 'admin.user.pending', 'label' => 'Pending Company'],
-                    'block_user' => ['route' => 'admin.user.block', 'label' => 'Blocked Company'],
+                    'active_user' => ['route' => 'admin.user.active', 'label' => 'Active User'],
+                    'pending_user' => ['route' => 'admin.user.pending', 'label' => 'Pending User'],
+                    'block_user' => ['route' => 'admin.user.block', 'label' => 'Blocked User'],
                 ];
 
                 // Define additional routes that should open the dropdown without a menu item

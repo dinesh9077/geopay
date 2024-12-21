@@ -21,6 +21,7 @@
 								<th>Email</th>
 								<th>Mobile</th> 
 								<th>Country</th> 
+								<th>Wallet Balance</th> 
 								<th>Is Kyc Verified</th> 
 								<th>Is Email Verified</th> 
 								<th>Is Mobile Verified</th> 
@@ -72,6 +73,7 @@
 			{ "data": "email" },  
 			{ "data": "mobile" },  
 			{ "data": "country" },  
+			{ "data": "wallet_balance" },  
 			{ "data": "is_kyc_verify" },  
 			{ "data": "is_email_verify" },  
 			{ "data": "is_mobile_verify" },  
