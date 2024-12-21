@@ -11,7 +11,8 @@ class LiveExchangeRate extends Model
 	
 	protected $fillable = [
         'channel',
-        'currency',
+        'country_name',
+        'currency', 
         'markdown_rate',
         'aggregator_rate',
         'markdown_type',

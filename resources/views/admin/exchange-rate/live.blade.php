@@ -18,7 +18,7 @@
         <hr>
 		@endif
         <div class="data-table-container">
-            <div class="left-head-deta mb-4">
+            <div class="left-head-deta mb-4 d-flex align-items-center justify-content-between">
 				{{-- <div class="custom-entry">
                     <p>Show</p>
                     <select class="form-select form-select-sm" id="page_length">
@@ -32,10 +32,13 @@
                     </select>
                     <p>entries</p>
                 </div> --}}
-                <a href="javascript:;" class="btn btn-primary btn-sm" id="excelExport"> XLXS</a>
-                <a href="javascript:;" class="btn btn-warning btn-sm" id="pdfExport"> PDF</a>
+				<div class="d-flex align-items-center gap-2">
+					<a href="javascript:;" class="btn btn-primary btn-sm" id="excelExport"> XLXS</a>
+					<a href="javascript:;" class="btn btn-warning btn-sm" id="pdfExport"> PDF</a> 
+					<button id="updateRows" style="display:none;" class="btn btn-success btn-sm">Update Margin</button>
+				</div>
 				
-				<button id="updateRows" style="display:none;" class="btn btn-success btn-sm">Update Margin</button>
+				<input class="form-control w-fit" type="search" id="search_table" placeholder="Search">
             </div>
 
             <table id="fxrate-table" class="table table-borderless table-hover border-0 mb-4">
@@ -43,6 +46,7 @@
                     <tr>
 						<th><input type="checkbox" id="selectAll"></th>
                         <th>Channel</th>
+                        <th>Country Name</th>
                         <th>Currency</th>
                         <th>Exchange Rate Against 1 USD</th>
                         <th>Exchange Rate Aggregator</th> 
@@ -104,7 +108,7 @@
 						modifier: {
 							page: 'current'
 						},
-						columns: [0, 1, 2, 3, 4, 5, 6]
+						columns: [1, 2, 3, 4, 5, 6, 7]
 					}
 				},
 				{
@@ -115,7 +119,7 @@
 						modifier: {
 							page: 'current'
 						},
-						columns: [0, 1, 2, 3, 4, 5, 6]
+						columns: [1, 2, 3, 4, 5, 6, 7]
 					}
 				}
 			], 
@@ -143,33 +147,20 @@
 				"data": function(d) {
 					d._token = "{{ csrf_token() }}";
 					d.channel = $('#channel').val(); 
+					d.search = $('#search_table').val(); 
 				}
 			},
-			"columns": [{
-					"data": "id"
-				},
-				{
-					"data": "channel"
-				},
-				{
-					"data": "currency"
-				},
-				{
-					"data": "markdown_rate"
-				},
-				{
-					"data": "aggregator_rate"
-				},
-				{
-					"data": "markdown_charge"
-				},
-				{
-					"data": "updated_at"
-				},
-				{
-					"data": "action"
-				} 
-			],
+			"columns": [
+				{ "data": "id" },
+				{ "data": "channel" },
+				{ "data": "country_name" },
+				{ "data": "currency" },
+				{ "data": "markdown_rate" },
+				{ "data": "aggregator_rate" },
+				{ "data": "markdown_charge" },
+				{ "data": "updated_at" },
+				{ "data": "action" }
+			], 
 			drawCallback: function() { 
 				$('[data-toggle="tooltip"]').tooltip();
 			},
@@ -188,6 +179,10 @@
 		
 		$('#page_length').change(function() {
 			dataTable.page.len($(this).val()).draw();
+		})
+		
+		$('#search_table').keyup(function() {
+			dataTable.draw();
 		}) 
 		 
 		// Handle "Select All" checkbox change

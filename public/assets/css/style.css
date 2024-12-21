@@ -30,6 +30,9 @@ body {
   background-color: #F5F7FA !important;
 }
 
+.w-fit{
+	width: fit-content !important;
+}
 a {
   cursor: pointer;
   text-decoration: none;

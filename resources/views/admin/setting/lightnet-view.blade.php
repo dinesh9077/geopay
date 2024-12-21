@@ -15,8 +15,8 @@
 				<th>Payout Currency</th>
 				<th>Status </th>
 				<th>Country Name </th>
-				<th>Markdown Type</th>
-				<th>Markdown Charge</th> 
+				{{-- <th>Markdown Type</th>
+				<th>Markdown Charge</th> --}}
 				<th></th>
 			</tr>
 		</thead>
@@ -38,7 +38,7 @@
 					<td>
 						<input type="text" id="label_{{ $lightnetCountry->id }}" name="label" class="form-control form-control-sm me-2" placeholder="Enter Country Full Name" value="{{ $lightnetCountry->label }}">
 					</td>
-					<td>
+					{{-- <td>
 						<select class="form-control form-control-sm me-2" id="markdown_type_{{ $lightnetCountry->id }}" name="markdown_type">
 							<option value="flat" {{ $lightnetCountry->markdown_type == 'flat' ? 'selected' : '' }}>Flat/Fix</option>
 							<option value="percentage" {{ $lightnetCountry->markdown_type == 'percentage' ? 'selected' : '' }}>Percentage</option>
@@ -46,7 +46,7 @@
 					</td>
 					<td>
 						<input type="text" class="form-control" id="markdown_charge_{{ $lightnetCountry->id }}" name="markdown_charge" autocomplete="off" placeholder="Commission Charge Flat/%" value="{{ $lightnetCountry->markdown_charge ?? 0 }}" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
-					</td>
+					</td> --}}
 					<td>
 						<button type="button" class="btn btn-sm btn-primary update-button" 
 						data-id="{{ $lightnetCountry->id }}">Submit</button>
@@ -72,8 +72,10 @@
 				id: id,
 				status: $(`#status_${id}`).val(),
 				label: $(`#label_${id}`).val(),
-				markdown_type: $(`#markdown_type_${id}`).val(),
-				markdown_charge: $(`#markdown_charge_${id}`).val(),
+				markdown_type: 'flat',
+				markdown_charge: 0,
+				/* markdown_type: $(`#markdown_type_${id}`).val(),
+				markdown_charge: $(`#markdown_charge_${id}`).val(), */
 			};
  
 			// Encrypt data before sending

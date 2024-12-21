@@ -88,9 +88,9 @@
 		public function thirdPartyKeyLightnetUpdate(Request $request)
 		{ 
 			$validationRules = [
-			'lightnet_url'       => 'required|string|max:255', 
-			'lightnet_apikey'    => 'required|string|max:255', 
-			'lightnet_secretkey' => 'required|string|max:255', 
+				'lightnet_url'       => 'required|string|max:255', 
+				'lightnet_apikey'    => 'required|string|max:255', 
+				'lightnet_secretkey' => 'required|string|max:255', 
 			];
 			
 			// Validate the incoming request
@@ -127,8 +127,8 @@
 				}
 				
 				Setting::updateOrCreate(
-				['name' => 'lightnet'],
-				['value' => 1, 'updated_at' => now()]
+					['name' => 'lightnet'],
+					['value' => 1, 'updated_at' => now()]
 				);
 				
 				DB::commit(); 
@@ -199,7 +199,7 @@
 				$lightnetCountry->update([
 					'status' => $request->status,
 					'label' => $request->label,
-					'markdown_type' => $request->markdown_type,
+					'markdown_type' => $request->markdown_type ?? 'flat',
 					'markdown_charge' => $request->markdown_charge ?? 0,
 					'updated_at' => now(),
 				]);

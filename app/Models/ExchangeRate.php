@@ -12,6 +12,7 @@ class ExchangeRate extends Model
 	protected $fillable = [
 		'admin_id',
 		'type', 
+		'country_name', 
 		'currency', 
 		'exchange_rate', 
 		'aggregator_rate', 

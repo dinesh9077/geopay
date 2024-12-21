@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('exchange_rates', function (Blueprint $table) {
-            $table->decimal('aggregator_rate', 15, 6)->default(0); 
-			$table->string('markdown_type')->default('flat'); 
-			$table->decimal('markdown_charge', 15, 6)->default(0); 
-			$table->integer('status')->default(1); 
+        Schema::table('live_exchange_rates', function (Blueprint $table) {
+            $table->string('country_name')->nullable()->after('currency');
         });
     }
 
@@ -24,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('exchange_rates', function (Blueprint $table) {
+        Schema::table('live_exchange_rates', function (Blueprint $table) {
             //
         });
     }

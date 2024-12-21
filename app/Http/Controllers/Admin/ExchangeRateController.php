@@ -34,9 +34,9 @@
 		{
 			if ($request->ajax()) {
 				// Define the columns for ordering and searching
-				$columns = ['id', 'created_by', 'currency', 'exchange_rate', 'aggregator_rate',  'markdown_charge', 'updated_at', 'action'];
+				$columns = ['id', 'created_by', 'country_name', 'currency', 'exchange_rate', 'aggregator_rate',  'markdown_charge', 'updated_at', 'action'];
 				
-				$search = $request->input('search.value'); // Global search value
+				$search = $request->input('search'); // Global search value
 				$start = $request->input('start'); // Offset for pagination
 				$limit = $request->input('length'); // Limit for pagination
 				$orderColumnIndex = $request->input('order.0.column', 0);
@@ -51,10 +51,11 @@
 				// Apply search filter if present
 				if (!empty($search)) {
 					$query->where(function ($q) use ($search) {
-						$q->where('currency', 'LIKE', "%{$search}%") 
-						->where('exchange_rate', 'LIKE', "%{$search}%") 
-						->where('aggregator_rate', 'LIKE', "%{$search}%") 
-						->where('markdown_charge', 'LIKE', "%{$search}%") 
+						$q->orWhere('currency', 'LIKE', "%{$search}%") 
+						->orWhere('country_name', 'LIKE', "%{$search}%") 
+						->orWhere('exchange_rate', 'LIKE', "%{$search}%") 
+						->orWhere('aggregator_rate', 'LIKE', "%{$search}%") 
+						->orWhere('markdown_charge', 'LIKE', "%{$search}%") 
 						->orWhereHas('createdBy', function ($q) use ($search) {
 							$q->where('name', 'LIKE', "%{$search}%");
 						})
@@ -68,8 +69,8 @@
 				// Apply ordering, limit, and offset for pagination
 				$values = $query
 				->orderBy($columns[$orderColumnIndex] ?? 'id', $orderDirection)
-				->offset($start)
-				->limit($limit)
+				/* ->offset($start)
+				->limit($limit) */
 				->get();
 				
 				// Format data for the response
@@ -82,6 +83,7 @@
 					$data[] = [
 					'id' => $i,
 						'created_by' => $value->createdBy ? $value->createdBy->name : 'N/A', 
+						'country_name' => $value->country_name,
 						'currency' => $value->currency,
 						'exchange_rate' => $value->exchange_rate, 
 						'aggregator_rate' => $value->aggregator_rate, 
@@ -159,7 +161,8 @@
 					// Combine headings with row data
 					$rowData = array_combine($headings, $row);
 					 
-					$currency = $rowData['currency'];
+					$countryName = $rowData['country_name'] ?? '';
+					$currency = $rowData['currency'] ?? '';
 					$markdown_type = $rowData['markdown_type'] ?? $rowData['markdown_type (flat/percentage)'];
 					$markdown_charge = $rowData['markdown_charge'];
 					
@@ -174,6 +177,7 @@
 					// Prepare data for upsert
 					$data[] = [
 						'type' => $type,
+						'country_name' => $countryName,
 						'currency' => $currency,
 						'exchange_rate' => $markdownRate,
 						'admin_id' => $admin->id,
@@ -190,6 +194,7 @@
 					ExchangeRate::updateOrInsert(
 						['currency' => $row['currency'], 'type' => $row['type']], // Unique key to check for existing records
 						[
+						'country_name' => $row['country_name'],
 						'exchange_rate' => $row['exchange_rate'],
 						'admin_id' => $row['admin_id'],
 						'aggregator_rate' => $row['aggregator_rate'],
@@ -304,9 +309,9 @@
 		{
 			if ($request->ajax()) {
 				// Define the columns for ordering and searching
-				$columns = ['id', 'channel', 'currency', 'markdown_rate', 'aggregator_rate', 'markdown_charge', 'updated_at', 'action'];
+				$columns = ['id', 'channel', 'country_name', 'currency', 'markdown_rate', 'aggregator_rate', 'markdown_charge', 'updated_at', 'action'];
 				
-				$search = $request->input('search.value'); // Global search value
+				$search = $request->input('search'); // Global search value
 				$start = $request->input('start'); // Offset for pagination
 				$limit = $request->input('length'); // Limit for pagination
 				$orderColumnIndex = $request->input('order.0.column', 0);
@@ -321,8 +326,12 @@
 				// Apply search filter if present
 				if (!empty($search)) {
 					$query->where(function ($q) use ($search) {
-						$q->where('currency', 'LIKE', "%{$search}%") 
-						->where('channel', 'LIKE', "%{$search}%")  
+						$q->orWhere('currency', 'LIKE', "%{$search}%") 
+						->orWhere('country_name', 'LIKE', "%{$search}%") 
+						->orWhere('channel', 'LIKE', "%{$search}%")  
+						->orWhere('markdown_rate', 'LIKE', "%{$search}%") 
+						->orWhere('aggregator_rate', 'LIKE', "%{$search}%") 
+						->orWhere('markdown_charge', 'LIKE', "%{$search}%") 
 						->orWhere('updated_at', 'LIKE', "%{$search}%");
 					});
 				}
@@ -344,6 +353,7 @@
 					$data[] = [
 						'id' => '<input type="checkbox" class="rowCheckbox" data-id="'.$value->id.'">',
 						'channel' => $value->channel,
+						'country_name' => $value->country_name,
 						'currency' => $value->currency,
 						'markdown_rate' => $value->markdown_rate, 
 						'aggregator_rate' => $value->aggregator_rate, 
@@ -393,11 +403,15 @@
 					);
 					 
 					// Validate response
-					if (!$response['success']) 
+					if(!$response['success']) 
 					{ 
 						continue;
 					}
-				  
+					
+					if(isset($response['response']['code']) && $response['response']['code'] != 0)
+					{
+						continue; 
+					}
 					$rateHistory = $response['response']['rateHistory'][0] ?? null;
 					
 					if (!$rateHistory) {
@@ -406,25 +420,38 @@
 
 					$rate = $rateHistory['rate'] ?? 0;
 					$updatedDate = $rateHistory['updatedDate'] ?? $currentDate;
-						
-					// Calculate markdown charge
-					$markdownCharge = $lightnetCountry->markdown_type === "flat"
-						? max($lightnetCountry->markdown_charge, 0) // Ensure flat fee is non-negative
-						: max(($rate * $lightnetCountry->markdown_charge / 100), 0); // Ensure percentage fee is non-negative
+				
+					$countryName = $lightnetCountry->label;
+					$currency = $lightnetCountry->value;
+
+					// Fetch existing record or default values
+					$liveExchangeRate = LiveExchangeRate::where([
+						'channel' => $channel,
+						'currency' => $currency,
+					])->first();
+
+					$markdownType = $liveExchangeRate->markdown_type ?? 'flat';
+					$markdownTypeCharge = $liveExchangeRate->markdown_charge ?? 0;
+
+					// Calculate markdown charge and rate
+					$markdownCharge = $markdownType === "flat"
+						? max($markdownTypeCharge, 0)
+						: max(($rate * $markdownTypeCharge / 100), 0);
 
 					$markdownRate = $rate - $markdownCharge;
-					
+
 					// Upsert the record
 					LiveExchangeRate::updateOrCreate(
 						[
 							'channel' => $channel,
-							'currency' => $lightnetCountry->value,
+							'currency' => $currency,
 						],
 						[
+							'country_name' => $countryName,
 							'markdown_rate' => $markdownRate,
 							'aggregator_rate' => $rate,
-							'markdown_type' => $lightnetCountry->markdown_type,
-							'markdown_charge' => $lightnetCountry->markdown_charge,
+							'markdown_type' => $markdownType,
+							'markdown_charge' => $markdownTypeCharge,
 							'status' => 1,
 							'updated_at' => $updatedDate,
 						]
