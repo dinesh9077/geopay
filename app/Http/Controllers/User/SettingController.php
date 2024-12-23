@@ -89,20 +89,27 @@ class SettingController extends Controller
 	public function profileUpdate(Request $request)
 	{
 		// Validate the input
-		$validator = Validator::make($request->all(), [
+		$user = auth()->user();
+
+		$rules = [
 			'first_name' => 'required|string|max:255',
 			'last_name' => 'required|string|max:255',
 			'profile_image' => 'nullable|mimes:jpeg,png,jpg,gif|max:2048',
-		]);
+		];
+
+		// Conditionally add 'address' validation
+		if ($user->is_company != 1) {
+			$rules['address'] = 'required|string';
+		} 
+		$validator = Validator::make($request->all(), $rules);
 
 		if ($validator->fails()) {
 			return $this->validateResponse($validator->errors());
 		}
-
+ 
 		try {
 			DB::beginTransaction();
-
-			$user = auth()->user();
+ 
 			$user->first_name = $request->input('first_name');
 			$user->last_name = $request->input('last_name');
 

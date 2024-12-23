@@ -40,6 +40,7 @@
 			'terms',
 			'user_limit_id',
 			'is_upload_document',
+			'address',
 			'password_changed_at'
 		];
 		

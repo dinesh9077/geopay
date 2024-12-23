@@ -46,6 +46,14 @@
 					@endif
 				</div>
 			</div> 
+			@if($user->is_company != 1)
+				<div class="col-md-12 mb-3">
+					<label for="email" class="form-label content-2 fw-semibold mb-1">Address</label>
+					<div class="position-relative">
+						<input type="text" id="address" name="address" class="form-control form-control-lg default-input" value="{{ $user->address }}"> 
+					</div>
+				</div> 
+			@endif
 		</div> 
         <button type="submit" class="btn btn-lg btn-secondary rounded-2 col-12 col-md-2 mt-3 mt-md-0">Save</button>
 	</form>

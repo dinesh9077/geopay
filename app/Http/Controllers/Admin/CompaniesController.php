@@ -332,8 +332,8 @@ class CompaniesController extends Controller
 			$orderId = "GPWW-".$sender->id."-".time();
 			// Record credit transaction for recipient
 			$creditTransaction = Transaction::create([
-				'user_id' => $recipient->id,
-				'receiver_id' => $sender->id,
+				'user_id' => $sender->id,
+				'receiver_id' => $recipient->id,
 				'platform_name' => 'Admin Transfer',
 				'platform_provider' => 'Admin',
 				'transaction_type' => 'credit',
@@ -352,7 +352,7 @@ class CompaniesController extends Controller
 			// Record debit transaction for sender
 			$debitTransaction = Transaction::create([
 				'user_id' => $sender->id,
-				'receiver_id' => $recipient->id,
+				'receiver_id' => $sender->id,
 				'platform_name' => 'Admin Transfer',
 				'platform_provider' => 'Admin',
 				'transaction_type' => 'debit',
@@ -442,8 +442,8 @@ class CompaniesController extends Controller
 			$orderId = "GPWW-".$sender->id."-".time();
 			// Record credit transaction for recipient
 			$creditTransaction = Transaction::create([
-				'user_id' => $recipient->id,
-				'receiver_id' => $sender->id,
+				'user_id' => $sender->id,
+				'receiver_id' => $recipient->id,
 				'platform_name' => 'Admin Transfer',
 				'platform_provider' => 'Admin',
 				'transaction_type' => 'credit',
@@ -462,7 +462,7 @@ class CompaniesController extends Controller
 			// Record debit transaction for sender
 			$debitTransaction = Transaction::create([
 				'user_id' => $sender->id,
-				'receiver_id' => $recipient->id,
+				'receiver_id' => $sender->id,
 				'platform_name' => 'Admin Transfer',
 				'platform_provider' => 'Admin',
 				'transaction_type' => 'debit',

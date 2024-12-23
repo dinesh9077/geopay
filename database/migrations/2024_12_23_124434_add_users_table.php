@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->timestamp('password_changed_at')->nullable();
+            $table->text('address')->nullable();
         });
     }
 
