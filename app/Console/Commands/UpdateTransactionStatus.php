@@ -6,6 +6,7 @@
 	use App\Models\Transaction;
 	use Illuminate\Support\Facades\Http;
 	use App\Services\LiquidNetService;
+	use Log;
 	class UpdateTransactionStatus extends Command
 	{
 		/**
