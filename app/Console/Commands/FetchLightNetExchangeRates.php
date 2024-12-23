@@ -5,19 +5,30 @@ use Illuminate\Console\Command;
 use App\Models\LiveExchangeRate;
 use App\Models\LightnetCountry;
 use Illuminate\Support\Facades\DB;
-
+use App\Services\LiquidNetService;
+use Log;
 class FetchLightNetExchangeRates extends Command
 {
     protected $signature = 'fetch:lightnet-exchange-rates'; // Command name
     protected $description = 'Fetch live exchange rates from the lightnet service';
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
+   /**
+	 * TransactionService instance.
+	*/
+	protected $liquidNetService;
+
+	/**
+	 * Create a new command instance.
+	 */
+	public function __construct(LiquidNetService $liquidNetService)
+	{
+		parent::__construct();
+		$this->liquidNetService = $liquidNetService;
+	} 
 
     public function handle()
     {
+		Log::info('Fetch live exchange rates from the lightnet service => '.now());
         $channel = 'lightnet';  // Replace this with dynamic channel or from the request
 
         try {
@@ -32,7 +43,7 @@ class FetchLightNetExchangeRates extends Command
                     $lightnetCountry->value,
                     $currentDate
                 );
-
+			 
                 // Validate response
                 if(!$response['success']) { 
                     continue;
@@ -85,8 +96,7 @@ class FetchLightNetExchangeRates extends Command
                         'updated_at' => $updatedDate,
                     ]
                 );
-            }
-
+            } 
             DB::commit();
             $this->info('Live exchange rates fetched successfully.');
         } catch (\Throwable $e) {

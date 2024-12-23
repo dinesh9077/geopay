@@ -41,6 +41,7 @@
 		*/
 		public function handle()
 		{
+			Log::info('Update transaction statuses via an API call => '.now());
 			$this->info('Starting to update transaction statuses...');
 			
 			// Fetch transactions that need status updates
