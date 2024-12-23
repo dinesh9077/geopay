@@ -22,12 +22,12 @@ class LogSuccessfulLogin
      */
     public function handle(Login $event): void
     {
-        $user = $event->user;
+        /* $user = $event->user;
 
         LoginLog::create([
             'user_id' => $user->id,
             'ip_address' => Request::ip(),
             'login_at' => now(),
-        ]);
+        ]); */
     }
 }

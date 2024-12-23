@@ -207,24 +207,36 @@
 			
 		}
 		
-		public static function decimalsprint($number,$decimal=0)
+		public static function decimalsprint($number, $decimal=0)
 		{
 			return sprintf("%0.".$decimal."f", $number);
 		}
 		  
 		public static function loginLog($type, $user, $source = "WEB")
-		{   
+		{    
 			$ip = request()->ip(); 
 			$agent = new Agent();
-		 
+
 			$device = $agent->isDesktop() ? 'Desktop' : ($agent->isTablet() ? 'Tablet' : 'Mobile');
 			$browser = $agent->browser(); 
-			 
-			$logData = [ 
-				'user_id' => $user->id, 'type' => $type, 'ip_address' => $ip, 'device' => $device, 'browser' => $browser, 'created_at' => now(), 'updated_at' => now(), 'source' => $source,
-			];
+
+			$currentDate = now()->toDateString(); // Get only the date
 			
-			LoginLog::insert($logData);
+			// Use updateOrCreate for logging
+			LoginLog::updateOrCreate(
+				[
+					'user_id' => $user->id,
+					'source' => $source,
+					'created_at' => $currentDate, // Match only the date part
+				],
+				[
+					'type' => $type,
+					'ip_address' => $ip,
+					'device' => $device,
+					'browser' => $browser,
+					'updated_at' => now(),
+				]
+			);
 		}
 		   
 		public static function saveData($object,$data)
