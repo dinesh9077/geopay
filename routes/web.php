@@ -23,6 +23,7 @@ use App\Http\Controllers\FrontController;
 */
 
 Route::get('/', [FrontController::class, 'index']);
+Route::get('/terms-and-condition', [FrontController::class, 'termAndCondition'])->name('terms-and-condition');
 
 //Auth::routes(); 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');

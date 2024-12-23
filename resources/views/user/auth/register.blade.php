@@ -157,7 +157,7 @@
 										<div class="mb-3">
 											<div class="d-flex">
 												<input type="checkbox" id="terms" name="terms" class="me-2 content-3" value="1" />
-												<label for="terms" class="d-flex text-secondary content-3"> I have read the User agreement and I accept it</label>
+												<label for="terms" class="d-flex text-secondary content-3"> <a target="_blank" href="{{ route('terms-and-condition') }}">I have read the User agreement and I accept it</a></label>
 											</div> 
 										</div> 
 										<div class="text-center d-flex justify-content-center">
@@ -237,7 +237,7 @@
 										<div class="mb-3">
 											<div class="d-flex">
 												<input type="checkbox" id="terms" name="terms" class="me-2 content-3" value="1"/>
-												<label for="terms" class="d-flex text-secondary content-3"> I have read the User agreement and I accept it</label>
+												<label for="terms" class="d-flex text-secondary content-3">  <a target="_blank" href="{{ route('terms-and-condition') }}">I have read the User agreement and I accept it</a></label>
 											</div> 
 										</div> 
 										<div class="text-center d-flex justify-content-center">

@@ -9,5 +9,10 @@ class FrontController extends Controller
     public function index(Request $request)
     {
         return view('welcome');
+    }    
+	
+    public function termAndCondition()
+    {
+        return view('terms_condition');
     }       
 }
