@@ -22,12 +22,12 @@
 					
 					<div class="mb-3 col-md-6">
 						<label for="recipient-name" class="form-label">Personal Mobile <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" id="mobile" name="mobile" value="{{ $staff->mobile }}">
+						<input type="text" class="form-control" id="mobile" name="mobile" value="{{ $staff->mobile }}"  oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
 					</div>  
 					
 					<div class="mb-3 col-md-6">
 						<label for="recipient-name" class="form-label">Office Mobile</label>
-						<input type="text" class="form-control" id="office_mobile" name="office_mobile" value="{{ $staff->office_mobile }}">
+						<input type="text" class="form-control" id="office_mobile" name="office_mobile" value="{{ $staff->office_mobile }}"  oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
 					</div>  
 					
 					<div class="mb-3 col-md-6">
@@ -56,7 +56,7 @@
 	</div>
 </div>
 <script> 
-	const flatpickrDateEl = document.querySelector('#flatpickr-date');
+	var flatpickrDateEl = document.querySelector('#flatpickr-date');
 	if(flatpickrDateEl) {
 		flatpickr("#flatpickr-date", {
 		  wrap: true,

@@ -495,6 +495,7 @@
 				$data['xps'] = base64_encode($request->password);
 				$data['email'] = strtolower($request->email);
 				$data['assign_by'] = $admin->id; 
+				$data['dob'] = $request->filled('dob') ? $request->input('dob') : null;
 				$data['created_at'] = $currentTimestamp;
 				$data['updated_at'] = $currentTimestamp;  
 				
@@ -549,7 +550,7 @@
 		} 
 		
 		public function staffUpdate(Request $request, $staffId)
-		{
+		{ 
 			$validator = Validator::make($request->all(), [ 
 				'name' => 'required|string', 
 				'email' => 'required|email|unique:admins,email,' . $staffId, // Ignore the current admin's email
@@ -578,6 +579,7 @@
 					$data['xps'] = base64_encode($request->password);  // Base64 encode the password
 				}
 				$data['email'] = strtolower($request->email); // Normalize email to lowercase
+				$data['dob'] = $request->filled('dob') ? $request->input('dob') : null;
 				$data['assign_by'] = $admin->id; 
 				$data['updated_at'] = $currentTimestamp; // Update the timestamp
 
