@@ -28,7 +28,7 @@ class FetchLightNetExchangeRates extends Command
 
     public function handle()
     {
-		Log::info('Fetch live exchange rates from the lightnet service => '.now());
+		//Log::info('Fetch live exchange rates from the lightnet service => '.now());
         $channel = 'lightnet';  // Replace this with dynamic channel or from the request
 
         try {
