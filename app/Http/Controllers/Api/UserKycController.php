@@ -74,14 +74,14 @@
 			}
 			
 			// Ensure event type is correct before proceeding
-			if (!in_array($data['eventName'], ['verification_started', 'verification_updated', 'verification_completed', 'step_completed'])) {
+			if (!in_array($data['eventName'], ['verification_started', 'verification_updated', 'verification_completed'])) {
 				return;
 			}
 			
 			// Get verification ID from resource URL
 			$verificationId = basename($data['resource']);
 			
-			if (in_array($data['eventName'], ["step_completed", "verification_started"]) && isset($data['metadata']['user_id'])) 
+			if (in_array($data['eventName'], ["verification_started"]) && isset($data['metadata']['user_id'])) 
 			{  
 				$user_id = $data['metadata']['user_id'];
 				$user_email = isset($data['metadata']['user_email']) ? $data['metadata']['user_email'] : null; // Check if 'user_email' exists
@@ -154,9 +154,9 @@
 			DB::transaction(function () use ($response, $documentImages, $storedVideoUrl, $data, $userId) {
 				UserKyc::where('verification_id', $response['id']) 
 				->update([
-				'verification_status' => in_array($response['identity']['status'] ?? 'pending', ['reviewNeeded', 'verified']) 
+				'verification_status' => in_array($response['identity']['status'] ?? 'reviewNeeded', ['reviewNeeded', 'verified']) 
                                 ? $response['identity']['status'] 
-                                : 'pending',
+                                : 'reviewNeeded',
 				'identification_id' => $response['identity']['id'],
 				'document' => json_encode($documentImages),
 				'video' => $storedVideoUrl,
