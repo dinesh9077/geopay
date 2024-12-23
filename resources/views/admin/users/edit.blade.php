@@ -288,6 +288,16 @@
 							name="password_confirmation" value="">
 						</div>
 						
+						<div class="mb-3 col-md-6">
+							<label for="recipient-name" class="form-label">Plans </label>
+							<select class="form-control select2" id="user_limit_id"
+							name="user_limit_id">
+								@foreach($userLimits as $userLimit)
+									<option value="{{ $userLimit->id }}" {{ $userLimit->id == $company->user_limit_id ? 'selected' : '' }}>{{ $userLimit->name }}</option>
+								@endforeach
+							</select> 
+						</div>
+						
 						<div class="col-md-12 mt-3 text-end">
 							<button type="submit" class="btn btn-primary ">Submit</button>
 						</div>

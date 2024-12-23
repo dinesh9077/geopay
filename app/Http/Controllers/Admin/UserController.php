@@ -8,10 +8,18 @@ use App\Models\User;
 use App\Models\Transaction;
 use DB, Auth, Helper, Hash, Validator;
 use App\Http\Traits\WebResponseTrait;  
+use App\Services\MasterService;
 
 class UserController extends Controller
 {
 	use WebResponseTrait;
+	protected $masterService;
+	
+	public function __construct()
+	{
+		$this->masterService = new MasterService();
+	}
+	
     public function userActive()
 	{
 		return view('admin.users.active');
@@ -149,7 +157,8 @@ class UserController extends Controller
 		->groupBy('txn_status')
 		->pluck('txn_status');
 		
-		return view('admin.users.edit', compact('company', 'txnStatuses')); 
+		$userLimits = $this->masterService->getUserLimits(1);
+		return view('admin.users.edit', compact('company', 'txnStatuses', 'userLimits')); 
 	}
 	
 	public function userUpdate(Request $request, $companyid)

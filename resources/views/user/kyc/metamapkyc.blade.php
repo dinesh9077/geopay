@@ -110,7 +110,7 @@
 				 
 				// You could also trigger the KYC verification here based on user actions. 
 				metamapButton.addEventListener('metamap:userFinishedSdk', async ({ detail }) => {
-					//console.log('MetaMap response: ', detail);
+					console.log('MetaMap response: ', detail);
 					
 					// Extract necessary fields from the detail object
 					const { identityId, verificationId } = detail;
@@ -143,21 +143,24 @@
 							{   
 								if(res.status === "success")
 								{ 
+									console.log(1)
 									toastrMsg(res.status, res.message);
 									window.location.href = "{{ route('metamap.kyc') }}";
 								} 
 								else
 								{ 
-									toastrMsg(res.status, res.message); 
-									
+									console.log(2)
+									toastrMsg(res.status, res.message);  
 								}
 							} 
-						});
+						}); 
+						 
 					} catch (error) { 
+						console.log(3)
 						window.location.href = "{{ route('metamap.kyc') }}";
 					}
-				});
-				
+					console.log(4)
+				}); 
 			@else
 				@if(!in_array($userKyc->verification_status, ['verified', 'rejected']))
 					// Define a variable to hold the interval ID

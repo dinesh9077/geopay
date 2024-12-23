@@ -2,7 +2,7 @@
 	
 	namespace App\Services; 
 	use App\Models\{
-		UserRole, User, Role
+		UserRole, User, Role, UserLimit
 	};
 	use Illuminate\Support\Facades\Log;
 	use Auth;
@@ -45,6 +45,16 @@
 			
 			if ($status !== null) {
 				$users->where('status', $status);
+			} 
+			return $users->get(['id', 'name']);
+		}	
+		
+		public function getUserLimits($status = null)
+		{ 
+			$users = UserLimit::orderBy('name');
+			
+			if ($status !== null) {
+				$users->where('is_active', $status);
 			} 
 			return $users->get(['id', 'name']);
 		}	
