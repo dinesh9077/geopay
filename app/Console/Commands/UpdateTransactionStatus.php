@@ -66,14 +66,17 @@
 						if (!$response['success'] || ($response['response']['code'] ?? -1) != 0) {
 							continue; // Skip to the next transaction
 						} 
+						
 						// Update transaction status
                         $txn_status = strtolower($response['response']['status'] ?? $transaction->txn_status);
-                        $transaction->update(['txn_status' => $txn_status]); 
+						 
+                        $transaction->update(['txn_status' => $txn_status]); ; 
 					}
 				} 
 				catch (\Throwable $e) 
 				{ 
-					\Log::error("Error updating transaction ID {$transaction->id}: {$e->getMessage()}"); 
+					//$this->info("{$e->getMessage()}");  
+					//\Log::error("Error updating transaction ID {$transaction->id}: {$e->getMessage()}"); 
 				}
 			}
 			
