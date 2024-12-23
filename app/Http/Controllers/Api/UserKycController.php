@@ -85,7 +85,7 @@
 			{  
 				$user_id = $data['metadata']['user_id'];
 				$user_email = isset($data['metadata']['user_email']) ? $data['metadata']['user_email'] : null; // Check if 'user_email' exists
-				$step_id = $data['step']['id'] ?? 'pending'; // Default to 'pending' if 'step_id' is not present
+				$step_id = 'pending'; // Default to 'pending' if 'step_id' is not present
 				
 				// Update or create the KYC record
 				UserKyc::updateOrCreate(
@@ -154,7 +154,9 @@
 			DB::transaction(function () use ($response, $documentImages, $storedVideoUrl, $data, $userId) {
 				UserKyc::where('verification_id', $response['id']) 
 				->update([
-				'verification_status' => $response['identity']['status'],
+				'verification_status' => in_array($response['identity']['status'] ?? 'pending', ['reviewNeeded', 'verified']) 
+                                ? $response['identity']['status'] 
+                                : 'pending',
 				'identification_id' => $response['identity']['id'],
 				'document' => json_encode($documentImages),
 				'video' => $storedVideoUrl,
