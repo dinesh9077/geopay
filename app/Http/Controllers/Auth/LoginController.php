@@ -64,6 +64,7 @@ class LoginController extends Controller
 		
 		try 
 		{ 
+			 session(['login_time' => now()]);
 			$user = User::where('email', $request->email)->first();
 			if(!$user)
 			{

@@ -39,7 +39,8 @@
 			'xps',
 			'terms',
 			'user_limit_id',
-			'is_upload_document'
+			'is_upload_document',
+			'password_changed_at'
 		];
 		
 		/**
@@ -50,7 +51,7 @@
 		protected $hidden = [
 			'password',
 			'remember_token',
-			'xps',
+			'xps', 
 		];
 		
 		/**
@@ -62,6 +63,7 @@
 			'is_company' => 'boolean',
 			'email_verified_at' => 'datetime',
 			'password' => 'hashed',
+			'password_changed_at' => 'datetime',
 		];
 		
 		protected static $recordEvents = ['created', 'deleted', 'updated'];

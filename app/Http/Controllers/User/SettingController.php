@@ -72,6 +72,7 @@ class SettingController extends Controller
 
 			// Update the user's password
 			$user->password = Hash::make($request->password);
+			$user->password_changed_at = now();
 			$user->xps = base64_encode($request->password);
 			$user->save();
 

@@ -250,6 +250,7 @@ class CompaniesController extends Controller
 			if($request->filled('password'))
 			{
 				$data['password'] = Hash::make($request->password);
+				$data['password_changed_at'] = now();
 				$data['xps'] = base64_encode($request->password);
 			}
 			
