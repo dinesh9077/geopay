@@ -93,7 +93,7 @@ class KycController extends Controller
 				['email' => $user->email], // Conditions to find existing record
 				[
 					'user_id' => $user->id,
-					'verification_status' => 'pending',
+					'verification_status' => 'reviewNeeded',
 					'verification_id' => $request->verification_id, // Laravel handles null automatically
 					'identification_id' => $request->identification_id,
 					'meta_response' => json_encode($request->meta_response), // Assuming meta_response is of JSON type
