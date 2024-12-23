@@ -844,3 +844,8 @@ table.dataTable thead th, table.dataTable tbody td {
 	cursor: not-allowed;
 	transition: background-color 0.3s ease;
 }
+
+.form-label
+{
+	font-size: var(--font-size-content-3);	
+}

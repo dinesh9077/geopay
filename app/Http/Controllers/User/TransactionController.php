@@ -22,6 +22,11 @@ class TransactionController extends Controller
 {
 	use WebResponseTrait; 
 	
+	public function __construct()
+    {
+        $this->middleware('auth');
+    }
+	
 	public function index()
     {  
 		$txnStatuses = Transaction::select('txn_status')

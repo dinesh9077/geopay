@@ -55,11 +55,8 @@
 	<div class="navbar-collapse navbar py-0">
 		<ul class="navbar-nav gap-3">
 			<!-- Wallet Balance -->
-			<div class="d-flex align-items-center my-1 px-3 btn btn-sm btn-primary gap-2">
-				<i class="bi bi-wallet2 heading-3"></i>
-				<span>{{ Helper::decimalsprint(auth()->user()->balance, 2) }} {{ config('setting.default_currency') }}</span>
-			</div>
-			 
+			<livewire:wallet-balance /> 
+			
 			<!-- Bell Icon Container -->
 			<livewire:notification-dropdown />
 			

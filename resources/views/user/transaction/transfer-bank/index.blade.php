@@ -315,6 +315,7 @@
 					toastrMsg(res.status, res.message);  
 					resetForm($transferToBankForm);  
 					Livewire.dispatch('refreshRecentTransactions'); 
+					Livewire.dispatch('updateBalance');
 				}
 				else if(res.status == "validation")
 				{  

@@ -75,7 +75,7 @@ class LoginController extends Controller
 			$messages = [
 				'status' => 'This user account is inactive. Please reach out to the administrator for further details.',
 				'is_email_verify' => 'This email was not verified. Please reach out to the administrator for further details.',
-				//'is_mobile_verify' => 'This mobile number was not verified. Please reach out to the administrator for further details.',
+				'is_mobile_verify' => 'This mobile number was not verified. Please reach out to the administrator for further details.',
 			];
 			
 			foreach ($messages as $key => $message) { 
@@ -84,8 +84,10 @@ class LoginController extends Controller
 				}
 			} 
 			
-			// Attempt to authenticate the user
-			if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) 
+			$credentials = $request->only('email', 'password');
+			$remember = $request->filled('remember'); // Check if "remember" checkbox is selected
+
+			if (Auth::attempt($credentials, $remember)) 
 			{ 
 				Helper::loginLog('login', $user);
 				$url = $user->is_kyc_verify == 0 ? route('metamap.kyc') : route('home');
@@ -101,11 +103,16 @@ class LoginController extends Controller
 	}
 
     // Handle logout
-    public function logout()
+    public function logout(Request $request)
     {
 		$user = Auth::user();
 		Helper::loginLog('logout', $user);
+		
+		// Clear the remember token
         Auth::logout();
+		$request->session()->invalidate();
+		$request->session()->regenerateToken();
+
         return redirect('/login')->with('success', 'Logged out successfully');
     }
 }

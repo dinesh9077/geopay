@@ -10,17 +10,21 @@
 			<form id="walletToWalletForm" action="{{ route('wallet-to-wallet.store') }}" method="post" class="animate__animated animate__fadeIn g-2">
 				<div class="mb-1 row">
 					<div class="col-12 mb-3"> 
+						<label for="country_id" class="form-label">Country <span class="text-danger">*</span></label>
 						<select id="country_id" name="country_id" class="form-control form-control-lg default-input">
 							<option></option> <!-- Placeholder option -->
 						</select>
 					</div>
 					<div class="col-12 mb-3">
+						<label for="country_id" class="form-label">Mobile (mobile number without code) <span class="text-danger">*</span></label>
 						<input type="number" id="mobile_number" name="mobile_number" class="form-control form-control-lg default-input mobile-number" placeholder="Enter your mobile number without code" oninput="this.value = this.value.replace(/\D/g, '')"/>
 					</div>
-					<div class="col-12 mb-3">
+					<div class="col-12 mb-3">	
+						<label for="country_id" class="form-label">Amount <span class="text-danger">*</span></label>
 						<input id="amount" name="amount" type="text" class="form-control form-control-lg default-input" placeholder="Enter Amount in USD (eg : 100 or eg : 0.0)" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
 					</div>
 					<div class="col-12 mb-3">
+						<label for="country_id" class="form-label">Notes</label>
 						<textarea name="notes" id="notes" class="form-control form-control-lg default-input" id="" placeholder="Account Description"></textarea>
 					</div> 
 				</div>
@@ -120,6 +124,7 @@
 						resetForm($walletForm);  
 						Livewire.dispatch('refreshRecentTransactions');
 						Livewire.dispatch('refreshNotificationDropdown');
+						Livewire.dispatch('updateBalance');
 					}
 					else if(res.status == "validation")
 					{  

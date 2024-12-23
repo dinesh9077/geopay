@@ -213,7 +213,7 @@
                     'general_setting' => ['route' => 'admin.general-setting', 'label' => 'General'],
                     'banner' => ['route' => 'admin.banner', 'label' => 'Banner'],
                     'faqs' => ['route' => 'admin.faqs', 'label' => "FAQ's"],
-                    'third_party_api' => ['route' => 'admin.third-party-key', 'label' => 'Third Party API'],
+                    'third_party_api' => ['route' => 'admin.third-party-key', 'label' => 'Third Party API & Commission'],
                 ];
             @endphp
 

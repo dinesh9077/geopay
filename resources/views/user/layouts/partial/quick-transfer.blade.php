@@ -37,5 +37,5 @@
             </div>
         </div>
     </div>
-   <livewire:recent-transactions /> 
+	<livewire:recent-transactions /> 
 </div>

@@ -382,6 +382,7 @@
 					toastrMsg(res.status, res.message); 
 					resetForm($airtime);  
 					Livewire.dispatch('refreshRecentTransactions'); 
+					Livewire.dispatch('updateBalance');
 				}
 				else if(res.status == "validation")
 				{  
