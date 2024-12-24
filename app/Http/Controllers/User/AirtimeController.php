@@ -238,16 +238,17 @@ class AirtimeController extends Controller
 	
 	public function internationalAirtimeCallback(Request $request)
 	{ 
-		if (!isset($request['external_id'], $request['status']['message'])) {
+		if (!isset($request['external_id'], $request['status']['class']['message'])) {
 			return ;
-		}
-
+		} 
+		
+		\Log::info('only request data:'. $request);
+		\Log::info('laravel request all'. $request->all());
 		$uniqueIdentifier = $request['external_id']; 
-        $txnStatus = strtolower($request['status']['message']) ?? 'process';
-        
-		  
+        $txnStatus = strtolower($request['status']['class']['message']) ?? 'process';
+         
 		$updated = Transaction::where('unique_identifier', $uniqueIdentifier)
-			->update(['txn_status' => $txnStatus, 'api_response' => $request]);
+			->update(['txn_status' => $txnStatus]);
 
 		return $updated;
 	}
