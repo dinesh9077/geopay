@@ -238,7 +238,7 @@
 		
 		public function internationalAirtimeCallback(Request $request)
 		{ 
-			try {
+			/* try {
 				
 				DB::beginTransaction();
 				if (!isset($request['external_id'], $request['status']['class']['message'])) {
@@ -260,6 +260,47 @@
 			{ 
 				DB::rollBack();
 				\Log::info('failed recharge: '. $e->getMessage()); 
-			} 
+			}  */
+			
+			
+			try {
+				// Log the full request data for debugging
+				Log::info('Callback Data Received:', $request->all());
+
+				$status = $request->input('status.class.message');
+				$externalId = $request->input('external_id');
+				$userData = $request->input('credit_party_identifier');
+
+				if ($status === 'DECLINED') {
+					// Handle declined recharge
+					$transaction = Transaction::where('unique_identifier', $externalId)->first();
+
+					if ($transaction) {
+						// Convert any array data to JSON for storing
+						$transaction->update([
+							'status' => 'declined',
+							'api_response' => json_encode($request->all()), // Save response as JSON
+							'comment' => 'Recharge declined',
+						]);
+
+						// Optional: Refund wallet balance logic
+						$user = User::find($transaction->user_id);
+						if ($user) {
+							$user->wallet_balance += $transaction->amount;
+							$user->save();
+						}
+					}
+				}
+
+				return response()->json(['message' => 'Callback processed successfully']);
+			} catch (\Exception $e) {
+				// Log the exception for debugging
+				Log::error('Error processing callback:', [
+					'error' => $e->getMessage(),
+					'data' => $request->all(),
+				]);
+
+				return response()->json(['error' => 'Callback processing failed'], 500);
+			}
 		}
 	}
