@@ -5,6 +5,7 @@
 	use App\Http\Controllers\Controller;
 	use Illuminate\Http\Request;
 	use App\Models\Country;
+	use App\Notifications\AirtimeRefundNotification;
 	use App\Models\Transaction;
 	use App\Models\User;
 	use Illuminate\Support\Facades\DB;
@@ -286,9 +287,11 @@
 
 					// Log the transaction creation
 					Helper::updateLogName($newTransaction->id, Transaction::class, 'international airtime transaction', $user->id);
-
+					 
+					$user->notify(new AirtimeRefundNotification($txnAmount, $newTransaction->id, $comments, ucfirst($txnStatus)));
+					
 					// Update the original transaction status
-					$transaction->update(['txn_status' => $txnStatus]);
+					Transaction::where('unique_identifier', $uniqueIdentifier)->update(['txn_status' => $txnStatus]);
 
 					return response()->json(['message' => 'Refund processed successfully', 'transaction' => $newTransaction]);
 				} else {
@@ -296,12 +299,8 @@
 				}
 			}
 
-			// For other status types, just update the transaction status
-			$transaction = Transaction::where('unique_identifier', $uniqueIdentifier)->first();
-			if ($transaction) {
-				$transaction->update(['txn_status' => $txnStatus]);
-				return response()->json(['message' => 'Transaction status updated', 'transaction' => $transaction]);
-			}
+			Transaction::where('unique_identifier', $uniqueIdentifier)->update(['txn_status' => $txnStatus]);
+			return response()->json(['message' => 'Transaction status updated', 'transaction' => $transaction]);
 
 			return response()->json(['error' => 'Transaction not found'], 404);
 		} 
