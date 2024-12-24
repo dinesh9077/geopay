@@ -242,7 +242,7 @@
 				DB::beginTransaction();
 
 				// Decode JSON string if needed
-				$requestData = $request->isJson() ? $request->json()->all() : $request->all();
+				$requestData = $request->isJson() ? json_decode($request) : $request->all();
 
 				// Validate required fields
 				if (!isset($requestData['external_id'], $requestData['status']['class']['message'])) {
