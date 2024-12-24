@@ -20,8 +20,8 @@ class AirtimeRefundNotification extends Notification
 		$this->receiver = $receiver;
         $this->txnAmount = $txnAmount;
         $this->transactionId = $transactionId; 
-        $this->comments = $comments; 
-        $this->notes = $notes; 
+        $this->comments = $comments; 
+        $this->notes = $notes; 
         $this->status = $status;
     }
 
