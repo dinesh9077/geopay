@@ -90,6 +90,7 @@ class TransactionController extends Controller
 			// Apply ordering, limit, and offset for pagination
 			$values = $query
 				->orderBy($columns[$orderColumnIndex] ?? 'id', $orderDirection)
+				->orderBy('order_id', $orderDirection)
 				->offset($start)
 				->limit($limit)
 				->get();
