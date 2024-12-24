@@ -246,9 +246,10 @@ class AirtimeController extends Controller
 		\Log::info('laravel request all'. $request->all());
 		$uniqueIdentifier = $request['external_id']; 
         $txnStatus = strtolower($request['status']['class']['message']) ?? 'process';
-         
+        
+		  
 		$updated = Transaction::where('unique_identifier', $uniqueIdentifier)
-			->update(['txn_status' => $txnStatus]);
+			->update(['txn_status' => $txnStatus, 'api_response' => $request->all()]);
 
 		return $updated;
 	}
