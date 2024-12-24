@@ -242,12 +242,12 @@ class AirtimeController extends Controller
 			return ;
 		}
 
-		$uniqueIdentifier = $request['external_id'];
-		 
+		$uniqueIdentifier = $request['external_id']; 
         $txnStatus = strtolower($request['status']['message']) ?? 'process';
-          
+        
+		  
 		$updated = Transaction::where('unique_identifier', $uniqueIdentifier)
-			->update(['txn_status' => $txnStatus]);
+			->update(['txn_status' => $txnStatus, 'api_response' => $request]);
 
 		return $updated;
 	}
