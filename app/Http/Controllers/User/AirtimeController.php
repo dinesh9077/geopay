@@ -238,49 +238,71 @@
 		
 		public function internationalAirtimeCallback(Request $request)
 		{
-			try {
-				DB::beginTransaction();
+			// Get txn status and unique identifier from the request
+			$txnStatus = strtolower($request->input('status.class.message', 'process'));
+			$uniqueIdentifier = $request->input('external_id', '');
 
-				// Decode JSON string if needed
-				$requestData = $request->isJson() ? json_decode($request) : $request->all();
+			// Early return if txnStatus or uniqueIdentifier is empty
+			if (empty($txnStatus) || empty($uniqueIdentifier)) {
+				return response()->json(['error' => 'Missing required parameters'], 400); 
+			}
 
-				// Validate required fields
-				if (!isset($requestData['external_id'], $requestData['status']['class']['message'])) {
-					throw new \Exception('Missing required fields: external_id or status.class.message');
-				}
-
-				$uniqueIdentifier = $requestData['external_id'];
-				$txnStatus = strtolower($requestData['status']['class']['message'] ?? 'process');
-
-				// Log received data
-				Log::info('Callback Data Received', ['data' => $requestData]);
-
-				// Update the transaction status
+			// Check for declined, cancelled, or rejected status
+			if (in_array($txnStatus, ['rejected', 'cancelled', 'declined'])) {
 				$transaction = Transaction::where('unique_identifier', $uniqueIdentifier)->first();
 
 				if (!$transaction) {
-					throw new \Exception('Transaction not found with unique_identifier: ' . $uniqueIdentifier);
+					return response()->json(['error' => 'Transaction not found'], 404);
 				}
 
-				$transaction->txn_status = $txnStatus;
-				$transaction->api_response = json_encode($requestData); // Save the entire request data
-				$transaction->save();
+				$txnAmount = $transaction->txn_amount;
 
-				DB::commit();
+				// Update user's balance
+				$user = User::find($transaction->user_id);
+				if ($user) {
+					$user->increment('balance', $txnAmount);
+					
+					$duetomsg = strtolower($request->input('status.message', 'technical issue'));
+					// Prepare the comments for the refund
+					$comments = "You have successfully refunded $txnAmount USD for {$transaction->product_name} to this order ID {$uniqueIdentifier} due to {$duetomsg}";
 
-				return response()->json(['message' => 'Transaction processed successfully'], 200);
-			} catch (\Exception $e) {
-				DB::rollBack();
+					// Clone transaction data and exclude 'id'
+					$newTransactionData = $transaction->toArray();
+					unset($newTransactionData['id']); // Remove the 'id' field to avoid duplication
 
-				// Log the exception for debugging
-				Log::error('Error processing callback', [
-					'error' => $e->getMessage(),
-					'data' => $request->all()
-				]);
+					// Add necessary changes for the new transaction
+					$newTransactionData['user_id'] = $user->id;
+					$newTransactionData['receiver_id'] = $user->id;
+					$newTransactionData['txn_status'] = $txnStatus;
+					$newTransactionData['comments'] = $comments;
+					$newTransactionData['transaction_type'] = 'credit';
+					$newTransactionData['total_charge'] = $txnAmount;
+					$newTransactionData['notes'] = 'Refund for transaction: ' . $uniqueIdentifier;
+					$newTransactionData['created_at'] = now();
+					$newTransactionData['updated_at'] = now();
 
-				return response()->json(['error' => 'Callback processing failed', 'details' => $e->getMessage()], 500);
+					// Create a new transaction record for the refund
+					$newTransaction = Transaction::create($newTransactionData);
+
+					// Log the transaction creation
+					Helper::updateLogName($newTransaction->id, Transaction::class, 'international airtime transaction', $user->id);
+
+					// Update the original transaction status
+					$transaction->update(['txn_status' => $txnStatus]);
+
+					return response()->json(['message' => 'Refund processed successfully', 'transaction' => $newTransaction]);
+				} else {
+					return response()->json(['error' => 'User not found'], 404);
+				}
 			}
-		}
 
+			// For other status types, just update the transaction status
+			$transaction = Transaction::where('unique_identifier', $uniqueIdentifier)->first();
+			if ($transaction) {
+				$transaction->update(['txn_status' => $txnStatus]);
+				return response()->json(['message' => 'Transaction status updated', 'transaction' => $transaction]);
+			}
 
+			return response()->json(['error' => 'Transaction not found'], 404);
+		} 
 	}
