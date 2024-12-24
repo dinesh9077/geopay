@@ -255,6 +255,13 @@
 				if (!$transaction) {
 					return response()->json(['error' => 'Transaction not found'], 404);
 				}
+				 
+				if (Transaction::where('unique_identifier', $uniqueIdentifier)
+					->whereIn('txn_status', ['rejected', 'cancelled', 'declined'])
+					->exists()) {
+					return response()->json(['error' => 'Transaction already made'], 404);
+				}
+
 
 				$txnAmount = $transaction->txn_amount;
 
