@@ -238,67 +238,45 @@
 		
 		public function internationalAirtimeCallback(Request $request)
 		{ 
-			/* try {
+			try {
 				
 				DB::beginTransaction();
+				// Check if the input is a JSON string and decode if needed
+				if (is_string($request)) {
+					$request = json_decode($request, true);
+					if (json_last_error() !== JSON_ERROR_NONE) {
+						throw new \Exception('Invalid JSON format');
+					}
+				}
+		
 				if (!isset($request['external_id'], $request['status']['class']['message'])) {
 					return ;
-				} 
-				
-				\Log::info('only request data:'. $request);
-				\Log::info('laravel request all'. $request->all());
+				}  
 				
 				$uniqueIdentifier = $request['external_id']; 
 				$txnStatus = strtolower($request['status']['class']['message']) ?? 'process';
 				
-				$updated = Transaction::where('unique_identifier', $uniqueIdentifier)
-				->update(['txn_status' => $txnStatus]);
+				// Update the transaction status
+				$transaction = Transaction::where('unique_identifier', $uniqueIdentifier)->first();
+
+				if (!$transaction) {
+					throw new \Exception('Transaction not found with unique_identifier: ' . $uniqueIdentifier);
+				}
+		
+				$transaction->txn_status = $txnStatus;
+				$transaction->api_reponse = $request;
+				$transaction->save();
+
 				
 				DB::commit();
-			} 
-			catch (\Throwable $e)
-			{ 
-				DB::rollBack();
-				\Log::info('failed recharge: '. $e->getMessage()); 
-			}  */
-			
-			
-			try {
-				// Log the full request data for debugging
-				Log::info('Callback Data Received:', $request->all());
-
-				$status = $request->input('status.class.message');
-				$externalId = $request->input('external_id');
-				$userData = $request->input('credit_party_identifier');
-
-				if ($status === 'DECLINED') {
-					// Handle declined recharge
-					$transaction = Transaction::where('unique_identifier', $externalId)->first();
-
-					if ($transaction) {
-						// Convert any array data to JSON for storing
-						$transaction->update([
-							'status' => 'declined',
-							'api_response' => json_encode($request->all())
-						]);
-
-						// Optional: Refund wallet balance logic
-						$user = User::find($transaction->user_id);
-						if ($user) {
-							$user->balance += $transaction->txn_amount;
-							$user->save();
-						}
-					}
-				}
-
-				return response()->json(['message' => 'Callback processed successfully']);
-			} catch (\Exception $e) {
+			}
+			catch (\Exception $e) {
 				// Log the exception for debugging
 				Log::error('Error processing callback:', [
-					'error' => $e->getMessage(),
-					'data' => $request->all(),
+				'error' => $e->getMessage(),
+				'data' => $request->all(),
 				]);
-
+				
 				return response()->json(['error' => 'Callback processing failed'], 500);
 			}
 		}
