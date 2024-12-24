@@ -237,28 +237,23 @@
 		}
 		
 		public function internationalAirtimeCallback(Request $request)
-		{ 
+		{
 			try {
 				DB::beginTransaction();
 
 				// Decode JSON string if needed
-				if (is_string($request)) {
-					$request = json_decode($request, true);
-					if (json_last_error() !== JSON_ERROR_NONE) {
-						throw new \Exception('Invalid JSON format');
-					}
-				}
+				$requestData = $request->isJson() ? $request->json()->all() : $request->all();
 
 				// Validate required fields
-				if (!isset($request['external_id'], $request['status']['class']['message'])) {
+				if (!isset($requestData['external_id'], $requestData['status']['class']['message'])) {
 					throw new \Exception('Missing required fields: external_id or status.class.message');
 				}
 
-				$uniqueIdentifier = $request['external_id'];
-				$txnStatus = strtolower($request['status']['class']['message'] ?? 'process');
+				$uniqueIdentifier = $requestData['external_id'];
+				$txnStatus = strtolower($requestData['status']['class']['message'] ?? 'process');
 
 				// Log received data
-				Log::info('Callback Data Received:', $request);
+				Log::info('Callback Data Received', ['data' => $requestData]);
 
 				// Update the transaction status
 				$transaction = Transaction::where('unique_identifier', $uniqueIdentifier)->first();
@@ -268,7 +263,7 @@
 				}
 
 				$transaction->txn_status = $txnStatus;
-				$transaction->api_response = json_encode($request); // Save the entire request data
+				$transaction->api_response = json_encode($requestData); // Save the entire request data
 				$transaction->save();
 
 				DB::commit();
@@ -278,13 +273,14 @@
 				DB::rollBack();
 
 				// Log the exception for debugging
-				Log::error('Error processing callback:', [
+				Log::error('Error processing callback', [
 					'error' => $e->getMessage(),
-					'data' => $request
+					'data' => $request->all()
 				]);
 
 				return response()->json(['error' => 'Callback processing failed', 'details' => $e->getMessage()], 500);
 			}
 		}
+
 
 	}
