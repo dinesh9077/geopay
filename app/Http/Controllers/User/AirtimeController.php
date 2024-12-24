@@ -263,10 +263,11 @@
 				if ($user) {
 					$user->increment('balance', $txnAmount);
 					
+					$transactionId = $transaction->id;
 					$duetomsg = strtolower($request->input('status.message', 'technical issue'));
 					// Prepare the comments for the refund
 					$comments = "You have successfully refunded $txnAmount USD for {$transaction->product_name} to this order ID {$uniqueIdentifier} due to {$duetomsg}";
-
+					
 					// Clone transaction data and exclude 'id'
 					$newTransactionData = $transaction->toArray();
 					unset($newTransactionData['id']); // Remove the 'id' field to avoid duplication
@@ -291,7 +292,7 @@
 					$user->notify(new AirtimeRefundNotification($txnAmount, $newTransaction->id, $comments, ucfirst($txnStatus)));
 					
 					// Update the original transaction status
-					Transaction::where('unique_identifier', $uniqueIdentifier)->update(['txn_status' => $txnStatus]); 
+					Transaction::where('id', $transactionId)->update(['txn_status' => $txnStatus]); 
 					return response()->json(['message' => 'Refund processed successfully', 'transaction' => $newTransaction]);
 				} else {
 					return response()->json(['error' => 'User not found'], 404);
