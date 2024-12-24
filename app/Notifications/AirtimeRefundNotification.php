@@ -10,14 +10,18 @@ class AirtimeRefundNotification extends Notification
     protected $txnAmount;
     protected $transactionId; 
     protected $comments;
-    protected $status;
-
+    protected $status;
+    protected $notes;
+	public $receiver;
+  
     // Constructor to initialize notification details
-    public function __construct($txnAmount, $transactionId, $comments, $status)
+    public function __construct(User $receiver, $txnAmount, $transactionId, $comments, $notes, $status)
     {
+		$this->receiver = $receiver;
         $this->txnAmount = $txnAmount;
         $this->transactionId = $transactionId; 
-        $this->comments = $comments; 
+        $this->comments = $comments; 
+        $this->notes = $notes; 
         $this->status = $status;
     }
 
@@ -39,13 +43,17 @@ class AirtimeRefundNotification extends Notification
      * @return array
      */
     public function toDatabase($notifiable)
-    {
-        return [
-            'message' => $this->comments,
-            'txn_amount' => $this->txnAmount,
+    { 
+		$receiverProfile = $this->receiver->profile_image ? url('storage/profile', $this->receiver->profile_image): '';
+        return new DatabaseMessage([ 
+            'receiver_name' => $this->receiver->first_name.' '.$this->receiver->last_name,
+            'receiver_profile' => $receiverProfile,
+            'amount' => $this->txnAmount,
+            'comment' => $this->comments,
+            'notes' => $this->notes,
             'transaction_id' => $this->transactionId, 
-            'status' => $this->status,
-        ];
+            'transaction_status' => $this->status,
+        ]);
     } 
     
 }
