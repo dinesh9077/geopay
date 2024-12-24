@@ -1,17 +1,21 @@
 <?php
 
 namespace App\Notifications;
-
+ 
+use App\Models\User;
+use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\DatabaseMessage;
+use Illuminate\Notifications\Messages\MailMessage;
+
 
 class AirtimeRefundNotification extends Notification
 {
-    protected $txnAmount;
-    protected $transactionId; 
-    protected $comments;
-    protected $status;
-    protected $notes;
+    public $txnAmount;
+    public $transactionId; 
+    public $comments;
+    public $status;
+    public $notes;
 	public $receiver;
   
     // Constructor to initialize notification details
