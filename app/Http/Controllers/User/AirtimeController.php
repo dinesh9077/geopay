@@ -279,14 +279,13 @@
 						// Convert any array data to JSON for storing
 						$transaction->update([
 							'status' => 'declined',
-							'api_response' => json_encode($request->all()), // Save response as JSON
-							'comment' => 'Recharge declined',
+							'api_response' => json_encode($request->all())
 						]);
 
 						// Optional: Refund wallet balance logic
 						$user = User::find($transaction->user_id);
 						if ($user) {
-							$user->wallet_balance += $transaction->amount;
+							$user->balance += $transaction->txn_amount;
 							$user->save();
 						}
 					}
