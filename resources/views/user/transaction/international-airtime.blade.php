@@ -9,6 +9,7 @@
 			<form id="airtimeForm" action="{{ route('international-airtime.store') }}" method="post" class="animate__animated animate__fadeIn g-2">
 				<div class="mb-1 row">
 					<div class="col-12 mb-3"> 
+						<label for="country_code" class="form-label">Country <span class="text-danger">*</span></label>
 						<select id="country_code" name="country_code" class="form-control form-control-lg default-input select2">
 							<option value="">Select Country</option> 
 							@foreach($countries as $country)
@@ -18,11 +19,13 @@
 					</div>
 					
 					<div class="col-12 mb-3" id="operatorHtml" style="display:none;"> 
+						<label for="operator_id" class="form-label">Operator <span class="text-danger">*</span></label>
 						<select id="operator_id" name="operator_id" class="form-control form-control-lg default-input select2">  
 						</select>
 					</div>
 					
 					<div class="col-12 mb-3" id="productHtml" style="display:none;"> 
+						<label for="product_id" class="form-label">Product <span class="text-danger">*</span></label>
 						<select id="product_id" name="product_id" class="form-control form-control-lg default-input select2">  
 						</select> 
 					</div>
@@ -31,10 +34,12 @@
 					</div>
 					
 					<div class="col-12 mb-3">
+						<label for="product_id" class="form-label">Mobile (eg:265244476305)  <span class="text-danger">*</span></label>
 						<input type="number" id="mobile_number" name="mobile_number" class="form-control form-control-lg default-input mobile-number" placeholder="Enter your mobile number with country code"/>
 					</div>
 					 
 					<div class="col-12 mb-3">
+						<label for="product_id" class="form-label">Notes</label>
 						<textarea name="notes" id="notes" class="form-control form-control-lg default-input" placeholder="Account Description"></textarea>
 					</div> 
 				</div>
