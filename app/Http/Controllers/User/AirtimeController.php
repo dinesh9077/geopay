@@ -291,8 +291,7 @@
 					$user->notify(new AirtimeRefundNotification($txnAmount, $newTransaction->id, $comments, ucfirst($txnStatus)));
 					
 					// Update the original transaction status
-					Transaction::where('unique_identifier', $uniqueIdentifier)->update(['txn_status' => $txnStatus]);
-
+					Transaction::where('unique_identifier', $uniqueIdentifier)->update(['txn_status' => $txnStatus]); 
 					return response()->json(['message' => 'Refund processed successfully', 'transaction' => $newTransaction]);
 				} else {
 					return response()->json(['error' => 'User not found'], 404);
