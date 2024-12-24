@@ -239,45 +239,52 @@
 		public function internationalAirtimeCallback(Request $request)
 		{ 
 			try {
-				
 				DB::beginTransaction();
-				// Check if the input is a JSON string and decode if needed
+
+				// Decode JSON string if needed
 				if (is_string($request)) {
 					$request = json_decode($request, true);
 					if (json_last_error() !== JSON_ERROR_NONE) {
 						throw new \Exception('Invalid JSON format');
 					}
 				}
-		
+
+				// Validate required fields
 				if (!isset($request['external_id'], $request['status']['class']['message'])) {
-					return ;
-				}  
-				
-				$uniqueIdentifier = $request['external_id']; 
-				$txnStatus = strtolower($request['status']['class']['message']) ?? 'process';
-				
+					throw new \Exception('Missing required fields: external_id or status.class.message');
+				}
+
+				$uniqueIdentifier = $request['external_id'];
+				$txnStatus = strtolower($request['status']['class']['message'] ?? 'process');
+
+				// Log received data
+				Log::info('Callback Data Received:', $request);
+
 				// Update the transaction status
 				$transaction = Transaction::where('unique_identifier', $uniqueIdentifier)->first();
 
 				if (!$transaction) {
 					throw new \Exception('Transaction not found with unique_identifier: ' . $uniqueIdentifier);
 				}
-		
+
 				$transaction->txn_status = $txnStatus;
-				$transaction->api_reponse = $request;
+				$transaction->api_response = json_encode($request); // Save the entire request data
 				$transaction->save();
 
-				
 				DB::commit();
-			}
-			catch (\Exception $e) {
+
+				return response()->json(['message' => 'Transaction processed successfully'], 200);
+			} catch (\Exception $e) {
+				DB::rollBack();
+
 				// Log the exception for debugging
 				Log::error('Error processing callback:', [
-				'error' => $e->getMessage(),
-				'data' => $request->all(),
+					'error' => $e->getMessage(),
+					'data' => $request
 				]);
-				
-				return response()->json(['error' => 'Callback processing failed'], 500);
+
+				return response()->json(['error' => 'Callback processing failed', 'details' => $e->getMessage()], 500);
 			}
 		}
+
 	}
