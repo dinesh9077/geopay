@@ -13,6 +13,7 @@
 			<form id="transferToBankForm" action="{{ route('transfer-to-bank.store') }}" method="post" class="animate__animated animate__fadeIn g-2">
 				<div class="mb-1 row">
 					<div class="col-12 mb-3"> 
+						<label for="country_code" class="form-label">Country <span class="text-danger">*</span></label>
 						<select id="country_code" name="country_code" class="form-control form-control-lg content-3 default-input select3" >
 							<option value="">Select Country</option>
 							@foreach($countries as $country) 
@@ -22,18 +23,21 @@
 					</div>
 					
 					<div class="col-12 mb-3"> 
+						<label for="beneficiaryId" class="form-label">Beneficiary <span class="text-danger">*</span></label>
 						<select id="beneficiaryId" name="beneficiaryId" class="form-control form-control-lg default-input content-3 select3" >
 							<option value="">Select Beneficiary</option> 
 						</select>
 					</div>
 					  
 					<div class="col-12 mb-3"> 
+						<label for="txnAmount" class="form-label">Amount <span class="text-danger">*</span></label>
 						<input id="txnAmount" name="txnAmount" class="form-control form-control-lg content-3 default-input"  placeholder="Enter Amount in {{config('setting.default_currency')}} (eg : 100 or eg : 0.0)" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));"> 
 					</div>
 					  
-					<div class="col-12 mb-3" id="commissionHtml"></div>
+					<div class="col-12" id="commissionHtml"></div>
 					  
 					<div class="col-12 mb-3">
+						<label for="txnAmount" class="form-label">Notes </label>
 						<textarea name="notes" id="notes" class="form-control form-control-lg default-input" placeholder="Account Description"></textarea>
 					</div> 
 				</div>
