@@ -7,16 +7,7 @@
 			</div>
 			<div class="modal-body p-4">
 				<form id="transferBankBeneficiaryForm" method="post" action="{{ route('transfer-to-bank.beneficiary-store') }}">
-					<div class="row">
-						<div class="mb-4 col-lg-6">
-							<label class="content-3 mb-0">Beneficiary Type <span class="text-danger">*</span></label>
-							<select id="beneficiaryType" name="beneficiaryType" class="form-control form-control-lg content-3 select2" >
-								<option value="">Select Beneficiary Type</option>
-								<option value="I">Individual</option>
-								<option value="B">Business</option> 
-							</select>
-						</div> 
-						
+					<div class="row">  
 						<div class="mb-4 col-lg-6">
 							<label class="content-3 mb-0">Country <span class="text-danger">*</span></label>
 							<select id="payoutCurrency" name="payoutCurrency" class="form-control form-control-lg content-3 select2" >
@@ -32,51 +23,38 @@
 							<select id="bankId" name="bankId" class="form-control form-control-lg content-3 select2" >
 								<option value="">Select Bank Name</option>
 							</select>
-						</div>
-						
+						</div> 
+					</div>
+					
+					<div class="row" id="dynamicFields">
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Bank Account Number <span class="text-danger">*</span></label>
-							<input id="bankAccountNumber" name="bankAccountNumber" placeholder="Enter Bank Account Number" type="text" class="form-control form-control-lg content-3" oninput="this.value = this.value.replace(/\D/g, '')"/>
+							<input id="bankaccountnumber" name="bankaccountnumber" placeholder="Enter Bank Account Number" type="text" class="form-control form-control-lg content-3" oninput="this.value = this.value.replace(/\D/g, '')"/>
 						</div>
 						
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Beneficiary First Name <span class="text-danger">*</span></label>
-							<input id="beneficiaryFirstName" name="beneficiaryFirstName" placeholder="Enter Beneficiary First Name" type="text" class="form-control form-control-lg content-3" />
+							<input id="receiverfirstname" name="receiverfirstname" placeholder="Enter Beneficiary First Name" type="text" class="form-control form-control-lg content-3" />
 						</div>
-						
-						<div class="mb-4 col-md-6">
-							<label class="content-3 mb-0">Beneficiary Middle Name ( Optional )</label>
-							<input id="beneficiaryMiddleName" name="beneficiaryMiddleName" placeholder="Enter Beneficiary Middle Name" type="text" class="form-control form-control-lg content-3" />
-						</div>
-						
+						  
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Beneficiary Last Name <span class="text-danger">*</span></label>
-							<input id="beneficiaryLastName" name="beneficiaryLastName" placeholder="Enter Beneficiary Last Name" type="text" class="form-control form-control-lg content-3" />
+							<input id="receiverlastname" name="receiverlastname" placeholder="Enter Beneficiary Last Name" type="text" class="form-control form-control-lg content-3" />
 						</div>
 						
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Beneficiary Address <span class="text-danger">*</span></label>
-							<input id="beneficiaryAddress" name="beneficiaryAddress" placeholder="Enter Beneficiary Address" type="text" class="form-control form-control-lg content-3" />
+							<input id="receiveraddress" name="receiveraddress" placeholder="Enter Beneficiary Address" type="text" class="form-control form-control-lg content-3" />
 						</div>
-						
-						<div class="mb-4 col-md-6">
-							<label class="content-3 mb-0">Beneficiary State</label>
-							<input id="beneficiaryState" name="beneficiaryState" placeholder="Enter Beneficiary State" type="text" class="form-control form-control-lg content-3" />
-						</div>
-						
-						<div class="mb-4 col-md-6">
-							<label class="content-3 mb-0">Beneficiary Email <span class="text-danger">*</span></label>
-							<input id="beneficiaryEmail" name="beneficiaryEmail" placeholder="Enter Beneficiary Email id" type="email" class="form-control form-control-lg content-3" />
-						</div>
-						
+						  
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Beneficiary Mobile Number (eg:265244476305) <span class="text-danger">*</span></label>
-							<input id="beneficiaryMobile" name="beneficiaryMobile" placeholder="Enter Beneficiary Mobile No" type="tel" class="form-control form-control-lg content-3" oninput="this.value = this.value.replace(/\D/g, '')"/>
+							<input id="receivercontactnumber" name="receivercontactnumber" placeholder="Enter Beneficiary Mobile No" type="tel" class="form-control form-control-lg content-3" oninput="this.value = this.value.replace(/\D/g, '')"/>
 						</div>
 						
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Select Beneficiary Relationship with sender <span class="text-danger">*</span></label>
-							<select id="senderBeneficiaryRelationship" name="senderBeneficiaryRelationship" class="form-control form-control-lg content-3 select2" >
+							<select id="senderbeneficiaryrelationship" name="senderbeneficiaryrelationship" class="form-control form-control-lg content-3 select2" >
 								<option value="">Select Beneficiary Relationship with sender</option>
 								@foreach($relationships as $relationship)
 								<option value="{{ $relationship['data'] }}" data-relation-remark="{{ $relationship['value'] }}">{{ $relationship['value'] }}</option>
@@ -86,7 +64,7 @@
 						
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Remittance Purpose <span class="text-danger">*</span></label>
-							<select id="purposeOfRemittance" name="purposeOfRemittance" class="form-control form-control-lg content-3 select2" >
+							<select id="purposeofremittance" name="purposeofremittance" class="form-control form-control-lg content-3 select2" >
 								<option value="">Select Remittance purpose</option>
 								@foreach($purposeRemittances as $purposeRemittance)
 								<option value="{{ $purposeRemittance['data'] }}" data-purpose-remittance-remarks="{{ $purposeRemittance['value'] }}">{{ $purposeRemittance['value'] }}</option>
@@ -96,7 +74,7 @@
 						
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Sender Source of Fund <span class="text-danger">*</span></label>
-							<select id="senderSourceOfFund" name="senderSourceOfFund" class="form-control form-control-lg content-3 select2" >
+							<select id="sendersourceoffund" name="sendersourceoffund" class="form-control form-control-lg content-3 select2" >
 								<option value="">Select Source of Fund</option>
 								@foreach($sourceOfFunds as $sourceOfFund)
 								<option value="{{ $sourceOfFund['data'] }}" data-sender-sourceof-fundremarks="{{ $sourceOfFund['value'] }}">{{ $sourceOfFund['value'] }}</option>
@@ -106,7 +84,7 @@
 						
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Beneficiary Id Type <span class="text-danger">*</span></label>
-							<select id="receiverIdType" name="receiverIdType" class="form-control form-control-lg content-3 select2" >
+							<select id="beneficiarytype" name="beneficiarytype" class="form-control form-control-lg content-3 select2" >
 								<option value="">Select Beneficiary Id Type</option>
 								@foreach($documentOfCustomers as $documentOfCustomer)
 								<option value="{{ $documentOfCustomer['data'] }}">{{ $documentOfCustomer['value'] }}</option>
@@ -138,7 +116,9 @@
 		</div>
 	</div>
 </div> 
-<script> 
+<script>  
+	var $beneficiaryForm = $('#transferBankBeneficiaryForm'); 
+	
 	// Initialize Select2 for dropdowns
 	$('#transferBankBeneficiaryForm .select2').select2({
 		dropdownParent: $('#addTransferBankBeneficiary'),
@@ -149,7 +129,7 @@
 	flatpickr("#receiverIdExpireDate, #receiverDateOfBirth", {
 		dateFormat: "Y-m-d"
 	});
-	
+	 
 	// Handle Country Change for Bank List
 	$('#transferBankBeneficiaryForm #payoutCurrency').change(function() { 
 		var payoutCountry = $(this).find(':selected').data('payout-country');
@@ -177,8 +157,52 @@
 		});
 	});
 	
-	// Attach the submit event handler
-	var $beneficiaryForm = $('#transferBankBeneficiaryForm'); 
+	$('#transferBankBeneficiaryForm #bankId').change(function()
+	{ 
+		var locationId = $(this).val();
+		var payoutCurrency = $beneficiaryForm.find('#payoutCurrency').val();
+		var payoutCountry = $beneficiaryForm.find('#payoutCurrency :selected').data('payout-country');
+		var serviceName = $beneficiaryForm.find('#payoutCurrency :selected').data('service-name');
+
+		if (!locationId || !payoutCurrency || !payoutCountry || !serviceName) { 
+			toastrMsg('error', 'Missing required data for form submission.'); 
+			return;
+		}
+
+		var formData = {
+			payoutCountry: payoutCountry,
+			payoutCurrency: payoutCurrency,
+			serviceName: serviceName,
+			locationId: locationId
+		};
+
+		const encrypted_data = encryptData(JSON.stringify(formData));
+		
+		// Show Loading Indicator
+		run_waitMe($beneficiaryForm, 1, 'facebook');
+		
+		// AJAX Request to Fetch Banks
+		$.ajax({
+			type: 'POST',
+			url: "{{ route('transfer-to-bank.get-fields') }}",
+			data: { encrypted_data: encrypted_data, '_token': "{{ csrf_token() }}" },
+			dataType: 'json',
+			success: function(res) {
+				$beneficiaryForm.waitMe('hide');
+				if(res.status == "success")
+				{
+					var result = decryptData(res.response);  
+					$('#dynamicFields').html(result.view);
+				}  
+			},
+			error: function(err) {
+				$beneficiaryForm.waitMe('hide');
+				toastrMsg('error', 'Error loading fields. Please try again.'); 
+			}
+		});
+	});
+	
+	// Attach the submit event handler 
 	$beneficiaryForm.submit(function(event) 
 	{
 		event.preventDefault();   
@@ -203,10 +227,7 @@
 		formData['category_name'] = 'transfer to bank'; 
 		formData['service_name'] = $beneficiaryForm.find('#payoutCurrency').find(':selected').data('service-name') ?? '';
 		formData['payoutCountry'] = $beneficiaryForm.find('#payoutCurrency').find(':selected').data('payout-country') ?? '';
-		formData['payoutCountryName'] = $beneficiaryForm.find('#payoutCurrency').find(':selected').data('country-name') ?? '';
-		formData['senderBeneficiaryRelationshipRemarks'] = $beneficiaryForm.find('#senderBeneficiaryRelationship').find(':selected').data('relation-remark') ?? '';
-		formData['purposeOfRemittanceRemark'] = $beneficiaryForm.find('#purposeOfRemittance').find(':selected').data('purpose-remittance-remarks') ?? '';
-		formData['senderSourceOfFundRemarks'] = $beneficiaryForm.find('#senderSourceOfFund').find(':selected').data('sender-sourceof-fundremarks') ?? '';
+		formData['payoutCountryName'] = $beneficiaryForm.find('#payoutCurrency').find(':selected').data('country-name') ?? ''; 
 		formData['bankName'] = $beneficiaryForm.find('#bankId').find(':selected').data('bank-name') ?? '';
 		  
 		// Encrypt data before sending

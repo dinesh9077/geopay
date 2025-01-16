@@ -16,7 +16,7 @@
 						<select id="country_code" name="country_code" class="form-control form-control-lg content-3 default-input select3" >
 							<option value="">Select Country</option>
 							@foreach($countries as $country) 
-							<option value="{{ $country['value'] }}" data-service-name="{{ $country['service_name'] }}" data-country-name="{{ $country['label'] }}" data-payout-country="{{ $country['data'] }}">{{ $country['label'] }}</option>
+								<option value="{{ $country['value'] }}" data-service-name="{{ $country['service_name'] }}" data-country-name="{{ $country['label'] }}" data-payout-country="{{ $country['data'] }}">{{ $country['label'] }}</option>
 							@endforeach
 						</select>
 					</div>
@@ -110,9 +110,9 @@
 					
 					// Check for valid output
 					if (result.output) {
-						$('#beneficiaryId').html(result.output);
+						$('#transferToBankForm #beneficiaryId').html(result.output);
 					} else { 
-						$('#beneficiaryId').html('<option value="">No beneficiary found</option>');
+						$('#transferToBankForm #beneficiaryId').html('<option value="">No beneficiary found</option>');
 					}
 				} catch (e) { 
 					toastrMsg('error', 'An error occurred while processing the response.');

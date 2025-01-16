@@ -67,6 +67,7 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	// Dashboard
 	Route::get('/home', [HomeController::class, 'index'])->name('home');   
 	
+	// Notification
 	Route::get('/notifications', [HomeController::class, 'notifications'])->name('notifications');   
 	 
 	// Wallet To Wallet
@@ -84,9 +85,12 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	// Transfer To Bank
 	Route::get('/transfer-to-bank', [TransferBankController::class, 'transferToBank'])->name('transfer-to-bank');  
 	Route::post('/transfer-to-bank/store', [TransferBankController::class, 'transferToBankStore'])->name('transfer-to-bank.store');  
+	
 	Route::get('/transfer-to-bank/beneficiary', [TransferBankController::class, 'transferToBankBeneficiary'])->name('transfer-to-bank.beneficiary');  
 	Route::post('/transfer-to-bank/beneficiary-store', [TransferBankController::class, 'transferToBankBeneficiaryStore'])->name('transfer-to-bank.beneficiary-store');  
 	Route::post('/transfer-to-bank/bank-list', [TransferBankController::class, 'transferToBankList'])->name('transfer-to-bank.bank-list');  
+	Route::post('/transfer-to-bank/get-fields', [TransferBankController::class, 'transferToBankFields'])->name('transfer-to-bank.get-fields');  
+	
 	Route::post('/transfer-to-bank/beneficiary-list', [TransferBankController::class, 'transferToBeneficiaryList'])->name('transfer-to-bank.beneficiary-list');  
 	Route::post('/transfer-to-bank/beneficiary-detail', [TransferBankController::class, 'transferToBeneficiaryDetail'])->name('transfer-to-bank.beneficiary-detail');  
 	Route::get('/transfer-to-bank/beneficiary-edit/{id}', [TransferBankController::class, 'transferToBankBeneficiaryEdit']);  

@@ -17,6 +17,9 @@ class LightnetCatalogue extends Model
         'service_name',
         'catalogue_type',
         'catalogue_description',
+        'additionalField1',
+        'additionalField2',
+        'additionalField3',
         'data',
     ];
 

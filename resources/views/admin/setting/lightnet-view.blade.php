@@ -107,6 +107,7 @@
 			$('body').waitMe('hide');
 			if(res.status == "success")
 			{
+				getLightNetView(event)
 				toastrMsg(res.status, res.message); 
 			}
 			else

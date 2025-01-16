@@ -223,6 +223,7 @@
 				// Define catalogues with keys and descriptions
 				$catalogues = [
 					'OCC' => 'Get Occupation',
+					'CTY' => 'Get Country',  
 					'SOF' => 'Get Source of Fund',
 					'REL' => 'Get Relationship List',
 					'POR' => 'Get Purpose of Remittance',
@@ -250,6 +251,10 @@
 						throw new \Exception($errorMsg);
 					} 
 					
+					$data = $response['response']['result'];
+					$filteredData = array_filter($data, function ($item) {
+						return $item['value'] !== 'Other';
+					});
 					// Update or create the catalogue record in the database
 					LightnetCatalogue::updateOrCreate(
 						['service_name' => 'lightnet', 'catalogue_type' => $key],
@@ -258,7 +263,7 @@
 							'service_name' => 'lightnet',
 							'catalogue_type' => $key,
 							'catalogue_description' => $catalogue,
-							'data' => $response['response']['result'],
+							'data' => $filteredData,
 							'updated_at' => now(),
 						]
 					);
@@ -312,7 +317,8 @@
 					}, $countries);
 					
 					foreach($countries as $country)
-					{	
+					{	 
+						$this->getLightnetState($country['data']);
 						LightnetCountry::updateOrCreate(
 							['service_name' => 'lightnet', 'value' => $country['value']],
 							['data' => $country['data'], 'updated_at' => now()]
@@ -328,6 +334,34 @@
 				DB::rollBack();
 				return $this->errorResponse('Failed to sync Country. ' . $e->getMessage());
 			} 
+		}
+		
+		public function getLightnetState($payoutCountry)
+		{
+			$timestamp = time();
+			$body =  [
+				'agentSessionId' => (string) $timestamp,
+				'catalogueType' => 'STA',
+				'additionalField1' => (string) $payoutCountry,
+			];
+			
+			$response = $this->liquidNetService->serviceApi('post', '/GetCatalogue', $timestamp, $body);
+			if (!$response['success']) {
+				return;
+			}
+			
+			if(($response['response']['code'] ?? -1) != 0)
+			{
+				return;
+			} 
+			
+			$result = $response['response']['result'] ?? [];
+			
+			LightnetCatalogue::updateOrCreate(
+				['service_name' => 'lightnet', 'catalogue_type' => 'STA', 'additionalField1'=> $payoutCountry],
+				['category_name' => 'transfer to bank', 'catalogue_description' => 'Get States', 'data'=> $result, 'additionalField1'=> $payoutCountry, 'updated_at' => now()]
+			);
+			return;
 		}
 		
 		public function UserLimitUpdate(Request $request)

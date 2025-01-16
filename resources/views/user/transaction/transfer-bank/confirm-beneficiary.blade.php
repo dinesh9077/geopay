@@ -8,63 +8,71 @@
 			</div>
 			<div class="modal-body">
 				<div class="row">
+					<!-- Category Name -->
 					<div class="mb-2 col-4">
-						<label class="content-3 mb-1 d-flex justify-content-between">Category Name <span>:</span> </label> 
+						<label class="content-3 mb-1 d-flex justify-content-between">Category Name <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ $beneficiary->category_name }} </span> 
+						<span class="content-3 text-secondary">{{ $beneficiary->category_name ?? 'N/A' }}</span>
 					</div>
-					
+
+					<!-- Country Name -->
 					<div class="mb-2 col-4">
-						<label class="content-3 mb-1 d-flex justify-content-between">Country Name <span>:</span> </label> 
+						<label class="content-3 mb-1 d-flex justify-content-between">Country Name <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ $beneficiary->dataArr ? $beneficiary->dataArr['payoutCountryName'] : 'N/A' }} </span> 
+						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['payoutCountryName'] ?? 'N/A' }}</span>
 					</div>
-					
+
+					<!-- Bank Name -->
 					<div class="mb-2 col-4">
-						<label class="content-3 mb-1 d-flex justify-content-between">Bank Name <span>:</span> </label> 
+						<label class="content-3 mb-1 d-flex justify-content-between">Bank Name <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ $beneficiary->dataArr ? $beneficiary->dataArr['bankName'] : 'N/A' }} </span> 
+						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['bankName'] ?? 'N/A' }}</span>
 					</div>
-					  
+
+					<!-- Bank Account Number -->
 					<div class="mb-2 col-4">
-						<label class="content-3 mb-1 d-flex justify-content-between">Bank Account No. <span>:</span> </label> 
+						<label class="content-3 mb-1 d-flex justify-content-between">Bank Account No. <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ $beneficiary->dataArr ? $beneficiary->dataArr['bankAccountNumber'] : 'N/A' }} </span> 
+						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['bankaccountnumber'] ?? 'N/A' }}</span>
 					</div>
-					   
+
+					<!-- Mobile Number -->
 					<div class="mb-2 col-4">
-						<label class="content-3 mb-1 d-flex justify-content-between">Mobile Number <span>:</span> </label> 
+						<label class="content-3 mb-1 d-flex justify-content-between">Mobile Number <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ $beneficiary->dataArr ? $beneficiary->dataArr['beneficiaryMobile'] : 'N/A' }} </span> 
+						<span class="content-3 text-secondary">{{ optional($beneficiary->dataArr)['receivercontactnumber'] ?? 'N/A' }}</span>
 					</div>
-					   
+
+					<!-- First Name -->
 					<div class="mb-2 col-4">
-						<label class="content-3 mb-1 d-flex justify-content-between">First Name <span>:</span> </label> 
+						<label class="content-3 mb-1 d-flex justify-content-between">First Name <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ $beneficiary->dataArr ? $beneficiary->dataArr['beneficiaryFirstName'] : 'N/A' }} </span> 
+						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['receiverfirstname'] ?? 'N/A' }}</span>
 					</div>
-					     
+
+					<!-- Last Name -->
 					<div class="mb-2 col-4">
-						<label class="content-3 mb-1 d-flex justify-content-between">Last Name <span>:</span> </label> 
+						<label class="content-3 mb-1 d-flex justify-content-between">Last Name <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ $beneficiary->dataArr ? $beneficiary->dataArr['beneficiaryLastName'] : 'N/A' }} </span> 
+						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['receiverlastname'] ?? 'N/A' }}</span>
 					</div>
-					     
+
+					<!-- Receiver Address -->
 					<div class="mb-2 col-4">
-						<label class="content-3 mb-1 d-flex justify-content-between">Email <span>:</span> </label> 
+						<label class="content-3 mb-1 d-flex justify-content-between">Receiver Address <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ $beneficiary->dataArr ? $beneficiary->dataArr['beneficiaryEmail'] : 'N/A' }} </span> 
-					</div> 
+						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['receiveraddress'] ?? 'N/A' }}</span>
+					</div>
 				</div>
-			</div>
+			</div> 
 			<div class="modal-footer">
 				<button type="button" class="btn content-3 btn-primary" data-bs-dismiss="modal">Confirm</button>
 				<button type="button" class="btn content-3 btn-secondary" data-beneficiary-id="{{ $beneficiary->id }}" onclick="editBeneficiary(this, event)">Edit</button>
@@ -94,8 +102,7 @@
 				</div>                                                    
 			</div>
 		</div>
-	</div>  
-	
+	</div>   
 	<script>
 		function editBeneficiary(obj, event)
 		{ 
@@ -105,11 +112,13 @@
 			{
 				modalOpen = true;
 				closemodal(); 
+				run_waitMe($('#confirmBeneficiaryModal'), 1, 'facebook');
 				$.get("{{ url('transfer-to-bank/beneficiary-edit') }}/"+beneficiaryId, function(res)
 				{
 					const result = decryptData(res.response);
 					$('body').find('#modal-view-render').html(result.view);
 					$('#editTransferBankBeneficiary').modal('show');  
+					$('#confirmBeneficiaryModal').waitMe('hide');
 				});
 			} 
 		}
