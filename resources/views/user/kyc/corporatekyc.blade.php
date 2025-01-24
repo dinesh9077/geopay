@@ -235,7 +235,7 @@
 					submitFormStep(currentStep, true); 
 				});
 				
-				$("#company_director_id").trigger('change');
+				$("#company_director_id").change();
 				
 				$(document).on('change', "#company_director_id", function () {
 					var directorId = $(this).val(); 
