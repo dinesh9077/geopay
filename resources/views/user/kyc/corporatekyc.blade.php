@@ -234,9 +234,15 @@
 					// Final step submission if validation passes
 					submitFormStep(currentStep, true); 
 				});
- 
+				
+				$("#company_director_id").trigger('change');
+				
 				$(document).on('change', "#company_director_id", function () {
 					var directorId = $(this).val(); 
+					if(!directorId)
+					{
+						return;
+					}
 					fetchDocuments(directorId); // Fetch documents for the selected director
 				});
 	

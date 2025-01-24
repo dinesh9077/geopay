@@ -22,6 +22,24 @@
 		|
 	*/
 	
+	/* Route::get('onafriqtest', function () {
+        try {
+            $client = new Client();
+            
+                $response = $client->get('https://onafriqtest.com/mttest/services/XPService.XPServiceHttpSoap11Endpoint/', [
+                'headers' => [
+                    'User-Agent' => 'GEOPAYOUTBOUND',
+                ],
+            ]);
+    
+            
+            return response()->json($response);
+            
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+    }); */
+	
 	Route::middleware(['decrypt.request'])->group(function () 
 	{  
 		Route::post('login', [LoginController::class, 'login']);  
