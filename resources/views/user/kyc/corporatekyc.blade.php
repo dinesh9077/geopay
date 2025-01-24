@@ -246,6 +246,7 @@
 					{
 						return;
 					}
+					$('#document_type_id').attr('disabled', false);
 					fetchDocuments(directorId); // Fetch documents for the selected director
 				});
 	

@@ -181,12 +181,15 @@
 			$('#document_type_id').html('<option value="">Select Document</option>');
 			return;
 		}
-
+		
+		$('#document_type_id').attr('disabled', true);
+		
 		// AJAX request to fetch documents
 		$.ajax({
 			url: "{{ url('corporate/document-type')}}/"+directorId,
 			method: 'GET',
 			success: function (data) {
+				$('#document_type_id').attr('disabled', false);
 				// Clear existing options
 				$('#document_type_id').html('<option value="">Select Document</option>');
 
