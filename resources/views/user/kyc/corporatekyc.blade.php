@@ -235,7 +235,10 @@
 					submitFormStep(currentStep, true); 
 				});
 				
-				$("#company_director_id").change();
+				setTimeout(function(){
+					$("#company_director_id").trigger('change');
+				}, 1000)
+				
 				
 				$(document).on('change', "#company_director_id", function () {
 					var directorId = $(this).val(); 
