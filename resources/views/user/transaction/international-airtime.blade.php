@@ -12,9 +12,9 @@
 						<label for="country_code" class="form-label">Country <span class="text-danger">*</span></label>
 						<select id="country_code" name="country_code" class="form-control form-control-lg default-input select2">
 							<option value="">Select Country</option> 
-							@foreach($countries as $country)
+							{{-- @foreach($countries as $country)
 								<option value="{{ $country['iso_code'] }}">{{ $country['name'] }}</option> 
-							@endforeach
+							@endforeach --}}
 						</select>
 					</div>
 					
@@ -62,6 +62,42 @@
 	});
 	
 	var $airtimeForm = $('#airtimeForm');
+	
+	var countries = @json($countriesWithFlags);
+
+	$(document).ready(function() {
+		// Initialize Select2 for the individual form
+		$airtimeForm.find('#country_code').select2({
+			data: countries.map(country => ({
+				id: country.iso3,
+				text: country.name,
+				flag: country.country_flag // Add custom data for the flag
+			})),
+			templateResult: formatCountry,
+			templateSelection: formatCountrySelection,
+			width: "100%"
+		});
+		 
+		// Template for the dropdown items
+		function formatCountry(country) {
+			if (!country.id) {
+				return country.text; // Default text if no id (for the placeholder option)
+			}
+			const flagImg = '<img src="'+country.flag+'" style="width: 20px; height: 20px; margin-right: 4px; margin-bottom: 4px;" />';
+			return $('<span>'+flagImg+' '+country.text+'</span>');
+		}
+
+		// Template for the selected item
+		function formatCountrySelection(country) {
+			if (!country.id) {
+				return country.text;
+			}
+			const flagImg = '<img src="'+country.flag+'" style="width: 20px; height: 20px; margin-right: 4px; margin-bottom: 4px;" />';
+			return $('<span>'+flagImg+' '+country.text+'</span>');
+		}
+	 
+	});
+	 
 	$('#country_code').change(function ()
 	{
 		if(!$(this).val())

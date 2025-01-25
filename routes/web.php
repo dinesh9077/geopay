@@ -103,7 +103,15 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	
 	// Transfer To Mobile Money
 	Route::get('/transfer-to-mobile-money', [TransferMobileController::class, 'transferToMobileMoney'])->name('transfer-to-mobile-money'); 
-	  
+	
+	Route::get('/transfer-to-mobile/beneficiary', [TransferMobileController::class, 'transferToMobileBeneficiary'])->name('transfer-to-mobile.beneficiary');  
+	Route::post('/transfer-to-mobile/beneficiary-store', [TransferMobileController::class, 'transferToMobileBeneficiaryStore'])->name('transfer-to-mobile.beneficiary-store');
+	Route::post('/transfer-to-mobile/beneficiary-list', [TransferMobileController::class, 'transferToBeneficiaryList'])->name('transfer-to-mobile.beneficiary-list'); 
+	Route::post('/transfer-to-mobile/beneficiary-detail', [TransferMobileController::class, 'transferToBeneficiaryDetail'])->name('transfer-to-mobile.beneficiary-detail'); 
+	Route::get('/transfer-to-mobile/beneficiary-edit/{id}', [TransferMobileController::class, 'transferToMobileBeneficiaryEdit']);  
+	Route::post('/transfer-to-mobile/beneficiary-update/{id}', [TransferMobileController::class, 'transferToMobileBeneficiaryUpdate'])->name('transfer-to-mobile.beneficiary-update');  
+	Route::get('/transfer-to-mobile/beneficiary-delete/{id}', [TransferMobileController::class, 'transferToBeneficiaryDelete'])->name('transfer-to-mobile.beneficiary-delete');  
+	
 	//Add Mobile Money
 	Route::get('/add-money', function () {
 		return view('user.transaction.add-money.index');

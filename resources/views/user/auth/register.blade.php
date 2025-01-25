@@ -386,8 +386,8 @@
 				}
 			
 				// You can set a default value for both forms (e.g., country with ID 98)
-				$individualForm.find('#country_id').val('98').trigger('change'); 
-				$companyForm.find('#country_id1').val('98').trigger('change');
+				$individualForm.find('#country_id').val('99').trigger('change'); 
+				$companyForm.find('#country_id1').val('99').trigger('change');
 			});
 
 			 

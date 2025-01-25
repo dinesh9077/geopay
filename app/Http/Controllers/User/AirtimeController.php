@@ -31,8 +31,18 @@
 		
 		public function internationalAirtime()
 		{ 
-			$countries = $this->airtimeService->getCountries(); 
-			return view('user.transaction.international-airtime', compact('countries'));
+			//$countries = $this->airtimeService->getCountries(); 
+			
+			$countries = Country::get();
+
+			$countriesWithFlags = $countries->transform(function ($country) {
+				if ($country->country_flag) {
+					$country->country_flag = asset('country/' . $country->country_flag);
+				} 
+				return $country;
+			});
+			
+			return view('user.transaction.international-airtime', compact('countries', 'countriesWithFlags'));
 		}
 		
 		public function internationalAirtimeOperator(Request $request)

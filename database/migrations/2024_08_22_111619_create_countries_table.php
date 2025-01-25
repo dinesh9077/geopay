@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('iso3');
             $table->string('numcode');
             $table->string('isdcode');
+            $table->string('currency_code');
             $table->string('country_flag'); 
             $table->timestamps();
         });

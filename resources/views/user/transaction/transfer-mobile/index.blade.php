@@ -46,20 +46,20 @@
 				</div>
 
 				<!-- Right Side: Add Beneficiary Button -->
-				<button type="button" class="btn btn-primary" onclick="addTransferBankBeneficiary(this, event)">
+				<button type="button" class="btn btn-primary" onclick="addTransferMobileBeneficiary(this, event)">
 					Add Beneficiary Details
 				</button>
 			</div>
  
-			<form id="transferToBankForm" action="{{ route('transfer-to-bank.store') }}" method="post" class="animate__animated animate__fadeIn g-2">
+			<form id="transferToMobileForm" action="{{ route('transfer-to-bank.store') }}" method="post" class="animate__animated animate__fadeIn g-2">
 				<div class="mb-1 row">
 					<div class="col-12 mb-3"> 
 						<label for="country_code" class="form-label">Country <span class="text-danger">*</span></label>
 						<select id="country_code" name="country_code" class="form-control form-control-lg content-3 default-input select3" >
 							<option value="">Select Country</option>
-							@foreach($countries as $country) 
+							{{-- @foreach($countries as $country) 
 								<option value="{{ $country['value'] }}" data-service-name="{{ $country['service_name'] }}" data-country-name="{{ $country['label'] }}" data-payout-country="{{ $country['data'] }}">{{ $country['label'] }}</option>
-							@endforeach
+							@endforeach --}}
 						</select>
 					</div>
 					
@@ -95,43 +95,82 @@
 @endsection
 @push('js')
 <script>
-	$('#transferToBankForm .select3').select2({ 
+	$('#transferToMobileForm .select3').select2({ 
 		width: "100%"
 	});
 	
-	function addTransferBankBeneficiary(obj, event)
+	var $transferToMobileForm = $('#transferToMobileForm');  
+	var countries = @json($countries);
+
+	$(document).ready(function() {
+		// Initialize Select2 for the individual form
+		$transferToMobileForm.find('#country_code').select2({
+			data: countries.map(country => ({
+				id: country.id,
+				iso: country.iso,
+				text: country.name,
+				flag: country.country_flag // Add custom data for the flag
+			})),
+			templateResult: formatCountry,
+			templateSelection: formatCountrySelection,
+			width: "100%"
+		}).on('select2:select', function (e) {
+			let selectedData = e.params.data; 
+			$(this).attr('data-iso', selectedData.iso).attr('data-name', selectedData.text); 
+		});
+		 
+		// Template for the dropdown items
+		function formatCountry(country) {
+			if (!country.id) {
+				return country.text; // Default text if no id (for the placeholder option)
+			}
+			const flagImg = '<img src="'+country.flag+'" style="width: 20px; height: 20px; margin-right: 4px; margin-bottom: 4px;" />';
+			return $('<span>'+flagImg+' '+country.text+'</span>');
+		}
+
+		// Template for the selected item
+		function formatCountrySelection(country) {
+			if (!country.id) {
+				return country.text;
+			}
+			const flagImg = '<img src="'+country.flag+'" style="width: 20px; height: 20px; margin-right: 4px; margin-bottom: 4px;" />';
+			return $('<span>'+flagImg+' '+country.text+'</span>');
+		}
+	 
+	});
+	
+	function addTransferMobileBeneficiary(obj, event)
 	{
 		event.preventDefault();
 		if (!modalOpen)
 		{
 			modalOpen = true;
 			closemodal(); 
-			$.get("{{ route('transfer-to-bank.beneficiary') }}", function(res)
+			$.get("{{ route('transfer-to-mobile.beneficiary') }}", function(res)
 			{
 				const result = decryptData(res.response);
 				$('body').find('#modal-view-render').html(result.view);
-				$('#addTransferBankBeneficiary').modal('show');  
+				$('#addTransferMobileBeneficiary').modal('show');  
 			});
 		} 
 	}
 	
-	$('#transferToBankForm #country_code').on('change', function() 
+	$('#transferToMobileForm #country_code').on('change', function() 
 	{ 
 		// Retrieve selected country payout data
 		if(!$(this).val())
 		{
 			return;
 		}
-		const payoutCountry = $(this).find(':selected').data('payout-country');
-		const serviceName = $(this).find(':selected').data('service-name');
+		
+		const iso = $(this).attr('data-iso');
+		const countryName = $(this).attr('data-name');
 		 
-			
 		// Prepare and encrypt form data
 		let formData = {};
-		formData['payoutCurrency'] =  $(this).val();
-		formData['payoutCountry'] = payoutCountry;
-		formData['serviceName'] = serviceName;
-		formData['categoryName'] = 'transfer to bank';
+		formData['recipient_country'] = $(this).val(); 
+		formData['serviceName'] = 'onafric';
+		formData['categoryName'] = 'transfer to mobile';
 		const encryptedData = encryptData(JSON.stringify(formData));
 
 		// Show Loading Indicator
@@ -139,7 +178,7 @@
  
 		$.ajax({
 			type: 'POST',
-			url: "{{ route('transfer-to-bank.beneficiary-list') }}",
+			url: "{{ route('transfer-to-mobile.beneficiary-list') }}",
 			data: { 
 				encrypted_data: encryptedData,
 				_token: "{{ csrf_token() }}" 
@@ -155,9 +194,9 @@
 					
 					// Check for valid output
 					if (result.output) {
-						$('#transferToBankForm #beneficiaryId').html(result.output);
+						$('#transferToMobileForm #beneficiaryId').html(result.output);
 					} else { 
-						$('#transferToBankForm #beneficiaryId').html('<option value="">No beneficiary found</option>');
+						$('#transferToMobileForm #beneficiaryId').html('<option value="">No beneficiary found</option>');
 					}
 				} catch (e) { 
 					toastrMsg('error', 'An error occurred while processing the response.');
@@ -171,7 +210,7 @@
 		});
 	});
 	  
-	$('#transferToBankForm #beneficiaryId').on('change', function() 
+	$('#transferToMobileForm #beneficiaryId').on('change', function() 
 	{  
 		// Prepare and encrypt form data
 		let formData = {};
@@ -183,7 +222,7 @@
  
 		$.ajax({
 			type: 'POST',
-			url: "{{ route('transfer-to-bank.beneficiary-detail') }}",
+			url: "{{ route('transfer-to-mobile.beneficiary-detail') }}",
 			data: { 
 				encrypted_data: encryptedData,
 				_token: "{{ csrf_token() }}" 
@@ -202,14 +241,14 @@
 				else
 				{
 					toastrMsg(response.status, response.message);
-					$('#transferToBankForm #beneficiaryId').val('').select2();
+					$('#transferToMobileForm #beneficiaryId').val('').select2();
 				}
 			} 
 		});
 	});
 	
 	let debounceTimer;
-	$('#transferToBankForm #txnAmount').on('input', function() 
+	$('#transferToMobileForm #txnAmount').on('input', function() 
 	{  
 		clearTimeout(debounceTimer);
 		var txnAmount = $(this).val();
@@ -224,7 +263,7 @@
 	function commissionAmount(txnAmount)
 	{
 		let formData = {};
-		formData['beneficiaryId'] = $('#transferToBankForm #beneficiaryId').val();   
+		formData['beneficiaryId'] = $('#transferToMobileForm #beneficiaryId').val();   
 		formData['txnAmount'] =  txnAmount; 
 		const encryptedData = encryptData(JSON.stringify(formData));
 
@@ -244,7 +283,7 @@
 				$('body').waitMe('hide'); 
 				// Remove old commission elements
 				$('.removeCommission').remove();
-				$('#transferToBankForm').find('#netAmount, #totalCharges, #platformCharge, #serviceCharge, #payoutCurrencyAmount, #aggregatorCurrencyAmount, #exchangeRate, #aggregatorRate').remove();
+				$('#transferToMobileForm').find('#netAmount, #totalCharges, #platformCharge, #serviceCharge, #payoutCurrencyAmount, #aggregatorCurrencyAmount, #exchangeRate, #aggregatorRate').remove();
 
 				if (response.status === "success") {
 					const result = decryptData(response.response);
@@ -279,7 +318,7 @@
 					`;
 
 					// Append all hidden fields at once
-					$('#transferToBankForm').append(hiddenFields);
+					$('#transferToMobileForm').append(hiddenFields);
 
 					// Prepare commission details HTML
 					const commissionDetails = `
@@ -317,11 +356,11 @@
 		});
 	}
 	 
-	var $transferToBankForm = $('#transferToBankForm'); 
-	$transferToBankForm.submit(function(event) 
+	
+	$transferToMobileForm.submit(function(event) 
 	{
 		event.preventDefault();   
-		$transferToBankForm.find('[type="submit"]')
+		$transferToMobileForm.find('[type="submit"]')
 		.prop('disabled', true) 
 		.addClass('loading-span') 
 		.html('<span class="spinner-border"></span>');
@@ -332,10 +371,8 @@
 			formData[inputName] = $(this).val();
 		});
 		
-		formData['category_name'] = 'transfer to bank'; 
-		formData['service_name'] = $transferToBankForm.find('#country_code').find(':selected').data('service-name') ?? '';
-		formData['payoutCountry'] = $transferToBankForm.find('#country_code').find(':selected').data('payout-country') ?? '';
-		formData['payoutCountryName'] = $transferToBankForm.find('#country_code').find(':selected').data('country-name') ?? '';
+		formData['category_name'] = 'transfer to mobile'; 
+		formData['service_name'] = 'onafric';  
 	  
 		// Encrypt data before sending
 		const encrypted_data = encryptData(JSON.stringify(formData));
@@ -349,7 +386,7 @@
 			dataType: 'Json', 
 			success: function (res) 
 			{ 
-				$transferToBankForm.find('[type="submit"]')
+				$transferToMobileForm.find('[type="submit"]')
 				.prop('disabled', false)  
 				.removeClass('loading-span') 
 				.html('Submit'); 
@@ -358,14 +395,14 @@
 				if(res.status === "success")
 				{ 
 					toastrMsg(res.status, res.message);  
-					resetForm($transferToBankForm);  
+					resetForm($transferToMobileForm);  
 					Livewire.dispatch('refreshRecentTransactions'); 
 					Livewire.dispatch('updateBalance');
 				}
 				else if(res.status == "validation")
 				{  
 					$.each(res.errors, function(key, value) {
-						var inputField = $transferToBankForm.find('#' + key);
+						var inputField = $transferToMobileForm.find('#' + key);
 						var errorSpan = $('<span>')
 						.addClass('error_msg text-danger content-4') 
 						.attr('id', key + 'Error')

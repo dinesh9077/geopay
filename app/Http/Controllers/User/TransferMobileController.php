@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\WebResponseTrait;
 use App\Services\LiquidNetService;
+use App\Services\MasterService;
 use App\Notifications\WalletTransactionNotification;
 use Illuminate\Support\Facades\Notification;
 use Helper;
@@ -27,91 +28,36 @@ class TransferMobileController extends Controller
 { 
 	use WebResponseTrait;
 	protected $liquidNetService;
+	protected $masterService;
     public function __construct()
     {
 		$this->liquidNetService = new LiquidNetService(); 
+		$this->masterService = new MasterService(); 
 		$this->middleware('auth');
     }	
 	
 	public function transferToMobileMoney()
 	{
-		$countries = $this->countries();
+		/* $countrys = DB::table('country')->get();
+		foreach($countrys as $country)
+		{ 
+			Country::where('iso3', $country->iso3)->update(['currency_code' => $country->currency]);
+		}
+		  */
+		$countries = $this->masterService->getCountries(); 
 		return view('user.transaction.transfer-mobile.index', compact('countries'));
 	}
-	
-	public function countries()
-	{
-		return LightnetCountry::where('status', 1)
-			->whereNotNull('label')
-			->get()
-			->toArray();
-	}
- 
-	public function transferToBankBeneficiary()
+	 
+	public function transferToMobileBeneficiary()
 	{  
-		$countries = $this->countries();
-		$catalogues = LightnetCatalogue::where('category_name', 'transfer to bank')
-		->where('service_name', 'lightnet')
-		->whereNotNull('data')
-		->get()
-		->keyBy('catalogue_type');
-		 
-		$relationships = $catalogues->has('REL')
-        ? $catalogues->get('REL')->data
-        : [];
-		 
-		$purposeRemittances = $catalogues->has('POR')
-        ? $catalogues->get('POR')->data
-        : [];
-		 
-		$sourceOfFunds = $catalogues->has('SOF')
-        ? $catalogues->get('SOF')->data
-        : [];
-		
-		$documentOfCustomers = $catalogues->has('DOC')
-        ? $catalogues->get('DOC')->data
-        : [];
-		 
-		$view = view('user.transaction.transfer-bank.transfer-bank-beneficiary', compact('catalogues', 'countries', 'relationships', 'purposeRemittances', 'sourceOfFunds', 'documentOfCustomers'))->render();
+		$countries = $this->masterService->getCountries(); 
+		$view = view('user.transaction.transfer-mobile.transfer-mobile-beneficiary', compact('countries'))->render();
 		return $this->successResponse('success', ['view' => $view]);
 	}
-	
-	public function transferToBankList(Request $request)
-	{
-		$timestamp = time();
-		$body = [
-			'agentSessionId' => (string) $timestamp,
-			'paymentMode' => 'B',
-			'payoutCountry' => (string) $request->payoutCountry,
-		];
-
-		// Call the service API
-		$response = $this->liquidNetService->serviceApi('post', '/GetAgentList', $timestamp, $body);
-		
-		// Initialize the output
-		if (!isset($response['success']) || !$response['success'] && $response['response']['code'] !== 0) {
-			return $this->successResponse('success', ['output' => '<option value="">No banks available</option>']);
-		} 
-		// Process bank list
-		$banks = $response['response']['locationDetail'] ?? [];
-		$output = '<option value="">Select Bank Name</option>';
-		
-		foreach ($banks as $bank) {
-			$output .= sprintf(
-				'<option value="%s" data-bank-name="%s">%s</option>',
-				htmlspecialchars($bank['locationId'] ?? '', ENT_QUOTES, 'UTF-8'),
-				htmlspecialchars($bank['locationName'] ?? '', ENT_QUOTES, 'UTF-8'),
-				htmlspecialchars($bank['locationName'] ?? '', ENT_QUOTES, 'UTF-8')
-			);
-		}
-
-		return $this->successResponse('success', ['output' => $output]);
-	} 
-	
-	public function transferToBankBeneficiaryStore(Request $request)
+	 
+	public function transferToMobileBeneficiaryStore(Request $request)
 	{    
-		try {
-			
+		try { 
 			DB::beginTransaction();
 			$beneficiaryData = $request->except('_token');
 		
@@ -124,7 +70,7 @@ class TransferMobileController extends Controller
 			$data['data'] = $beneficiaryData;
 			 
 			$beneficiary = Beneficiary::create($data);
-			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to bank beneficiary');
+			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to mobile beneficiary');
 			
 			DB::commit(); 
 			return $this->successResponse('The beneficiary was completed successfully.');
@@ -140,27 +86,25 @@ class TransferMobileController extends Controller
 	{  
 		// Extract request data
 		$userId = Auth::id();
-		$payoutCurrency = $request->payoutCurrency;
-		$payoutCountry = $request->payoutCountry;
+		$recipientCountry = $request->recipient_country; 
 		$categoryName = $request->categoryName;
 		$serviceName = $request->serviceName;
-
+		 
 		// Fetch beneficiaries with filters
 		$beneficiaries = Beneficiary::where('user_id', $userId)
 			->where('category_name', $categoryName)
 			->where('service_name', $serviceName)
-			->where('data->payoutCurrency', $payoutCurrency)
-			->where('data->payoutCountry', $payoutCountry)
+			->where('data->recipient_country', $recipientCountry) 
 			->get(); 
 		// Initialize output
 		$output = '<option value="">Select Beneficiary</option>';
 
 		// Loop through beneficiaries and prepare output
 		foreach ($beneficiaries as $beneficiary) {
-			$dataArr = $beneficiary->dataArr ?? [];
-			$firstName = $dataArr['receiverfirstname'] ?? '';
-			$lastName = $dataArr['receiverlastname'] ?? '';
-			$bankName = $dataArr['bankName'] ?? '';
+			$data = $beneficiary->data ?? [];
+			$firstName = $data['recipient_name'] ?? '';
+			$lastName = $data['recipient_surname'] ?? ''; 
+			$recipientMobile = $data['recipient_mobile'] ?? ''; 
 
 			// Skip beneficiaries with missing required data
 			if (empty($firstName) || empty($lastName)) {
@@ -173,7 +117,7 @@ class TransferMobileController extends Controller
 				htmlspecialchars($beneficiary->id, ENT_QUOTES, 'UTF-8'),
 				htmlspecialchars($firstName, ENT_QUOTES, 'UTF-8'),
 				htmlspecialchars($lastName, ENT_QUOTES, 'UTF-8'),
-				htmlspecialchars($bankName, ENT_QUOTES, 'UTF-8')
+				htmlspecialchars($recipientMobile, ENT_QUOTES, 'UTF-8')
 			);
 		}
 
@@ -196,7 +140,7 @@ class TransferMobileController extends Controller
 			}
 
 			// Render the view with the beneficiary data
-			$view = view('user.transaction.transfer-bank.confirm-beneficiary', compact('beneficiary'))->render();
+			$view = view('user.transaction.transfer-mobile.confirm-beneficiary', compact('beneficiary'))->render();
 
 			// Return success response with rendered view
 			return $this->successResponse('success', ['view' => $view]); 
@@ -207,137 +151,20 @@ class TransferMobileController extends Controller
 			return $this->errorResponse('Something went wrong. Please try again later.'. $e->getMessage());
 		}
 	}
-	
-	public function transferToBankFields(Request $request)
+	   
+	public function transferToMobileBeneficiaryEdit($id)
 	{
-		$payoutCountry = $request->payoutCountry;
-		$payoutCurrency = $request->payoutCurrency;
-		$serviceName = $request->serviceName;
-		$locationId = $request->locationId;
-		
-		$view = $this->getFieldView($payoutCountry, $payoutCurrency, $locationId);
-
-		// Return success response with rendered view
-		return $this->successResponse('success', ['view' => $view]); 
-	}
-	
-	public function getFieldView($payoutCountry, $payoutCurrency, $locationId, $editData = null)
-	{
-		$timestamp = time();
-		$body = [
-			'agentSessionId' => (string) $timestamp,
-			'locationId' => (string) $locationId,
-			'payoutCountry' => (string) $payoutCountry,
-			'payoutCurrency' => (string) $payoutCurrency,
-			'paymentMode' => 'B',
-		];
-
-		// Call the service API
-		$response = $this->liquidNetService->serviceApi('post', '/GetFieldInfo', $timestamp, $body);
-		
-		// Handle unsuccessful commit response
-		if (!$response['success']) {
-			return $this->successResponse('Error loading fields. Please try again.');
-		}
-		
-		// Handle unsuccessful commit response
-		if (($response['response']['code'] ?? 1) != 0) {
-			return $this->successResponse('Error loading fields. Please try again.');
-		}
-			
-		// Process bank list 
-		$fieldList = $response['response']['fieldList'] ?? []; 
-		
-		$catalogue = LightnetCatalogue::where('category_name', 'transfer to bank')
-		->where('service_name', 'lightnet')
-		->whereNotNull('data')
-		->get()
-		->keyBy('catalogue_type');
-		
-		$states = $this->lightnetStates($payoutCountry);
-		 
-		$countries = $this->countries();
-		$view = view('user.transaction.transfer-bank.lightnet-fields', compact('fieldList', 'catalogue', 'countries', 'states', 'editData'))->render();
-		return $view;
-	}
-	
-	public function lightnetStates($payoutCountry)
-	{
-		$timestamp = time();
-		$body =  [
-			'agentSessionId' => (string) $timestamp,
-			'catalogueType' => 'STA',
-			'additionalField1' => (string) $payoutCountry,
-		];
-		
-		$response = $this->liquidNetService->serviceApi('post', '/GetCatalogue', $timestamp, $body);
-		if (!$response['success']) {
-			return LightnetCatalogue::where('category_name', 'transfer to bank')
-			->where('service_name', 'lightnet')
-			->where('service_name', $payoutCountry)
-			->whereNotNull('data')
-			->first()->data ?? [];
-		}
-		
-		if(($response['response']['code'] ?? -1) != 0)
-		{
-			return LightnetCatalogue::where('category_name', 'transfer to bank')
-			->where('service_name', 'lightnet')
-			->where('service_name', $payoutCountry)
-			->whereNotNull('data')
-			->first()->data ?? [];
-		} 
-		
-		$result = $response['response']['result'] ?? [];
-		return $result;
-	}
-	
-	public function transferToBankBeneficiaryEdit($id)
-	{
-		$countries = $this->countries();
-		$catalogues = LightnetCatalogue::where('category_name', 'transfer to bank')
-		->where('service_name', 'lightnet')
-		->whereNotNull('data')
-		->get()
-		->keyBy('catalogue_type');
-		 
-		$relationships = $catalogues->has('REL')
-        ? $catalogues->get('REL')->data
-        : [];
-		 
-		$purposeRemittances = $catalogues->has('POR')
-        ? $catalogues->get('POR')->data
-        : [];
-		 
-		$sourceOfFunds = $catalogues->has('SOF')
-        ? $catalogues->get('SOF')->data
-        : [];
-		
-		$documentOfCustomers = $catalogues->has('DOC')
-        ? $catalogues->get('DOC')->data
-        : [];
-		
+		$countries = $this->masterService->getCountries(); 
 		$beneficiary = Beneficiary::find($id);
 		$edit = $beneficiary->data;
-		  
-		$timestamp = time();
-		$body = [
-			'agentSessionId' => (string) $timestamp,
-			'paymentMode' => 'B',
-			'payoutCountry' => (string) $edit['payoutCountry'],
-		];
-
-		// Call the service API
-		$response = $this->liquidNetService->serviceApi('post', '/GetAgentList', $timestamp, $body); 
-		$banks = $response['response']['locationDetail'] ?? [];
-		
-		$fieldView = $this->getFieldView($edit['payoutCountry'], $edit['payoutCurrency'], $edit['bankId'], $edit);
-		 
-		$view = view('user.transaction.transfer-bank.edit-transfer-bank-beneficiary', compact('catalogues', 'countries', 'relationships', 'purposeRemittances', 'sourceOfFunds', 'documentOfCustomers', 'beneficiary', 'edit', 'banks', 'fieldView'))->render();
+		   
+		$view = view('user.transaction.transfer-mobile.edit-transfer-mobile-beneficiary',
+		compact('countries', 'beneficiary', 'edit'))
+		->render();
 		return $this->successResponse('success', ['view' => $view]);	
 	}
 	
-	public function transferToBankBeneficiaryUpdate(Request $request, $id)
+	public function transferToMobileBeneficiaryUpdate(Request $request, $id)
 	{   	 
 		try {
 			
@@ -353,7 +180,7 @@ class TransferMobileController extends Controller
 			 
 			$beneficiary = Beneficiary::find($id);
 			$beneficiary->update($data);
-			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to bank beneficiary');
+			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to mobile beneficiary');
 			
 			DB::commit(); 
 			return $this->successResponse('The beneficiary was updated successfully.');
