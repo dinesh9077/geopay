@@ -26,6 +26,9 @@
 			<li class="nav-item">
 				<a class="nav-link" onclick="getLightNetView(event)" id="lightnet-line-tab" data-bs-toggle="tab" href="#line-lightnet" role="tab" aria-controls="line-lightnet" aria-selected="false">Lightnet (LiquidNet)</a>
 			</li> 
+			<li class="nav-item">
+				<a class="nav-link" id="lightnet-line-tab" data-bs-toggle="tab" href="#line-onafriq" role="tab" aria-controls="line-onafriq" aria-selected="false">Onafriq</a>
+			</li> 
 		</ul>
 		<div class="tab-content mt-3" id="lineTabContent">
 			<div class="tab-pane fade show active" id="line-metamap" role="tabpanel" aria-labelledby="metamap-line-tab"> 
@@ -239,6 +242,39 @@
 					</div>
 				</div>
 			</div> 
+			<div class="tab-pane fade" id="line-onafriq" role="tabpanel" aria-labelledby="onafriq-line-tab"> 
+				<div class="col-md-12 grid-margin stretch-card">
+					<div class="card">
+						<div class="card-body"> 
+							<form class="forms-sample row" id="onafricForm" action="{{ route('admin.third-party-key.update') }}" method="post" enctype="multipart/form-data">
+								<!--<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">Host Url</label>
+									<input type="url" class="form-control" id="onafric_endpoint" name="onafric_endpoint" autocomplete="off" placeholder="Host Url"  value="{{ config('setting.onafric_endpoint') }}">
+								</div> --> 
+								
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">Corporate Code</label>
+									<input type="text" class="form-control" id="onafric_corporate" name="onafric_corporate" autocomplete="off" placeholder="Corporate Code"  value="{{ config('setting.onafric_corporate') }}">
+								</div>  
+								
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">Password</label>
+									<input type="text" class="form-control" id="onafric_password" name="onafric_password" autocomplete="off" placeholder="Password" value="{{ config('setting.onafric_password') }}">
+								</div>  
+								 
+								<div class="mb-3 col-md-6">
+									<label for="exampleInputUsername1" class="form-label">Unique Key</label>
+									<input type="text" class="form-control" id="onafric_unique_key" name="onafric_unique_key" autocomplete="off" placeholder="Unique Key" value="{{ config('setting.onafric_unique_key') }}">
+								</div>  
+								  
+								<div class="d-flex justify-content-end">
+									<button type="submit" class="btn btn-primary me-2">Submit</button> 
+								</div>
+							</form> 
+						</div>
+					</div>
+				</div> 
+			</div>
 		</div>
 	</div>
 </div>
@@ -247,7 +283,7 @@
 
 @push('js')
 <script>
-	var $forms = $('#metaMapForm, #smsPlusForm, #dtonePlusForm, #lightnetPlusForm');
+	var $forms = $('#metaMapForm, #smsPlusForm, #dtonePlusForm, #lightnetPlusForm, #onafricForm');
 
 	$forms.submit(function (event) {
 		event.preventDefault();

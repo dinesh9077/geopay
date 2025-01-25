@@ -10,6 +10,7 @@ use App\Http\Controllers\User\TransactionController;
 use App\Http\Controllers\User\KycController;
 use App\Http\Controllers\User\TransferBankController;
 use App\Http\Controllers\User\AirtimeController;
+use App\Http\Controllers\User\TransferMobileController;
 use App\Http\Controllers\FrontController;
 /*
 |--------------------------------------------------------------------------
@@ -83,7 +84,8 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	Route::post('/international-airtime/callback/{txnId}', [AirtimeController::class, 'internationalAirtimeCallback'])->withoutMiddleware('webdecrypt.request');
 	
 	// Transfer To Bank
-	Route::get('/transfer-to-bank', [TransferBankController::class, 'transferToBank'])->name('transfer-to-bank');  
+	
+	Route::get('/transfer-to-bank', [TransferBankController::class, 'transferToBank'])->name('transfer-to-bank'); 
 	Route::post('/transfer-to-bank/store', [TransferBankController::class, 'transferToBankStore'])->name('transfer-to-bank.store');  
 	
 	Route::get('/transfer-to-bank/beneficiary', [TransferBankController::class, 'transferToBankBeneficiary'])->name('transfer-to-bank.beneficiary');  
@@ -99,16 +101,14 @@ Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	Route::post('/transfer-to-bank/commission', [TransferBankController::class, 'transferToBankCommission'])->name('transfer-to-bank.commission');  
    	Route::get('/transfer-to-bank/commit-transaction/{id}', [TransferBankController::class, 'transferToBankCommitTransaction'])->name('transfer-to-bank.commit-transaction');
 	
+	// Transfer To Mobile Money
+	Route::get('/transfer-to-mobile-money', [TransferMobileController::class, 'transferToMobileMoney'])->name('transfer-to-mobile-money'); 
+	  
 	//Add Mobile Money
 	Route::get('/add-money', function () {
 		return view('user.transaction.add-money.index');
 	})->name('add-money');  
-  
-	// Transfer To Mobile Money
-	Route::get('/transfer-to-mobile-money', function () {
-		return view('user.transaction.transfer-to-mobile-money');
-	})->name('transfer-to-mobile-money');
-	    
+     
 	//Transaction List 
 	Route::get('/transaction-list', [TransactionController::class, 'index'])->name('transaction-list');
 	Route::post('/transaction-ajax', [TransactionController::class, 'transactionAjax'])->name('transaction-ajax')->withoutMiddleware('webdecrypt.request');

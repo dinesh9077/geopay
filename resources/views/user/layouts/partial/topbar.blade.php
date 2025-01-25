@@ -64,9 +64,9 @@
 			<li class="nav-item dropdown d-flex align-items-center gap-2">
 				<a href="javascipt:;" data-bs-toggle="dropdown" class="nav-icon pe-md-0"> 
 					@if(auth()->user()->profile_image)  
-					<img src="{{ url('storage/profile', auth()->user()->profile_image) }}" class="avatar img-fluid rounded-circle " alt="">
+						<img src="{{ url('storage/profile', auth()->user()->profile_image) }}" class="avatar img-fluid rounded-circle " alt="">
 					@else
-					<img src="{{ url('admin/default-profile.png') }}" class="avatar img-fluid rounded-circle " alt="">
+						<img src="{{ url('admin/default-profile.png') }}" class="avatar img-fluid rounded-circle " alt="">
 					@endif 
 				</a>
 				<div class="d-flex flex-column me-3" data-bs-toggle="dropdown">
