@@ -48,11 +48,14 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
         ->middleware('permission:third_party_api.view');
     Route::post('/third-party-key/update', [SettingController::class, 'thirdPartyKeyUpdate'])->name('third-party-key.update');
     Route::post('/third-party-key/lightnet-update', [SettingController::class, 'thirdPartyKeyLightnetUpdate'])->name('third-party-key.lightnet-update');
-    Route::get('/third-party-key/lightnet-view', [SettingController::class, 'thirdPartyKeyLightnetView'])->name('third-party-key.lightnet-view');
+    Route::get('/third-party-key/lightnet-view', [SettingController::class, 'thirdPartyKeyLightnetView'])->name('third-party-key.lightnet-view'); 
     Route::get('/third-party-key/sync-catalogue', [SettingController::class, 'thirdPartyKeySyncCatalogue'])->name('third-party-key.sync-catalogue');
     Route::get('/third-party-key/sync-countries', [SettingController::class, 'thirdPartyKeySyncCountries'])->name('third-party-key.sync-countries');
     Route::post('/third-party-key/lightnet-country-update', [SettingController::class, 'thirdPartyKeyCountryUpdate'])->name('third-party-key.lightnet-country-update');
-
+	
+	Route::get('/third-party-key/onafric-mobile-view', [SettingController::class, 'thirdPartyKeyOnafricMobileView'])->name('third-party-key.onafric-mobile-view');
+	Route::post('/third-party-key/onafric-mobile-update', [SettingController::class, 'thirdPartyKeyOnafricMobileUpdate'])->name('third-party-key.onafric-mobile-update')->withoutMiddleware('webdecrypt.request');
+	  
     // Profile
     Route::get('/profile', [SettingController::class, 'profile'])->name('profile');
     Route::post('/profile/update', [SettingController::class, 'profileUpdate'])->name('profile-update');

@@ -30,6 +30,8 @@
                     <option value="international airtime">International Airtime</option>
                     <option value="geopay to geopay wallet">Geopay To Geopay Wallet</option>
                     <option value="admin transfer">Admin Transfer</option>
+                    <option value="transfer to bank">transfer to bank</option>
+                    <option value="transfer to mobile">transfer to mobile</option>
                 </select>
             </div>
             <div class=" col-md-3 col-lg-2">
@@ -94,13 +96,10 @@
                         <th>Action</th>
                     </tr>
                 </thead>
-            </table>
-
+            </table> 
         </div>
-    </div>
-
-@endsection
-
+    </div> 
+@endsection 
 @push('js')
     <script>
         $('.select2').select2({

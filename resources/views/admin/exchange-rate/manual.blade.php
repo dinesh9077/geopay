@@ -49,6 +49,7 @@
 										<tr>
 											<th>#</th> 
 											<th>Created By</th>  
+											<th>Service Name</th>
 											<th>Country Name</th>
 											<th>Currency</th>
 											<th>Exchange Rate Against 1 USD</th>
@@ -82,6 +83,7 @@
 										<tr>
 											<th>#</th>
 											<th>Created By</th>  
+											<th>Service Name</th>
 											<th>Country Name</th>
 											<th>Currency</th>
 											<th>Exchange Rate Against 1 USD</th>
@@ -158,6 +160,7 @@
 			columns: [
 				{ data: "id" },
 				{ data: "created_by" },
+				{ data: "service_name" },
 				{ data: "country_name" },
 				{ data: "currency" },
 				{ data: "exchange_rate" },

@@ -18,6 +18,14 @@
 
 					<!-- Country Name -->
 					<div class="mb-2 col-4">
+						<label class="content-3 mb-1 d-flex justify-content-between">Operator Name <span>:</span></label>
+					</div>
+					<div class="mb-2 col-8">
+						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['channel_name'] ?? 'N/A' }}</span>
+					</div>
+
+					<!-- Country Name -->
+					<div class="mb-2 col-4">
 						<label class="content-3 mb-1 d-flex justify-content-between">Country Name <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">

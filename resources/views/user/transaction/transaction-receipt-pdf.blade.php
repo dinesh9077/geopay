@@ -225,7 +225,7 @@
 								</td> 
 								<td>
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
-									{{ $transaction->beneficiary_request['data']['bankAccountNumber'] ?? 'N/A' }}</p>
+									{{ $transaction->beneficiary_request['data']['bankaccountnumber'] ?? 'N/A' }}</p>
 								</td>
 							</tr> 
 							<tr> 
@@ -234,8 +234,8 @@
 								</td> 
 								<td>
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
-									{{ isset($transaction->beneficiary_request['data']['beneficiaryFirstName']) && isset($transaction->beneficiary_request['data']['beneficiaryLastName']) ? 
-										$transaction->beneficiary_request['data']['beneficiaryFirstName'] . ' ' . $transaction->beneficiary_request['data']['beneficiaryLastName'] : 'N/A' }}</p>
+									{{ isset($transaction->beneficiary_request['data']['receiverfirstname']) && isset($transaction->beneficiary_request['data']['receiverlastname']) ? 
+										$transaction->beneficiary_request['data']['receiverfirstname'] . ' ' . $transaction->beneficiary_request['data']['receiverlastname'] : 'N/A' }}</p>
 								</td>
 							</tr> 
 							<tr> 
@@ -244,7 +244,105 @@
 								</td> 
 								<td>
 									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
-									{{ $transaction->beneficiary_request['data']['beneficiaryMobile'] ?? 'N/A' }}</p>
+									{{ $transaction->beneficiary_request['data']['receivercontactnumber'] ?? 'N/A' }}</p>
+								</td>
+							</tr>
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">UNIT AMOUNT</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->unit_rates }}</p>
+								</td>
+							</tr>
+							
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">PLATFORM FEES</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->fees }}</p>
+								</td>
+							</tr>
+							 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">NET AMOUNT</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</p>
+								</td>
+							</tr>
+							
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">EXCHANGE RATE</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->rates }}</p>
+								</td>
+							</tr>
+							
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">DESTINATION AMOUNT</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ Helper::decimalsprint($transaction->unit_amount, 2) }} {{ $transaction->unit_currency }}</p>
+								</td>
+							</tr>
+						
+						@elseif ($transaction->platform_name == 'transfer to mobile') 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">FROM ACCOUNT</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $userName }} {{ $userNumber }}</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Transaction Id</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->unique_identifier ?? 'N/A' }}</p>
+								</td>
+							</tr>  
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Sender Mobile</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->beneficiary_request['data']['sender_mobile'] ?? 'N/A' }}</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Counterparty Name</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+										{{ isset($transaction->beneficiary_request['data']['recipient_name']) && isset($transaction->beneficiary_request['data']['recipient_surname']) ? 
+										$transaction->beneficiary_request['data']['recipient_name'] . ' ' . $transaction->beneficiary_request['data']['recipient_surname'] : 'N/A' }}
+									</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Mobile</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->beneficiary_request['data']['recipient_mobile'] ?? 'N/A' }}</p>
 								</td>
 							</tr>
 							<tr> 

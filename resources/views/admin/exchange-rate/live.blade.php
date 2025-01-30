@@ -9,6 +9,7 @@
             <div class=" col-md-3 col-lg-1">
                 <select class="form-control default-input content-3 select2" name="channel" id="channel">  
 					<option value="lightnet">Lightnet</option> 
+					<option value="onafric">Onafric</option> 
                 </select>
             </div> 
             <div class="filter-buttons col-md-4 col-lg-2">
@@ -177,7 +178,7 @@
 			$(".buttons-pdf").trigger("click");
 		});
 		
-		$('#page_length').change(function() {
+		$('#page_length, #channel').change(function() {
 			dataTable.page.len($(this).val()).draw();
 		})
 		

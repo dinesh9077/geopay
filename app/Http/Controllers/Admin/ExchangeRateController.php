@@ -12,16 +12,22 @@
 	use PhpOffice\PhpSpreadsheet\Shared\Date; 
 	use Maatwebsite\Excel\Facades\Excel;
 	use PhpOffice\PhpSpreadsheet\IOFactory; 
-	use App\Services\LiquidNetService; 
+	use App\Services\{ 
+		LiquidNetService, OnafricService, MasterService
+	};
 	
 	class ExchangeRateController extends Controller
 	{
 		use WebResponseTrait;
 		protected $liquidNetService;
+		protected $onafricService;
+		protected $masterService;
 		
 		public function __construct()
 		{
 			$this->liquidNetService = new LiquidNetService();
+			$this->onafricService = new OnafricService(); 
+			$this->masterService = new MasterService(); 
 		}
 		
 		public function manualExchangeRate()
@@ -33,7 +39,7 @@
 		{
 			if ($request->ajax()) {
 				// Define the columns for ordering and searching
-				$columns = ['id', 'created_by', 'country_name', 'currency', 'exchange_rate', 'aggregator_rate',  'markdown_charge', 'updated_at', 'action'];
+				$columns = ['id', 'created_by', 'service_name', 'country_name', 'currency', 'exchange_rate', 'aggregator_rate',  'markdown_charge', 'updated_at', 'action'];
 				
 				$search = $request->input('search'); // Global search value
 				$start = $request->input('start'); // Offset for pagination
@@ -51,6 +57,7 @@
 				if (!empty($search)) {
 					$query->where(function ($q) use ($search) {
 						$q->orWhere('currency', 'LIKE', "%{$search}%") 
+						->orWhere('service_name', 'LIKE', "%{$search}%") 
 						->orWhere('country_name', 'LIKE', "%{$search}%") 
 						->orWhere('exchange_rate', 'LIKE', "%{$search}%") 
 						->orWhere('aggregator_rate', 'LIKE', "%{$search}%") 
@@ -82,6 +89,7 @@
 					$data[] = [
 					'id' => $i,
 						'created_by' => $value->createdBy ? $value->createdBy->name : 'N/A', 
+						'service_name' => $value->service_name,
 						'country_name' => $value->country_name,
 						'currency' => $value->currency,
 						'exchange_rate' => $value->exchange_rate, 
@@ -128,6 +136,7 @@
 		{ 
 			$validator = Validator::make($request->all(), [
 			'type' => 'required|in:1,2',
+			'service_name' => 'required',
 			'file_import' => 'required|mimes:xlsx,csv|max:10240', // max file size 10MB (10240 KB)
 			]);
 			
@@ -155,6 +164,7 @@
 				// Prepare data for bulk insert or update
 				$data = [];
 				$type = $request->type;	
+				$serviceName = $request->service_name;	
 				
 				foreach ($rows as $key => $row) {
 					// Combine headings with row data
@@ -176,6 +186,7 @@
 					// Prepare data for upsert
 					$data[] = [
 						'type' => $type,
+						'service_name' => $serviceName,
 						'country_name' => $countryName,
 						'currency' => $currency,
 						'exchange_rate' => $markdownRate,
@@ -184,6 +195,7 @@
 						'markdown_type' => $markdown_type,
 						'markdown_charge' => $markdown_charge,
 						'status' => 1, 
+						'created_at' => now(),
 						'updated_at' => now(),
 					];
 				}
@@ -200,6 +212,7 @@
 						'markdown_type' => $row['markdown_type'],
 						'markdown_charge' => $row['markdown_charge'],
 						'status' => $row['status'],
+						'created_at' => $row['created_at'], 
 						'updated_at' => $row['updated_at'], 
 						]
 					);
@@ -340,8 +353,7 @@
 				
 				// Apply ordering, limit, and offset for pagination
 				$values = $query
-				->orderBy($columns[$orderColumnIndex] ?? 'id', $orderDirection)
-				 
+				->orderBy($columns[$orderColumnIndex] ?? 'id', $orderDirection) 
 				->get();
 				
 				// Format data for the response
@@ -390,78 +402,161 @@
 
 			try {
 				DB::beginTransaction();
-
-				$lightnetCountries = LightnetCountry::where('service_name', $channel)->get(); 
-				$currentDate = now()->toDateString();
-
-				foreach ($lightnetCountries as $lightnetCountry) {
-					$response = $this->liquidNetService->getRateHistory(
-						$lightnetCountry->data,
-						$lightnetCountry->value,
-						$currentDate
-					);
-					 
-					// Validate response
-					if(!$response['success']) 
-					{ 
-						continue;
-					}
-					
-					if(isset($response['response']['code']) && $response['response']['code'] != 0)
-					{
-						continue; 
-					}
-					$rateHistory = $response['response']['rateHistory'][0] ?? null;
-					
-					if (!$rateHistory) {
-						continue; // Skip if no rate history is available
-					}
-
-					$rate = $rateHistory['rate'] ?? 0;
-					$updatedDate = $rateHistory['updatedDate'] ?? $currentDate;
 				
-					$countryName = $lightnetCountry->label;
-					$currency = $lightnetCountry->value;
+				switch ($channel) {
+					case 'lightnet':
+						$this->getLightnetRates($channel);
+						break;  // Add break to stop execution after this case
+					
+					case 'onafric':
+						$this->getOnafricRates($channel);
+						break;  // Add break to stop execution after this case
 
-					// Fetch existing record or default values
-					$liveExchangeRate = LiveExchangeRate::where([
-						'channel' => $channel,
-						'currency' => $currency,
-					])->first();
-
-					$markdownType = $liveExchangeRate->markdown_type ?? 'flat';
-					$markdownTypeCharge = $liveExchangeRate->markdown_charge ?? 0;
-
-					// Calculate markdown charge and rate
-					$markdownCharge = $markdownType === "flat"
-						? max($markdownTypeCharge, 0)
-						: max(($rate * $markdownTypeCharge / 100), 0);
-
-					$markdownRate = $rate - $markdownCharge;
-
-					// Upsert the record
-					LiveExchangeRate::updateOrCreate(
-						[
-							'channel' => $channel,
-							'currency' => $currency,
-						],
-						[
-							'country_name' => $countryName,
-							'markdown_rate' => $markdownRate,
-							'aggregator_rate' => $rate,
-							'markdown_type' => $markdownType,
-							'markdown_charge' => $markdownTypeCharge,
-							'status' => 1,
-							'updated_at' => $updatedDate,
-						]
-					);
+					default:
+						// Optional: Handle unexpected values
+						throw new \Exception("Invalid channel: $channel");
 				}
- 
+
+				 
 				DB::commit();
 				return $this->successResponse('Live exchange rates fetched successfully.');
 			} catch (\Throwable $e) {
 				DB::rollBack();
 				return $this->errorResponse('Failed to fetch rates. Error: ' . $e->getMessage());
+			}
+		}
+		
+		public function getLightnetRates($channel)
+		{
+			$lightnetCountries = LightnetCountry::where('service_name', $channel)->get(); 
+			$currentDate = now()->toDateString();
+
+			foreach ($lightnetCountries as $lightnetCountry) {
+				$response = $this->liquidNetService->getRateHistory(
+					$lightnetCountry->data,
+					$lightnetCountry->value,
+					$currentDate
+				);
+				 
+				// Validate response
+				if(!$response['success']) 
+				{ 
+					continue;
+				}
+				
+				if(isset($response['response']['code']) && $response['response']['code'] != 0)
+				{
+					continue; 
+				}
+				$rateHistory = $response['response']['rateHistory'][0] ?? null;
+				
+				if (!$rateHistory) {
+					continue; // Skip if no rate history is available
+				}
+
+				$rate = $rateHistory['rate'] ?? 0;
+				$updatedDate = $rateHistory['updatedDate'] ?? $currentDate;
+			
+				$countryName = $lightnetCountry->label;
+				$currency = $lightnetCountry->value;
+
+				// Fetch existing record or default values
+				$liveExchangeRate = LiveExchangeRate::where([
+					'channel' => $channel,
+					'currency' => $currency,
+				])->first();
+
+				$markdownType = $liveExchangeRate->markdown_type ?? 'flat';
+				$markdownTypeCharge = $liveExchangeRate->markdown_charge ?? 0;
+
+				// Calculate markdown charge and rate
+				$markdownCharge = $markdownType === "flat"
+					? max($markdownTypeCharge, 0)
+					: max(($rate * $markdownTypeCharge / 100), 0);
+
+				$markdownRate = $rate - $markdownCharge;
+
+				// Upsert the record
+				LiveExchangeRate::updateOrCreate(
+					[
+						'channel' => $channel,
+						'currency' => $currency,
+					],
+					[
+						'country_name' => $countryName,
+						'markdown_rate' => $markdownRate,
+						'aggregator_rate' => $rate,
+						'markdown_type' => $markdownType,
+						'markdown_charge' => $markdownTypeCharge,
+						'status' => 1,
+						'updated_at' => $updatedDate,
+					]
+				);
+			}
+		}
+		
+		public function getOnafricRates($channel)
+		{ 
+			$africanCountries = $this->onafricService->availableCountry(); 
+			$countries = $this->masterService->getCountries()->whereIn('nicename', $africanCountries)->values();
+			$currentDate = now()->toDateString();
+			$defaultCurrency = Config('setting.default_currency') ?? 'USD';
+			foreach ($countries as $country) 
+			{ 
+				$response = $this->onafricService->getRates($defaultCurrency, $country->only('iso', 'currency_code'));
+				
+				// Validate response
+				if(!$response['success']) 
+				{ 
+					continue;
+				}
+				 
+				$rateHistory = $response['response'];
+				
+
+				// Validate rate history
+				if (empty($rateHistory) || !isset($rateHistory['fx_rate']) || (int)$rateHistory['fx_rate'] == 0) { 
+					continue;
+				}
+				 
+				$rate = $rateHistory['fx_rate'] ?? 0;
+				$updatedDate = $rateHistory['updatedDate'] ?? $currentDate;
+			
+				$countryName = $country->nicename;
+				$currency = $country->currency_code;
+
+				// Fetch existing record or default values
+				$liveExchangeRate = LiveExchangeRate::where([
+					'channel' => $channel, 
+					'currency' => $currency,
+				])->first();
+
+				$markdownType = $liveExchangeRate->markdown_type ?? 'flat';
+				$markdownTypeCharge = $liveExchangeRate->markdown_charge ?? 0;
+
+				// Calculate markdown charge and rate
+				$markdownCharge = $markdownType === "flat"
+					? max($markdownTypeCharge, 0)
+					: max(($rate * $markdownTypeCharge / 100), 0);
+
+				$markdownRate = $rate - $markdownCharge;
+
+				// Upsert the record
+				LiveExchangeRate::updateOrCreate(
+					[
+						'channel' => $channel,
+						'currency' => $currency,
+					],
+					[
+						'country_name' => $countryName,
+						'markdown_rate' => $markdownRate,
+						'aggregator_rate' => $rate,
+						'markdown_type' => $markdownType,
+						'markdown_charge' => $markdownTypeCharge,
+						'status' => 1,
+						'updated_at' => $updatedDate,
+					]
+				);
 			}
 		}
 		

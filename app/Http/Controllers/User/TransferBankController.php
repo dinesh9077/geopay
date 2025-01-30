@@ -404,8 +404,12 @@ class TransferBankController extends Controller
 		
 		$liveExchangeRate = LiveExchangeRate::select('markdown_rate', 'aggregator_rate')->where('channel', $beneficiary->dataArr['service_name'])->where('currency', $beneficiary->dataArr['payoutCurrency'])->first(); 
 		if(!$liveExchangeRate)
-		{
-			$liveExchangeRate = ExchangeRate::select('exchange_rate as markdown_rate', 'aggregator_rate')->where('type', 2)->where('currency', $beneficiary->dataArr['payoutCurrency'])->first();
+		{ 
+			$liveExchangeRate = ExchangeRate::select('exchange_rate as markdown_rate', 'aggregator_rate')
+			->where('type', 2)
+			->where('service_name', $beneficiary->data['service_name'])
+			->where('currency', $beneficiary->dataArr['payoutCurrency'])
+			->first();
 			if (!$liveExchangeRate) {
 				return $this->errorResponse('A technical issue has occurred. Please try again later.'); 
 			}
@@ -558,12 +562,12 @@ class TransferBankController extends Controller
 			$user->decrement('balance', $netAmount); 
 			
 			// Check if necessary fields exist to prevent undefined index warnings
-			$beneficiaryFirstName = $beneficiary->dataArr['beneficiaryFirstName'] ?? '';
-			$beneficiaryLastName = $beneficiary->dataArr['beneficiaryLastName'] ?? '';
-			$bankName = $beneficiary->dataArr['bankName'] ?? 'Unknown Bank';
-			$bankId = $beneficiary->dataArr['bankId'] ?? '';
-			$mobileNumber = $beneficiary->dataArr['beneficiaryMobile'] ?? '';
-			$payoutCurrency = $beneficiary->dataArr['payoutCurrency'] ?? '';
+			$beneficiaryFirstName = $beneficiary->data['receiverfirstname'] ?? $beneficiary->data['beneficiaryFirstName'];
+			$beneficiaryLastName = $beneficiary->data['receiverlastname'] ?? $beneficiary->data['beneficiaryLastName'];
+			$bankName = $beneficiary->data['bankName'] ?? 'Unknown Bank';
+			$bankId = $beneficiary->data['bankId'] ?? '';
+			$mobileNumber = $beneficiary->data['receivercontactnumber'] ?? '';
+			$payoutCurrency = $beneficiary->data['payoutCurrency'] ?? '';
 			$payoutCurrencyAmount = $request->payoutCurrencyAmount;
 			$aggregatorCurrencyAmount = $request->aggregatorCurrencyAmount;
 			$exchangeRate = $request->exchangeRate; 
@@ -573,8 +577,9 @@ class TransferBankController extends Controller
 
 			// Build the comment using sprintf for better readability
 			$comments = sprintf(
-				"You have successfully transferred %s USD to %s, of bank: %s.",
-				number_format($netAmount, 2), // Ensure txnAmount is formatted to 2 decimal places
+				"You have successfully transferred %s %s to %s, of bank: %s.",
+				number_format($netAmount, 2),  
+				$remitCurrency,
 				$beneficiaryName,
 				$bankName
 			);

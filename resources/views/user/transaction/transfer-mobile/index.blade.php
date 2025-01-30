@@ -41,17 +41,21 @@
 					<i class="bi bi-wallet2 heading-3"></i>
 					<div class="ms-2">
 						<span class="balance-label">Balance</span><br>
-						<span class="balance-amount">{{ Helper::decimalsprint(auth()->user()->balance, 2) }} <span class="currency">{{ config('setting.default_currency') }}</span></span>
+						<span class="balance-amount" id="updateBalance">
+							{{ Helper::decimalsprint(auth()->user()->balance, 2) }} 
+							<span class="currency">
+								{{ config('setting.default_currency') }}
+							</span>
+						</span>
 					</div>
-				</div>
-
+				</div> 
 				<!-- Right Side: Add Beneficiary Button -->
 				<button type="button" class="btn btn-primary" onclick="addTransferMobileBeneficiary(this, event)">
 					Add Beneficiary Details
 				</button>
 			</div>
  
-			<form id="transferToMobileForm" action="{{ route('transfer-to-bank.store') }}" method="post" class="animate__animated animate__fadeIn g-2">
+			<form id="transferToMobileForm" action="{{ route('transfer-to-mobile.store') }}" method="post" class="animate__animated animate__fadeIn g-2">
 				<div class="mb-1 row">
 					<div class="col-12 mb-3"> 
 						<label for="country_code" class="form-label">Country <span class="text-danger">*</span></label>
@@ -78,7 +82,7 @@
 					<div class="col-12" id="commissionHtml"></div>
 					  
 					<div class="col-12 mb-3">
-						<label for="txnAmount" class="form-label">Notes </label>
+						<label for="notes" class="form-label">Notes </label>
 						<textarea name="notes" id="notes" class="form-control form-control-lg default-input" placeholder="Account Description"></textarea>
 					</div> 
 				</div>
@@ -271,14 +275,15 @@
 		run_waitMe($('body'), 1, 'facebook');
  
 		$.ajax({
-			type: 'POST',
-			url: "{{ route('transfer-to-bank.commission') }}",
+			type: 'POST', 
+			url: "{{ route('transfer-to-mobile.commission') }}",
 			data: { 
 				encrypted_data: encryptedData,
 				_token: "{{ csrf_token() }}" 
 			},
 			dataType: 'json',
-			success: function(response) {
+			success: function(response) 
+			{
 				// Hide Loading Indicator
 				$('body').waitMe('hide'); 
 				// Remove old commission elements
@@ -294,6 +299,7 @@
 					const payoutCurrencyAmount = parseFloat(result.payoutCurrencyAmount) || 0;
 					const aggregatorCurrencyAmount = parseFloat(result.aggregatorCurrencyAmount) || 0;
 					const txnAmountFloat = parseFloat(txnAmount) || 0;
+					const sendFee = parseFloat(result.sendFee) || 0;
 
 					// Calculate totals
 					const aggregatorRate = parseFloat(result.aggregatorRate) || 0;
@@ -307,6 +313,7 @@
 
 					// Prepare hidden input fields
 					const hiddenFields = `
+						<input type="hidden" id="sendFee" name="sendFee" value="${sendFee}">
 						<input type="hidden" id="netAmount" name="netAmount" value="${netAmount}">
 						<input type="hidden" id="exchangeRate" name="exchangeRate" value="${exchangeRate}">
 						<input type="hidden" id="aggregatorRate" name="aggregatorRate" value="${aggregatorRate}">
@@ -397,7 +404,13 @@
 					toastrMsg(res.status, res.message);  
 					resetForm($transferToMobileForm);  
 					Livewire.dispatch('refreshRecentTransactions'); 
-					Livewire.dispatch('updateBalance');
+					Livewire.dispatch('updateBalance'); 
+					
+					const decodeRes = decryptData(res.response);
+					
+					// Update balance dynamically
+					const balanceHtml = `${decodeRes.userBalance} <span class="currency">${decodeRes.currencyCode}</span>`;
+					$("#updateBalance").html(balanceHtml);
 				}
 				else if(res.status == "validation")
 				{  

@@ -9,19 +9,25 @@
 	use App\Models\Faq;
 	use App\Models\UserLimit;
 	use App\Models\LightnetCountry;
+	use App\Models\OnafricChannel;
 	use App\Models\LightnetCatalogue;
 	use App\Http\Traits\WebResponseTrait; 
 	use App\Services\LiquidNetService; 
+	use App\Services\OnafricService; 
+	use App\Services\MasterService; 
 	use Validator, DB, Auth, ImageManager, Hash;
 	
 	class SettingController extends Controller
 	{
 		use WebResponseTrait;
 		protected $liquidNetService;
+		protected $onafricService;
 		
 		public function __construct()
 		{
+			$this->onafricService = new OnafricService(); 
 			$this->liquidNetService	= new LiquidNetService();
+			$this->masterService	= new MasterService();
 		}
 		
 		public function generalSetting()
@@ -34,11 +40,11 @@
 		{   
 			// Define validation rules dynamically for flexibility
 			$validationRules = [
-			'site_name'        => 'nullable|string|max:255',
-			'default_currency' => 'nullable|string|max:3', 
-			'site_logo'        => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048',
-			'fevicon_icon'     => 'nullable|file|mimes:jpg,jpeg,png,ico|max:1024',
-			'login_logo'       => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048',
+				'site_name'        => 'nullable|string|max:255',
+				'default_currency' => 'nullable|string|max:3', 
+				'site_logo'        => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048',
+				'fevicon_icon'     => 'nullable|file|mimes:jpg,jpeg,png,ico|max:1024',
+				'login_logo'       => 'nullable|file|mimes:jpg,jpeg,png,svg|max:2048',
 			];
 			
 			// Validate the incoming request
@@ -186,7 +192,7 @@
 			$view = view('admin.setting.lightnet-view', compact('lightnetCountries'))->render();
 			return $this->successResponse('success', ['view' => $view]);
 		}
-		
+		 
 		public function thirdPartyKeyCountryUpdate(Request $request)
 		{
 			try
@@ -363,6 +369,103 @@
 			);
 			return;
 		}
+		
+		//Onafric Mobile
+		public function thirdPartyKeyOnafricMobileView()
+		{	  
+			$africanCountries = $this->onafricService->availableCountry(); 
+			$onafricCuntries = $this->masterService->getCountries()->whereIn('nicename', $africanCountries)->values();  
+			$view = view('admin.setting.onafric-mobile-view', compact('onafricCuntries'))->render();
+			return $this->successResponse('success', ['view' => $view]);
+		}
+		
+		public function thirdPartyKeyOnafricMobileUpdate(Request $request)
+		{
+			DB::beginTransaction();
+			
+			try {
+				$insertData = [];
+				$updateData = [];
+				$batch = 100; // Size of batch to insert at once
+
+				// Loop through the channels input data
+				foreach ($request->input('channel') as $countryId => $channels) 
+				{
+					foreach ($channels as $index => $channel) {
+						// Skip if the channel is empty
+						if (empty($channel)) {
+							continue;
+						}
+
+						$fees = $request->input('fees')[$countryId][$index] ?? 0;
+						$commissionType = $request->input('commission_type')[$countryId][$index] ?? 'flat';
+						$commissionCharge = $request->input('commission_charge')[$countryId][$index] ?? 0;
+						$channelId = $request->input('channel_id')[$countryId][$index] ?? null;
+
+						// Prepare the channel data
+						$channelData = [
+							'country_id' => $countryId,
+							'channel' => $channel,
+							'fees' => $fees,
+							'commission_type' => $commissionType,
+							'commission_charge' => $commissionCharge,
+							'status' => 1,  // Set as active
+							'updated_at' => now(),
+						];
+
+						// If the channel_id exists, add it to the update data
+						if ($channelId) {
+							$updateData[] = array_merge($channelData, ['id' => $channelId]);
+							
+							// If insertData exceeds batch size, perform a batch insert
+							if (count($updateData) >= $batch) {
+								OnafricChannel::upsert($updateData, ['id'], ['country_id', 'channel', 'fees', 'commission_type', 'commission_charge', 'status', 'updated_at']);
+								$updateData = []; // Clear insert data after batch insert
+							} 
+							
+						} else {
+							// Otherwise, add it to the insert data
+							$insertData[] = array_merge($channelData, [
+								'created_at' => now(),
+							]);
+
+							// If insertData exceeds batch size, perform a batch insert
+							if (count($insertData) >= $batch) {
+								OnafricChannel::insert($insertData);  // Insert batch of channels
+								$insertData = []; // Clear insert data after batch insert
+							}
+						}
+					}
+				}
+
+				// Insert remaining data if any
+				if (!empty($insertData)) {
+					OnafricChannel::insert($insertData);
+				}
+
+				// Perform batch update if there are any update records
+				if (!empty($updateData)) {
+					OnafricChannel::upsert($updateData, ['id'], ['country_id', 'channel', 'fees', 'commission_type', 'commission_charge', 'status', 'updated_at']);
+				}
+
+				// Commit the transaction if everything went well
+				DB::commit();
+				
+				// Return success response
+				return response()->json(['status' => 'success', 'message' => 'Channels updated successfully']);
+				
+			} catch (\Exception $e) {
+				// Rollback the transaction in case of any errors
+				DB::rollBack();
+
+				// Log the error message
+				Log::error('Error updating channels: ' . $e->getMessage());
+
+				// Return error response
+				return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again.']);
+			}
+		}
+
 		
 		public function UserLimitUpdate(Request $request)
 		{    

@@ -165,6 +165,9 @@
 			<li class="nav-item" role="presentation">
 				<button class="nav-link" id="transfer-to-bank-tab" data-bs-toggle="tab" data-bs-target="#transfer-to-bank-tab" data-platform="transfer to bank" type="button" role="tab" aria-controls="transfer-to-bank-tab" aria-selected="true"> Transfer To Bank </button>
 			</li> 
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" id="transfer-to-mobile-tab" data-bs-toggle="tab" data-bs-target="#transfer-to-mobile-tab" data-platform="transfer to mobile" type="button" role="tab" aria-controls="transfer-to-mobile-tab" aria-selected="true"> Transfer To Mobile </button>
+			</li> 
 		</ul>
 		
 		<div class="card dynemic-tab" id="transaction" style="display:none;">
@@ -656,7 +659,7 @@
 		});
 		  
 		// Handle tab clicks
-		$('#airtime-tab, #geopay-tab, #admin-transfer-tab, #transfer-to-bank-tab').off('click').on('click', function() {
+		$('#airtime-tab, #geopay-tab, #admin-transfer-tab, #transfer-to-bank-tab, #transfer-to-mobile-tab').off('click').on('click', function() {
 			platformName = $(this).data('platform') || $(this).val(); 
 			$('#transactionType').text(platformName ? platformName.toUpperCase() + ' Transaction' : 'Transaction')
 			transactionTable.draw();

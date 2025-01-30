@@ -11,14 +11,16 @@ use App\Models\User;
 use App\Models\LightnetCatalogue;
 use App\Models\LiveExchangeRate;
 use App\Models\ExchangeRate;
+use App\Models\OnafricChannel;
 use App\Models\LightnetCountry;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Traits\WebResponseTrait;
-use App\Services\LiquidNetService;
-use App\Services\MasterService;
+use App\Http\Traits\WebResponseTrait; 
+use App\Services\{ 
+	MasterService, LiquidNetService, OnafricService
+}; 
 use App\Notifications\WalletTransactionNotification;
 use Illuminate\Support\Facades\Notification;
 use Helper;
@@ -29,28 +31,24 @@ class TransferMobileController extends Controller
 	use WebResponseTrait;
 	protected $liquidNetService;
 	protected $masterService;
+	protected $onafricService;
     public function __construct()
     {
 		$this->liquidNetService = new LiquidNetService(); 
 		$this->masterService = new MasterService(); 
+		$this->onafricService = new OnafricService(); 
 		$this->middleware('auth');
     }	
 	
 	public function transferToMobileMoney()
-	{
-		/* $countrys = DB::table('country')->get();
-		foreach($countrys as $country)
-		{ 
-			Country::where('iso3', $country->iso3)->update(['currency_code' => $country->currency]);
-		}
-		  */
-		$countries = $this->masterService->getCountries(); 
+	{   
+		$countries = $this->onafricService->country();  
 		return view('user.transaction.transfer-mobile.index', compact('countries'));
 	}
 	 
 	public function transferToMobileBeneficiary()
 	{  
-		$countries = $this->masterService->getCountries(); 
+		$countries = $this->onafricService->country(); 
 		$view = view('user.transaction.transfer-mobile.transfer-mobile-beneficiary', compact('countries'))->render();
 		return $this->successResponse('success', ['view' => $view]);
 	}
@@ -154,7 +152,7 @@ class TransferMobileController extends Controller
 	   
 	public function transferToMobileBeneficiaryEdit($id)
 	{
-		$countries = $this->masterService->getCountries(); 
+		$countries = $this->onafricService->country();
 		$beneficiary = Beneficiary::find($id);
 		$edit = $beneficiary->data;
 		   
@@ -219,20 +217,29 @@ class TransferMobileController extends Controller
 		}  
 	}
 	
-	public function transferToBankCommission(Request $request)
+	public function transferToMobileCommission(Request $request)
 	{
 		$beneficiaryId = $request->beneficiaryId;
 		$txnAmount = $request->txnAmount;
-		
+		 
 		$beneficiary = Beneficiary::find($beneficiaryId);
-		if (!$beneficiary || empty($beneficiary->dataArr)) {
+		if (!$beneficiary || empty($beneficiary->data ?? [])) {
 			return $this->errorResponse('Beneficiary not found.');
 		}
 		
-		$liveExchangeRate = LiveExchangeRate::select('markdown_rate', 'aggregator_rate')->where('channel', $beneficiary->dataArr['service_name'])->where('currency', $beneficiary->dataArr['payoutCurrency'])->first(); 
+		$country = Country::find($beneficiary->data['recipient_country']);
+		$liveExchangeRate = LiveExchangeRate::select('markdown_rate', 'aggregator_rate')
+		->where('channel', $beneficiary->data['service_name'])
+		->where('currency', $country->currency_code)
+		->first(); 
+		
 		if(!$liveExchangeRate)
 		{
-			$liveExchangeRate = ExchangeRate::select('exchange_rate as markdown_rate', 'aggregator_rate')->where('type', 2)->where('currency', $beneficiary->dataArr['payoutCurrency'])->first();
+			$liveExchangeRate = ExchangeRate::select('exchange_rate as markdown_rate', 'aggregator_rate')
+			->where('type', 2)
+			->where('service_name', $beneficiary->data['service_name'])
+			->where('currency', $country->currency_code)
+			->first();
 			if (!$liveExchangeRate) {
 				return $this->errorResponse('A technical issue has occurred. Please try again later.'); 
 			}
@@ -244,61 +251,37 @@ class TransferMobileController extends Controller
 		$exchangeRate = $liveExchangeRate->markdown_rate ?? 0;
 		$payoutCurrencyAmount = ($txnAmount * $exchangeRate);
 		$serviceCharge = 0;
-		$commissionType = config('setting.lightnet_commission_type') ?? 'flat';
-		$commissionCharge = config('setting.lightnet_commission_charge') ?? 0;
+		
+		$onafricChannel = OnafricChannel::find($beneficiary->data['channel_id'] ?? null);
+		
+		$sendFee = $onafricChannel && $onafricChannel->fees ? $onafricChannel->fees : 0;
+		$commissionType = $onafricChannel && $onafricChannel->commission_type ? $onafricChannel->commission_type : 'flat';
+		$commissionCharge = $onafricChannel && $onafricChannel->commission_charge ? $onafricChannel->commission_charge : 0;
 		
 		$platformFees = $commissionType === "flat"
 		? max($commissionCharge, 0) // Ensure flat fee is not negative
 		: max(($txnAmount * $commissionCharge / 100), 0); // Ensure percentage fee is not negative
 						
 		$comissions = [
-			'payoutCurrency' => $beneficiary->dataArr['payoutCurrency'],
-			'payoutCountry' => $beneficiary->dataArr['payoutCountry'],
+			'payoutCurrency' => $country->currency_code,
+			'payoutCountry' => $country->iso3,
 			'txnAmount' => $txnAmount,
 			'aggregatorRate' => $aggregatorRate,
 			'aggregatorCurrencyAmount' => $aggregatorCurrencyAmount,
 			'exchangeRate' => $exchangeRate,
 			'payoutCurrencyAmount' => $payoutCurrencyAmount,
-			'remitCurrency' => config('setting.default_currency'),
+			'remitCurrency' => config('setting.default_currency') ?? 'USD',
 			'platformCharge' => $platformFees,
 			'serviceCharge' => $serviceCharge,
+			'sendFee' => $sendFee
 		];
 		return $this->successResponse('success', $comissions);
 	}
-	
-	public function serviceCharge($payoutCurrencyAmount, $beneficiary)
-	{
-		// Prepare API Request Body
-		$timestamp = time();
-		$defaultCurrency = config('setting.default_currency'); // Cache config value
-
-		$body = [
-			"agentSessionId"   => (string) $timestamp,
-			"transferAmount"   => (string) $payoutCurrencyAmount,
-			"calcBy"           => "P",
-			"payoutCurrency"   => $beneficiary['payoutCurrency'] ?? '',
-			"paymentMode"      => "B",
-			"locationId"       => $beneficiary['bankId'] ?? '',
-			"payoutCountry"    => $beneficiary['payoutCountry'] ?? '',
-			"remitCurrency"    => $defaultCurrency,
-		];
-
-		// Call the service API
-		$response = $this->liquidNetService->serviceApi('post', '/GetEXRate', $timestamp, $body);
-
-		// Return 0 on failure or unexpected response
-		if (!$response['success'] || ($response['response']['code'] ?? -1) != 0) {
-			return 0;
-		}
-
-		// Return Service Charge or Default to 0
-		return $response['response']['serviceCharge'] ?? 0;
-	}
- 
-	public function transferToBankStore(Request $request)
+	  
+	public function transferToMobileStore(Request $request)
 	{	
 		$user = Auth::user();
-
+	  
 		// Validation rules
 		$validator = Validator::make($request->all(), [
 			'country_code'   => 'required|string|max:10', // Restrict maximum length
@@ -330,16 +313,16 @@ class TransferMobileController extends Controller
 	 
 		try {
 			DB::beginTransaction(); 
-			$request['order_id'] = "GPTB-".$user->id."-".time();
-			$request['timestamp'] = time();
+			$request['order_id'] = "GPTM-".$user->id."-".time();
+			$request['timestamp'] = now()->format('Y-m-d H:i:s');
 			
-			$remitCurrency = config('setting.default_currency');
+			$remitCurrency = config('setting.default_currency') ?? 'USD';
 			
 			$transactionLimit = $user->is_company == 1 
 				? config('setting.company_pay_monthly_limit') 
 				: ($user->userLimit->daily_pay_limit ?? 0);
 
-			$transactionAmountQuery = Transaction::whereIn('platform_name', ['international airtime', 'transfer to bank']);
+			$transactionAmountQuery = Transaction::whereIn('platform_name', ['international airtime', 'transfer to bank', 'transfer to mobile']);
 
 			// Adjust the date filter based on whether the user is a company or an individual
 			if ($user->is_company == 1) {
@@ -365,18 +348,23 @@ class TransferMobileController extends Controller
 				return $this->errorResponse('Something went wrong.');
 			}
 			
-			$response = $this->liquidNetService->sendTransaction($request, $beneficiary->data);
-			
+			$response = $this->onafricService->sendMobileTransaction($request, $beneficiary->data);
+			 
+
 			if (!$response['success']) {
 				$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
 				throw new \Exception($errorMsg);
 			}
-			 
-			if($response['response']['code'] != 0)
-			{
-				$errorMsg = $response['response']['message'] ?? 'An error occurred.';
-				throw new \Exception($errorMsg);
+			
+			$responseCode = $response['response']['details']['transResponse'][0]['status']['code'] ?? 101;
+
+			if ($responseCode != 100) { 
+				$responseMessage = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'Rejected';
+				$errMessage = $responseMessage . ': ' . ($response['response']['details']['transResponse'][0]['status']['messageDetail'] ?? 'An error occurred.');
+				
+				throw new \Exception($errMessage);
 			}
+
 			
 			$txnAmount = $request->input('txnAmount');
 			$netAmount = $request->input('netAmount');
@@ -385,32 +373,30 @@ class TransferMobileController extends Controller
 			$user->decrement('balance', $netAmount); 
 			
 			// Check if necessary fields exist to prevent undefined index warnings
-			$beneficiaryFirstName = $beneficiary->dataArr['beneficiaryFirstName'] ?? '';
-			$beneficiaryLastName = $beneficiary->dataArr['beneficiaryLastName'] ?? '';
-			$bankName = $beneficiary->dataArr['bankName'] ?? 'Unknown Bank';
-			$bankId = $beneficiary->dataArr['bankId'] ?? '';
-			$mobileNumber = $beneficiary->dataArr['beneficiaryMobile'] ?? '';
-			$payoutCurrency = $beneficiary->dataArr['payoutCurrency'] ?? '';
+			$beneficiaryFirstName = $beneficiary->data['recipient_name'] ?? '';
+			$beneficiaryLastName = $beneficiary->data['recipient_surname'] ?? ''; 
+			$mobileNumber = $beneficiary->data['recipient_mobile'] ?? '';
+			$payoutCurrency = $beneficiary->data['payoutCurrency'] ?? '';
 			$payoutCurrencyAmount = $request->payoutCurrencyAmount;
 			$aggregatorCurrencyAmount = $request->aggregatorCurrencyAmount;
 			$exchangeRate = $request->exchangeRate; 
-			$confirmationId = $response['response']['confirmationId'];
+			$confirmationId = $request['order_id'];
 			// Concatenate beneficiary name safely
 			$beneficiaryName = trim("$beneficiaryFirstName $beneficiaryLastName"); // Using trim to remove any leading/trailing spaces
 
 			// Build the comment using sprintf for better readability
 			$comments = sprintf(
-				"You have successfully transferred %s USD to %s, of bank: %s.",
+				"You have successfully transferred %s USD to %s, of mobile No: %s.",
 				number_format($netAmount, 2), // Ensure txnAmount is formatted to 2 decimal places
 				$beneficiaryName,
-				$bankName
+				$mobileNumber
 			);
 
 			// Create transaction record
 			$transaction = Transaction::create([
 				'user_id' => $user->id,
 				'receiver_id' => $user->id,
-				'platform_name' => 'transfer to bank',
+				'platform_name' => 'transfer to mobile',
 				'platform_provider' => $beneficiary->data['service_name'],
 				'transaction_type' => 'debit',
 				'country_id' => $user->country_id,
@@ -419,8 +405,8 @@ class TransferMobileController extends Controller
 				'comments' => $comments,
 				'notes' => $request->input('notes'),
 				'unique_identifier' => $confirmationId,
-				'product_name' => $bankName, 
-				'product_id' => $bankId,
+				'product_name' => null, 
+				'product_id' => null,
 				'mobile_number' => $mobileNumber,
 				'unit_currency' => $payoutCurrency,
 				'unit_amount' => $payoutCurrencyAmount,
@@ -441,77 +427,17 @@ class TransferMobileController extends Controller
 			]);
 
 			// Log the transaction creation
-			Helper::updateLogName($transaction->id, Transaction::class, 'transfer to bank transaction', $user->id);
-			 
-			$commitResponse = $this->liquidNetService->commitTransaction($confirmationId, $remitCurrency);
-
-			if (!$commitResponse['success'] || ($commitResponse['response']['code'] ?? 1) != 0) {
-				// Provide a clear and user-friendly error message
-				$errorMsg = "Your transaction has been accepted but couldn't be committed due to a technical issue. Please visit the transaction list to manually commit the transaction.";
-				throw new \Exception($errorMsg);
-			}
-
-			// Safely fetch the transaction and update it
-			if ($transaction) {
-				$commitTransaction = Transaction::find($transaction->id);
-				$commitTransaction->update(['api_response_second' => $commitResponse['response'], 'txn_status' => strtolower($commitResponse['response']['status'])]);
-			}
- 
+			Helper::updateLogName($transaction->id, Transaction::class, 'transfer to mobile transaction', $user->id); 
 			DB::commit();  
-			return $this->successResponse($commitResponse['response']['message']);
+			return $this->successResponse('The order has been accepted.', ['userBalance' => Helper::decimalsprint($user->balance, 2), 'currencyCode' => config('setting.default_currency')]);
 		} catch (\Throwable $e) {
 			DB::rollBack();  
 			return $this->errorResponse($e->getMessage()); 
 		}  
 	}
 	
-	public function transferToBankCommitTransaction($id)
+	public function transferToMobileWebhook(Request $request, $uniqueId)
 	{
-		try {
-			DB::beginTransaction();
-
-			// Fetch the transaction
-			$transaction = Transaction::find($id);
-			if (!$transaction) {
-				return $this->errorResponse('Transaction not found.');
-			}
-
-			if (!$transaction->unique_identifier) {
-				return $this->errorResponse('Transaction confirmation id is missing.');
-			}
-
-			// Call the commitTransaction method
-			$commitResponse = $this->liquidNetService->commitTransaction($transaction->unique_identifier, $transaction->unit_currency);
-
-			// Handle unsuccessful commit response
-			if (!$commitResponse['success']) {
-				$errorMsg = $commitResponse['response']['errors'][0]['message'] ?? 'An error occurred.';
-				throw new \Exception($errorMsg);
-			}
-			
-			// Handle unsuccessful commit response
-			if (($commitResponse['response']['code'] ?? 1) != 0) {
-				$errorMsg = $commitResponse['response']['message'];
-				throw new \Exception($errorMsg);
-			}
-
-			// Update the transaction status
-			$transaction->update([
-				'api_response_second' => $commitResponse['response'],
-				'txn_status' => strtolower($commitResponse['response']['status'] ?? 'pending'),
-			]);
-
-			// Log the transaction update
-			Helper::updateLogName($transaction->id, Transaction::class, 'Transfer to bank commit transaction');
-
-			DB::commit();
-
-			return $this->successResponse($commitResponse['response']['message'] ?? 'Transaction committed successfully.');
-		} catch (\Throwable $e) {
-			DB::rollBack();
-
-			return $this->errorResponse($e->getMessage());
-		}
+		\Log::info('onafric webhook received', ['data' => $request->all()]);
 	}
-	 
 }

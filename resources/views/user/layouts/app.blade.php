@@ -63,7 +63,7 @@
 				
 				<footer class="footer">
 					<div class="container-fluid">
-						<p class="mb-0 p-2 text-center content-3">Copyright © 2024 <a class="text-secondary" href="https://www.softieons.com" target="_blank">Softieons Technologies</a>. All rights reserved.</p>
+						<p class="mb-0 p-2 text-center content-3">Copyright © {{ now()->format('Y') }} <a class="text-secondary" href="https://www.softieons.com" target="_blank">Softieons Technologies</a>. All rights reserved.</p>
 					</div>
 				</footer>
 			</div>
@@ -176,6 +176,5 @@
 			} 
 		</script>
 		@stack('js') 
-	</body>
-	
+	</body> 
 </html>

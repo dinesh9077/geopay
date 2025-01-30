@@ -17,6 +17,7 @@ class LiquidNetService
         $this->appId = config('setting.lightnet_apikey');
         $this->apiKey = config('setting.lightnet_secretkey');
         $this->baseUrl = config('setting.lightnet_url');
+        $this->defaultCurrency = Config('setting.default_currency') ?? 'USD';
     }
 
     public function hmacAuthGenerate(string $method, string $apiUrl, string $requestTimeStamp, array $requestBody = [])
@@ -95,13 +96,13 @@ class LiquidNetService
 			"senderCity" => $beneficiary['sendercity'] ?? '',
 			"senderState" => $beneficiary['senderstate'] ?? '',
 			"senderZipCode" => $beneficiary['senderzipcode'] ?? '',
-			"senderCountry" => $beneficiary['payoutCountry'] ?? '',
+			"senderCountry" => $beneficiary['sendercountry'] ?? '',
 			"senderMobile" => ltrim(trim($user->formatted_number), '+'),
 			"SenderNationality" => $beneficiary['sendernationality'] ?? '',
 			"senderIdType" => $beneficiary['senderidtype'] ?? '',
 			"senderIdTypeRemarks" => $beneficiary['senderidtyperemarks'] ?? '',
 			"senderIdNumber" => $beneficiary['senderidnumber'] ?? '',
-			"senderIdIssueCountry" => $beneficiary['payoutCountry'],
+			"senderIdIssueCountry" => $beneficiary['senderidissuecountry'] ?? '',
 			"senderIdIssueDate" => $beneficiary['senderidissuedate'] ?? '',
 			"senderIdExpireDate" => $beneficiary['senderidexpiredate'] ?? '',
 			"senderDateOfBirth" => $beneficiary['senderdateofbirth'] ?? '',
@@ -139,7 +140,7 @@ class LiquidNetService
 			"senderNativeLastname" => "",
 			"calcBy" => "P",
 			"transferAmount" => (string) $aggregatorCurrencyAmount,
-			"remitCurrency" => Config('setting.default_currency'),
+			"remitCurrency" => $this->defaultCurrency,
 			"payoutCurrency" => $beneficiary['payoutCurrency'] ?? '',
 			"paymentMode" => "B",
 			"bankName" => $beneficiary['bankName'] ?? '',

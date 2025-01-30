@@ -17,7 +17,8 @@
 				<option value="">ALL</option>
 				<option value="geopay to geopay wallet">Geopay To Geopay Wallet</option>
 				<option value="international airtime">International Airtime</option>
-				<option value="transfer to bank">transfer to bank</option>
+				<option value="transfer to bank">transfer to bank</option>
+				<option value="transfer to mobile">transfer to mobile</option>
 				<option value="admin transfer">Admin Transfer</option>
 			</select>
 		</div>

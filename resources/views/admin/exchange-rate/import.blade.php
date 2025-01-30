@@ -14,6 +14,14 @@
 							<option value="1"> Add Service </option>
 							<option value="2"> Pay Service </option>
 						</select>
+					</div>
+					<div class="mb-3">
+						<label for="recipient-name" class="form-label">Service Type <span class="text-danger">*</span></label>
+						<select class="form-control" id="service_name" name="service_name">
+							<option value="">Service Type</option>
+							<option value="lightnet">Lightnet</option>
+							<option value="onafric">Onafric</option>
+						</select>
 					</div> 
 					<div class="mb-3">
 						<label for="recipient-name" class="form-label">File Import <span class="text-danger">*</span></label>
