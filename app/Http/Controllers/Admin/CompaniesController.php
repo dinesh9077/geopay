@@ -172,6 +172,8 @@ class CompaniesController extends Controller
 			$user = User::find($request->id); 
 			$user->update(['status' => $request->status]);
 			
+			Helper::updateLogName($user->id, User::class, 'corporate/company user');
+			
 			// Generate the updated button HTML dynamically
 			$status = $user->status;
 			$blockText = $status == 1 ? 'Block' : 'Unblock';

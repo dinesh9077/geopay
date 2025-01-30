@@ -97,11 +97,9 @@
 		
 		public function rolesCreate()
 		{
-			$permissions = Permission::where('status', 1)
-			//->orderBy('heading_position', 'asc')
+			$permissions = Permission::where('status', 1) 
 			->orderBy('position', 'asc')
-			->get();
-			//->groupBy('heading');
+			->get(); 
 			
 			$view = view('admin.roles.create', compact('permissions'))->render();
 			return $this->successResponse('success', ['view' => $view])	;
@@ -110,16 +108,16 @@
 		public function rolesStore(Request $request)
 		{  
 			$validator = Validator::make($request->all(), [
-			'name' => [
-			'required', 
-			'string', 
-			'unique:roles,name' // Explicitly specify the column to avoid confusion
-			],
-			'status' => [
-			'required', 
-			'integer', // Use "integer" for numbers (instead of "numeric")
-			'in:0,1'   // Ensures the value is either 0 or 1
-			]
+				'name' => [
+					'required', 
+					'string', 
+					'unique:roles,name' 	
+					],
+				'status' => [
+					'required', 
+					'integer', 	
+					'in:0,1'  	
+				]
 			]);
 			
 			
@@ -203,16 +201,16 @@
 		{
 			// Validate input
 			$validator = Validator::make($request->all(), [
-			'name' => [
-            'required', 
-            'string', 
-            'unique:roles,name,' . $id // Make sure the unique validation excludes the current role
-			],
-			'status' => [
-            'required', 
-            'integer', // Use "integer" for numbers (instead of "numeric")
-            'in:0,1'   // Ensures the value is either 0 or 1
-			]
+				'name' => [
+					'required', 
+					'string', 
+					'unique:roles,name,' . $id
+				],
+				'status' => [
+					'required', 
+					'integer',
+					'in:0,1'
+				]
 			]);
 			
 			// Return validation errors if validation fails
@@ -417,7 +415,7 @@
 						}
 
 						// Permission management permission
-						if (config('permission.staff.add')) {
+						if (config('permission.staff.edit')) {
 							$actions[] = '<a href="' . route('admin.staff.permission', ['id' => $value->id]) . '" onclick="editPermission(this, event)" class="btn btn-sm btn-info">Permission</a>';
 						}
 
@@ -484,7 +482,6 @@
 			try
 			{
 				DB::beginTransaction();
-				
 				 
 				$admin = auth()->guard('admin')->user();
 				

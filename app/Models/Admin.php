@@ -36,9 +36,14 @@ class Admin extends Authenticatable
 
 	public function getActivitylogOptions(string $logName = 'staff'): LogOptions
 	{  
-		$user_name = auth()->check() ? auth()->guard('admin')->user()->name : 'Unknown User'; // Fixed ternary operator
+		$user_name = auth()->check() 
+		? (auth()->guard('admin')->check() 
+			? auth()->guard('admin')->user()->name 
+			: auth()->user()->name) 
+		: 'Unknown User';
+		
 		return LogOptions::defaults()
-			->logOnly(['*', 'roles.name'])
+			->logOnly(['*'])
 			->logOnlyDirty()
 			->dontSubmitEmptyLogs()
 			->useLogName($logName)

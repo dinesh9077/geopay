@@ -1,6 +1,5 @@
 <?php  
-	namespace App\Helpers;
-	
+	namespace App\Helpers; 
 	use App\Models\{
 		LoginLog
 	}; 
@@ -172,7 +171,7 @@
 			$get_paise = ($amount_after_decimal > 0) ? "And " . ($change_words[$amount_after_decimal / 10] . " 
 			" . $change_words[$amount_after_decimal % 10]) . '' : '';
 			return ($implode_to_Rupees ? $implode_to_Rupees . '' : '') . $get_paise;
-		}
+			}
 		
 		public static function decimal_number($number,$decimal=null)
 		{

@@ -73,13 +73,23 @@
 		{  
 			$user_name = auth()->check() ? auth()->user()->name : 'Unknown User'; // Fixed ternary operator
 			return LogOptions::defaults()
-			->logOnly(['*', 'country.name'])
+			->logOnly(['*', 'country.name', 'user_status_text'])
 			->logOnlyDirty()
 			->dontSubmitEmptyLogs()
 			->useLogName($logName)
 			->setDescriptionForEvent(function (string $eventName) use ($logName, $user_name) {
 				return "The {$logName} has been {$eventName} by {$user_name}";
 			});
+		}
+		
+		public function getUserStatusTextAttribute()
+		{
+			$statusText = [
+				0 => 'In-active',
+				1 => 'Active'
+			];
+
+			return $statusText[$this->status] ?? 'Unknown';
 		}
 		
 		public function unreadNotifications()
