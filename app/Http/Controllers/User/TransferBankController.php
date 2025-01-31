@@ -4,60 +4,58 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Country;
-use App\Models\Transaction;
-use App\Models\Beneficiary;
-use App\Models\User;
-use App\Models\LightnetCatalogue;
-use App\Models\LiveExchangeRate;
-use App\Models\ExchangeRate;
-use App\Models\LightnetCountry;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\{
+    DB, Auth, Log, Validator, Notification
+};
+use App\Models\{
+    Country, Transaction, Beneficiary, User, 
+    LightnetCatalogue, LiveExchangeRate, ExchangeRate, 
+    LightnetCountry
+};
 use App\Http\Traits\WebResponseTrait;
-use App\Services\LiquidNetService;
+use App\Services\{
+    LiquidNetService, OnafricService
+};
 use App\Notifications\WalletTransactionNotification;
-use Illuminate\Support\Facades\Notification;
+use Carbon\Carbon;
 use Helper;
-use Carbon\Carbon;  
-
+ 
 class TransferBankController extends Controller
 { 
 	use WebResponseTrait;
 	protected $liquidNetService;
+	protected $onafricService;
     public function __construct()
     {
 		$this->liquidNetService = new LiquidNetService(); 
+		$this->onafricService = new OnafricService(); 
 		$this->middleware('auth');
     }	
 	
 	public function transferToBank()
 	{
-		$countries = $this->countries();
-		 
+		$countries = $this->countries()->toArray(); 
 		return view('user.transaction.transfer-bank.index', compact('countries'));
 	}
 	
 	public function countries()
 	{
-		$lightnetCountry = LightnetCountry::select('id', 'data', 'value', 'label', 'service_name', 'status', 'created_at', 'updated_at', 'markdown_type', 'markdown_charge')
+		$lightnetCountry = LightnetCountry::select('id', 'data', 'value', 'label', 'service_name', 'status', 'created_at', 'updated_at', 'markdown_type', 'markdown_charge', DB::raw("'' as iso"))
         ->whereNotNull('label')
         ->get(); 
 
-		$onafricCountry = Country::select('id', 'iso3 as data', 'currency_code as value', 'nicename as label', DB::raw("'onafric' as service_name"), DB::raw("1 as status"), 'created_at', 'updated_at', DB::raw("'flat' as markdown_type"), DB::raw("0 as markdown_charge"))
-		->whereIn('nicename', ['Nigeria', 'Kenya', 'South Africa', 'Uganda'])
+		$onafricCountry = Country::select('id', 'iso3 as data', 'currency_code as value', 'nicename as label', DB::raw("'onafric' as service_name"), DB::raw("1 as status"), 'created_at', 'updated_at', DB::raw("'flat' as markdown_type"), DB::raw("0 as markdown_charge"), 'iso')
+		->whereIn('nicename', $this->onafricService->bankAvailableCountry())
 		->get();
 
 		// Merge both collections
-		$countries = $lightnetCountry->merge($onafricCountry)->sortBy('label')->toArray();
+		$countries = $lightnetCountry->merge($onafricCountry)->sortBy('label')->values();
 		return $countries;
 	}
  
 	public function transferToBankBeneficiary()
 	{  
-		$countries = $this->countries();
+		$countries = $this->countries()->toArray();
 		$catalogues = LightnetCatalogue::where('category_name', 'transfer to bank')
 		->where('service_name', 'lightnet')
 		->whereNotNull('data')
@@ -86,36 +84,26 @@ class TransferBankController extends Controller
 	
 	public function transferToBankList(Request $request)
 	{
-		$timestamp = time();
-		$body = [
-			'agentSessionId' => (string) $timestamp,
-			'paymentMode' => 'B',
-			'payoutCountry' => (string) $request->payoutCountry,
-		];
+		$serviceName = $request->serviceName;
 
-		// Call the service API
-		$response = $this->liquidNetService->serviceApi('post', '/GetAgentList', $timestamp, $body);
-		
-		// Initialize the output
-		if (!isset($response['success']) || !$response['success'] && $response['response']['code'] !== 0) {
-			return $this->successResponse('success', ['output' => '<option value="">No banks available</option>']);
-		} 
-		// Process bank list
-		$banks = $response['response']['locationDetail'] ?? [];
-		$output = '<option value="">Select Bank Name</option>';
-		
-		foreach ($banks as $bank) {
-			$output .= sprintf(
-				'<option value="%s" data-bank-name="%s">%s</option>',
-				htmlspecialchars($bank['locationId'] ?? '', ENT_QUOTES, 'UTF-8'),
-				htmlspecialchars($bank['locationName'] ?? '', ENT_QUOTES, 'UTF-8'),
-				htmlspecialchars($bank['locationName'] ?? '', ENT_QUOTES, 'UTF-8')
-			);
+		switch ($serviceName) {
+			case 'lightnet':
+				return $this->successResponse('success', [
+					'output' => $this->liquidNetService->getAgentList($request)
+				]);
+			
+			case 'onafric':
+				return $this->successResponse('success', [
+					'output' => $this->onafricService->getOnafricBank($request)
+				]);
+			
+			default:
+				return $this->successResponse('success', [
+					'output' => '<option value="">No banks available</option>'
+				]);
 		}
-
-		return $this->successResponse('success', ['output' => $output]);
-	} 
-	
+	}
+ 
 	public function transferToBankBeneficiaryStore(Request $request)
 	{    
 		try {
@@ -162,12 +150,12 @@ class TransferBankController extends Controller
 			->get(); 
 		// Initialize output
 		$output = '<option value="">Select Beneficiary</option>';
-
+		 
 		// Loop through beneficiaries and prepare output
 		foreach ($beneficiaries as $beneficiary) {
-			$dataArr = $beneficiary->dataArr ?? [];
-			$firstName = $dataArr['receiverfirstname'] ?? '';
-			$lastName = $dataArr['receiverlastname'] ?? '';
+			$dataArr = $beneficiary->data ?? [];
+			$firstName = $dataArr['receiverfirstname'] ?? ($dataArr['recipient_name'] ?? '');
+			$lastName = $dataArr['receiverlastname'] ?? ($dataArr['recipient_surname'] ?? '');
 			$bankName = $dataArr['bankName'] ?? '';
 
 			// Skip beneficiaries with missing required data
@@ -220,16 +208,31 @@ class TransferBankController extends Controller
 	{
 		$payoutCountry = $request->payoutCountry;
 		$payoutCurrency = $request->payoutCurrency;
+		$payoutIso = $request->payoutIso;
 		$serviceName = $request->serviceName;
 		$locationId = $request->locationId;
 		
-		$view = $this->getFieldView($payoutCountry, $payoutCurrency, $locationId);
+		if($serviceName == "lightnet")
+		{
+			$view = $this->getLightnetFieldView($payoutCountry, $payoutCurrency, $locationId); 
+		}
+		else
+		{
+			$view = $this->getOnafricFieldView($payoutCountry, $payoutCurrency, $locationId); 
+		}
 
 		// Return success response with rendered view
 		return $this->successResponse('success', ['view' => $view]); 
 	}
 	
-	public function getFieldView($payoutCountry, $payoutCurrency, $locationId, $editData = null)
+	public function getOnafricFieldView($payoutCountry, $payoutCurrency, $locationId, $editData = null)
+	{ 
+		$countries = $this->countries()->whereIn('label', $this->onafricService->bankAvailableCountry()); 
+		$view = view('user.transaction.transfer-bank.onafric-fields', compact('countries', 'editData'))->render();
+		return $view;
+	}
+	
+	public function getLightnetFieldView($payoutCountry, $payoutCurrency, $locationId, $editData = null)
 	{
 		$timestamp = time();
 		$body = [
@@ -264,7 +267,7 @@ class TransferBankController extends Controller
 		
 		$states = $this->lightnetStates($payoutCountry);
 		 
-		$countries = $this->countries();
+		$countries = $this->countries()->toArray();
 		$view = view('user.transaction.transfer-bank.lightnet-fields', compact('fieldList', 'catalogue', 'countries', 'states', 'editData'))->render();
 		return $view;
 	}
@@ -302,46 +305,32 @@ class TransferBankController extends Controller
 	
 	public function transferToBankBeneficiaryEdit($id)
 	{
-		$countries = $this->countries();
-		$catalogues = LightnetCatalogue::where('category_name', 'transfer to bank')
-		->where('service_name', 'lightnet')
-		->whereNotNull('data')
-		->get()
-		->keyBy('catalogue_type');
-		 
-		$relationships = $catalogues->has('REL')
-        ? $catalogues->get('REL')->data
-        : [];
-		 
-		$purposeRemittances = $catalogues->has('POR')
-        ? $catalogues->get('POR')->data
-        : [];
-		 
-		$sourceOfFunds = $catalogues->has('SOF')
-        ? $catalogues->get('SOF')->data
-        : [];
-		
-		$documentOfCustomers = $catalogues->has('DOC')
-        ? $catalogues->get('DOC')->data
-        : [];
-		
+		$countries = $this->countries()->toArray(); 
 		$beneficiary = Beneficiary::find($id);
 		$edit = $beneficiary->data;
-		  
-		$timestamp = time();
-		$body = [
-			'agentSessionId' => (string) $timestamp,
-			'paymentMode' => 'B',
-			'payoutCountry' => (string) $edit['payoutCountry'],
-		];
+		   
+		if($beneficiary->service_name == "lightnet")
+		{
+			$timestamp = time();
+			$body = [
+				'agentSessionId' => (string) $timestamp,
+				'paymentMode' => 'B',
+				'payoutCountry' => (string) $edit['payoutCountry'],
+			];
 
-		// Call the service API
-		$response = $this->liquidNetService->serviceApi('post', '/GetAgentList', $timestamp, $body); 
-		$banks = $response['response']['locationDetail'] ?? [];
-		
-		$fieldView = $this->getFieldView($edit['payoutCountry'], $edit['payoutCurrency'], $edit['bankId'], $edit);
+			// Call the service API
+			$response = $this->liquidNetService->serviceApi('post', '/GetAgentList', $timestamp, $body); 
+			$banks = $response['response']['locationDetail'] ?? [];
+			
+			$fieldView = $this->getLightnetFieldView($edit['payoutCountry'], $edit['payoutCurrency'], $edit['bankId'], $edit); 
+		}
+		else
+		{
+			$banks = $this->onafricService->getOnafricBank(['payoutIso' => $edit['payoutIso'] ?? '', 'bankId' => $edit['bankId'] ?? '']);
+			$fieldView = $this->getOnafricFieldView($edit['payoutCountry'], $edit['payoutCurrency'], $edit['bankId'], $edit); 
+		}
 		 
-		$view = view('user.transaction.transfer-bank.edit-transfer-bank-beneficiary', compact('catalogues', 'countries', 'relationships', 'purposeRemittances', 'sourceOfFunds', 'documentOfCustomers', 'beneficiary', 'edit', 'banks', 'fieldView'))->render();
+		$view = view('user.transaction.transfer-bank.edit-transfer-bank-beneficiary', compact('countries', 'beneficiary', 'edit', 'banks', 'fieldView'))->render();
 		return $this->successResponse('success', ['view' => $view]);	
 	}
 	
@@ -415,7 +404,7 @@ class TransferBankController extends Controller
 		{ 
 			$liveExchangeRate = ExchangeRate::select('exchange_rate as markdown_rate', 'aggregator_rate')
 			->where('type', 2)
-			->where('service_name', $beneficiary->data['service_name'])
+			->where('service_name', $beneficiary->service_name)
 			->where('currency', $beneficiary->dataArr['payoutCurrency'])
 			->first();
 			if (!$liveExchangeRate) {
@@ -429,8 +418,17 @@ class TransferBankController extends Controller
 		$exchangeRate = $liveExchangeRate->markdown_rate ?? 0;
 		$payoutCurrencyAmount = ($txnAmount * $exchangeRate);
 		$serviceCharge = 0;
-		$commissionType = config('setting.lightnet_commission_type') ?? 'flat';
-		$commissionCharge = config('setting.lightnet_commission_charge') ?? 0;
+		
+		if($beneficiary->service_name == "lightnet")
+		{
+			$commissionType = config('setting.lightnet_commission_type') ?? 'flat';
+			$commissionCharge = config('setting.lightnet_commission_charge') ?? 0;
+		}
+		else
+		{
+			$commissionType = config('setting.onafric_bank_commission_type') ?? 'flat';
+			$commissionCharge = config('setting.onafric_bank_commission_charge') ?? 0;
+		}
 		
 		$platformFees = $commissionType === "flat"
 		? max($commissionCharge, 0) // Ensure flat fee is not negative
@@ -450,36 +448,7 @@ class TransferBankController extends Controller
 		];
 		return $this->successResponse('success', $comissions);
 	}
-	
-	public function serviceCharge($payoutCurrencyAmount, $beneficiary)
-	{
-		// Prepare API Request Body
-		$timestamp = time();
-		$defaultCurrency = config('setting.default_currency'); // Cache config value
-
-		$body = [
-			"agentSessionId"   => (string) $timestamp,
-			"transferAmount"   => (string) $payoutCurrencyAmount,
-			"calcBy"           => "P",
-			"payoutCurrency"   => $beneficiary['payoutCurrency'] ?? '',
-			"paymentMode"      => "B",
-			"locationId"       => $beneficiary['bankId'] ?? '',
-			"payoutCountry"    => $beneficiary['payoutCountry'] ?? '',
-			"remitCurrency"    => $defaultCurrency,
-		];
-
-		// Call the service API
-		$response = $this->liquidNetService->serviceApi('post', '/GetEXRate', $timestamp, $body);
-
-		// Return 0 on failure or unexpected response
-		if (!$response['success'] || ($response['response']['code'] ?? -1) != 0) {
-			return 0;
-		}
-
-		// Return Service Charge or Default to 0
-		return $response['response']['serviceCharge'] ?? 0;
-	}
- 
+	  
 	public function transferToBankStore(Request $request)
 	{	
 		$user = Auth::user();
@@ -524,7 +493,7 @@ class TransferBankController extends Controller
 				? config('setting.company_pay_monthly_limit') 
 				: ($user->userLimit->daily_pay_limit ?? 0);
 
-			$transactionAmountQuery = Transaction::whereIn('platform_name', ['international airtime', 'transfer to bank']);
+			$transactionAmountQuery = Transaction::whereIn('platform_name', ['international airtime', 'transfer to bank', 'transfer to mobile']);
 
 			// Adjust the date filter based on whether the user is a company or an individual
 			if ($user->is_company == 1) {
@@ -550,17 +519,43 @@ class TransferBankController extends Controller
 				return $this->errorResponse('Something went wrong.');
 			}
 			
-			$response = $this->liquidNetService->sendTransaction($request, $beneficiary->data);
-			
-			if (!$response['success']) {
-				$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
-				throw new \Exception($errorMsg);
-			}
-			 
-			if($response['response']['code'] != 0)
+			if($beneficiary->service_name === "lightnet")
 			{
-				$errorMsg = $response['response']['message'] ?? 'An error occurred.';
-				throw new \Exception($errorMsg);
+				$response = $this->liquidNetService->sendTransaction($request, $beneficiary->data);
+				
+				if (!$response['success']) {
+					$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
+					throw new \Exception($errorMsg);
+				}
+				 
+				if($response['response']['code'] != 0)
+				{
+					$errorMsg = $response['response']['message'] ?? 'An error occurred.';
+					throw new \Exception($errorMsg);
+				}
+				$confirmationId = $response['response']['confirmationId'];
+				$txnStatus = 'pending';
+			}
+			else
+			{
+				$response = $this->onafricService->sendBankTransaction($request, $beneficiary->data);
+			  
+				if (!$response['success']) {
+					$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
+					throw new \Exception($errorMsg);
+				}
+				
+				$responseCode = $response['response']['details']['transResponse'][0]['status']['code'] ?? 101;
+
+				if ($responseCode != 100) { 
+					$responseMessage = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'Rejected';
+					$errMessage = $responseMessage . ': ' . ($response['response']['details']['transResponse'][0]['status']['messageDetail'] ?? 'An error occurred.');
+					
+					throw new \Exception($errMessage);
+				}
+				$confirmationId = $request['order_id'];
+				
+				$txnStatus = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'pending';
 			}
 			
 			$txnAmount = $request->input('txnAmount');
@@ -579,7 +574,7 @@ class TransferBankController extends Controller
 			$payoutCurrencyAmount = $request->payoutCurrencyAmount;
 			$aggregatorCurrencyAmount = $request->aggregatorCurrencyAmount;
 			$exchangeRate = $request->exchangeRate; 
-			$confirmationId = $response['response']['confirmationId'];
+			
 			// Concatenate beneficiary name safely
 			$beneficiaryName = trim("$beneficiaryFirstName $beneficiaryLastName"); // Using trim to remove any leading/trailing spaces
 
@@ -597,11 +592,11 @@ class TransferBankController extends Controller
 				'user_id' => $user->id,
 				'receiver_id' => $user->id,
 				'platform_name' => 'transfer to bank',
-				'platform_provider' => $beneficiary->data['service_name'],
+				'platform_provider' => $beneficiary->service_name,
 				'transaction_type' => 'debit',
 				'country_id' => $user->country_id,
 				'txn_amount' => $netAmount,
-				'txn_status' => "pending",
+				'txn_status' => $txnStatus,
 				'comments' => $comments,
 				'notes' => $request->input('notes'),
 				'unique_identifier' => $confirmationId,
@@ -629,22 +624,27 @@ class TransferBankController extends Controller
 			// Log the transaction creation
 			Helper::updateLogName($transaction->id, Transaction::class, 'transfer to bank transaction', $user->id);
 			 
-			$commitResponse = $this->liquidNetService->commitTransaction($confirmationId, $remitCurrency);
+			if($beneficiary->service_name === "lightnet")
+			{
+				$commitResponse = $this->liquidNetService->commitTransaction($confirmationId, $remitCurrency);
 
-			if (!$commitResponse['success'] || ($commitResponse['response']['code'] ?? 1) != 0) {
-				// Provide a clear and user-friendly error message
-				$errorMsg = "Your transaction has been accepted but couldn't be committed due to a technical issue. Please visit the transaction list to manually commit the transaction.";
-				throw new \Exception($errorMsg);
-			}
+				if (!$commitResponse['success'] || ($commitResponse['response']['code'] ?? 1) != 0) {
+					// Provide a clear and user-friendly error message
+					$errorMsg = "Your transaction has been accepted but couldn't be committed due to a technical issue. Please visit the transaction list to manually commit the transaction.";
+					throw new \Exception($errorMsg);
+				}
 
-			// Safely fetch the transaction and update it
-			if ($transaction) {
-				$commitTransaction = Transaction::find($transaction->id);
-				$commitTransaction->update(['api_response_second' => $commitResponse['response'], 'txn_status' => strtolower($commitResponse['response']['status'])]);
+				// Safely fetch the transaction and update it
+				if ($transaction) {
+					$commitTransaction = Transaction::find($transaction->id);
+					$commitTransaction->update(['api_response_second' => $commitResponse['response'], 'txn_status' => strtolower($commitResponse['response']['status'])]);
+				}
+				
+				$successMsg = $commitResponse['response']['message'];
 			}
  
 			DB::commit();  
-			return $this->successResponse($commitResponse['response']['message']);
+			return $this->successResponse($successMsg ?? 'TXN Successfully Accepted.');
 		} catch (\Throwable $e) {
 			DB::rollBack();  
 			return $this->errorResponse($e->getMessage()); 

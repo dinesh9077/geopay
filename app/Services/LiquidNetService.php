@@ -359,5 +359,37 @@ class LiquidNetService
 			'response' => json_decode($response->body(), true)
 		];
 	}
+	
+	public function getAgentList($request)
+	{
+		$timestamp = time();
+		$body = [
+			'agentSessionId' => (string) $timestamp,
+			'paymentMode' => 'B',
+			'payoutCountry' => (string) $request->payoutCountry,
+		];
+
+		// Call the service API
+		$response = $this->serviceApi('post', '/GetAgentList', $timestamp, $body);
+		
+		// Initialize the output
+		if (!isset($response['success']) || !$response['success'] && $response['response']['code'] !== 0) {
+			return '<option value="">No banks available</option>';
+		} 
+		// Process bank list
+		$banks = $response['response']['locationDetail'] ?? [];
+		
+		$output = '<option value="">Select Bank Name</option>';
+		foreach ($banks as $bank) {
+			$output .= sprintf(
+				'<option value="%s" data-bank-name="%s">%s</option>',
+				htmlspecialchars($bank['locationId'] ?? '', ENT_QUOTES, 'UTF-8'),
+				htmlspecialchars($bank['locationName'] ?? '', ENT_QUOTES, 'UTF-8'),
+				htmlspecialchars($bank['locationName'] ?? '', ENT_QUOTES, 'UTF-8')
+			);
+		}
+		return $output;
+
+	}
 
 }

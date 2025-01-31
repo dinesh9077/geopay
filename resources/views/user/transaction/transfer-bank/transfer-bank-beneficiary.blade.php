@@ -13,7 +13,7 @@
 							<select id="payoutCurrency" name="payoutCurrency" class="form-control form-control-lg content-3 select2" >
 								<option value="">Select Country</option>
 								@foreach($countries as $country) 
-								<option value="{{ $country['value'] }}" data-service-name="{{ $country['service_name'] }}" data-payout-country="{{ $country['data'] }}" data-country-name="{{ $country['label'] }}">{{ $country['label'] }}</option>
+									<option value="{{ $country['value'] }}" data-service-name="{{ $country['service_name'] }}" data-payout-country="{{ $country['data'] }}" data-country-name="{{ $country['label'] }}" data-iso="{{ $country['iso'] }}">{{ $country['label'] }}</option>
 								@endforeach
 							</select>
 						</div>
@@ -132,8 +132,10 @@
 	 
 	// Handle Country Change for Bank List
 	$('#transferBankBeneficiaryForm #payoutCurrency').change(function() { 
-		var payoutCountry = $(this).find(':selected').data('payout-country');
-		var formData = { payoutCountry: payoutCountry };
+		var payoutCountry = $(this).find(':selected').data('payout-country'); 
+		var payoutIso = $(this).find(':selected').data('iso'); 
+		var serviceName = $(this).find(':selected').data('service-name');
+		var formData = { payoutCountry: payoutCountry, serviceName: serviceName, payoutIso: payoutIso };
 		const encrypted_data = encryptData(JSON.stringify(formData));
 		
 		// Show Loading Indicator
@@ -162,6 +164,7 @@
 		var locationId = $(this).val();
 		var payoutCurrency = $beneficiaryForm.find('#payoutCurrency').val();
 		var payoutCountry = $beneficiaryForm.find('#payoutCurrency :selected').data('payout-country');
+		var payoutIso = $beneficiaryForm.find('#payoutCurrency :selected').data('payout-iso');
 		var serviceName = $beneficiaryForm.find('#payoutCurrency :selected').data('service-name');
 
 		if (!locationId || !payoutCurrency || !payoutCountry || !serviceName) { 
@@ -172,6 +175,7 @@
 		var formData = {
 			payoutCountry: payoutCountry,
 			payoutCurrency: payoutCurrency,
+			payoutIso: payoutIso,
 			serviceName: serviceName,
 			locationId: locationId
 		};
@@ -228,6 +232,7 @@
 		formData['service_name'] = $beneficiaryForm.find('#payoutCurrency').find(':selected').data('service-name') ?? '';
 		formData['payoutCountry'] = $beneficiaryForm.find('#payoutCurrency').find(':selected').data('payout-country') ?? '';
 		formData['payoutCountryName'] = $beneficiaryForm.find('#payoutCurrency').find(':selected').data('country-name') ?? ''; 
+		formData['payoutIso'] = $beneficiaryForm.find('#payoutCurrency').find(':selected').data('iso') ?? ''; 
 		formData['bankName'] = $beneficiaryForm.find('#bankId').find(':selected').data('bank-name') ?? '';
 		  
 		// Encrypt data before sending

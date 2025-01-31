@@ -109,7 +109,7 @@
 					<div class="row"> 
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Purpose Of Transfer</label>
-							<input id="purposeOfTransfer" name="purposeOfTransfer" placeholder="Enter Purpose Of Transfer such as Health/Medical Expense or Education." type="text" class="form-control form-control-lg content-3" oninput="this.value = this.value.replace(/\D/g, '')"/>
+							<input id="purposeOfTransfer" name="purposeOfTransfer" placeholder="Enter Purpose Of Transfer such as Health/Medical Expense or Education." type="text" class="form-control form-control-lg content-3" />
 						</div>
 						
 						<div class="mb-4 col-md-6">

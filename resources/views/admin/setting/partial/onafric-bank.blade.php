@@ -3,6 +3,10 @@
 		<div class="card-body"> 
 			<form class="forms-sample row" id="onafricBankForm" action="{{ route('admin.third-party-key.update') }}?module_type=onafric_bank_setting" method="post" enctype="multipart/form-data"> 
 				<div class="mb-3 col-md-6">
+					<label for="exampleInputUsername1" class="form-label">Onafric Fees</label>
+					<input type="text" class="form-control" id="onafric_bank_send_fees" name="onafric_bank_send_fees" autocomplete="off" placeholder="Onafric Fees" value="{{ config('setting.onafric_bank_send_fees') ?? 0 }}" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
+				</div>
+				<div class="mb-3 col-md-6">
 					<label for="exampleInputUsername1" class="form-label">Commission Type</label>
 					<select class="form-control" id="onafric_bank_commission_type" name="onafric_bank_commission_type" > 
 						<option value="flat" {{ config('setting.onafric_bank_commission_type') == "flat" ? 'selected' : '' }}>Flat/Fix</option>

@@ -364,7 +364,8 @@ class TransferMobileController extends Controller
 				
 				throw new \Exception($errMessage);
 			}
-
+			
+			$txnStatus = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'pending';
 			
 			$txnAmount = $request->input('txnAmount');
 			$netAmount = $request->input('netAmount');
@@ -401,7 +402,7 @@ class TransferMobileController extends Controller
 				'transaction_type' => 'debit',
 				'country_id' => $user->country_id,
 				'txn_amount' => $netAmount,
-				'txn_status' => "pending",
+				'txn_status' => $txnStatus,
 				'comments' => $comments,
 				'notes' => $request->input('notes'),
 				'unique_identifier' => $confirmationId,

@@ -13,105 +13,26 @@
 							<select id="payoutCurrency" name="payoutCurrency" class="form-control form-control-lg content-3 select2" >
 								<option value="">Select Country</option>
 								@foreach($countries as $country) 
-									<option value="{{ $country['value'] }}" data-service-name="{{ $country['service_name'] }}" data-payout-country="{{ $country['data'] }}" data-country-name="{{ $country['label'] }}" {{ isset($edit['payoutCurrency']) && $edit['payoutCurrency'] === $country['value'] ? 'selected' : '' }}>{{ $country['label'] }}</option>
+									<option value="{{ $country['value'] }}" data-service-name="{{ $country['service_name'] }}" data-payout-country="{{ $country['data'] }}" data-country-name="{{ $country['label'] }}" data-iso="{{ $country['iso'] }}" {{ isset($edit['payoutCurrency']) && $edit['payoutCurrency'] === $country['value'] ? 'selected' : '' }}>{{ $country['label'] }}</option>
 								@endforeach
 							</select>
-						</div>
-						 
+						</div> 
 						<div class="mb-4 col-lg-6">
 							<label class="content-3 mb-0">Bank Name <span class="text-danger">*</span></label>
 							<select id="bankId" name="bankId" class="form-control form-control-lg content-3 select2" >
 								<option value="">Select Bank Name</option>
-								@foreach($banks as $bank) 
-									<option value="{{ $bank['locationId'] }}" data-bank-name="{{ $bank['locationName'] }}" {{ isset($edit['bankId']) && $edit['bankId'] === $bank['locationId'] ? 'selected' : '' }}>{{ $bank['locationName'] }}</option>
-								@endforeach
+								@if($beneficiary->service_name == "lightnet")
+									@foreach($banks as $bank) 
+										<option value="{{ $bank['locationId'] }}" data-bank-name="{{ $bank['locationName'] }}" {{ isset($edit['bankId']) && $edit['bankId'] === $bank['locationId'] ? 'selected' : '' }}>{{ $bank['locationName'] }}</option>
+									@endforeach
+								@else
+									{!! $banks !!}
+								@endif
 							</select>
 						</div>
 					</div>
 					<div class="row" id="dynamicFields">  
-						@if($fieldView)
-							{!! $fieldView !!}
-						@else
-							<div class="mb-4 col-md-6">
-								<label class="content-3 mb-0">Bank Account Number <span class="text-danger">*</span></label>
-								<input id="bankaccountnumber" name="bankaccountnumber" placeholder="Enter Bank Account Number" type="text" class="form-control form-control-lg content-3" value="{{ $edit['bankaccountnumber'] }}" oninput="this.value = this.value.replace(/\D/g, '')"/>
-							</div>
-							
-							<div class="mb-4 col-md-6">
-								<label class="content-3 mb-0">Beneficiary First Name <span class="text-danger">*</span></label>
-								<input id="receiverfirstname" name="receiverfirstname" placeholder="Enter Beneficiary First Name" type="text" class="form-control form-control-lg content-3" value="{{ $edit['receiverfirstname'] }}"/>
-							</div>
-							 
-							<div class="mb-4 col-md-6">
-								<label class="content-3 mb-0">Beneficiary Last Name <span class="text-danger">*</span></label>
-								<input id="receiverlastname" name="receiverlastname" placeholder="Enter Beneficiary Last Name" type="text" class="form-control form-control-lg content-3" value="{{ $edit['receiverlastname'] }}"/>
-							</div>
-							
-							<div class="mb-4 col-md-6">
-								<label class="content-3 mb-0">Beneficiary Address <span class="text-danger">*</span></label>
-								<input id="receiveraddress" name="receiveraddress" placeholder="Enter Beneficiary Address" type="text" class="form-control form-control-lg content-3" value="{{ $edit['receiveraddress'] }}"/>
-							</div>
-							 
-							<div class="mb-4 col-md-6">
-								<label class="content-3 mb-0">Beneficiary Mobile Number (eg:265244476305) <span class="text-danger">*</span></label>
-								<input id="receivercontactnumber" name="receivercontactnumber" placeholder="Enter Beneficiary Mobile No" type="tel" class="form-control form-control-lg content-3" value="{{ $edit['receivercontactnumber'] }}" oninput="this.value = this.value.replace(/\D/g, '')"/>
-							</div>
-							
-							<div class="mb-4 col-md-6">
-								<label class="content-3 mb-0">Select Beneficiary Relationship with sender <span class="text-danger">*</span></label>
-								<select id="senderbeneficiaryrelationship" name="senderbeneficiaryrelationship" class="form-control form-control-lg content-3 select2" >
-									<option value="">Select Beneficiary Relationship with sender</option>
-									@foreach($relationships as $relationship)
-									<option value="{{ $relationship['data'] }}" data-relation-remark="{{ $relationship['value'] }}" {{ isset($edit['senderbeneficiaryrelationship']) && $edit['senderbeneficiaryrelationship'] === $relationship['data'] ? 'selected' : '' }}>{{ $relationship['value'] }}</option>
-									@endforeach
-								</select>
-							</div>
-							
-							<div class="mb-4 col-md-6">
-								<label class="content-3 mb-0">Remittance Purpose <span class="text-danger">*</span></label>
-								<select id="purposeofremittance" name="purposeofremittance" class="form-control form-control-lg content-3 select2" >
-									<option value="">Select Remittance purpose</option>
-									@foreach($purposeRemittances as $purposeRemittance)
-									<option value="{{ $purposeRemittance['data'] }}" data-purpose-remittance-remarks="{{ $purposeRemittance['value'] }}" {{ isset($edit['purposeofremittance']) && $edit['purposeofremittance'] === $purposeRemittance['data'] ? 'selected' : '' }}>{{ $purposeRemittance['value'] }}</option>
-									@endforeach
-								</select>
-							</div>
-							
-							<div class="mb-4 col-md-6">
-								<label class="content-3 mb-0">Sender Source of Fund <span class="text-danger">*</span></label>
-								<select id="sendersourceoffund" name="sendersourceoffund" class="form-control form-control-lg content-3 select2" >
-									<option value="">Select Source of Fund</option>
-									@foreach($sourceOfFunds as $sourceOfFund)
-									<option value="{{ $sourceOfFund['data'] }}" data-sender-sourceof-fundremarks="{{ $sourceOfFund['value'] }}" {{ isset($edit['sendersourceoffund']) && $edit['sendersourceoffund'] === $sourceOfFund['data'] ? 'selected' : '' }}>{{ $sourceOfFund['value'] }}</option>
-									@endforeach
-								</select>
-							</div>
-							
-							<div class="mb-4 col-md-6">
-								<label class="content-3 mb-0">Beneficiary Id Type <span class="text-danger">*</span></label>
-								<select id="beneficiarytype" name="beneficiarytype" class="form-control form-control-lg content-3 select2" >
-									<option value="">Select Beneficiary Id Type</option>
-									@foreach($documentOfCustomers as $documentOfCustomer)
-									<option value="{{ $documentOfCustomer['data'] }}" {{ isset($edit['beneficiarytype']) && $edit['beneficiarytype'] === $documentOfCustomer['data'] ? 'selected' : '' }}>{{ $documentOfCustomer['value'] }}</option>
-									@endforeach
-								</select>
-							</div>
-							
-							<div class="mb-4 mb-md-0 col-sm-6">
-								<label class="content-3 mb-0">Beneficiary Id Number <span class="text-danger">*</span></label>
-								<input id="receiverIdTypeRemarks" name="receiverIdTypeRemarks" placeholder="Enter Beneficiary Id Number" type="text" class="form-control form-control-lg content-3" value="{{ $edit['receiverIdTypeRemarks'] }}"/>
-							</div>
-							
-							<div class="col-sm-6">
-								<label class="content-3 mb-0">Receiver Id Expiry Date </label>
-								<input id="receiverIdExpireDate" name="receiverIdExpireDate" placeholder="Enter Receiver Id Expiry Date" type="text" class="form-control form-control-lg " value="{{ $edit['receiverIdExpireDate'] }}"/>
-							</div>
-							
-							<div class="col-sm-6">
-								<label class="content-3 mb-0">Receiver Birthdate </label>
-								<input id="receiverDateOfBirth" name="receiverDateOfBirth" placeholder="Enter Receiver Birthdate" type="text" class="form-control form-control-lg " value="{{ $edit['receiverDateOfBirth'] }}"/>
-							</div>
-						@endif
+						{!! $fieldView !!} 
 					</div>
 				</form>
 			</div>
@@ -233,8 +154,9 @@
 		formData['service_name'] = $beneficiaryForm.find('#payoutCurrency').find(':selected').data('service-name') ?? '';
 		formData['payoutCountry'] = $beneficiaryForm.find('#payoutCurrency').find(':selected').data('payout-country') ?? '';
 		formData['payoutCountryName'] = $beneficiaryForm.find('#payoutCurrency').find(':selected').data('country-name') ?? ''; 
+		formData['payoutIso'] = $beneficiaryForm.find('#payoutCurrency').find(':selected').data('iso') ?? ''; 
 		formData['bankName'] = $beneficiaryForm.find('#bankId').find(':selected').data('bank-name') ?? '';
-		  
+		    
 		// Encrypt data before sending
 		const encrypted_data = encryptData(JSON.stringify(formData));
 		
