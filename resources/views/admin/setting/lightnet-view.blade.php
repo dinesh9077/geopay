@@ -47,9 +47,12 @@
 					<td>
 						<input type="text" class="form-control" id="markdown_charge_{{ $lightnetCountry->id }}" name="markdown_charge" autocomplete="off" placeholder="Commission Charge Flat/%" value="{{ $lightnetCountry->markdown_charge ?? 0 }}" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
 					</td> --}}
+					
 					<td>
-						<button type="button" class="btn btn-sm btn-primary update-button" 
-						data-id="{{ $lightnetCountry->id }}">Submit</button>
+						@if (config("permission.lightnet_setting.edit"))
+							<button type="button" class="btn btn-sm btn-primary update-button" 
+							data-id="{{ $lightnetCountry->id }}">Submit</button>
+						@endif
 					</td> 
 				</tr>
 			@endforeach 

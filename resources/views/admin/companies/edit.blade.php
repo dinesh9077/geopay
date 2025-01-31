@@ -19,36 +19,43 @@
 	<livewire:admin.user-detail-card :company="$company" />
 </div>
 
-<div class="row">
-	<div class="col-md-4 col-lg-3 mb-2">
-		<a href="{{ route('admin.companies.login-history', ['id' => $company->id]) }}" class="btn btn-info w-100">
-			<i data-feather="align-justify" style="height: 16px;"></i>
-			Login History
-		</a>
-	</div>
-	<div class="col-md-4 col-lg-3 mb-2">
-		<a href="{{ route('admin.companies.increment-balance', ['id' => $company->id]) }}"
-		onclick="addBalance(this, event)" class="btn btn-success w-100">
-			<i data-feather="plus-circle" style="height: 16px;"></i>
-			Balance
-		</a>
-	</div>
-	
-	<div class="col-md-4 col-lg-3 mb-2">
-		<a href="{{ route('admin.companies.decrement-balance', ['id' => $company->id]) }}"
-		onclick="minusBalance(this, event)" class="btn btn-danger w-100">
-			<i data-feather="minus-circle" style="height: 16px;"></i>
-			Balance
-		</a>
-	</div>
-	<div class="col-md-4 col-lg-3 mb-2" id="blockUnblockAccount">
-		<button type="button" class="btn btn-warning w-100"
-		data-block-text="{{ $company->status == 1 ? 'Block' : 'Unblock' }} Account"data-block-msg="{{ $company->status == 1 ? 'If you block this account he/she want able to access his/her dashboard.' : 'If you unblock this account he/she able to access his/her dashboard.' }} Account"
-		data-status="{{ $company->status == 1 ? 0 : 1 }}" onclick="banAccount(this, event)">
-			<i data-feather="{{ $company->status == 1 ? 'slash' : 'key' }}" style="height: 16px;"></i>
-			{{ $company->status == 1 ? 'Block' : 'Unblock' }} Account
-		</button>
-	</div>
+<div class="row"> 
+	@if (config('permission.company_login_history.view'))
+		<div class="col-md-4 col-lg-3 mb-2">
+			<a href="{{ route('admin.companies.login-history', ['id' => $company->id]) }}" class="btn btn-info w-100">
+				<i data-feather="align-justify" style="height: 16px;"></i>
+				Login History
+			</a>
+		</div>
+	@endif
+	@if (config('permission.company_add_balance.add'))
+		<div class="col-md-4 col-lg-3 mb-2">
+			<a href="{{ route('admin.companies.increment-balance', ['id' => $company->id]) }}"
+			onclick="addBalance(this, event)" class="btn btn-success w-100">
+				<i data-feather="plus-circle" style="height: 16px;"></i>
+				Balance
+			</a>
+		</div>
+	@endif
+	@if (config('permission.company_deduct_balance.add'))
+		<div class="col-md-4 col-lg-3 mb-2">
+			<a href="{{ route('admin.companies.decrement-balance', ['id' => $company->id]) }}"
+			onclick="minusBalance(this, event)" class="btn btn-danger w-100">
+				<i data-feather="minus-circle" style="height: 16px;"></i>
+				Balance
+			</a>
+		</div>
+	@endif
+	@if (config('permission.company_edit.edit'))
+		<div class="col-md-4 col-lg-3 mb-2" id="blockUnblockAccount">
+			<button type="button" class="btn btn-warning w-100"
+			data-block-text="{{ $company->status == 1 ? 'Block' : 'Unblock' }} Account"data-block-msg="{{ $company->status == 1 ? 'If you block this account he/she want able to access his/her dashboard.' : 'If you unblock this account he/she able to access his/her dashboard.' }} Account"
+			data-status="{{ $company->status == 1 ? 0 : 1 }}" onclick="banAccount(this, event)">
+				<i data-feather="{{ $company->status == 1 ? 'slash' : 'key' }}" style="height: 16px;"></i>
+				{{ $company->status == 1 ? 'Block' : 'Unblock' }} Account
+			</button>
+		</div>
+	@endif
 </div>
 
 <div class="row gy-4 mt-0">
@@ -312,10 +319,11 @@
 							<input type="text" class="form-control" id="password_confirmation"
 							name="password_confirmation" value="">
 						</div>
-						
-						<div class="col-md-12 mt-3 text-end">
-							<button type="submit" class="btn btn-primary ">Submit</button>
-						</div>
+						@if (config('permission.company_edit.edit'))
+							<div class="col-md-12 mt-3 text-end">
+								<button type="submit" class="btn btn-primary ">Submit</button>
+							</div>
+						@endif
 					</div>
 				</form>
 			</div>

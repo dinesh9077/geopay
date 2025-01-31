@@ -74,9 +74,11 @@
 				</div>
 			@endforeach 
 		</div>
+		@if (config("permission.onafric_mobile_setting.edit"))
 		<div class="d-flex justify-content-end">
 			<button type="submit" class="btn btn-success">Save</button>
 		</div>
+		@endif
 	</form>
 	<script> 
 		var $onafricMobileCountryform = $(`#onafricMobileCountryform`);

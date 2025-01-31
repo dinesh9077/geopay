@@ -10,7 +10,7 @@
 	use App\Models\RolePermission;
 	use App\Models\Admin;
 	use App\Http\Traits\WebResponseTrait; 
-	use Validator, DB, Auth, ImageManager, Hash;
+	use Validator, DB, Auth, ImageManager, Hash, Helper;
 	use App\Services\MasterService;
 	use Carbon\Carbon;
 	class StaffController extends Controller
@@ -503,9 +503,9 @@
 					$permissions = $request->permission;
 					
 					// Prepare data for bulk insert
-					$data = [];
+					$permissionData = [];
 					foreach ($permissions as $key => $permission) {
-						$data[] = [
+						$permissionData[] = [
 						'admin_id' => $staff->id,
 						'name' => $key,
 						'value' => $permission,
@@ -515,12 +515,14 @@
 					}
 					
 					// Use chunking for bulk insert to improve performance
-					$chunks = array_chunk($data, 200); // Chunk size can be adjusted based on your needs
+					$chunks = array_chunk($permissionData, 200); // Chunk size can be adjusted based on your needs
 					
 					foreach ($chunks as $chunk) 
 					{
 						RolePermission::insert($chunk);
 					} 
+					
+					Helper::multipleDataLogs('created', RolePermission::class, 'User Role permission ', $staff->id, $permissionData); 
 				}
 				
 				DB::commit();
@@ -639,10 +641,10 @@
 					// Delete permissions not included in the current request 
 					RolePermission::where('admin_id', $staffId)->delete();
 					
-					// Prepare data for bulk insert
-					$data = [];
+					// Prepare permissionData for bulk insert
+					$permissionData = [];
 					foreach ($permissions as $key => $permission) {
-						$data[] = [
+						$permissionData[] = [
 							'admin_id' => $staffId,
 							'name' => $key,
 							'value' => $permission,
@@ -652,12 +654,13 @@
 					}
 					
 					// Use chunking for bulk insert to improve performance
-					$chunks = array_chunk($data, 200); // Chunk size can be adjusted based on your needs
+					$chunks = array_chunk($permissionData, 200); // Chunk size can be adjusted based on your needs
 					
 					foreach ($chunks as $chunk) 
 					{
 						RolePermission::insert($chunk);
 					} 
+					Helper::multipleDataLogs('updated', RolePermission::class, 'User Role permission ', $staffId, $permissionData); 
 				}
 				else if ($request->role != "admin")
 				{

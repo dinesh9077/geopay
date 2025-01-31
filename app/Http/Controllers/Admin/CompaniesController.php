@@ -132,12 +132,12 @@ class CompaniesController extends Controller
 
 				// Manage actions with permission checks
 				$actions = [];
-				if (config('permission.active_company.edit') || config('permission.pending_company.edit') || config('permission.block_company.edit')) {
-					$actions[] = '<a href="' . route('admin.companies.edit', ['id' => $value->id]) . '" class="btn btn-sm btn-primary">View Details</a>';
+				if (config('permission.company_edit.view')) {
+					$actions[] = '<a href="' . route('admin.companies.edit', ['id' => $value->id]) . '" class="btn btn-sm btn-primary">Edit Details</a>';
 				} 
-				if (config('permission.active_company.edit') || config('permission.pending_company.edit') || config('permission.block_company.edit')) 
+				if (config('permission.company_kyc.view')) 
 				{  
-					$actions[] = '<a href="' . route('admin.companies.view-kyc', ['id' => $value->id]) . '"  class="btn btn-sm btn-warning">View Kyc Data</a>';
+					$actions[] = '<a href="' . route('admin.companies.view-kyc', ['id' => $value->id]) . '"  class="btn btn-sm btn-warning">Edit Kyc Data</a>';
 				} 
 
 				// Assign actions to the row if permissions exist
@@ -171,9 +171,10 @@ class CompaniesController extends Controller
 			
 			$user = User::find($request->id); 
 			$user->update(['status' => $request->status]);
-			
-			Helper::updateLogName($user->id, User::class, 'corporate/company user');
-			
+			if($user->is_company == 1)
+			{
+				Helper::updateLogName($user->id, User::class, 'corporate/company user');
+			}
 			// Generate the updated button HTML dynamically
 			$status = $user->status;
 			$blockText = $status == 1 ? 'Block' : 'Unblock';
@@ -266,7 +267,12 @@ class CompaniesController extends Controller
 			}
 			 
 			$user->update($data);
-			  
+			
+			if($user->is_company == 1)
+			{
+				Helper::updateLogName($user->id, User::class, 'corporate/company user');
+			}
+			
 			DB::commit();
 			
 			return $this->successResponse('Company have been successfully updated.');
@@ -321,10 +327,17 @@ class CompaniesController extends Controller
  
 			// Update sender's balance (debit the amount)
 			$sender->decrement('balance', $txnAmount);
-
+			if($sender->is_company == 1)
+			{
+				Helper::updateLogName($sender->id, User::class, 'corporate/company user');
+			}
+			
 			// Update recipient's balance (credit the amount)
 			$recipient->increment('balance', $txnAmount);
-			
+			if($recipient->is_company == 1)
+			{
+				Helper::updateLogName($recipient->id, User::class, 'corporate/company user');
+			}
 			// Construct comments for transactions
 			$senderComment = 'You successfully transferred ' . $txnAmount . ' USD to ' 
 							 . $recipient->first_name . ' ' . $recipient->last_name . ' by admin.';
@@ -432,10 +445,17 @@ class CompaniesController extends Controller
  
 			// Update sender's balance (debit the amount)
 			$sender->decrement('balance', $txnAmount);
-
+			if($sender->is_company == 1)
+			{
+				Helper::updateLogName($sender->id, User::class, 'corporate/company user');
+			}
+			
 			// Update recipient's balance (credit the amount)
 			$recipient->increment('balance', $txnAmount);
-			
+			if($recipient->is_company == 1)
+			{
+				Helper::updateLogName($recipient->id, User::class, 'corporate/company user');
+			}
 			// Construct comments for transactions
 			$senderComment = 'You successfully transferred ' . $txnAmount . ' USD to ' 
 							 . $recipient->first_name . ' ' . $recipient->last_name . ' by admin.';
@@ -512,7 +532,7 @@ class CompaniesController extends Controller
 			$companyDirectorId = $request->company_director_id;
 			$companyDetailsId = $request->company_details_id;
 			$userId = $request->user_id;
-			
+			$user = User::find($userId);
 			// Ensure that documentTypeIds are not empty
 			if (count($documentTypeIds) == 0) {
 				return $this->errorResponse('No document types provided.');
@@ -547,9 +567,9 @@ class CompaniesController extends Controller
 				if (count($rejectedDocuments) > 0)
 				{
 					// Fetch director's name and email
-					$director = CompanyDirector::find($companyDirectorId);
-					$user = User::find($userId);
+					$director = CompanyDirector::find($companyDirectorId); 
 					$user->update(['is_upload_document' => 0]);  
+					Helper::updateLogName($user->id, User::class, 'corporate/company user kyc document rejected');
 					// Send email
 					Mail::to($user->email)->send(new KycRejectionMail($director->name, $rejectedDocuments));
 				}
@@ -563,8 +583,7 @@ class CompaniesController extends Controller
 			if($allApproved)
 			{  
 				// Fetch director's name and email
-				$director = CompanyDirector::find($companyDirectorId);
-				$user = User::find($userId);
+				$director = CompanyDirector::find($companyDirectorId); 
 				Mail::to($user->email)->send(new DirectorApprovalMail($director));
 			}
 			
@@ -572,13 +591,18 @@ class CompaniesController extends Controller
 			$allDirectorApproved = CompanyDocument::where('company_details_id', $companyDetailsId)
             ->where('status', '<>', 1)
             ->doesntExist(); // If no documents exist with a status other than 1, all are approved
+			 
 			
-			$user = User::find($userId);
-			$user->update(['is_kyc_verify' => 0]);
 			if($allDirectorApproved)
 			{ 
 				$user->update(['is_kyc_verify' => 1]); 
+				Helper::updateLogName($user->id, User::class, 'corporate/company user kyc approved');
 				CompanyDetail::where('id', $companyDetailsId)->update(['is_update_kyc' => 1]); 
+			}
+			else
+			{
+				$user->update(['is_kyc_verify' => 0]);
+				Helper::updateLogName($user->id, User::class, 'corporate/company user kyc rejected');
 			}
 			DB::commit(); 
 			return $this->successResponse('The director KYC has been updated successfully.');
@@ -591,8 +615,7 @@ class CompaniesController extends Controller
 	}
 	
 	public function companiesloginHistory($companyId)
-	{
-		//$loginLogs = LoginLog::where('user_id', $companyid)->orderByDesc('id')->get(); 
+	{ 
 		return view('admin.companies.login-history', compact('companyId')); 
 	}
 	

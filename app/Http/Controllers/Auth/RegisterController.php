@@ -222,7 +222,7 @@ class RegisterController extends Controller
 			$userData['verification_token'] = Str::random(64);
 		
             $user = User::create($userData);
-				 
+			Helper::updateLogName($user->id, User::class, 'corporate/company user');	 
 			// Log the user in
 			Auth::login($user);
  

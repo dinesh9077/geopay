@@ -15,8 +15,10 @@
 	use App\Services\LiquidNetService; 
 	use App\Services\OnafricService; 
 	use App\Services\MasterService; 
-	use Validator, DB, Auth, ImageManager, Hash;
-	
+	use Validator, DB, Auth, ImageManager, Hash, Helper;
+	use Spatie\Activitylog\Facades\LogActivity;
+	use Spatie\Activitylog\Models\Activity;
+
 	class SettingController extends Controller
 	{
 		use WebResponseTrait;
@@ -58,14 +60,19 @@
 			{
 				DB::beginTransaction();
 				
-				$data = $request->except('_token', 'fevicon_icon', 'login_logo', 'site_logo');
+				$data = $request->except('_token', 'fevicon_icon', 'login_logo', 'site_logo', 'module_type');
 				
 				// Bulk update or create for general settings
 				foreach ($data as $key => $value) {
-					Setting::updateOrCreate(
-					['name' => $key],
-					['value' => $value, 'updated_at' => now()]
+					$setting = Setting::updateOrCreate(
+						['name' => $key],
+						['value' => $value, 'updated_at' => now()]
 					);
+					if($request->has('module_type'))
+					{
+						$logName = str_replace('_', ' ', $request->module_type);
+						Helper::updateLogName($setting->id, Setting::class, $logName);
+					}
 				}
 				
 				$images = $request->only('fevicon_icon', 'login_logo', 'site_logo');
@@ -110,7 +117,7 @@
 			{
 				DB::beginTransaction();
 				
-				$data = $request->except('_token');
+				$data = $request->except('_token', 'module_type');
 				
 				$response = $this->liquidNetService->getEcho($data);
 				
@@ -126,16 +133,23 @@
 				} 
 				// Bulk update or create for general settings
 				foreach ($data as $key => $value) {
-					Setting::updateOrCreate(
-					['name' => $key],
-					['value' => $value, 'updated_at' => now()]
-					);
+					$setting = Setting::updateOrCreate(
+						['name' => $key],
+						['value' => $value, 'updated_at' => now()]
+					);  
+					
+					if($request->has('module_type'))
+					{
+						$logName = str_replace('_', ' ', $request->module_type);
+						Helper::updateLogName($setting->id, Setting::class, $logName);
+					}
 				}
 				
 				Setting::updateOrCreate(
 					['name' => 'lightnet'],
 					['value' => 1, 'updated_at' => now()]
 				);
+				
 				
 				DB::commit(); 
 				return $this->successResponse('Settings have been successfully updated.');
@@ -419,7 +433,9 @@
 							
 							// If insertData exceeds batch size, perform a batch insert
 							if (count($updateData) >= $batch) {
-								OnafricChannel::upsert($updateData, ['id'], ['country_id', 'channel', 'fees', 'commission_type', 'commission_charge', 'status', 'updated_at']);
+								OnafricChannel::upsert($updateData, ['id'], ['country_id', 'channel', 'fees', 'commission_type', 'commission_charge', 'status', 'updated_at']); 
+								
+								Helper::multipleDataLogs('updated', OnafricChannel::class, 'Onafric Mobile Country Channel', $module_id = NULL, $updateData); 
 								$updateData = []; // Clear insert data after batch insert
 							} 
 							
@@ -431,8 +447,9 @@
 
 							// If insertData exceeds batch size, perform a batch insert
 							if (count($insertData) >= $batch) {
-								OnafricChannel::insert($insertData);  // Insert batch of channels
-								$insertData = []; // Clear insert data after batch insert
+								OnafricChannel::insert($insertData); 
+								Helper::multipleDataLogs('created', OnafricChannel::class, 'Onafric Mobile Country Channel', $module_id = NULL, $insertData);   
+								$insertData = []; 
 							}
 						}
 					}
@@ -441,11 +458,13 @@
 				// Insert remaining data if any
 				if (!empty($insertData)) {
 					OnafricChannel::insert($insertData);
+					Helper::multipleDataLogs('created', OnafricChannel::class, 'Onafric Mobile Country Channel', $module_id = NULL, $insertData); 
 				}
 
 				// Perform batch update if there are any update records
 				if (!empty($updateData)) {
-					OnafricChannel::upsert($updateData, ['id'], ['country_id', 'channel', 'fees', 'commission_type', 'commission_charge', 'status', 'updated_at']);
+					OnafricChannel::upsert($updateData, ['id'], ['country_id', 'channel', 'fees', 'commission_type', 'commission_charge', 'status', 'updated_at']); 
+					Helper::multipleDataLogs('updated', OnafricChannel::class, 'Onafric Mobile Country Channel', $module_id = NULL, $updateData); 
 				}
 
 				// Commit the transaction if everything went well
@@ -457,12 +476,9 @@
 			} catch (\Exception $e) {
 				// Rollback the transaction in case of any errors
 				DB::rollBack();
-
-				// Log the error message
-				Log::error('Error updating channels: ' . $e->getMessage());
-
+ 
 				// Return error response
-				return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again.']);
+				return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again.'.$e->getMessage()]);
 			}
 		}
 
@@ -874,7 +890,7 @@
 			return view('admin.setting.third-party');
 		}
 		
-		public function ThirdPartyKeyUpdate(Request $request)
+		public function thirdPartyKeyUpdate(Request $request)
 		{  
 			// Define your validation rules dynamically based on the request input keys
 			$rules = collect($request->all())->mapWithKeys(function ($value, $key) {
@@ -893,14 +909,20 @@
 			{
 				DB::beginTransaction();
 				
-				$data = $request->except('_token');
+				$data = $request->except('_token', 'module_type');
 				
 				// Bulk update or create for general settings
 				foreach ($data as $key => $value) {
-					Setting::updateOrCreate(
-					['name' => $key],
-					['value' => $value, 'updated_at' => now()]
+					$setting = Setting::updateOrCreate(
+						['name' => $key],
+						['value' => $value, 'updated_at' => now()]
 					);
+					
+					if($request->has('module_type'))
+					{
+						$logName = str_replace('_', ' ', $request->module_type);
+						Helper::updateLogName($setting->id, Setting::class, $logName);
+					}
 				}
 				
 				DB::commit();

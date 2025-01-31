@@ -12,9 +12,11 @@
 					<option value="onafric">Onafric</option> 
                 </select>
             </div> 
-            <div class="filter-buttons col-md-4 col-lg-2">
-                <button onclick="getLiveRates(this, event)" class="btn btn-primary">Get Live Rate</button> 
-            </div>
+			@if (config('permission.live_exchange_rate.edit')) 
+				<div class="filter-buttons col-md-4 col-lg-2">
+					<button onclick="getLiveRates(this, event)" class="btn btn-primary">Get Live Rate</button> 
+				</div>
+			@endif
         </div> 
         <hr>
 		@endif
@@ -36,7 +38,9 @@
 				<div class="d-flex align-items-center gap-2">
 					<a href="javascript:;" class="btn btn-primary btn-sm" id="excelExport"> XLXS</a>
 					<a href="javascript:;" class="btn btn-warning btn-sm" id="pdfExport"> PDF</a> 
-					<button id="updateRows" style="display:none;" class="btn btn-success btn-sm">Update Margin</button>
+					@if (config('permission.live_exchange_rate.edit')) 
+						<button id="updateRows" style="display:none;" class="btn btn-success btn-sm">Update Margin</button>
+					@endif
 				</div>
 				
 				<input class="form-control w-fit" type="search" id="search_table" placeholder="Search">

@@ -1,7 +1,7 @@
 <div class="col-md-12 grid-margin stretch-card">
 	<div class="card">
 		<div class="card-body"> 
-			<form class="forms-sample row" id="metaMapForm" action="{{ route('admin.third-party-key.update') }}" method="post" enctype="multipart/form-data">
+			<form class="forms-sample row" id="metaMapForm" action="{{ route('admin.third-party-key.update') }}?module_type=metamap_setting" method="post" enctype="multipart/form-data">
 				<div class="mb-3 col-md-6">
 					<label for="exampleInputUsername1" class="form-label">Meta Host</label>
 					<input type="url" class="form-control" id="meta_host" name="meta_host" autocomplete="off" placeholder="Meta Host"  value="{{ config('setting.meta_host') }}">
@@ -26,10 +26,11 @@
 					<label for="exampleInputUsername1" class="form-label">Meta Bearer Token</label>
 					<input type="text" class="form-control" id="meta_bearer" name="meta_bearer" autocomplete="off" placeholder="Meta Bearer Token" value="{{ config('setting.meta_bearer') }}">
 				</div>  
-				
-				<div class="d-flex justify-content-end">
-					<button type="submit" class="btn btn-primary me-2">Submit</button> 
-				</div>
+				@if (config("permission.metamap_setting.edit"))
+					<div class="d-flex justify-content-end">
+						<button type="submit" class="btn btn-primary me-2">Submit</button> 
+					</div>
+				@endif
 			</form> 
 		</div>
 	</div>

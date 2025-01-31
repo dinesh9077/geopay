@@ -20,9 +20,14 @@ class UserLimit extends Model
 	
 	protected static $recordEvents = ['created', 'deleted', 'updated'];
 	
-	public function getActivitylogOptions(string $logName = 'user limit'): LogOptions
+	public function getActivitylogOptions(string $logName = 'user limit setting'): LogOptions
 	{  
-		$user_name = auth()->check() ? auth()->user()->name : 'Unknown User'; // Fixed ternary operator
+		$user_name = auth()->check() 
+		? (auth()->guard('admin')->check() 
+			? auth()->guard('admin')->user()->name 
+			: auth()->user()->name) 
+		: 'Unknown User';
+			
 		return LogOptions::defaults()
 		->logOnly(['*'])
 		->logOnlyDirty()

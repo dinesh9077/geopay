@@ -52,11 +52,13 @@
 								</div>
 							</div>
 						@endforeach 
-						<div class="col-12">
-							<div class="d-flex justify-content-end">
-								<button type="submit" class="btn btn-sm btn-primary">Submit</button>
+						@if (config('permission.company_kyc.edit')) 
+							<div class="col-12">
+								<div class="d-flex justify-content-end">
+									<button type="submit" class="btn btn-sm btn-primary">Submit</button>
+								</div>
 							</div>
-						</div>
+						@endif
 					</div>
 				</form> 
 			</div> 

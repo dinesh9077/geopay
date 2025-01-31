@@ -7,7 +7,6 @@
 	use Illuminate\Support\Str;
 	use Auth, DB, DateTime, Config;
 	use Spatie\Activitylog\Models\Activity;  
-	
 	class Helper
 	{  
 		public static  function posted($time)
@@ -260,4 +259,28 @@
 				$latestActivityLog->save();
 			} 
 		}
+		
+		public static function multipleDataLogs($event = null, $subject_type, $log_name = null, $module_id = null, $properties = [])
+		{
+			$user = auth()->guard('admin')->check() 
+				? auth()->guard('admin')->user() 
+				: auth()->user();
+
+			$user_name = $user->name ?? 'Unknown User';
+			$causer_id = $user->id ?? null;
+			$causer_type = $user ? get_class($user) : null;
+
+			Activity::insert([
+				'module_id'      => $module_id,
+				'log_name'       => $log_name,
+				'description'    => "The {$log_name} has been {$event} by {$user_name}",
+				'event'          => $event,
+				'subject_type'   => $subject_type,
+				'subject_id'     => null,
+				'causer_type'    => $causer_type,
+				'causer_id'      => $causer_id,
+				'properties'     => json_encode(['new_properties' => collect($properties)]), // Changed key for consistency
+			]);
+		}
+
 	}																		

@@ -1,7 +1,7 @@
 <div class="col-md-12 grid-margin stretch-card">
 	<div class="card">
 		<div class="card-body"> 
-			<form class="forms-sample row" id="onafricForm" action="{{ route('admin.third-party-key.update') }}" method="post" enctype="multipart/form-data">
+			<form class="forms-sample row" id="onafricForm" action="{{ route('admin.third-party-key.update') }}?module_type=onafric_mobile_setting" method="post" enctype="multipart/form-data">
 				<div class="mb-3 col-md-6">
 					<label for="exampleInputUsername1" class="form-label">Sync Api</label>
 					<input type="url" class="form-control" id="onafric_sync_url" name="onafric_sync_url" autocomplete="off" placeholder="Sync Api Url"  value="{{ config('setting.onafric_sync_url') }}">
@@ -37,9 +37,11 @@
 					<label for="exampleInputUsername1" class="form-label">Commission Charge Flat/%</label>
 					<input type="text" class="form-control" id="onafric_commission_charge" name="onafric_commission_charge" autocomplete="off" placeholder="Commission Charge Flat/%" value="{{ config('setting.onafric_commission_charge') ?? 0 }}" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
 				</div>  --}}
+				@if (config("permission.onafric_mobile_setting.edit")) 
 				<div class="d-flex justify-content-end">
 					<button type="submit" class="btn btn-primary me-2">Submit</button> 
 				</div>
+				@endif
 			</form>
 			<hr>
 			<div class="row mt-3" id="onafricMobileView"> 

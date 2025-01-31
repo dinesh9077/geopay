@@ -58,7 +58,12 @@ class Transaction extends Model
 	
 	public function getActivitylogOptions(string $logName = 'transaction'): LogOptions
 	{  
-		$user_name = auth()->user()->name ?? 'UNKNOWN'; // Fixed ternary operator
+		$user_name = auth()->check() 
+		? (auth()->guard('admin')->check() 
+			? auth()->guard('admin')->user()->name 
+			: auth()->user()->name) 
+		: 'Unknown User';
+		
 		return LogOptions::defaults()
 		->logOnly(['*', 'user.first_name', 'receive.first_name'])
 		->logOnlyDirty()

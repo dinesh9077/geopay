@@ -15,7 +15,7 @@
 	use App\Services\{ 
 		LiquidNetService, OnafricService, MasterService
 	};
-	
+	 
 	class ExchangeRateController extends Controller
 	{
 		use WebResponseTrait;
@@ -74,9 +74,7 @@
 				
 				// Apply ordering, limit, and offset for pagination
 				$values = $query
-				->orderBy($columns[$orderColumnIndex] ?? 'id', $orderDirection)
-				/* ->offset($start)
-				->limit($limit) */
+				->orderBy($columns[$orderColumnIndex] ?? 'id', $orderDirection) 
 				->get();
 				
 				// Format data for the response
@@ -201,7 +199,8 @@
 				}
 				
 				// Process each row and either insert or update based on the combination of currency and type
-				foreach ($data as $row) {
+				foreach ($data as $row) 
+				{
 					ExchangeRate::updateOrInsert(
 						['currency' => $row['currency'], 'type' => $row['type']], // Unique key to check for existing records
 						[
@@ -217,15 +216,14 @@
 						]
 					);
 				}
+				Helper::multipleDataLogs('created', ExchangeRate::class, 'Manual Exchange Rate', $module_id = NULL, $data); 
 				
 				DB::commit(); 
 				return $this->successResponse('File imported successfully.'); 
 			} 
 			catch (\Throwable $e) 
-			{
-				// Rollback in case of an exception
-				DB::rollBack(); 
-				// Return error response with the exception message
+			{ 
+				DB::rollBack();  
 				return $this->errorResponse('Failed to update status. ' . $e->getMessage());
 			}
 		}
@@ -640,7 +638,9 @@
 				$exchangeRates = LiveExchangeRate::whereIn('id', $ids)->get()->keyBy('id');
 
 				$data = [];
-				foreach ($ids as $id) {
+				$exchangeData = [];
+				foreach ($ids as $id)
+				{
 					if (!$exchangeRates->has($id)) {
 						continue;
 					}
@@ -656,6 +656,9 @@
  
 					$data = [
 						'id' => $id,
+						'channel' => $exchangeRates->get($id)->channel ?? null,
+						'currency' => $exchangeRates->get($id)->currency ?? null,
+						'country_name' => $exchangeRates->get($id)->country_name ?? null,
 						'markdown_rate' => $markdownRate,
 						'aggregator_rate' => $rate,
 						'markdown_type' => $request->markdown_type,
@@ -663,11 +666,15 @@
 						'status' => 1,
 						'updated_at' => now(),
 					];
+					$exchangeData[] = $data;
+					
 					LiveExchangeRate::updateOrCreate(
 						['id' => $data['id']], // Match based on primary key
 						$data // Update with this data
 					);
 				}
+				
+				Helper::multipleDataLogs('updated', LiveExchangeRate::class, 'Live Exchange Rate', $module_id = NULL, $exchangeData); 
  
 				DB::commit();
 

@@ -69,7 +69,7 @@
 		
 		protected static $recordEvents = ['created', 'deleted', 'updated'];
 		
-		public function getActivitylogOptions(string $logName = 'user'): LogOptions
+		public function getActivitylogOptions(string $logName = 'Individual User'): LogOptions
 		{  
 			$user_name = auth()->check() ? auth()->user()->name : 'Unknown User'; // Fixed ternary operator
 			return LogOptions::defaults()

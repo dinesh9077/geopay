@@ -10,26 +10,50 @@
 
 <div class="row"> 
 	<div class="example">
-		<ul class="nav nav-tabs nav-tabs-line" id="lineTab" role="tablist">
+		@php
+			$tabs = [
+				'general_setting',
+				'social_media_setting',
+				'aboutus_setting',
+				'company_user_limit_setting'
+			];
+
+			// Filter only tabs that the user has permission to view
+			$visibleTabs = collect($tabs)->filter(fn($tab) => config("permission.$tab.view"));
+			
+			// Get the first tab's ID for setting the active class dynamically
+			$firstTab = $visibleTabs->first(); 
+		@endphp
+
+		<ul class="nav nav-tabs nav-tabs-line" id="settingsTabs" role="tablist">
+			@if (config("permission.general_setting.view"))
 			<li class="nav-item">
-				<a class="nav-link active" id="general-setting-tab" data-bs-toggle="tab" href="#general-setting" role="tab" aria-controls="general-setting" aria-selected="true">General Setting</a>
+				<a class="nav-link {{ $firstTab == 'general_setting' ? 'active' : '' }}" id="general-setting-tab" data-bs-toggle="tab" href="#general-setting" role="tab" aria-controls="general-setting" aria-selected="true">General Setting</a>
 			</li>
+			@endif
+			@if (config("permission.social_media_setting.view"))
 			<li class="nav-item">
-				<a class="nav-link" id="social-line-tab" data-bs-toggle="tab" href="#social-line" role="tab" aria-controls="social-line" aria-selected="false">Social Media Link</a>
+				<a class="nav-link {{ $firstTab == 'social_media_setting' ? 'active' : '' }}" id="social-line-tab" data-bs-toggle="tab" href="#social-line" role="tab" aria-controls="social-line" aria-selected="false">Social Media Link</a>
 			</li>  
+			@endif
+			@if (config("permission.aboutus_setting.view"))
 			<li class="nav-item">
-				<a class="nav-link" id="aboutus-line-tab" data-bs-toggle="tab" href="#aboutus-line" role="tab" aria-controls="aboutus-line" aria-selected="false">About Us</a>
+				<a class="nav-link {{ $firstTab == 'aboutus_setting' ? 'active' : '' }}" id="aboutus-line-tab" data-bs-toggle="tab" href="#aboutus-line" role="tab" aria-controls="aboutus-line" aria-selected="false">About Us</a>
 			</li>  
+			@endif
+			@if (config("permission.company_user_limit_setting.view"))
 			<li class="nav-item">
-				<a class="nav-link" id="user-limit-tab" data-bs-toggle="tab" href="#user-limit" role="tab" aria-controls="user-limit" aria-selected="false">Company / User Limit</a>
+				<a class="nav-link {{ $firstTab == 'company_user_limit_setting' ? 'active' : '' }}" id="user-limit-tab" data-bs-toggle="tab" href="#user-limit" role="tab" aria-controls="user-limit" aria-selected="false">Company / User Limit</a>
 			</li>  
+			@endif
 		</ul>
 		<div class="tab-content mt-3" id="lineTabContent">
-			<div class="tab-pane fade show active" id="general-setting" role="tabpanel" aria-labelledby="general-setting-tab"> 
+			@if (config("permission.general_setting.view"))
+			<div class="tab-pane fade {{ $firstTab == 'general_setting' ? 'show active' : '' }}" id="general-setting" role="tabpanel" aria-labelledby="general-setting-tab"> 
 				<div class="col-md-12 grid-margin stretch-card">
 					<div class="card">
 						<div class="card-body"> 
-							<form class="forms-sample row" id="generalForm" action="{{ route('admin.general-setting.update') }}" method="post" enctype="multipart/form-data">
+							<form class="forms-sample row" id="generalForm" action="{{ route('admin.general-setting.update') }}?module_type=general_setting" method="post" enctype="multipart/form-data">
 								<div class="mb-3 col-md-6">
 									<label for="exampleInputUsername1" class="form-label">Site Name</label>
 									<input type="text" class="form-control" id="site_name" name="site_name" autocomplete="off" placeholder="Site Name"  value="{{ config('setting.site_name') }}">
@@ -76,22 +100,24 @@
 									<label for="exampleInputPassword1" class="form-label">Fevicon Icon</label> 
 									<input type="file" name="fevicon_icon" id="fevicon_icon" class="form-control" accept=".jpg,.jpeg,.png,.ico"> 
 									<img class="mt-3" src="{{ url('storage/setting', config('setting.fevicon_icon')) }}" style="height:80px; width:80px">
-								</div>
-								 
+								</div> 
+								@if (config("permission.general_setting.edit"))
 								<div class="d-flex justify-content-end">
 									<button type="submit" class="btn btn-primary me-2">Submit</button> 
-								</div>
+								</div> 
+								@endif
 							</form> 
 						</div>
 					</div>
 				</div> 
 			</div>
-			
-			<div class="tab-pane fade" id="social-line" role="tabpanel" aria-labelledby="social-line-tab"> 
+			@endif
+			@if (config("permission.social_media_setting.view"))
+			<div class="tab-pane fade {{ $firstTab == 'social_media_setting' ? 'show active' : '' }}" id="social-line" role="tabpanel" aria-labelledby="social-line-tab"> 
 				<div class="col-md-12 grid-margin stretch-card">
 					<div class="card">
 						<div class="card-body"> 
-							<form class="forms-sample row" id="socialForm" action="{{ route('admin.general-setting.update') }}" method="post" enctype="multipart/form-data">
+							<form class="forms-sample row" id="socialForm" action="{{ route('admin.general-setting.update') }}?module_type=social_media_setting" method="post" enctype="multipart/form-data">
 								   
 								<div class="mb-3 col-md-6">
 									<label for="exampleInputUsername1" class="form-label">Facebook</label>
@@ -112,43 +138,46 @@
 									<label for="exampleInputUsername1" class="form-label">LinkedIn</label>
 									<input type="url" class="form-control" id="social_linkedin" name="social_linkedin" autocomplete="off" placeholder="LinkedIn Url"  value="{{ config('setting.social_linkedin') }}">
 								</div>
-								
+								@if (config("permission.social_media_setting.edit"))
 								<div class="d-flex justify-content-end">
 									<button type="submit" class="btn btn-primary me-2">Submit</button> 
 								</div>
+								@endif
 							</form> 
 						</div>
 					</div>
 				</div> 
 			</div>
-			 
-			<div class="tab-pane fade" id="aboutus-line" role="tabpanel" aria-labelledby="aboutus-line-tab"> 
+			@endif
+			@if (config("permission.aboutus_setting.view"))
+			<div class="tab-pane fade {{ $firstTab == 'aboutus_setting' ? 'show active' : '' }}" id="aboutus-line" role="tabpanel" aria-labelledby="aboutus-line-tab"> 
 				<div class="col-md-12 grid-margin stretch-card">
 					<div class="card">
 						<div class="card-body"> 
-							<form class="forms-sample row" id="aboutUsForm" action="{{ route('admin.general-setting.update') }}" method="post" enctype="multipart/form-data">
-								   
+							<form class="forms-sample row" id="aboutUsForm" action="{{ route('admin.general-setting.update') }}?module_type=aboutus_setting" method="post" enctype="multipart/form-data"> 
 								<div class="mb-3 col-md-12">
 									<label for="exampleInputPassword1" class="form-label">About Us</label> 
 									<textarea class="form-control tinymce" name="aboutus" id="aboutus" rows="10">{{ config('setting.aboutus') ?? '' }}</textarea>
-								</div>
-								
+								</div> 
+								@if (config("permission.aboutus_setting.edit"))
 								<div class="d-flex justify-content-end">
 									<button type="submit" class="btn btn-primary me-2">Submit</button> 
-								</div>
+								</div> 
+								@endif 
 							</form> 
 						</div>
 					</div>
 				</div> 
 			</div>
-			 
-			<div class="tab-pane fade" id="user-limit" role="tabpanel" aria-labelledby="user-limit-tab"> 
+			@endif 
+			@if (config("permission.company_user_limit_setting.view"))
+			<div class="tab-pane fade {{ $firstTab == 'company_user_limit_setting' ? 'show active' : '' }}" id="user-limit" role="tabpanel" aria-labelledby="user-limit-tab"> 
 				<div class="col-md-12 grid-margin stretch-card">
 					<div class="card">
 						<div class="card-body"> 
 							<h4>Company Limit</h4>
 							<hr>
-							<form class="forms-sample row" id="companyLimitForm" action="{{ route('admin.third-party-key.update') }}" method="post" enctype="multipart/form-data">
+							<form class="forms-sample row" id="companyLimitForm" action="{{ route('admin.third-party-key.update') }}?module_type=company_limit_setting" method="post" enctype="multipart/form-data">
 								<div class="mb-3 col-md-6">
 									<label for="exampleInputUsername1" class="form-label">Company Add Monthly Limit</label>
 									<input type="text" class="form-control" id="company_add_monthly_limit" name="company_add_monthly_limit" autocomplete="off" placeholder="Company Add Monthly Limit"  value="{{ config('setting.company_add_monthly_limit') ?? 0 }}">
@@ -157,16 +186,16 @@
 								<div class="mb-3 col-md-6">
 									<label for="exampleInputUsername1" class="form-label">Company Pay Monthly Limit</label>
 									<input type="text" class="form-control" id="company_pay_monthly_limit" name="company_pay_monthly_limit" autocomplete="off" placeholder="Company Pay Monthly Limit"  value="{{ config('setting.company_pay_monthly_limit') ?? 0 }}">
-								</div>
-								
+								</div> 
+								@if (config("permission.company_user_limit_setting.edit"))
 								<div class="d-flex justify-content-end">
 									<button type="submit" class="btn btn-primary me-2">Submit</button> 
-								</div>
+								</div> 
+								@endif
 							</form> 
 						</div>
 					</div>
-				</div> 
-				
+				</div>   
 				<div class="col-md-12 grid-margin stretch-card">
 					<div class="card">
 						<div class="card-body"> 
@@ -189,12 +218,14 @@
 											<td class="plan-daily-add-limit">{{ $userLimit->daily_add_limit }}</td>
 											<td class="plan-daily-pay-limit">{{ $userLimit->daily_pay_limit }}</td> 
 											<td>
-												<button class="btn btn-primary btn-sm edit-user-limit" 
-													data-id="{{ $userLimit->id }}"
-													data-name="{{ $userLimit->name }}"
-													data-daily-add-limit="{{ $userLimit->daily_add_limit }}"
-													data-daily-pay-limit="{{ $userLimit->daily_pay_limit }}"  
-												>Edit</button>
+												@if (config("permission.company_user_limit_setting.edit"))
+													<button class="btn btn-primary btn-sm edit-user-limit" 
+														data-id="{{ $userLimit->id }}"
+														data-name="{{ $userLimit->name }}"
+														data-daily-add-limit="{{ $userLimit->daily_add_limit }}"
+														data-daily-pay-limit="{{ $userLimit->daily_pay_limit }}"  
+													>Edit</button>
+												@endif
 											</td>
 										</tr>
 										@endforeach
@@ -205,6 +236,7 @@
 					</div>
 				</div> 
 			</div> 
+			@endif
 		</div>
 	</div>
 </div>
@@ -248,7 +280,7 @@
 @push('js')
 <script>
 	const tinymceExample = document.querySelector('#aboutus');
-	
+	   
 	if (tinymceExample) {
 		const options = {
 			selector: '#aboutus',

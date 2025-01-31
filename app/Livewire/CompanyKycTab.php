@@ -26,7 +26,7 @@ class CompanyKycTab extends Component
 	   $this->isDirectors = $companyDetail->companyDirectors->isNotEmpty() ? true : false;
 	   $this->companyDirectors = $companyDetail->companyDirectors;  
 	   
-	   $this->loadDocumentsData(($companyDetail && $companyDetail->companyDirectors ? $companyDetail->companyDirectors[0]->id : ''), $this->activeTab);
+	   $this->loadDocumentsData(($companyDetail && $companyDetail->companyDirectors ? ( $companyDetail->companyDirectors[0]->id ?? null) : null), $this->activeTab);
     }
 	
     public function loadDocumentsData($directorId, $key)

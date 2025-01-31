@@ -7,16 +7,16 @@
 		<h4 class="mb-3 mb-md-0">Manual Exchange Rate</h4>
 	</div> 
 	@if(config('permission.manual_exchange_rate.add'))
-	<div class="d-flex align-items-center flex-wrap text-nowrap"> 
-		<button type="button" onclick="addExchangeRate(this, event)" class="btn btn-primary btn-icon-text mb-2 mb-md-0" style="margin-right: 5px;">
-			<i class="btn-icon-prepend" data-feather="upload"></i>
-			Import Exchange Rate
-		</button>  
-		<a href="{{ url('admin/exchange-rate-sample.xlsx') }}" class="btn btn-info btn-icon-text mb-2 ml-2 mb-md-0" download> 
-			<i class="btn-icon-prepend" data-feather="arrow-down-circle"></i>
-			Download Sample
-		</a>
-	</div> 
+		<div class="d-flex align-items-center flex-wrap text-nowrap"> 
+			<button type="button" onclick="addExchangeRate(this, event)" class="btn btn-primary btn-icon-text mb-2 mb-md-0" style="margin-right: 5px;">
+				<i class="btn-icon-prepend" data-feather="upload"></i>
+				Import Exchange Rate
+			</button>  
+			<a href="{{ url('admin/exchange-rate-sample.xlsx') }}" class="btn btn-info btn-icon-text mb-2 ml-2 mb-md-0" download> 
+				<i class="btn-icon-prepend" data-feather="arrow-down-circle"></i>
+				Download Sample
+			</a>
+		</div> 
 	@endif
 </div>
 

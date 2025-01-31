@@ -1,7 +1,7 @@
 <div class="col-md-12 grid-margin stretch-card">
 	<div class="card">
 		<div class="card-body"> 
-			<form class="forms-sample row" id="metaMapForm" action="{{ route('admin.third-party-key.update') }}" method="post" enctype="multipart/form-data">
+			<form class="forms-sample row" id="metaMapForm" action="{{ route('admin.third-party-key.update') }}?module_type=smtp_mail_setting" method="post" enctype="multipart/form-data">
 				<div class="mb-3 col-md-6">
 					<label for="exampleInputUsername1" class="form-label">Mail Host</label>
 					<input type="text" class="form-control" id="mail_host" name="mail_host" autocomplete="off" placeholder="Mail Host"  value="{{ config('setting.mail_host') }}">
@@ -39,10 +39,11 @@
 					<label for="exampleInputUsername1" class="form-label">Mail From Name</label>
 					<input type="text" class="form-control" id="mail_from_name" name="mail_from_name" autocomplete="off" placeholder="Mail From Name" value="{{ config('setting.mail_from_name') }}">
 				</div> 
-				   
-				<div class="d-flex justify-content-end">
-					<button type="submit" class="btn btn-primary me-2">Submit</button> 
-				</div>
+				@if (config("permission.smtp_mail_setting.edit"))
+					<div class="d-flex justify-content-end">
+						<button type="submit" class="btn btn-primary me-2">Submit</button> 
+					</div>
+				@endif
 			</form> 
 		</div>
 	</div>

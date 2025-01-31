@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CompaniesController;
 use App\Http\Controllers\Admin\ExchangeRateController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\PermissionController;
 use Illuminate\Support\Facades\Route;
 
 // Admin authentication routes 
@@ -17,11 +18,19 @@ Route::post('logout', [AdminAuthController::class, 'logout'])->name('admin.logou
 
 // Protected admin routes
 
-Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(function () {
+Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(function ()
+{
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
-    // Settings
-    Route::get('/general-setting', [SettingController::class, 'generalSetting'])->name('general-setting')->middleware('permission:general_setting.view');
+    // Permission
+    Route::get('/permission', [PermissionController::class, 'index'])->name('permission.index'); 
+    Route::post('/permission/store', [PermissionController::class, 'store'])->name('permission.store')->withoutMiddleware('webdecrypt.request'); 
+    Route::post('/permission/update/{id}', [PermissionController::class, 'update'])->name('permission.update')->withoutMiddleware('webdecrypt.request'); 
+    Route::post('/permission/position', [PermissionController::class, 'positionUpdate'])->withoutMiddleware('webdecrypt.request'); 
+    Route::get('/permission/delete/{id}', [PermissionController::class, 'delete']); 
+  
+	// Settings
+    Route::get('/general-setting', [SettingController::class, 'generalSetting'])->name('general-setting');
     Route::post('/general-setting/update', [SettingController::class, 'generalSettingUpdate'])->name('general-setting.update');
     Route::post('/user-limit/update', [SettingController::class, 'UserLimitUpdate'])->name('user-limit.update');
 
@@ -44,8 +53,7 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
     Route::post('/faqs/delete/{id}', [SettingController::class, 'faqsDelete'])->withoutMiddleware('webdecrypt.request')->name('faqs.delete');
 
     // Third Party Key
-    Route::get('/third-party-key', [SettingController::class, 'thirdPartyKey'])->name('third-party-key')
-        ->middleware('permission:third_party_api.view');
+    Route::get('/third-party-key', [SettingController::class, 'thirdPartyKey'])->name('third-party-key');
     Route::post('/third-party-key/update', [SettingController::class, 'thirdPartyKeyUpdate'])->name('third-party-key.update');
     Route::post('/third-party-key/lightnet-update', [SettingController::class, 'thirdPartyKeyLightnetUpdate'])->name('third-party-key.lightnet-update');
     Route::get('/third-party-key/lightnet-view', [SettingController::class, 'thirdPartyKeyLightnetView'])->name('third-party-key.lightnet-view'); 

@@ -208,42 +208,66 @@
 
             @endif
 
-            @php
-                $settings = [
-                    'general_setting' => ['route' => 'admin.general-setting', 'label' => 'General'],
-                    'banner' => ['route' => 'admin.banner', 'label' => 'Banner'],
-                    'faqs' => ['route' => 'admin.faqs', 'label' => "FAQ's"],
-                    'third_party_api' => ['route' => 'admin.third-party-key', 'label' => 'Third Party API & Commission'],
-                ];
-            @endphp
+			@php
+				$settings = [
+					'general_setting' => ['route' => 'admin.general-setting', 'label' => 'General'],
+					'banner' => ['route' => 'admin.banner', 'label' => 'Banner'],
+					'faqs' => ['route' => 'admin.faqs', 'label' => "FAQ's"],
+					'metamap_setting' => ['route' => 'admin.third-party-key', 'label' => 'Third Party API & Commission'],
+				];
 
-            @if (collect($settings)->keys()->some(fn($key) => config("permission.$key.view")))
-                <li
-                    class="nav-item {{ collect($settings)->contains(fn($item) => request()->routeIs($item['route'])) ? 'active' : '' }}">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#settings" role="button"
-                        aria-expanded="{{ collect($settings)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}"
-                        aria-controls="settings">
-                        <i class="link-icon" data-feather="anchor"></i>
-                        <span class="link-title">Settings</span>
-                        <i class="link-arrow" data-feather="chevron-down"></i>
-                    </a>
-                    <div class="collapse {{ collect($settings)->contains(fn($item) => request()->routeIs($item['route'])) ? 'show' : '' }}"
-                        id="settings">
-                        <ul class="nav sub-menu">
-                            @foreach ($settings as $key => $item)
-                                @if (config("permission.$key.view"))
-                                    <li class="nav-item">
-                                        <a href="{{ route($item['route']) }}"
-                                            class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}">
-                                            {{ $item['label'] }}
-                                        </a>
-                                    </li>
-                                @endif
-                            @endforeach
-                        </ul>
-                    </div>
-                </li>
-            @endif
+				$extraSettings = [
+					'social_media_setting', 'aboutus_setting', 'company_user_limit_setting',
+					'metamap_setting', 'smtp_mail_setting', 'smsplus_setting',
+					'internation_airtime_setting', 'lightnet_setting',
+					'onafric_mobile_setting', 'onafric_bank_setting'
+				];
+
+				$keys = collect(array_merge(array_keys($settings), $extraSettings));
+
+				$isActive = collect($settings)->contains(fn($item) => request()->routeIs($item['route']));
+			@endphp
+
+			@if ($keys->some(fn($key) => config("permission.$key.view")))
+				<li class="nav-item {{ $isActive ? 'active' : '' }}">
+					<a class="nav-link" data-bs-toggle="collapse" href="#settings" role="button"
+						aria-expanded="{{ $isActive ? 'true' : 'false' }}" aria-controls="settings">
+						<i class="link-icon" data-feather="anchor"></i>
+						<span class="link-title">Settings</span>
+						<i class="link-arrow" data-feather="chevron-down"></i>
+					</a>
+					<div class="collapse {{ $isActive ? 'show' : '' }}" id="settings">
+						<ul class="nav sub-menu">
+							@foreach ($settings as $key => $item)
+								@php
+									$generalPermissions = ['general_setting', 'social_media_setting', 'aboutus_setting', 'company_user_limit_setting'];
+									$metamapPermissions = ['metamap_setting', 'smtp_mail_setting', 'smsplus_setting', 'internation_airtime_setting', 'lightnet_setting', 'onafric_mobile_setting', 'onafric_bank_setting'];
+								@endphp
+
+								@if ($key == 'general_setting' && collect($generalPermissions)->some(fn($perm) => config("permission.$perm.view")))
+									<li class="nav-item">
+										<a href="{{ route($item['route']) }}" class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}">
+											{{ $item['label'] }}
+										</a>
+									</li>
+								@elseif ($key == 'metamap_setting' && collect($metamapPermissions)->some(fn($perm) => config("permission.$perm.view")))
+									<li class="nav-item">
+										<a href="{{ route($item['route']) }}" class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}">
+											{{ $item['label'] }}
+										</a>
+									</li>
+								@elseif (config("permission.$key.view"))
+									<li class="nav-item">
+										<a href="{{ route($item['route']) }}" class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}">
+											{{ $item['label'] }}
+										</a>
+									</li>
+								@endif
+							@endforeach
+						</ul>
+					</div>
+				</li>
+			@endif
 
             <li class="nav-item">
                 <a href="{{ route('admin.logout') }}"
