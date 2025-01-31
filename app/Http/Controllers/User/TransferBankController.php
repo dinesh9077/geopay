@@ -36,15 +36,23 @@ class TransferBankController extends Controller
 	public function transferToBank()
 	{
 		$countries = $this->countries();
+		 
 		return view('user.transaction.transfer-bank.index', compact('countries'));
 	}
 	
 	public function countries()
 	{
-		return LightnetCountry::where('status', 1)
-			->whereNotNull('label')
-			->get()
-			->toArray();
+		$lightnetCountry = LightnetCountry::select('id', 'data', 'value', 'label', 'service_name', 'status', 'created_at', 'updated_at', 'markdown_type', 'markdown_charge')
+        ->whereNotNull('label')
+        ->get(); 
+
+		$onafricCountry = Country::select('id', 'iso3 as data', 'currency_code as value', 'nicename as label', DB::raw("'onafric' as service_name"), DB::raw("1 as status"), 'created_at', 'updated_at', DB::raw("'flat' as markdown_type"), DB::raw("0 as markdown_charge"))
+		->whereIn('nicename', ['Nigeria', 'Kenya', 'South Africa', 'Uganda'])
+		->get();
+
+		// Merge both collections
+		$countries = $lightnetCountry->merge($onafricCountry)->sortBy('label')->toArray();
+		return $countries;
 	}
  
 	public function transferToBankBeneficiary()
