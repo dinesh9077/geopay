@@ -99,7 +99,7 @@ class SettingController extends Controller
 
 		// Conditionally add 'address' validation
 		if ($user->is_company != 1) {
-			$rules['address'] = 'required|string';
+			$rules['address'] = 'nullable|string';
 		} 
 		$validator = Validator::make($request->all(), $rules);
 
@@ -130,7 +130,6 @@ class SettingController extends Controller
 
 			return $this->errorResponse('An error occurred while updating the profile. Please try again later.');
 		}
-	}
-
+	} 
 
 }

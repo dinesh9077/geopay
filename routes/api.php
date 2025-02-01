@@ -3,10 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\{
-    RegisterController, LoginController
+    RegisterController, LoginController, 
 };
 use App\Http\Controllers\Api\{
-    CountryController, UserController, TransactionLimitController, TransactionController, BannerController, UserKycController
+   SettingController, UserKycController
 };
 
 /*
@@ -56,8 +56,13 @@ Route::middleware(['decrypt.request'])->group(function ()
 Route::middleware(['auth:api', 'ensure.token'])->group(function () 
 {
     Route::post('logout', [LoginController::class, 'logout']); 
+	Route::post('user-details', [LoginController::class, 'userDetails']); 
+	
 	Route::middleware(['decrypt.request'])->group(function () 
-	{
-        Route::post('user-details', [LoginController::class, 'userDetails']);   
+	{ 
+		Route::post('user-profile-update', [SettingController::class, 'userProfileUpdate']);   
+		Route::post('user-reset-password', [SettingController::class, 'userResetPassword']);  
+		
+		Route::get('common-details', [SettingController::class, 'commonDetails']);   
     });
 });
