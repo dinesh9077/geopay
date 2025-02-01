@@ -1,119 +1,59 @@
 <?php
-	
 	namespace App\Http\Controllers\Api;
-	
+
 	use App\Http\Controllers\Controller;
 	use Illuminate\Http\Request;
-	use App\Models\UserKyc;
-	use App\Models\User;
-	use Illuminate\Support\Facades\Http;
-	use Illuminate\Support\Facades\Storage;
-	use App\Http\Traits\ApiResponseTrait; 
-	use Validator, DB, Log;
-	
+	use App\Models\{User, UserKyc};
+	use Illuminate\Support\Facades\{Http, Storage, DB, Log};
+	use App\Http\Traits\ApiResponseTrait;
+	use Validator;
+ 
 	class UserKycController extends Controller
 	{ 
-		use ApiResponseTrait;
-		
-		public function verify(Request $request)
-		{
-			// Validate incoming request data
-			$validator = Validator::make($request->all(), [
-			'email' => 'required|email',
-			'verification_id' => 'required|string',
-			'identification_id' => 'required|string', 
-			'meta_response' => 'nullable|array' 
-			]);
-			
-			// Check for validation failures
-			if ($validator->fails()) {
-				return $this->validateResponse($validator->errors());
-			}
-			
-			// Start database transaction
-			DB::beginTransaction();
-			
-			try {
-				// Retrieve the user based on the provided email
-				$user = User::where('email', $request->email)->first();
-				
-				// Check if the user exists
-				if (!$user) {
-					return $this->errorResponse('The email not found.');
-				}
-				
-				// Insert or update the KYC data
-				$userKyc = UserKyc::updateOrCreate(
-				['email' => $user->email], // Conditions to find existing record
-				[
-				'user_id' => $user->id,
-				'verification_status' => 'pending',
-				'verification_id' => $request->verification_id, // Laravel handles null automatically
-				'identification_id' => $request->identification_id,
-				'meta_response' => json_encode($request->meta_response), // Assuming meta_response is of JSON type
-				]
-				);
-				
-				// Commit the transaction
-				DB::commit();
-				
-				return $this->successResponse('KYC verification successful.', $userKyc);
-				} catch (\Throwable $e) {
-				// Rollback the transaction in case of error
-				DB::rollBack(); 
-				return $this->errorResponse('Something went wrong while processing your request. Please try again later.');
-			}
-		} 
-		
-		public function getKYCVerification(Request $request)
+		use ApiResponseTrait;  
+		public function metamapWebhook(Request $request)
 		{  
-			$data = $request->all();
-			//Log::info($data);
+			$data = $request->all(); 
 			if (empty($data['flowId']) || $data['flowId'] != config('setting.meta_verification_flow_id')) {
-				return; // Exit if flowId is missing or does not match
-			}
-			
-			// Ensure event type is correct before proceeding
-			if (!in_array($data['eventName'], ['verification_started', 'verification_updated', 'verification_completed'])) {
 				return;
 			}
 			
-			// Get verification ID from resource URL
+			if (!in_array($data['eventName'], ['verification_started', 'verification_updated', 'verification_completed'])) {
+				return;
+			}
+			 
 			$verificationId = basename($data['resource']);
 			
 			if (in_array($data['eventName'], ["verification_started"]) && isset($data['metadata']['user_id'])) 
 			{  
 				$user_id = $data['metadata']['user_id'];
-				$user_email = isset($data['metadata']['user_email']) ? $data['metadata']['user_email'] : null; // Check if 'user_email' exists
-				$step_id = 'pending'; // Default to 'pending' if 'step_id' is not present
-				
-				// Update or create the KYC record
+				$user_email = isset($data['metadata']['user_email']) ? $data['metadata']['user_email'] : null; 
+				$step_id = 'pending';
+				 
 				UserKyc::updateOrCreate(
-					['user_id' => $user_id], // Conditions to find existing record
+					['user_id' => $user_id], 
 					[
 						'email' => $user_email,
-						'verification_status' => $step_id, // Set the verification status
-						'verification_id' => $verificationId, // Laravel handles null automatically 
-						'meta_response' => json_encode($data), // Assuming meta_response is of JSON type 
+						'verification_status' => $step_id,
+						'verification_id' => $verificationId,
+						'meta_response' => json_encode($data),
 					]
 				);
 				return;
 			}
-			
-			// Fetch KYC detail from database
+			 
 			$metaKycDetail = UserKyc::where('verification_id', $verificationId)->first();
 			if (!$metaKycDetail) {
 				return;
 			}
 			
-			// Retrieve user ID associated with KYC
 			$userId = $metaKycDetail->user_id;
 			
 			// Obtain access token
 			$authResponse = Http::withOptions(['verify' => false])
 			->withHeaders([
-			'Content-Type' => 'application/x-www-form-urlencoded',
-			'Authorization' => 'Basic ' . config('setting.meta_bearer')
+				'Content-Type' => 'application/x-www-form-urlencoded',
+				'Authorization' => 'Basic ' . config('setting.meta_bearer')
 			])
 			->asForm()
 			->post(config('setting.meta_host') . '/oauth', ['grant_type' => 'client_credentials']);
@@ -122,7 +62,7 @@
 				return;
 			}
 			
-			$authToken = $authResponse->json()['access_token'];
+			$authToken = $authResponse->json()['access_token'] ?? null;
 			
 			// Fetch verification details
 			$verificationResponse = Http::withOptions(['verify' => false])
@@ -136,8 +76,8 @@
 			$response = $verificationResponse->json();
 			
 			// Check if the status is 'rejected' or 'deleted'
-			if (in_array($response['identity']['status'], ['rejected', 'deleted'])) {
-				// Delete stored files (videos and documents)
+			if (in_array($response['identity']['status'], ['rejected', 'deleted'])) 
+			{ 
 				$this->deleteKYCFiles($userId); 
 				User::whereId($userId)->update(['is_kyc_verify' => 0]);
 				$metaKycDetail->delete();
@@ -151,7 +91,8 @@
 			$documentImages = $this->storeKYCImages($response, $userId);
 			
 			// Update the KYC record in the database
-			DB::transaction(function () use ($response, $documentImages, $storedVideoUrl, $data, $userId) {
+			DB::transaction(function () use ($response, $documentImages, $storedVideoUrl, $data, $userId) 
+			{
 				UserKyc::where('verification_id', $response['id']) 
 				->update([
 				'verification_status' => in_array($response['identity']['status'] ?? 'reviewNeeded', ['reviewNeeded', 'verified']) 

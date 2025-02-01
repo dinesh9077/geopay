@@ -24,7 +24,8 @@
 		
 		public function render($request, Throwable $exception)
 		{
-			if ($exception instanceof TokenMismatchException) {
+			if ($exception instanceof TokenMismatchException) 
+			{
 				// Handle the CSRF token mismatch 
 				return response()->json([
 					'status' => 'error', 
@@ -46,7 +47,8 @@
 			}
 			
 			// Handle AuthenticationException for API requests
-			if ($exception instanceof AuthenticationException) {
+			if ($exception instanceof AuthenticationException) 
+			{ 
 				return $this->unauthenticated($request, $exception);
 			}
 			
@@ -57,7 +59,8 @@
 		protected function unauthenticated($request, AuthenticationException $exception)
 		{ 
 			// Check if the request expects JSON
-			if ($request->expectsJson()) {
+			if ($request->expectsJson()) 
+			{ 
 				// Return JSON response for API requests
 				return response()->json([
 					'success' => false,

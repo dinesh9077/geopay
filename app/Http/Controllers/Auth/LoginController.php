@@ -64,11 +64,11 @@ class LoginController extends Controller
 		
 		try 
 		{ 
-			 session(['login_time' => now()]);
+			session(['login_time' => now()]);
 			$user = User::where('email', $request->email)->first();
 			if(!$user)
-			{
-				return $this->errorResponse('The user was not found.'); 
+			{ 
+				return $this->errorResponse('User not found.');
 			}
 			
 			// Check user status and verification

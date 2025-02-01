@@ -152,11 +152,7 @@
 											<div class="col-md-6 mb-3">
 												<label for="referalcode" class="required content-3 text-primary">Promo Code</label>
 												<input id="referalcode" name="referalcode" type="text" class="form-control form-control-lg bg-light border-light"/> 
-											</div> 
-											<div class="col-md-12 mb-3">
-												<label for="address" class="required content-3 text-primary">Address <span class="text-danger">*</span></label>
-												<input id="address" name="address" type="text" class="form-control form-control-lg bg-light border-light"/> 
-											</div> 
+											</div>  
 										</div> 
 										<div class="mb-3">
 											<div class="d-flex">

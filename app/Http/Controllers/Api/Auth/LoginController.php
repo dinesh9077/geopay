@@ -20,14 +20,7 @@
 	
 	class LoginController extends Controller
 	{
-		use HasApiTokens, ApiResponseTrait;
-		
-		/**
-			* Handle user login.
-			*
-			* @param Request $request
-			* @return \Illuminate\Http\JsonResponse
-		*/
+		use HasApiTokens, ApiResponseTrait; 
 		
 		public function login(Request $request)
 		{   
@@ -35,7 +28,7 @@
 				'email' => 'required|string|email|max:255',
 				'password' => 'required|string',
 			]);
-			
+
 			if ($validator->fails()) {
 				return $this->validateResponse($validator->errors());
 			}
@@ -43,79 +36,90 @@
 			try 
 			{ 
 				$user = User::where('email', $request->email)->first();
-				if(!$user)
-				{
-					return $this->errorResponse('The user was not found.'); 
-				}
-				
-				if($user->status == 0)
-				{
-					return $this->errorResponse('This user account is inactive. Please reach out to the administrator for further details.'); 
-				}
-				
-				if (!$user || !Hash::check($request->password, $user->password)) {
-					return $this->errorResponse('Invalid credentials');
-				}
-				$token = $user->createToken('mag-srl')->accessToken;
-				
-				$user->load('companyDetail');
-				$user->token = $token;
 				 
-				Helper::loginLog('login', $user, 'App');
+				if (!$user) {
+					return $this->errorResponse('User not found.');
+				}
 				
-				return $this->successResponse('User login successfully', $user);
+				// Check user status and verification
+				$messages = [
+					'status' => 'This user account is inactive. Please reach out to the administrator for further details.',
+					'is_email_verify' => 'This email was not verified. Please reach out to the administrator for further details.',
+					'is_mobile_verify' => 'This mobile number was not verified. Please reach out to the administrator for further details.',
+				];
+				
+				foreach ($messages as $key => $message) { 
+					if ($user->$key == 0) {
+						return $this->errorResponse($message);
+					}
+				} 
+				
+				if (!Hash::check($request->password, $user->password)) {
+					return $this->errorResponse('Invalid credentials.');
+				}
+				
+				$token = $user->createToken('geopay')->accessToken;
+				$user->load('companyDetail'); 
+				$user->token = $token;
+
+				Helper::loginLog('login', $user, 'App'); 
+
+				return $this->successResponse('User logged in successfully.', $user);
 			}
 			catch (\Throwable $e)
 			{
 				return $this->errorResponse($e->getMessage());
 			}
 		}
-
-		public function userDetails(Request $request)
-		{
-			try {
-				// Retrieve the Bearer token from the Authorization header
-				$token = $request->bearerToken();  // This will get the token from Authorization header
-			 
-				// Get the authenticated user
-				$user = Auth::user();
-
-				// Load additional relationships, if needed
-				$user->load('companyDetail');
-
-				// You can attach the token to the user data (if you need to pass it to the response)
-				$user->token = $token;
-
-				// Return success response with user details
-				return $this->successResponse('User details fetched successfully', $user);
-			} catch (\Throwable $e) {
-				// Handle exceptions and return error
+		
+		public function logout(Request $request)
+		{ 
+			try 
+			{ 
+				Helper::loginLog('logout', $request->user(), 'App');	
+				
+				$token = $request->user()->token(); 
+				$token->revoke();  
+				return $this->successResponse('User logout successfully');
+			}
+			catch (\Throwable $e) 
+			{ 
 				return $this->errorResponse($e->getMessage());
 			}
 		}
- 
-		public function logout(Request $request)
-		{ 
-			Helper::loginLog('logout', $request->user(), 'App');	
-			$token = $request->user()->token(); 
-			$token->revoke();  
-			return $this->successResponse('User logout successfully');
-		}
 		
+		public function userDetails(Request $request)
+		{
+			try 
+			{ 
+				$token = $request->bearerToken();  
+				
+				$user = Auth::user(); 
+				$user->load('companyDetail'); 
+				$user->token = $token;
+ 
+				return $this->successResponse('User details fetched successfully', $user);
+			}
+			catch (\Throwable $e) 
+			{ 
+				return $this->errorResponse($e->getMessage());
+			}
+		}
+  
 		public function forgotPassword(Request $request)
 		{   
-			$companyValidator = Validator::make($request->all(), [
+			$validator = Validator::make($request->all(), [
 				'email' => 'required|string|email', 
 			]);
 
-			if ($companyValidator->fails()) {
-				return $this->validateResponse($companyValidator->errors());
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors());
 			}
 			
 			try {
 				
 				$email = $request->input('email');
-    
+
 				// Check if the user exists with the provided email
 				$user = User::where('email', $email)->first();
 				
@@ -134,7 +138,7 @@
 				if ($existingOtp) {
 					return $this->errorResponse('OTP was recently sent. Please try again after some time.');
 				}
-	
+
 				// Begin transaction
 				return DB::transaction(function () use ($email, $otpCode) {
 					// Send the OTP via Laravel Mail
@@ -149,7 +153,7 @@
 						['email_mobile' => $email],
 						['otp' => $otpCode, 'expires_at' => now()->addMinutes(10), 'created_at' => now()] // 10-minute expiration
 					);
-					
+					 
 					return $this->successResponse('Verification code sent to your email.');
 				}, 3); // Retry transaction 3 times if it fails
 			} 
@@ -321,6 +325,5 @@
 				DB::rollBack();
 				return $this->errorResponse($e->getMessage());
 			} 
-		} 
-
+		}  
 	}
