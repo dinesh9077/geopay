@@ -87,6 +87,7 @@
                         <th>Service Name</th>
                         <th>Order Id</th>
                         <th>Fees</th>
+                        <th>Transaction Type</th>
                         <th>Total Amount</th>
                         <th>Exchange Rate</th>
                         <th style="width: 20%;">Remark</th>
@@ -197,6 +198,9 @@
                     },
                     {
                         "data": "fees"
+                    },
+                    {
+                        "data": "transaction_type"
                     },
                     {
                         "data": "txn_amount"

@@ -68,6 +68,7 @@ class ReportController extends Controller
                     $q->orWhere('platform_name', 'LIKE', "%{$search}%")
                         ->orWhere('order_id', 'LIKE', "%{$search}%")
                         ->orWhere('comments', 'LIKE', "%{$search}%")
+                        ->orWhere('transaction_type', 'LIKE', "%{$search}%")
                         ->orWhere('notes', 'LIKE', "%{$search}%")
                         ->orWhere('txn_amount', 'LIKE', "%{$search}%")
                         ->orWhere('created_at', 'LIKE', "%{$search}%");
@@ -93,7 +94,8 @@ class ReportController extends Controller
                     'platform_name' => $value->platform_name,
                     'order_id' => $value->order_id,
                     'fees' => Helper::decimalsprint($value->fees, 2) . ' ' . config('setting.default_currency'),
-                    'txn_amount' => Helper::decimalsprint($value->txn_amount, 2) . ' ' . config('setting.default_currency') ?? 0,
+                    'transaction_type' => '<span class="text-' . ($value->transaction_type == 'debit' ? 'danger' : 'success') . '">' . e($value->transaction_type) . '</span>', 
+					'txn_amount' => '<span class="text-' . ($value->transaction_type == 'debit' ? 'danger' : 'success') . '">' . Helper::decimalsprint($value->txn_amount, 2) . ' ' . (config('setting.default_currency') ?? '') . '</span>',  
                     'unit_convert_exchange' => $value->rates ? Helper::decimalsprint($value->rates, 2) : "1.00",
                     'comments' => $value->comments ?? 'N/A',
                     'notes' => $value->notes,

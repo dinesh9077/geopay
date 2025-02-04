@@ -736,6 +736,7 @@ class CompaniesController extends Controller
                     $q->orWhere('platform_name', 'LIKE', "%{$search}%")
                         ->orWhere('order_id', 'LIKE', "%{$search}%")
                         ->orWhere('comments', 'LIKE', "%{$search}%")
+                        ->orWhere('transaction_type', 'LIKE', "%{$search}%")
                         ->orWhere('notes', 'LIKE', "%{$search}%")
                         ->orWhere('txn_amount', 'LIKE', "%{$search}%")
                         ->orWhere('created_at', 'LIKE', "%{$search}%");
