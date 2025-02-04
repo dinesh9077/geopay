@@ -90,7 +90,7 @@ class LoginController extends Controller
 			if (Auth::attempt($credentials, $remember)) 
 			{ 
 				Helper::loginLog('login', $user);
-				Auth::logoutOtherDevices($request->password);
+				Auth::logoutOtherDevices($request->password); 
 				$url = $user->is_kyc_verify == 0 ? route('metamap.kyc') : route('home');
 				return $this->successResponse('user logged in successfully.', ['url' => $url]);
 			}
