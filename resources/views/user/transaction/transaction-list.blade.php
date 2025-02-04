@@ -53,7 +53,8 @@
 					<th>Service Name</th>
 					<th>Order Id</th>
 					<th>Fees</th>
-					<th>Total Amount</th>
+					<th>Transaction Type</th>
+					<th>Total Amount</th>
 					<th>Exchange Rate</th> 
 					<th style="width: 20%;">Remark</th>
 					<th style="width: 15%;">Notes</th> 
@@ -128,6 +129,7 @@
 				{ "data": "platform_name" },   
 				{ "data": "order_id" },  
 				{ "data": "fees" },  
+				{ "data": "transaction_type" },  
 				{ "data": "txn_amount" },  
 				{ "data": "unit_convert_exchange" },  
 				{ "data": "comments" },  

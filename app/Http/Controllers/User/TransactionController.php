@@ -79,6 +79,7 @@ class TransactionController extends Controller
 						->orWhere('order_id', 'LIKE', "%{$search}%")
 						->orWhere('comments', 'LIKE', "%{$search}%")
 						->orWhere('notes', 'LIKE', "%{$search}%")
+						->orWhere('transaction_type', 'LIKE', "%{$search}%")
 						->orWhere('txn_amount', 'LIKE', "%{$search}%")
 						->orWhere('created_at', 'LIKE', "%{$search}%");
 				});
@@ -104,6 +105,7 @@ class TransactionController extends Controller
 					'platform_name' => $value->platform_name,
 					'order_id' => $value->order_id,
 					'fees' => Helper::decimalsprint($value->fees, 2).' '.config('setting.default_currency'),
+					'transaction_type' => $value->transaction_type,
 					'txn_amount' => Helper::decimalsprint($value->txn_amount, 2).' '.config('setting.default_currency') ?? 0,
 					'unit_convert_exchange' => $value->rates ? Helper::decimalsprint($value->rates, 2) : "1.00",
 					'comments' => $value->comments ?? 'N/A',
