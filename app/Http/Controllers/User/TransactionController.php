@@ -105,7 +105,7 @@ class TransactionController extends Controller
 					'platform_name' => $value->platform_name,
 					'order_id' => $value->order_id,
 					'fees' => Helper::decimalsprint($value->fees, 2).' '.config('setting.default_currency'),
-					'transaction_type' => $value->transaction_type,
+					'transaction_type' => '<span class="text-'.($value->transaction_type == 'debit' ? 'danger' : 'credit').'">'.$value->transaction_type.'</span>',
 					'txn_amount' => Helper::decimalsprint($value->txn_amount, 2).' '.config('setting.default_currency') ?? 0,
 					'unit_convert_exchange' => $value->rates ? Helper::decimalsprint($value->rates, 2) : "1.00",
 					'comments' => $value->comments ?? 'N/A',
