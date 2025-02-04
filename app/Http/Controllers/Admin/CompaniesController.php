@@ -347,7 +347,7 @@ class CompaniesController extends Controller
 			$orderId = "GPWW-".$sender->id."-".time();
 			// Record credit transaction for recipient
 			$creditTransaction = Transaction::create([
-				'user_id' => $sender->id,
+				'user_id' => $recipient->id,
 				'receiver_id' => $recipient->id,
 				'platform_name' => 'Admin Transfer',
 				'platform_provider' => 'Admin',
@@ -464,7 +464,7 @@ class CompaniesController extends Controller
 			$orderId = "GPWW-".$sender->id."-".time();
 			// Record credit transaction for recipient
 			$creditTransaction = Transaction::create([
-				'user_id' => $sender->id,
+				'user_id' => $recipient->id,
 				'receiver_id' => $recipient->id,
 				'platform_name' => 'Admin Transfer',
 				'platform_provider' => 'Admin',
