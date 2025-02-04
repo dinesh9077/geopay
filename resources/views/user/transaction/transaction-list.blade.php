@@ -54,7 +54,7 @@
 					<th>Order Id</th>
 					<th>Fees</th>
 					<th>Transaction Type</th>
-					<th>Total Amount</th>
+					<th>Total Amount</th>
 					<th>Exchange Rate</th> 
 					<th style="width: 20%;">Remark</th>
 					<th style="width: 15%;">Notes</th> 
