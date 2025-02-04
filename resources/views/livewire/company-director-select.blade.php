@@ -3,8 +3,7 @@
     <select 
         id="company_director_id" 
         name="company_director_id" 
-        class="form-control form-control-lg bg-light border-light select2">
-		<option value="">Select Director</option>
+        class="form-control form-control-lg bg-light border-light select2"> 
 		@if(count($companyDirectors) > 0) 
 			@foreach($companyDirectors as $companyDirector) 
 				<option value="{{ $companyDirector['id'] }}">{{ $companyDirector['name'] }}</option>
