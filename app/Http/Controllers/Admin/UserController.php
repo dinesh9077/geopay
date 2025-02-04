@@ -69,7 +69,7 @@ class UserController extends Controller
 					$q->where('first_name', 'LIKE', "%{$search}%")
 						->orWhere('last_name', 'LIKE', "%{$search}%")
 						->orWhere('email', 'LIKE', "%{$search}%")
-						->orWhere('mobile', 'LIKE', "%{$search}%")
+						->orWhere('mobile_number', 'LIKE', "%{$search}%")
 						->orWhereHas('country', function ($q) use ($search) {
 							$q->where('name', 'LIKE', "%{$search}%");
 						})
