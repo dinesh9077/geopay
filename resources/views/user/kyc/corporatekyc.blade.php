@@ -340,6 +340,7 @@
 								var result = decryptData(res.response); 
 								$('.step-'+parseInt(stepNumber + 1)).html(result.view) 
 								initializeFileUpload();  
+								$("#company_director_id").trigger('change')
 								select2()
 								if (!isFinal){
 									showStep(stepNumber + 1); // Move to the next step if not final
