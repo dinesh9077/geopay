@@ -329,7 +329,7 @@
 						success: function(res)
 						{
 							var buttontext = isFinal ? 'Submit' : 'Next <i class="bi bi-arrow-right ms-1"></i>';
-							stepFields.find('[type="button"]')
+							stepFields.find(buttonClass)
 							.prop('disabled', false)  
 							.removeClass('loading-span') 
 							.html(buttontext);  
