@@ -40,6 +40,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,  
 			\App\Http\Middleware\Permission::class,
 			\App\Http\Middleware\CheckPasswordChange::class,
+			\App\Http\Middleware\CheckUserStatus::class, // Add this line
         ],
 
         'api' => [
