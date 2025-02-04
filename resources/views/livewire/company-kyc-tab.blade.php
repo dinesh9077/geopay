@@ -28,9 +28,25 @@
 										<h4 class="card-title">{{ $documents[0]['document_type']['label'] }}</h4>
 										<div class="row g-2 mb-3">
 											@foreach($documents as $document)
-												<a class="col-6" href="{{ url('storage/company_documents/'.$userId, $document['document'])}}" data-fancybox="document{{$document['id']}}">
-													<img class="rounded-4 border border-dark shadow w-100" id="profileImage" src="{{ url('storage/company_documents/'.$userId, $document['document'])}}" alt="Profile Image" height="100" width="100"> 
-												</a>
+												@php
+													$filePath = 'storage/company_documents/'.$userId.'/'.$document['document'];
+													$fileUrl = url($filePath);
+													$extension = pathinfo($document['document'], PATHINFO_EXTENSION);
+												@endphp
+
+												@if(in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp']))
+													<a class="col-6" href="{{ $fileUrl }}" data-fancybox="document{{ $document['id'] }}">
+														<img class="rounded-4 border border-dark shadow w-100" src="{{ $fileUrl }}" alt="Document Image" height="100" width="100">
+													</a>
+												@elseif(strtolower($extension) == 'pdf')
+													<a class="col-6" href="{{ $fileUrl }}" target="_blank">
+														<embed src="{{ $fileUrl }}" type="application/pdf" class="rounded-4 border border-dark shadow w-100" height="100" width="100">
+													</a>
+												@else
+													<a class="col-6" href="{{ $fileUrl }}" target="_blank">
+														<span class="text-primary">View Document</span>
+													</a>
+												@endif
 											@endforeach 
 										</div>
 										<select 
