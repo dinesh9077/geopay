@@ -153,8 +153,9 @@
 				$transactionLimit = $user->is_company == 1 
 				? config('setting.company_pay_monthly_limit') 
 				: ($user->userLimit->daily_pay_limit ?? 0);
-				
-				$transactionAmountQuery = Transaction::whereIn('platform_name', ['international airtime', 'transfer to bank']);
+				 
+				$transactionAmountQuery = Transaction::whereIn('platform_name', ['international airtime', 'transfer to bank', 'transfer to mobile'])
+				->where('user_id', $user->id); 
 				
 				// Adjust the date filter based on whether the user is a company or an individual
 				if ($user->is_company == 1) {

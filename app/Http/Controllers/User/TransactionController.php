@@ -262,7 +262,7 @@ class TransactionController extends Controller
 			$orderId = "GPWW-".$user->id."-".time();
 			// Create a transaction record
 			$creditTransaction = Transaction::create([
-				'user_id' => $user->id,
+				'user_id' => $toUser->id,
 				'receiver_id' => $toUser->id,
 				'platform_name' => 'geopay to geopay wallet',
 				'platform_provider' => 'geopay to geopay wallet',

@@ -101,7 +101,7 @@
 				}
 			}
 		}
-		console.log(files)
+		//console.log(files)
 		// If all validations pass, submit the form or show success message
 		if (isValid) {
 			// Step 1: Prepare FormData
