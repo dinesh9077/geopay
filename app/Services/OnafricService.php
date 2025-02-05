@@ -392,6 +392,35 @@ class OnafricService
 			'response' => json_decode($response->body(), true), // Return the error response body
 		];
 	}
+	public function getWebhookRegister()
+	{  
+		// Send the API request using Laravel's HTTP client
+		$response = Http::withHeaders([
+			'Authorization' => 'Bearer ' . $bearerToken, // Add Bearer Token to the header
+			'password' => $this->onafricPassword,
+			'Content-Type' => 'application/json',
+		])
+		->withOptions([
+			'verify' => false, // Disable SSL verification if needed
+		])
+		->get('https://async-v2.dev.apionafriq.com/hub/async/api/webhook/'.$this->onafricCorporate); // Send requestBody instead of $data
+	  
+		// Handle the response
+		if ($response->successful()) {
+			return [
+				'success' => true,
+				'request' => $requestBody, // Return the request sent
+				'response' => $response->json(), // Return the API response
+			];
+		}
+
+		// If the response was unsuccessful, return an error response
+		return [
+			'success' => false,
+			'request' => $requestBody, // Return the request sent
+			'response' => json_decode($response->body(), true), // Return the error response body
+		];
+	}
 	
 	public function getTransactionStatus()
 	{  

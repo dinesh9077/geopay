@@ -989,7 +989,7 @@
 		public function thirdPartyKeyOnafricMobileWebhook(Request $request)
 		{
 			try {
-				$response = $this->onafricService->webhookRegister();
+				$response = $this->onafricService->getWebhookRegister();
 				return $response;
 				/* 
 				if (!$response['success']) {
