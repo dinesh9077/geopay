@@ -21,32 +21,7 @@
 	<label class="content-3 mb-0">Recipient Address</label>
 	<input id="receiveraddress" name="receiveraddress" placeholder="Enter Recipient Address" type="text" class="form-control form-control-lg content-3" value="{{ $editData && isset($editData['receiveraddress']) ? $editData['receiveraddress'] : '' }}" />
 </div> 
-
-<div class="mb-4 col-lg-6">
-	<label class="content-3 mb-0">Sender Country <span class="text-danger">*</span></label>
-	<select id="sender_country" name="sender_country" class="form-control form-control-lg content-3 select2" required>
-		<option value="">Select Sender Country</option> 
-		@foreach($countries as $country)
-			<option value="{{ $country->id }}" data-iso="{{ $country->iso }}" data-name="{{ $country->label }}" {{ $editData && isset($editData['sender_country']) ? ($country->id == $editData['sender_country'] ? 'selected' : '' ) : '' }}>{{ $country->label }}</option> 
-		@endforeach
-	</select>
-</div>
-
-<div class="mb-4 col-md-6">
-	<label class="content-3 mb-0">Sender mobile number e.g. 250700800900.<span class="text-danger">*</span></label>
-	<input id="sender_mobile" name="sender_mobile" placeholder="Enter Sender mobile number" type="text" class="form-control form-control-lg content-3" oninput="this.value = this.value.replace(/\D/g, '')" value="{{ $editData && isset($editData['sender_mobile']) ? $editData['sender_mobile'] : '' }}" required />
-</div>
-
-<div class="mb-4 col-md-6">
-	<label class="content-3 mb-0">Sender Name <span class="text-danger">*</span></label>
-	<input id="sender_name" name="sender_name" placeholder="Enter Sender Name" type="text" class="form-control form-control-lg content-3"  value="{{ $editData && isset($editData['sender_name']) ? $editData['sender_name'] : '' }}" required />
-</div>
   
-<div class="mb-4 col-md-6">
-	<label class="content-3 mb-0">Sender Surname <span class="text-danger">*</span></label>
-	<input id="sender_surname" name="sender_surname" placeholder="Enter Sender Surname" type="text" class="form-control form-control-lg content-3" value="{{ $editData && isset($editData['sender_surname']) ? $editData['sender_surname'] : '' }}" required />
-</div>
-
 <div class="mb-4 col-md-6">
 	<label class="content-3 mb-0">Purpose Of Transfer</label>
 	<input id="purposeOfTransfer" name="purposeOfTransfer" placeholder="Enter Purpose Of Transfer such as Health/Medical Expense or Education." type="text" class="form-control form-control-lg content-3" value="{{ $editData && isset($editData['purposeOfTransfer']) ? $editData['purposeOfTransfer'] : '' }}"/>
