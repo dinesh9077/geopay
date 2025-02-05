@@ -394,6 +394,10 @@ class OnafricService
 	}
 	public function getWebhookRegister()
 	{  
+		// Generate the bearer token 
+		$requestTimestamp = now()->format('Y-m-d H:i:s'); 
+		$bearerToken = $this->generateBearerToken($requestTimestamp); 
+		
 		// Send the API request using Laravel's HTTP client
 		$response = Http::withHeaders([
 			'Authorization' => 'Bearer ' . $bearerToken, // Add Bearer Token to the header
