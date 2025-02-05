@@ -183,11 +183,11 @@
 						{
 							if(response.status == "success")
 							{
-								Swal.fire("Success!", response.msg, "success");
+								Swal.fire("Success!", response.message, "success");
 							}
 							else
 							{
-								Swal.fire("Error!", response.msg, "error");
+								Swal.fire("Error!", response.message, "error");
 							}
 						},
 						error: function(xhr) {
