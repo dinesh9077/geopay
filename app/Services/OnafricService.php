@@ -374,7 +374,7 @@ class OnafricService
 		->withOptions([
 			'verify' => false, // Disable SSL verification if needed
 		])
-		->post($this->onafricAsyncCallService.'/api/webhook/subscribe', $requestBody); // Send requestBody instead of $data
+		->post('https://async-v2.dev.apionafriq.com/hub/async/api/webhook/subscribe', $requestBody); // Send requestBody instead of $data
 	  
 		// Handle the response
 		if ($response->successful()) {
