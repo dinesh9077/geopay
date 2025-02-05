@@ -267,9 +267,15 @@ class TransferBankController extends Controller
 			return $this->successResponse('Error loading fields. Please try again.');
 		}
 			
-		// Process bank list 
-		$fieldList = $response['response']['fieldList'] ?? []; 
-		
+		// Process bank list  
+		$fieldList = $response['response']['fieldList'] ?? collect(); 
+
+		if ($fieldList) {
+			$fieldList = collect($fieldList)->filter(fn($item) => 
+				!in_array(strtolower($item['fieldName']), ['sendercountry', 'senderfirstname', 'senderlastname', 'sendernationality', 'sendermobile', 'receivercountry', 'receivernationality'])
+			); 
+		}
+
 		$catalogue = LightnetCatalogue::where('category_name', 'transfer to bank')
 		->where('service_name', 'lightnet')
 		->whereNotNull('data')

@@ -81,24 +81,29 @@ class LiquidNetService
 		$orderId = $request->order_id;
 		$user = Auth::user();
 		
-		$aggregatorCurrencyAmount = (int) round($request->aggregatorCurrencyAmount);
-		 
+		$senderFirstname = $user->first_name ?? '';
+		$senderLastname = $user->last_name ?? '';
+		$senderMobile = $user->formatted_number ? ltrim(trim($user->formatted_number), '+') : '';
+		$senderCountry = $user->country->iso3 ?? '';
+		
+		$aggregatorCurrencyAmount = (int) round($request->aggregatorCurrencyAmount); 
+		
 		$requestBody = [
 			"agentSessionId" => (string) $requestTimestamp,
 			"agentTxnId" => $orderId,
 			"locationId" => $beneficiary['bankId'],
 			"remitterType" => $beneficiary['remittertype'] ?? '',
-			"senderFirstName" => $beneficiary['senderfirstname'] ?? '',
+			"senderFirstName" => $senderFirstname,
 			"senderMiddleName" => "",
-			"senderLastName" => $beneficiary['senderlastname'] ?? '',
+			"senderLastName" => $senderLastname,
 			"senderGender" => $beneficiary['sendergender'] ?? '',
 			"senderAddress" => $beneficiary['senderaddress'] ?? '',
 			"senderCity" => $beneficiary['sendercity'] ?? '',
 			"senderState" => $beneficiary['senderstate'] ?? '',
 			"senderZipCode" => $beneficiary['senderzipcode'] ?? '',
-			"senderCountry" => $beneficiary['sendercountry'] ?? '',
-			"senderMobile" => ltrim(trim($user->formatted_number), '+'),
-			"SenderNationality" => $beneficiary['sendernationality'] ?? '',
+			"senderCountry" => $senderCountry,
+			"senderMobile" => $senderMobile,
+			"SenderNationality" => $senderCountry,
 			"senderIdType" => $beneficiary['senderidtype'] ?? '',
 			"senderIdTypeRemarks" => $beneficiary['senderidtyperemarks'] ?? '',
 			"senderIdNumber" => $beneficiary['senderidnumber'] ?? '',
@@ -125,7 +130,7 @@ class LiquidNetService
 			"receiverState" => $beneficiary['receiverstate'] ?? '',
 			"receiverAreaTown" => "",
 			"receiverCity" => "",
-			"receiverCountry" => $beneficiary['receivercountry'] ?? '',
+			"receiverCountry" => $beneficiary['payoutCountry'] ?? '',
 			"receiverIdType" => $beneficiary['receiveridtype'] ?? '',
 			"receiverIdTypeRemarks" => $beneficiary['receiveridtyperemarks'] ?? '',
 			"receiverOccupation" => $beneficiary['receiveroccupation'] ?? '',
@@ -150,7 +155,7 @@ class LiquidNetService
 			"swiftCode" => $beneficiary['swiftcode'] ?? '',
 			"promotionCode" => "",
 			"SenderNativeAddress" => "",
-			"ReceiverNationality" => $beneficiary['receivernationality'] ?? '',
+			"ReceiverNationality" => $beneficiary['payoutCountry'] ?? '',
 			"receiverIdIssueDate" => $beneficiary['receiveridissuedate'] ?? '',
 			"receiverIdExpireDate" => $beneficiary['receiveridexpiredate'] ?? '',
 			"receiverDistrict" => "",

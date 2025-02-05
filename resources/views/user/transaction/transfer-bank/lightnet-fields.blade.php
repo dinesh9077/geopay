@@ -1,8 +1,9 @@
  
-@foreach ($fieldList as $field)
+@foreach ($fieldList as $field) 
 	@php
 		$fieldName = strtolower($field['fieldName']);
 	@endphp
+	 
 	<div class="mb-4 col-md-6">
 		<label class="content-3 mb-0">
 			{{ $field['fieldLabel'] }}
