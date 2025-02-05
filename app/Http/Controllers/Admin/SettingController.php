@@ -989,7 +989,7 @@
 		public function thirdPartyKeyOnafricMobileWebhook(Request $request)
 		{
 			try {
-				$response = $this->onafricService->getWebhookRegister();
+				$response = $this->onafricService->webhookRegister();
 				
 				if (!$response['success']) {
 					$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
