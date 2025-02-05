@@ -990,12 +990,13 @@
 		{
 			try {
 				$response = $this->onafricService->webhookRegister();
-				
+				return $response;
+				/* 
 				if (!$response['success']) {
 					$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
 					throw new \Exception($errorMsg);
 				}
-				return $this->successResponse("Webhook registered successfully: ". ($response['response']['data']['callbackUrl'] ?? ''));
+				return $this->successResponse("Webhook registered successfully: ". ($response['response']['data']['callbackUrl'] ?? '')); */
 			} catch (\Throwable $e) {
 				DB::rollBack();  
 				return $this->errorResponse($e->getMessage()); 
