@@ -56,8 +56,16 @@ class TransferMobileController extends Controller
 	public function transferToMobileBeneficiaryStore(Request $request)
 	{    
 		try { 
+			$user = Auth::user();
+			
 			DB::beginTransaction();
 			$beneficiaryData = $request->except('_token');
+			$beneficiaryData['sender_country'] = $user->country->id ?? '';
+			$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
+			$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
+			$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
+			$beneficiaryData['sender_name'] = $user->first_name ?? '';
+			$beneficiaryData['sender_surname'] = $user->last_name ?? '';
 		
 			$data = []; 
 			$data['category_name'] = $beneficiaryData['category_name'];
@@ -168,7 +176,13 @@ class TransferMobileController extends Controller
 			
 			DB::beginTransaction();
 			$beneficiaryData = $request->except('_token');
-		
+			$beneficiaryData['sender_country'] = $user->country->id ?? '';
+			$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
+			$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
+			$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
+			$beneficiaryData['sender_name'] = $user->first_name ?? '';
+			$beneficiaryData['sender_surname'] = $user->last_name ?? '';
+			
 			$data = []; 
 			$data['category_name'] = $beneficiaryData['category_name'];
 			$data['service_name'] = $beneficiaryData['service_name'];

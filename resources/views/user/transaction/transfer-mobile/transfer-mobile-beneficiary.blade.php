@@ -7,53 +7,7 @@
 			</div>
 			<div class="modal-body p-4">
 				<form id="transferMobileBeneficiaryForm" method="post" action="{{ route('transfer-to-mobile.beneficiary-store') }}">
-					 
-					<div class="row">
-						<div class="mb-4 col-lg-6">
-							<label class="content-3 mb-0">Sender Country <span class="text-danger">*</span></label>
-							<select id="sender_country" name="sender_country" class="form-control form-control-lg content-3 select2" required>
-								<option value="">Select Sender Country</option> 
-							</select>
-						</div>
-						
-						<div class="mb-4 col-md-6">
-							<label class="content-3 mb-0">Sender mobile number e.g. 250700800900.<span class="text-danger">*</span></label>
-							<input id="sender_mobile" name="sender_mobile" placeholder="Enter Sender mobile number" type="text" class="form-control form-control-lg content-3" oninput="this.value = this.value.replace(/\D/g, '')" required />
-						</div>
-						
-						<div class="mb-4 col-md-6">
-							<label class="content-3 mb-0">Sender Name <span class="text-danger">*</span></label>
-							<input id="sender_name" name="sender_name" placeholder="Enter Sender Name" type="text" class="form-control form-control-lg content-3" required />
-						</div>
-						  
-						<div class="mb-4 col-md-6">
-							<label class="content-3 mb-0">Sender Surname <span class="text-danger">*</span></label>
-							<input id="sender_surname" name="sender_surname" placeholder="Enter Sender Surname" type="text" class="form-control form-control-lg content-3" required />
-						</div>
-						
-						<div class="mb-4 col-md-6">
-							<label class="content-3 mb-0">Sender Address</label>
-							<input id="sender_address" name="sender_address" placeholder="Enter Sender Address" type="text" class="form-control form-control-lg content-3" />
-						</div>
-						
-						<div class="mb-4 col-md-3">
-							<label class="content-3 mb-0">Sender City</label>
-							<input id="sender_city" name="sender_city" placeholder="Enter Sender City" type="text" class="form-control form-control-lg content-3" />
-						</div> 
-						<div class="mb-4 col-md-3">
-							<label class="content-3 mb-0">Sender State</label>
-							<input id="sender_state" name="sender_state" placeholder="Enter Sender state" type="text" class="form-control form-control-lg content-3" />
-						</div> 
-						<div class="mb-4 col-md-6">
-							<label class="content-3 mb-0">Sender Postal Code</label>
-							<input id="sender_postalcode" name="sender_postalcode" placeholder="Enter Postal Code" type="text" class="form-control form-control-lg content-3" />
-						</div> 
-						<div class="col-sm-6">
-							<label class="content-3 mb-0">Sender Place Of Birth </label>
-							<input id="sender_placeofbirth" name="sender_placeofbirth" placeholder="Sender Place Of Birth" type="text" class="form-control form-control-lg "/>
-						</div>  
-					</div>
-					
+					  
 					<div class="row">
 						<div class="mb-4 col-lg-6">
 							<label class="content-3 mb-0">Recipient Country <span class="text-danger">*</span></label>
@@ -89,11 +43,11 @@
 							<input id="recipient_address" name="recipient_address" placeholder="Enter Recipient Address" type="text" class="form-control form-control-lg content-3" />
 						</div>
 						
-						<div class="mb-4 col-md-3">
+						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Recipient City</label>
 							<input id="recipient_city" name="recipient_city" placeholder="Enter Recipient City" type="text" class="form-control form-control-lg content-3" />
 						</div> 
-						<div class="mb-4 col-md-3">
+						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Recipient State</label>
 							<input id="recipient_state" name="recipient_state" placeholder="Enter Recipient state" type="text" class="form-control form-control-lg content-3" />
 						</div> 
@@ -129,24 +83,8 @@
 		var $beneficiaryForm = $('#transferMobileBeneficiaryForm');  
 		var countries = @json($countries);
 
-		$(document).ready(function() {
-			// Initialize Select2 for the individual form
-			$beneficiaryForm.find('#sender_country').select2({
-				data: countries.map(country => ({
-					id: country.id,
-					iso: country.iso,
-					text: country.name,
-					flag: country.country_flag // Add custom data for the flag
-				})),
-				templateResult: formatCountry,
-				templateSelection: formatCountrySelection,
-				dropdownParent: $('#addTransferMobileBeneficiary'),
-				width: "100%"
-			}).on('select2:select', function (e) {
-				let selectedData = e.params.data; 
-				$(this).attr('data-iso', selectedData.iso).attr('data-name', selectedData.text); 
-			});
-			
+		$(document).ready(function() 
+		{  
 			// Initialize Select2 for the individual form
 			$beneficiaryForm.find('#recipient_country').select2({
 				data: countries.map(country => ({
@@ -180,8 +118,7 @@
 				}
 				const flagImg = '<img src="'+country.flag+'" style="width: 20px; height: 20px; margin-right: 4px; margin-bottom: 4px;" />';
 				return $('<span>'+flagImg+' '+country.text+'</span>');
-			}
-		 
+			} 
 		});
 		
 		$beneficiaryForm.find('#recipient_country').change(function() {
@@ -216,7 +153,7 @@
 		});
 		
 		// Initialize Flatpickr for date inputs
-		flatpickr("#sender_placeofbirth, #recipient_dateofbirth", {
+		flatpickr("#recipient_dateofbirth", {
 			dateFormat: "Y-m-d"
 		});
 		  
@@ -243,9 +180,7 @@
 			});
 			
 			formData['category_name'] = 'transfer to mobile';  
-			formData['service_name'] = 'onafric';  
-			formData['sender_country_code'] = $beneficiaryForm.find('#sender_country').attr('data-iso') ?? '';   
-			formData['sender_country_name'] = $beneficiaryForm.find('#sender_country').attr('data-name') ?? '';   
+			formData['service_name'] = 'onafric';   
 			formData['recipient_country_code'] = $beneficiaryForm.find('#recipient_country').attr('data-iso') ?? '';   
 			formData['recipient_country_name'] = $beneficiaryForm.find('#recipient_country').attr('data-name') ?? '';   
 			formData['channel_name'] = $beneficiaryForm.find('#channel_id option:selected').data('channel-name') || '';   
