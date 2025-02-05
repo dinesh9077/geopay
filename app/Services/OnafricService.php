@@ -449,8 +449,6 @@ class OnafricService
 		$thirdPartyTransId = $request->order_id;  
 		$txnAmount = $request->txnAmount;
 		$sendFee = $this->sendFees;
-		
-		$country = Country::find($beneficiary['sender_country']);
 		 
 		$requestBody = [
 			"corporateCode" => $this->onafricCorporate,
@@ -472,7 +470,7 @@ class OnafricService
 					],
 					"sender" => [
 						"msisdn" => $beneficiary['sender_mobile'] ?? '',
-						"fromCountry" => $country && $country->iso ? $country->iso : '',
+						"fromCountry" => $beneficiary['sender_country_code'] ?? '',
 						"name" => $beneficiary['sender_name'] ?? '',
 						"surname" => $beneficiary['sender_surname'] ?? '',
 						"address" => $beneficiary['sender_address'] ?? '',
