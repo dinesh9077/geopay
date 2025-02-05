@@ -359,7 +359,7 @@ class OnafricService
 		$requestBody = [
 			"corporateCode" => $this->onafricCorporate, 
 			"callbackUrl" => url('onafric/webhook', $webhookUniqueId)
-		];
+		]; 
 		 
 		// Generate the bearer token 
 		$requestTimestamp = now()->format('Y-m-d H:i:s'); 
