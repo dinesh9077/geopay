@@ -66,7 +66,11 @@ class TransferMobileController extends Controller
 			$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
 			$beneficiaryData['sender_name'] = $user->first_name ?? '';
 			$beneficiaryData['sender_surname'] = $user->last_name ?? '';
-		
+			
+			$recipientCountry = Country::find($request->recipient_country ?? null);
+			$beneficiaryData['payoutCountry'] = $recipientCountry->iso3 ?? '';
+			$beneficiaryData['payoutCurrency'] = $recipientCountry->currency_code ?? '';
+			
 			$data = []; 
 			$data['category_name'] = $beneficiaryData['category_name'];
 			$data['service_name'] = $beneficiaryData['service_name'];
@@ -184,6 +188,10 @@ class TransferMobileController extends Controller
 			$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
 			$beneficiaryData['sender_name'] = $user->first_name ?? '';
 			$beneficiaryData['sender_surname'] = $user->last_name ?? '';
+			
+			$recipientCountry = Country::find($request->recipient_country ?? null);
+			$beneficiaryData['payoutCountry'] = $recipientCountry->iso3 ?? '';
+			$beneficiaryData['payoutCurrency'] = $recipientCountry->currency_code ?? '';
 			
 			$data = []; 
 			$data['category_name'] = $beneficiaryData['category_name'];
@@ -365,8 +373,7 @@ class TransferMobileController extends Controller
 			}
 			
 			$response = $this->onafricService->sendMobileTransaction($request, $beneficiary->data);
-			 
-
+			  
 			if (!$response['success']) {
 				$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
 				throw new \Exception($errorMsg);
