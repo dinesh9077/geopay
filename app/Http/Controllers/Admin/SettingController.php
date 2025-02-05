@@ -995,7 +995,7 @@
 					$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
 					throw new \Exception($errorMsg);
 				}
-				return $this->successResponse("Webhook registered successfully: ". $response['data']['callbackUrl']);
+				return $this->successResponse("Webhook registered successfully: ");
 			} catch (\Throwable $e) {
 				DB::rollBack();  
 				return $this->errorResponse($e->getMessage()); 
