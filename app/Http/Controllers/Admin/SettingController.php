@@ -986,5 +986,19 @@
 			}
 		}
 		
-		
+		public function thirdPartyKeyOnafricMobileWebhook(Request $request)
+		{
+			try {
+				$respones = $this->onafricService->webhookRegister();
+				
+				if (!$response['success']) {
+					$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
+					throw new \Exception($errorMsg);
+				}
+				return $this->successResponse("Webhook registered successfully.");
+			} catch (\Throwable $e) {
+				DB::rollBack();  
+				return $this->errorResponse($e->getMessage()); 
+			}  
+		}
 	}

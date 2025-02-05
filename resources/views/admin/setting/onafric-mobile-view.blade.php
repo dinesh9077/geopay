@@ -2,7 +2,10 @@
 	<form id="onafricMobileCountryform" action="{{ route('admin.third-party-key.onafric-mobile-update')}}" method="POST">
 		@csrf
 		<div id="countries-form"> 
-			<h3 class="mb-3">Country List</h3>  
+			<div class="d-flex align-item-center justify-content-between mb-3">
+				<h3 >Country List  </h3>   
+				<a href="{{ route('admin.third-party-key.onafric-mobile-webhook') }}" class="btn btn-info btn-sm" onclick="registerWebhook(this, event)"> Register WebHook</a> 
+			</div>
 			@foreach($onafricCuntries as $onafricCuntry)
 				<div class="country-section mb-3 ms-3">
 					<h4 class="mb-2 text-primary" >{{ $onafricCuntry->name }}</h4>
@@ -156,5 +159,44 @@
 				}
 			});
 		});
+		
+		function registerWebhook(obj, event) {
+			event.preventDefault(); // Prevent default action if it's a form button
+
+			Swal.fire({
+				title: "Are you sure?",
+				text: "Do you want to register this webhook?",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonColor: "#3085d6",
+				cancelButtonColor: "#d33",
+				confirmButtonText: "Yes, Register!",
+				cancelButtonText: "Cancel"
+			}).then((result) => {
+				if (result.isConfirmed) {
+					$.ajax({
+						url: obj, // Replace with your actual endpoint
+						type: 'POST',
+						data: { _token: "{{ csrf_token() }}" }, 
+						dataType: "Json",
+						success: function(response) 
+						{
+							if(response.status == "success")
+							{
+								Swal.fire("Success!", response.msg, "success");
+							}
+							else
+							{
+								Swal.fire("Error!", response.msg, "error");
+							}
+						},
+						error: function(xhr) {
+							Swal.fire("Error!", "Something went wrong.", "error");
+						}
+					});
+				}
+			});
+		}
+
 	</script>
 </div>
