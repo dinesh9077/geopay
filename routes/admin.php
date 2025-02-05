@@ -17,9 +17,7 @@ Route::post('login', [AdminAuthController::class, 'login'])->name('admin.login.s
 Route::post('logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
 // Protected admin routes
-
-Route::get('third-party-key/onafric-mobile-webhook', [SettingController::class, 'thirdPartyKeyOnafricMobileWebhook'])->name('admin.third-party-key.onafric-mobile-webhook');
-
+ 
 Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(function ()
 {
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
@@ -65,7 +63,9 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 	
 	Route::get('/third-party-key/onafric-mobile-view', [SettingController::class, 'thirdPartyKeyOnafricMobileView'])->name('third-party-key.onafric-mobile-view');
 	Route::post('/third-party-key/onafric-mobile-update', [SettingController::class, 'thirdPartyKeyOnafricMobileUpdate'])->name('third-party-key.onafric-mobile-update')->withoutMiddleware('webdecrypt.request');
-	 
+	
+	Route::post('third-party-key/onafric-mobile-webhook', [SettingController::class, 'thirdPartyKeyOnafricMobileWebhook'])->name('admin.third-party-key.onafric-mobile-webhook')->withoutMiddleware('webdecrypt.request');
+	
     // Profile
     Route::get('/profile', [SettingController::class, 'profile'])->name('profile');
     Route::post('/profile/update', [SettingController::class, 'profileUpdate'])->name('profile-update');

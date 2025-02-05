@@ -48,7 +48,7 @@
 	Route::post('/password/reset', [ResetPasswordController::class, 'resetPassword'])->name('password.reset')->middleware('webdecrypt.request');
 	
 	
-	Route::match(['get', 'post'], '/transfer-to-mobile/webhook/{webhookIds}', [TransferMobileController::class, 'transferToMobileWebhook']);
+	Route::match(['get', 'post'], '/onafric/webhook/{webhookIds}', [TransferMobileController::class, 'transferToMobileWebhook']);
 		
 	Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	{     

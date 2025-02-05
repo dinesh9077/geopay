@@ -358,7 +358,7 @@ class OnafricService
 		$webhookUniqueId = "nW8h9vQ8MgRQTbqTUcy5HcjBLmbRB9";
 		$requestBody = [
 			"corporateCode" => $this->onafricCorporate, 
-			"callbackUrl" => url('transfer-to-mobile/webhook', $webhookUniqueId)
+			"callbackUrl" => url('onafric/webhook', $webhookUniqueId)
 		];
 		
 		// Generate the bearer token 
@@ -374,7 +374,7 @@ class OnafricService
 		->withOptions([
 			'verify' => false, // Disable SSL verification if needed
 		])
-		->post('https://async-v2.dev.apionafriq.com/hub/async/api/webhook/subscribe', $requestBody); // Send requestBody instead of $data
+		->post($this->onafricAsyncCallService.'/api/webhook/subscribe', $requestBody); // Send requestBody instead of $data
 	  
 		// Handle the response
 		if ($response->successful()) {
@@ -407,7 +407,7 @@ class OnafricService
 		->withOptions([
 			'verify' => false, // Disable SSL verification if needed
 		])
-		->get('https://async-v2.dev.apionafriq.com/hub/async/api/webhook/'.$this->onafricCorporate); // Send requestBody instead of $data
+		->get($this->onafricAsyncCallService.'/api/webhook/'.$this->onafricCorporate); // Send requestBody instead of $data
 	  
 		// Handle the response
 		if ($response->successful()) {
