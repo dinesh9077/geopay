@@ -37,7 +37,7 @@ class TransferMobileController extends Controller
 		$this->liquidNetService = new LiquidNetService(); 
 		$this->masterService = new MasterService(); 
 		$this->onafricService = new OnafricService(); 
-		$this->middleware('auth');
+		$this->middleware('auth')->except('transferToMobileWebhook');
     }	
 	
 	public function transferToMobileMoney()
