@@ -174,6 +174,8 @@ class TransferMobileController extends Controller
 	{   	 
 		try {
 			
+			$user = Auth::user();
+			
 			DB::beginTransaction();
 			$beneficiaryData = $request->except('_token');
 			$beneficiaryData['sender_country'] = $user->country->id ?? '';
