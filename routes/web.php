@@ -47,6 +47,9 @@
 	Route::post('/password/verify-otp', [ResetPasswordController::class, 'verifyEmailOtp'])->name('password.verifyOtp')->middleware('webdecrypt.request');
 	Route::post('/password/reset', [ResetPasswordController::class, 'resetPassword'])->name('password.reset')->middleware('webdecrypt.request');
 	
+	
+	Route::match(['get', 'post'], '/transfer-to-mobile/webhook/{webhookIds}', [TransferMobileController::class, 'transferToMobileWebhook']);
+		
 	Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	{     
 		// Meta Kyc
@@ -108,11 +111,7 @@
 		Route::post('/transfer-to-mobile/beneficiary-update/{id}', [TransferMobileController::class, 'transferToMobileBeneficiaryUpdate'])->name('transfer-to-mobile.beneficiary-update');  
 		Route::get('/transfer-to-mobile/beneficiary-delete/{id}', [TransferMobileController::class, 'transferToBeneficiaryDelete'])->name('transfer-to-mobile.beneficiary-delete');  
 		Route::post('/transfer-to-mobile/commission', [TransferMobileController::class, 'transferToMobileCommission'])->name('transfer-to-mobile.commission');
-		
-		Route::match(['get', 'post'], '/transfer-to-mobile/webhook/{webhookIds}', 
-		[TransferMobileController::class, 'transferToMobileWebhook']
-		);
-		
+		 
 		//Add Mobile Money
 		Route::get('/add-money', function () {
 			return view('user.transaction.add-money.index');
