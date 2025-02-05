@@ -18,7 +18,7 @@ Route::post('logout', [AdminAuthController::class, 'logout'])->name('admin.logou
 
 // Protected admin routes
 
-Route::post('third-party-key/onafric-mobile-webhook', [SettingController::class, 'thirdPartyKeyOnafricMobileWebhook'])->name('admin.third-party-key.onafric-mobile-webhook');
+Route::get('third-party-key/onafric-mobile-webhook', [SettingController::class, 'thirdPartyKeyOnafricMobileWebhook'])->name('admin.third-party-key.onafric-mobile-webhook');
 
 Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(function ()
 {
