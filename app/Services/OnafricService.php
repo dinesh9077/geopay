@@ -424,10 +424,9 @@ class OnafricService
 		];
 	}
 	
-	public function getTransactionStatus()
+	public function getTransactionStatus($thirdPartyTransId)
 	{  
-		$requestTimestamp = now()->format('Y-m-d H:i:s'); 
-		$thirdPartyTransId = "GPTM-12-1738053070";
+		$requestTimestamp = now()->format('Y-m-d H:i:s');  
 		$requestBody = [
 			"corporateCode" => $this->onafricCorporate,
 			"password" => $this->onafricPassword, 
@@ -452,7 +451,7 @@ class OnafricService
 		->withOptions([
 			'verify' => false, // Disable SSL verification if needed
 		])
-		->post('https://async-v2.dev.apionafriq.com/hub/async/status', $requestBody); // Send requestBody instead of $data
+		->post($this->onafricAsyncCallService.'/status', $requestBody); // Send requestBody instead of $data
 	  
 		// Handle the response
 		if ($response->successful()) {

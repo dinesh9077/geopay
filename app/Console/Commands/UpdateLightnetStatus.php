@@ -7,14 +7,14 @@
 	use Illuminate\Support\Facades\Http;
 	use App\Services\LiquidNetService;
 	use Log;
-	class UpdateTransactionStatus extends Command
+	class UpdateLightnetStatus extends Command
 	{
 		/**
 			* The name and signature of the console command.
 			*
 			* @var string
 		*/
-		protected $signature = 'transaction:update-status';
+		protected $signature = 'transaction:update-lightnet-status';
 		
 		/**
 			* The console command description.
@@ -47,7 +47,7 @@
 			
 			// Fetch transactions that need status updates
 			$transactions = Transaction::select('id', 'user_id', 'txn_status', 'platform_provider', 'order_id')
-			->whereIn('platform_provider', ['lightnet'])
+			->where('platform_provider', 'lightnet')
 			->whereNotIn('txn_status', ['paid'])
 			->get();
 			
@@ -58,20 +58,17 @@
 			foreach ($transactions as $transaction)
 			{
 				try { 
+					 
+					$response = $this->liquidNetService->getTXNStatus($transaction->order_id);
+					// Return 0 on failure or unexpected response
+					if (!$response['success'] || ($response['response']['code'] ?? -1) != 0) {
+						continue; // Skip to the next transaction
+					} 
 					
-					if($transaction->platform_provider == "lightnet")
-					{
-						$response = $this->liquidNetService->getTXNStatus($transaction->order_id);
-						// Return 0 on failure or unexpected response
-						if (!$response['success'] || ($response['response']['code'] ?? -1) != 0) {
-							continue; // Skip to the next transaction
-						} 
-						
-						// Update transaction status
-                        $txn_status = strtolower($response['response']['status'] ?? $transaction->txn_status);
-						 
-                        $transaction->update(['txn_status' => $txn_status]); ; 
-					}
+					// Update transaction status
+					$txn_status = strtolower($response['response']['status'] ?? $transaction->txn_status);
+					 
+					$transaction->update(['txn_status' => $txn_status]);  
 				} 
 				catch (\Throwable $e) 
 				{ 
