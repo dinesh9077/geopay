@@ -54,7 +54,7 @@
 				</select> 
             </div>
             <div class="col-md-3 col-lg-2">
-				<label >.</label>
+				<label >Search</label>
                 <input type="text" class="form-control default-input" name="search" id="search"
                     placeholder="Search Item">
             </div>
