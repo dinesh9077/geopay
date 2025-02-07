@@ -22,9 +22,8 @@ class ReportController extends Controller
     public function transactionHistory()
     {
         $users = $this->masterService->getUsers();
-		$txnStatuses = Transaction::select('txn_status')
-		->groupBy('txn_status')
-		->pluck('txn_status');
+		$txnStatuses = Transaction::distinct()->pluck('txn_status'); 
+		
         return view('admin.report.transaction-history', compact('users', 'txnStatuses'));
     }
 

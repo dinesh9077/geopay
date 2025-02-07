@@ -448,7 +448,7 @@ class CompaniesController extends Controller
 			if($sender->is_company == 1)
 			{
 				Helper::updateLogName($sender->id, User::class, 'corporate/company user');
-			}
+				}
 			
 			// Update recipient's balance (credit the amount)
 			$recipient->increment('balance', $txnAmount);

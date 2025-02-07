@@ -437,6 +437,18 @@
 								</p>
 							</td>
 						</tr> 
+						@if($transaction->txn_status === "refund")
+						<tr> 
+							<td style="width: 40%;">
+								<p style="margin-top: 0;"><span style="font-weight: 600;">REFUND REASON</span></p>
+							</td> 
+							<td>
+								<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->refund_reason }}
+								</p>
+							</td>
+						</tr> 
+						@endif
 						<tr>
 							<td style="padding-top: 30px;">
 								<p style="margin-top: 0;  margin-bottom: 5px;"><span

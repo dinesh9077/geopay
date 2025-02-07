@@ -186,4 +186,10 @@
         <th class="content-4 d-flex justify-content-between text-nowrap">TRANSACTION STATUS <span class="mx-1">:</span></th>
         <td class="content-4">{{ $transaction->txn_status }}</td>
     </tr>
+	@if($transaction->txn_status === "refund")
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">REFUND REASON <span class="mx-1">:</span></th>
+			<td class="content-4">{{ $transaction->refund_reason }}</td>
+		</tr>
+	@endif
 </table>

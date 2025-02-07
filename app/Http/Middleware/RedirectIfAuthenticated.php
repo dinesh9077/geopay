@@ -19,7 +19,8 @@ class RedirectIfAuthenticated
     {
         $guards = empty($guards) ? [null] : $guards; 
         foreach ($guards as $guard) {
-            if (Auth::guard($guard)->check()) { 
+            if (Auth::guard($guard)->check())
+			{ 
 				$user = Auth::user();
 				if($user->is_kyc_verify == 0 && $user->is_company == 0)
 				{

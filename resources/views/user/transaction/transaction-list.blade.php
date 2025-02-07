@@ -58,6 +58,7 @@
 					<th>Exchange Rate</th> 
 					<th style="width: 20%;">Remark</th>
 					<th style="width: 15%;">Notes</th> 
+					<th>Refund Reason</th> 
 					<th>Status</th>
 					<th>Created At</th>
 					<th >Action</th>
@@ -134,6 +135,7 @@
 				{ "data": "unit_convert_exchange" },  
 				{ "data": "comments" },  
 				{ "data": "notes" },  
+				{ "data": "refund_reason" },  
 				{ "data": "status" },  
 				{ "data": "created_at" }, 
 				{ "data": "action" }

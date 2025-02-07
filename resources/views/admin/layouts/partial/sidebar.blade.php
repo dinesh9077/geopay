@@ -171,7 +171,45 @@
                     </div>
                 </li>
             @endif
+			
+			@php
+                $Reports = [
+                    'transaction_mobile_money_onafric' => ['route' => 'admin.transaction.mobile-money-onafric', 'label' => 'Oafric Mobile Money'],
+                    'transaction_bank_onafric' => ['route' => 'admin.transaction.bank-onafric', 'label' => 'Oafric Transfer Bank'],
+                    'transaction_bank_lightnet' => ['route' => 'admin.transaction.bank-lightnet', 'label' => 'Lightnet Transfer Bank'],
+                ];
+            @endphp
 
+            @if (collect($manageExchanges)->keys()->some(fn($key) => config("permission.$key.view")))
+
+                <li
+                    class="nav-item {{ collect($Reports)->contains(fn($item) => request()->routeIs($item['route'])) ? 'active' : '' }}">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#reports" role="button"
+                        aria-expanded="{{ collect($Reports)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}"
+                        aria-controls="reports">
+                        <i class="link-icon" data-feather="file"></i>
+                        <span class="link-title">All Transaction</span>
+                        <i class="link-arrow" data-feather="chevron-down"></i>
+                    </a>
+                    <div class="collapse {{ collect($Reports)->contains(fn($item) => request()->routeIs($item['route'])) ? 'show' : '' }}"
+                        id="reports">
+                        <ul class="nav sub-menu">
+                            @foreach ($Reports as $key => $item)
+                                @if (config("permission.$key.view"))
+                                    <li class="nav-item">
+                                        <a href="{{ route($item['route']) }}"
+                                            class="nav-link {{ request()->routeIs($item['route']) ? 'active' : '' }}">
+                                            {{ $item['label'] }}
+                                        </a>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    </div>
+                </li>
+
+            @endif 
+			
             @php
                 $Reports = [
                     'transaction_history' => ['route' => 'admin.report.transaction-history', 'label' => 'Transaction History'],

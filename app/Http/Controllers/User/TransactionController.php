@@ -40,7 +40,7 @@ class TransactionController extends Controller
 	{
 		if ($request->ajax()) {
 			// Define the columns for ordering and searching
-			$columns = ['id', 'platform_name', 'order_id', 'fees', 'txn_amount', 'unit_convert_exchange', 'comments', 'notes', 'status', 'created_at', 'created_at', 'action'];
+			$columns = ['id', 'platform_name', 'order_id', 'fees', 'txn_amount', 'unit_convert_exchange', 'comments', 'notes', 'refund_reason', 'status', 'created_at', 'created_at', 'action'];
 
 			 // Global search value
 			$start = $request->input('start'); // Offset for pagination
@@ -110,6 +110,7 @@ class TransactionController extends Controller
 					'unit_convert_exchange' => $value->rates ? Helper::decimalsprint($value->rates, 2) : "1.00",
 					'comments' => $value->comments ?? 'N/A',
 					'notes' => $value->notes,
+					'refund_reason' => $value->refund_reason,
 					'status' => $value->txn_status,
 					'created_at' => $value->created_at->format('M d, Y H:i:s'),
 					'action' => '', // Initialize action buttons

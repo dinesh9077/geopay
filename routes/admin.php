@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ExchangeRateController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 // Admin authentication routes 
@@ -152,7 +153,25 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
         Route::get('/transaction-history', [ReportController::class, 'transactionHistory'])->name('transaction-history')
 		->middleware('permission:transaction_history.view');
         Route::post('/transaction-history-ajax', [ReportController::class, 'transactionReportAjax'])
-		->name('transaction-history-ajax')->withoutMiddleware('webdecrypt.request');
-		 
+		->name('transaction-history-ajax')->withoutMiddleware('webdecrypt.request'); 
+    }); 
+	
+    // Reports
+    Route::prefix('transaction')->as('transaction.')->group(function () 
+	{
+        Route::get('/mobile-money-onafric', [TransactionController::class, 'mobileMoneyOnafric'])->name('mobile-money-onafric')
+		->middleware('permission:transaction_mobile_money_onafric.view');
+		
+		Route::get('/bank-onafric', [TransactionController::class, 'bankOnafric'])->name('bank-onafric')
+		->middleware('permission:transaction_bank_onafric.view');
+		
+		Route::get('/bank-lightnet', [TransactionController::class, 'bankLightnet'])->name('bank-lightnet')
+		->middleware('permission:transaction_bank_lightnet.view');
+		
+        Route::post('/ajax', [TransactionController::class, 'transactionAjax'])
+		->name('ajax')->withoutMiddleware('webdecrypt.request'); 
+		
+		Route::post('/refund', [TransactionController::class, 'transactionRefund'])
+		->name('refund')->withoutMiddleware('webdecrypt.request'); 
     }); 
 });
