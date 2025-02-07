@@ -180,7 +180,7 @@
                 ];
             @endphp
 
-            @if (collect($manageExchanges)->keys()->some(fn($key) => config("permission.$key.view")))
+            @if (collect($Reports)->keys()->some(fn($key) => config("permission.$key.view")))
 
                 <li
                     class="nav-item {{ collect($Reports)->contains(fn($item) => request()->routeIs($item['route'])) ? 'active' : '' }}">
