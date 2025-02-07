@@ -154,6 +154,15 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 		->middleware('permission:transaction_history.view');
         Route::post('/transaction-history-ajax', [ReportController::class, 'transactionReportAjax'])
 		->name('transaction-history-ajax')->withoutMiddleware('webdecrypt.request'); 
+		
+		//Admin/User Log History
+		Route::get('/admin-log-history', [ReportController::class, 'adminLogHistory'])->name('admin-log-history')
+		->middleware('permission:admin_log_history.view');
+		Route::get('/user-log-history', [ReportController::class, 'userLogHistory'])->name('user-log-history')
+		->middleware('permission:user_log_history.view'); 
+		Route::get('/log-view/{id}', [ReportController::class, 'adminUserLogView'])->name('log-view'); 
+        Route::post('/log-history-ajax', [ReportController::class, 'adminUserLogAjax'])
+		->name('log-history-ajax')->withoutMiddleware('webdecrypt.request'); 
     }); 
 	
     // Reports

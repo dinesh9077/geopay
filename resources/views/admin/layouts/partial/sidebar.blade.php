@@ -213,6 +213,8 @@
             @php
                 $Reports = [
                     'transaction_history' => ['route' => 'admin.report.transaction-history', 'label' => 'Transaction History'],
+                    'admin_log_history' => ['route' => 'admin.report.admin-log-history', 'label' => 'Admin Log History'],
+                    'user_log_history' => ['route' => 'admin.report.user-log-history', 'label' => 'User Log History'],
                 ];
             @endphp
 
