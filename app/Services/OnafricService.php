@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Crypt; // Remove Crypt facade if not used
 use Auth;
 use App\Models\Country;
@@ -74,7 +75,8 @@ class OnafricService
 			</soap:Body>
 		</soap:Envelope>
 		XML; 
-	 
+		
+		Log::info('get_rate request', ['request' => $xmlRequest]);
 		// Send the request
 		$response = Http::withHeaders([
 			'Content-Type' => 'text/xml; charset=utf-8',
@@ -86,7 +88,7 @@ class OnafricService
 		
 		// Debug the raw XML response
 		$xmlResponse = $response->body(); 
-		
+		Log::info('get_rate response', ['response' => $xmlResponse]);
 		
 		try 
 		{    
@@ -150,6 +152,7 @@ class OnafricService
 		</soap:Envelope>
 		XML;
 		
+		Log::info('get_banks request', ['request' => $xmlRequest]);
 		// Send the request
 		$response = Http::withHeaders([
 			'Content-Type' => 'text/xml; charset=utf-8',
@@ -161,7 +164,7 @@ class OnafricService
 		
 		// Debug the raw XML response
 		$xmlResponse = $response->body(); 
-		
+		Log::info('get_banks response', ['response' => $xmlResponse]);
 		try 
 		{    
 			 // Disable XML errors to avoid display during parsing
@@ -316,6 +319,7 @@ class OnafricService
 			]
 		];
 	  
+		Log::info('send mobile request', ['request' => $requestBody]);
 		// Generate the mfsSign
 		$mfsSign = $this->generateMfsSign($batchId);
 	  
@@ -336,8 +340,10 @@ class OnafricService
 		])
 		->post($this->onafricAsyncCallService.'/callService', $requestBody); // Send requestBody instead of $data
 	  
+		Log::info('send mobile response', ['response' => $response->json()]);
 		// Handle the response
 		if ($response->successful()) {
+			
 			return [
 				'success' => true,
 				'request' => $requestBody, // Return the request sent
@@ -360,7 +366,7 @@ class OnafricService
 			"corporateCode" => $this->onafricCorporate, 
 			"callbackUrl" => url('onafric/webhook', $webhookUniqueId)
 		]; 
-		 
+		Log::info('webhook register request', ['request' => $requestBody]);
 		// Generate the bearer token 
 		$requestTimestamp = now()->format('Y-m-d H:i:s'); 
 		$bearerToken = $this->generateBearerToken($requestTimestamp); 
@@ -375,7 +381,7 @@ class OnafricService
 			'verify' => false, // Disable SSL verification if needed
 		])
 		->post($this->onafricAsyncCallService.'/api/webhook/subscribe', $requestBody); // Send requestBody instead of $data
-	  
+		Log::info('webhook register response', ['response' => $response->json()]);
 		// Handle the response
 		if ($response->successful()) {
 			return [
@@ -408,7 +414,7 @@ class OnafricService
 			'verify' => false, // Disable SSL verification if needed
 		])
 		->get($this->onafricAsyncCallService.'/api/webhook/'.$this->onafricCorporate); // Send requestBody instead of $data
-	  
+		 
 		// Handle the response
 		if ($response->successful()) {
 			return [
@@ -432,7 +438,9 @@ class OnafricService
 			"password" => $this->onafricPassword, 
 			"thirdPartyTransId" => $thirdPartyTransId 
 		];
-	  
+		
+		Log::info('query status response', ['response' => $requestBody]);
+		
 		// Generate the mfsSign
 		$mfsSign = $this->generateMfsSign($thirdPartyTransId);
 	  
@@ -452,7 +460,8 @@ class OnafricService
 			'verify' => false, // Disable SSL verification if needed
 		])
 		->post($this->onafricAsyncCallService.'/status', $requestBody); // Send requestBody instead of $data
-	  
+		
+		Log::info('query status response', ['response' => $response->json()]);
 		// Handle the response
 		if ($response->successful()) {
 			return [
@@ -540,7 +549,7 @@ class OnafricService
 				]
 			]
 		];
-	  
+		Log::info('send bank request', ['request' => $requestBody]);
 		// Generate the mfsSign
 		$mfsSign = $this->generateMfsSign($batchId);
 	  
@@ -561,6 +570,7 @@ class OnafricService
 		])
 		->post($this->onafricAsyncCallService.'/callService', $requestBody); // Send requestBody instead of $data
 	  
+		Log::info('send bank response', ['response' => $response->json()]);
 		// Handle the response
 		if ($response->successful()) {
 			return [
