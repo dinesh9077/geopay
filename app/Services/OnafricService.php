@@ -439,7 +439,7 @@ class OnafricService
 			"thirdPartyTransId" => $thirdPartyTransId 
 		];
 		
-		Log::info('query status response', ['response' => $requestBody]);
+		Log::info('query status request', ['request' => $requestBody]);
 		
 		// Generate the mfsSign
 		$mfsSign = $this->generateMfsSign($thirdPartyTransId);
