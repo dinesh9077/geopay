@@ -135,6 +135,80 @@ class OnafricService
 		];	 
 	}  
 	
+	
+	public function getAccountRequest($recipient_country_code, $recipient_mobile)
+    {
+        $xmlRequest = <<<XML
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+            <soap:Body>
+                <ns:account_request xmlns:ns="http://ws.mfsafrica.com">
+                    <ns:login>
+                        <ns:corporate_code>{$this->onafricCorporate}</ns:corporate_code>
+                        <ns:password>{$this->onafricPassword}</ns:password>
+                    </ns:login>
+                    <ns:to_country>{$recipient_country_code}</ns:to_country>
+                    <ns:msisdn>{$recipient_mobile}</ns:msisdn> 
+                </ns:account_request>
+            </soap:Body>
+        </soap:Envelope> 
+        XML;
+  
+		//Log::info('get_rate request', ['request' => $xmlRequest]);
+		// Send the request
+		$response = Http::withHeaders([
+			'Content-Type' => 'text/xml; charset=utf-8',
+			'SOAPAction' => 'urn:account_request', // Fixed typo
+			'User-Agent' => 'GEOPAYOUTBOUND'
+		]) 
+		->withBody($xmlRequest, 'text/xml') // Ensure XML is sent as raw body
+		->post($this->onafricSyncUrl);
+		
+		// Debug the raw XML response
+		$xmlResponse = $response->body(); 
+		//Log::info('get_rate response', ['response' => $xmlResponse]);
+	 
+		try 
+		{    
+			libxml_use_internal_errors(true); // Prevent XML parsing errors from displaying
+			$dom = new \DOMDocument();
+				if (!$dom->loadXML($xmlResponse)) { 
+					return [
+					'success' => false, 
+					'response' => 'Invalid XML response'
+				];
+			}
+
+			$xpath = new \DOMXPath($dom);
+			$xpath->registerNamespace('soapenv', 'http://schemas.xmlsoap.org/soap/envelope/');
+			$xpath->registerNamespace('ns', 'http://ws.mfsafrica.com');
+			$xpath->registerNamespace('ax21', 'http://mfs/xsd');
+
+			// Extract values using XPath queries
+			$statusCode = $xpath->evaluate("string(//ax21:status_code)");
+			$msisdn = $xpath->evaluate("string(//ax21:msisdn)");
+			$partnerCode = $xpath->evaluate("string(//ax21:partner_code)"); 
+
+			$arrayResponse = [
+				'status_code' => $statusCode,
+				'msisdn' => $msisdn,
+				'partner_code' => $partnerCode,
+			];
+			     
+		} catch (\Exception $e) {
+			return [
+				'success' => false, 
+				'response' => 'Provided country and mobile number are not active'
+			];
+		}
+
+		// Return structured response
+		return [
+			'success' => true,
+			'response' => $arrayResponse
+		];	 
+	}
+	
 	public function getOnafricBank($request)
     {  
 		$xmlRequest = <<<XML

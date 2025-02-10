@@ -55,9 +55,22 @@ class TransferMobileController extends Controller
 	 
 	public function transferToMobileBeneficiaryStore(Request $request)
 	{    
+    	$recipient_country_code = $request->recipient_country_code; 
+		$recipient_mobile = $request->recipient_mobile;
+		$response = $this->onafricService->getAccountRequest($recipient_country_code, $recipient_mobile);
+		
+		if (
+            !isset($response['success']) || 
+            !$response['success'] || 
+            (isset($response['response']['status_code']) && $response['response']['status_code'] != "Active")
+        ) {
+               
+            return $this->errorResponse('Provided country and mobile number are not active');
+        }
+        
 		try { 
 			$user = Auth::user();
-			
+			 
 			DB::beginTransaction();
 			$beneficiaryData = $request->except('_token');
 			$beneficiaryData['sender_country'] = $user->country->id ?? '';
@@ -176,6 +189,18 @@ class TransferMobileController extends Controller
 	
 	public function transferToMobileBeneficiaryUpdate(Request $request, $id)
 	{   	 
+	   /* $recipient_country_code = $request->recipient_country_code; 
+		$recipient_mobile = $request->recipient_mobile;
+		$response = $this->onafricService->getAccountRequest($recipient_country_code, $recipient_mobile);
+		
+		if (
+            !isset($response['success']) || 
+            !$response['success'] || 
+            (isset($response['response']['status_code']) && $response['response']['status_code'] != "Active")
+        ) {
+               
+            return $this->errorResponse('Provided country and mobile number are not active');
+        }*/
 		try {
 			
 			$user = Auth::user();
