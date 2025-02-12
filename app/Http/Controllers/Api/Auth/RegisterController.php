@@ -16,10 +16,11 @@ use Str;
 use App\Services\{
 	SmsService, EmailService
 };
+use Laravel\Passport\HasApiTokens;
 
 class RegisterController extends Controller
 {
-    use ApiResponseTrait;  
+    use HasApiTokens, ApiResponseTrait;  
 	protected $smsService;
 	protected $emailService; 
 	 
@@ -97,7 +98,9 @@ class RegisterController extends Controller
 			$userData['verification_token'] = Str::random(64);
 		
             $user = User::create($userData);
-			 
+			$token = $user->createToken('geopay')->accessToken;
+			$user->load('companyDetail'); 
+			$user->token = $token; 
             DB::commit();  
             return $this->successResponse('User registered successfully.', $user); 
         } 
@@ -176,9 +179,11 @@ class RegisterController extends Controller
 			$userData['is_kyc_verify'] = 0; 
 			$userData['verification_token'] = Str::random(64);
 		
-            $user = User::create($userData);
+            $user = User::create($userData); 
 			Helper::updateLogName($user->id, User::class, 'corporate/company user');	 
-		 
+			$token = $user->createToken('geopay')->accessToken;
+			$user->load('companyDetail'); 
+			$user->token = $token; 
             DB::commit();  
             return $this->successResponse('User registered successfully.', $user); 
         } 
