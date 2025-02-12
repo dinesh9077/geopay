@@ -52,6 +52,8 @@ Route::middleware(['decrypt.request'])->group(function ()
     Route::post('/metamap-webhook', [UserKycController::class, 'metamapWebhook'])->withoutMiddleware('decrypt.request');
 });
 
+Route::get('country-list', [SettingController::class, 'countryList']);   
+
 // Authenticated Routes
 Route::middleware(['auth:api', 'ensure.token'])->group(function () 
 {

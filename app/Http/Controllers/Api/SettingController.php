@@ -4,7 +4,7 @@
 	use App\Http\Controllers\Controller;
 	use Illuminate\Http\Request;
 	use App\Models\{ 
-		User, Banner, Faq, Setting 
+		User, Banner, Faq, Setting , Country 
 	};
 	use Illuminate\Support\Facades\{Http, Storage, Hash, DB, Log, Auth};
 	use App\Http\Traits\ApiResponseTrait;
@@ -141,5 +141,18 @@
 				'social_linkedin' => config('setting.social_linkedin') ?? '',
 			]; 
 			return $this->successResponse('data fetched.', $data);
+		}
+		
+		public function countryList()
+		{
+			$countries = Country::all();
+
+			$countriesWithFlags = $countries->transform(function ($country) {
+				if ($country->country_flag) {
+					$country->country_flag = asset('country/' . $country->country_flag);
+				} 
+				return $country;
+			});
+			return $this->successResponse('country fetched.', $countriesWithFlags);
 		}
 	}
