@@ -49,8 +49,9 @@
 					$user->profile_image = $storedFile;
 				} 
 				$user->save(); 
+				$user->profile_image = $user->profile_image ? url('storage/profile', $user->profile_image) : url('admin/default-profile.png');
 				DB::commit();  
-				return $this->successResponse('Your profile has been updated successfully.');
+				return $this->successResponse('Your profile has been updated successfully.', $user);
 			} catch (\Throwable $e) {
 				DB::rollBack(); 
 				return $this->errorResponse('An error occurred while updating the profile. Please try again later.');
