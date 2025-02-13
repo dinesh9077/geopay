@@ -99,6 +99,7 @@ class RegisterController extends Controller
 		
             $user = User::create($userData);
 			$token = $user->createToken('geopay')->accessToken;
+			$user->profile_image = url('storage/profile', $user->profile_image);
 			$user->load('companyDetail'); 
 			$user->token = $token; 
             DB::commit();  
@@ -182,6 +183,7 @@ class RegisterController extends Controller
             $user = User::create($userData); 
 			Helper::updateLogName($user->id, User::class, 'corporate/company user');	 
 			$token = $user->createToken('geopay')->accessToken;
+			$user->profile_image = url('storage/profile', $user->profile_image);
 			$user->load('companyDetail'); 
 			$user->token = $token; 
             DB::commit();  
