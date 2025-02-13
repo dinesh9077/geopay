@@ -60,7 +60,7 @@
 				
 				$token = $user->createToken('geopay')->accessToken;
 				$user->load('companyDetail'); 
-				$user->profile_image = url('storage/profile', $user->profile_image);
+				$user->profile_image = $user->profile_image ? url('storage/profile', $user->profile_image) : url('admin/default-profile.png');
 				$user->token = $token;
 
 				Helper::loginLog('login', $user, 'App'); 
@@ -96,7 +96,7 @@
 				$token = $request->bearerToken();  
 				
 				$user = Auth::user(); 
-				$user->profile_image = url('storage/profile', $user->profile_image);
+				$user->profile_image = $user->profile_image ? url('storage/profile', $user->profile_image) : url('admin/default-profile.png');
 				$user->load('companyDetail'); 
 				$user->token = $token;
  
