@@ -485,8 +485,31 @@ class TransferMobileController extends Controller
 		}  
 	}
 	
-	public function transferToMobileWebhook(Request $request, $uniqueId)
+	public function transferToMobileWebhook(Request $request)
 	{
-		\Log::info('onafric webhook received', ['data' => $request->all()]);
+		// Log the incoming request for debugging
+		Log::info('Webhook received', ['data' => $request->all()]);
+ 
+		if (!$request->all()) {
+			return response()->json(['error' => 'Empty request'], 400);
+		}
+ 
+		$thirdPartyTransId = $request->input('thirdPartyTransId');
+		$txnStatus = $request->input('status.message'); // Message as status update
+ 
+		// Find the transaction based on thirdPartyTransId
+		$transaction = Transaction::where('order_id', $thirdPartyTransId)->first();
+
+		if (!$transaction) {
+			Log::warning("Transaction not found for order_id: $thirdPartyTransId");
+			return response()->json(['error' => 'Transaction not found'], 404);
+		}
+
+		// Update transaction status
+		$transaction->txn_status = $txnStatus;
+		$transaction->touch(); // Updates the `updated_at` timestamp
+		$transaction->save();
+ 
+		return response()->json(['message' => 'Transaction updated successfully'], 200);
 	}
 }
