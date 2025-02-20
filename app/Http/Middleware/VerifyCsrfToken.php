@@ -13,6 +13,6 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         '/international-airtime/callback/*', // Exclude this route
-        '/transfer-to-mobile/webhook/*', // Exclude this route
+        '/onafric/webhook/*', // Exclude this route
     ];
 }
