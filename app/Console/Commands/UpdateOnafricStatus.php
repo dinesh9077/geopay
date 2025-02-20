@@ -69,7 +69,7 @@ class UpdateOnafricStatus extends Command
 				// Update transaction status
 				$txn_status = strtolower($response['response']['data']['status']['message'] ?? $transaction->txn_status);
 				 
-				$transaction->update(['txn_status' => $txn_status]);  
+				$transaction->update(['txn_status' => strtolower($txn_status)]);  
 			} 
 			catch (\Throwable $e) 
 			{  

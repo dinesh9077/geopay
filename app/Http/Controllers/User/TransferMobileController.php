@@ -506,7 +506,7 @@ class TransferMobileController extends Controller
 		}
 
 		// Update transaction status
-		$transaction->txn_status = $txnStatus;
+		$transaction->txn_status = strtolower($txnStatus);
 		$transaction->touch(); // Updates the `updated_at` timestamp
 		$transaction->save();
  
