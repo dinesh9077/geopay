@@ -64,7 +64,7 @@
 		Route::post('corporate/kyc/step/{step}', [KycController::class, 'corporateKycStep'])->name('corporate.kyc.submit-step');
 		Route::post('corporate/kyc/document-store', [KycController::class, 'corporateKycDocumntStore'])->name('corporate.kyc.document-store');
 		Route::post('corporate/kyc/final', [KycController::class, 'corporateKycFinal'])->name('corporate.kyc.submit-final');
-		
+		 
 		// Dashboard
 		Route::get('/home', [HomeController::class, 'index'])->name('home');   
 		
