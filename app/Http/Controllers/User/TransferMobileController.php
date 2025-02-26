@@ -188,24 +188,33 @@ class TransferMobileController extends Controller
 	}
 	
 	public function transferToMobileBeneficiaryUpdate(Request $request, $id)
-	{   	 
-	   /* $recipient_country_code = $request->recipient_country_code; 
-		$recipient_mobile = $request->recipient_mobile;
-		$response = $this->onafricService->getAccountRequest($recipient_country_code, $recipient_mobile);
-		
-		if (
-            !isset($response['success']) || 
-            !$response['success'] || 
-            (isset($response['response']['status_code']) && $response['response']['status_code'] != "Active")
-        ) {
-               
-            return $this->errorResponse('Provided country and mobile number are not active');
-        }*/
+	{   
+        DB::beginTransaction();
 		try {
 			
 			$user = Auth::user();
+			$beneficiary = Beneficiary::find($id);
 			
-			DB::beginTransaction();
+			$recipient_country_code = $request->recipient_country_code; 
+    		$recipient_mobile = $request->recipient_mobile;
+    		
+    		// Ensure beneficiary->data is an array
+            $beneficiaryDataArray = is_array($beneficiary->data) ? $beneficiary->data : [];
+    
+            if ($recipient_country_code !== ($beneficiaryDataArray['recipient_country_code'] ?? '') ||
+                $recipient_mobile !== ($beneficiaryDataArray['recipient_mobile'] ?? '')) 
+            {
+        		$response = $this->onafricService->getAccountRequest($recipient_country_code, $recipient_mobile);
+        		
+        		if (
+                    !isset($response['success']) || 
+                    !$response['success'] || 
+                    (isset($response['response']['status_code']) && $response['response']['status_code'] != "Active")
+                ) {
+                       
+                    return $this->errorResponse('Provided country and mobile number are not active');
+                }	
+    		}
 			$beneficiaryData = $request->except('_token');
 			$beneficiaryData['sender_country'] = $user->country->id ?? '';
 			$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
@@ -224,8 +233,7 @@ class TransferMobileController extends Controller
 			$data['user_id'] = Auth::id(); 
 			$data['updated_at'] = now(); 
 			$data['data'] = $beneficiaryData;
-			 
-			$beneficiary = Beneficiary::find($id);
+			  
 			$beneficiary->update($data);
 			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to mobile beneficiary');
 			

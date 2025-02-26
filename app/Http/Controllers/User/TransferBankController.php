@@ -106,6 +106,24 @@ class TransferBankController extends Controller
  
 	public function transferToBankBeneficiaryStore(Request $request)
 	{    
+	    if($request->service_name == "onafric")
+		{
+		    $bankaccountnumber = $request->bankaccountnumber; 
+    		$payoutIso = $request->payoutIso;
+    		$bankId = $request->bankId;
+    		
+    		$response = $this->onafricService->getValidateBankRequest($payoutIso, $bankId, $bankaccountnumber);
+    	 
+    		if (
+                !isset($response['success']) || 
+                !$response['success'] || 
+                (isset($response['response']['status_code']) && !in_array($response['response']['status_code'], ["Active"]))
+            ) {
+                   
+                return $this->errorResponse('Provided bank or account number are not active');
+            }  
+		}
+		
 		try {
 			
 			$user = Auth::user();
@@ -354,7 +372,33 @@ class TransferBankController extends Controller
 	public function transferToBankBeneficiaryUpdate(Request $request, $id)
 	{   	 
 		try {
-			
+		    
+			$beneficiary = Beneficiary::find($id);
+			if($request->service_name == "onafric")
+    		{
+    		    $bankaccountnumber = $request->bankaccountnumber; 
+        		$payoutIso = $request->payoutIso;
+        		$bankId = $request->bankId;
+        		// Ensure beneficiary->data is an array
+                $beneficiaryDataArray = is_array($beneficiary->data) ? $beneficiary->data : [];
+    
+                if ($bankaccountnumber !== ($beneficiaryDataArray['bankaccountnumber'] ?? '') ||
+                    $bankId !== ($beneficiaryDataArray['bankId'] ?? '') ||
+                    $payoutIso !== ($beneficiaryDataArray['payoutIso'] ?? '')) 
+                {
+            		$response = $this->onafricService->getValidateBankRequest($payoutIso, $bankId, $bankaccountnumber);
+            	    
+            		if (
+                        !isset($response['success']) || 
+                        !$response['success'] || 
+                        (isset($response['response']['status_code']) && !in_array($response['response']['status_code'], ["Active"]))
+                    ) {
+                           
+                        return $this->errorResponse('Provided bank or account number are not active');
+                    }  
+                }
+    		}
+		
 			$user = Auth::user();
 			
 			DB::beginTransaction();
@@ -376,8 +420,7 @@ class TransferBankController extends Controller
 			$data['user_id'] = Auth::id(); 
 			$data['updated_at'] = now(); 
 			$data['data'] = $beneficiaryData;
-			 
-			$beneficiary = Beneficiary::find($id);
+			  
 			$beneficiary->update($data);
 			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to bank beneficiary');
 			

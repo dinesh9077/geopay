@@ -209,6 +209,86 @@ class OnafricService
 		];	 
 	}
 	
+    public function getValidateBankRequest($payoutIso, $bankId, $bankaccountnumber)
+    {
+        $xmlRequest = <<<XML
+        <?xml version="1.0" encoding="utf-8"?>
+        <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+          <soap:Body>
+            <ns:validate_bank_account xmlns:ns="http://ws.mfsafrica.com">
+              <ns:login>
+                <ns:corporate_code>{$this->onafricCorporate}</ns:corporate_code>
+                <ns:password>{$this->onafricPassword}</ns:password>
+              </ns:login>
+              <ns:payee>
+                <ns:msisdn></ns:msisdn>
+                <ns:name></ns:name>
+              </ns:payee>
+              <ns:account>
+                <ns:account_number>{$bankaccountnumber}</ns:account_number>
+                <ns:mfs_bank_code>{$bankId}</ns:mfs_bank_code>
+              </ns:account>
+              <ns:to_country>{$payoutIso}</ns:to_country>
+            </ns:validate_bank_account>
+          </soap:Body>
+        </soap:Envelope> 
+        XML; 
+		//Log::info('get_rate request', ['request' => $xmlRequest]);
+		// Send the request
+		$response = Http::withHeaders([
+			'Content-Type' => 'text/xml; charset=utf-8',
+			'SOAPAction' => 'urn:validate_bank_account', // Fixed typo
+			'User-Agent' => 'GEOPAYOUTBOUND'
+		]) 
+		->withBody($xmlRequest, 'text/xml') // Ensure XML is sent as raw body
+		->post($this->onafricSyncUrl);
+		
+		// Debug the raw XML response
+		$xmlResponse = $response->body();
+	    
+		//Log::info('get_rate response', ['response' => $xmlResponse]);
+	 
+		try 
+		{    
+			libxml_use_internal_errors(true); // Prevent XML parsing errors from displaying
+			$dom = new \DOMDocument();
+				if (!$dom->loadXML($xmlResponse)) { 
+					return [
+					'success' => false, 
+					'response' => 'Invalid XML response'
+				];
+			}
+
+			$xpath = new \DOMXPath($dom);
+			$xpath->registerNamespace('soapenv', 'http://schemas.xmlsoap.org/soap/envelope/');
+			$xpath->registerNamespace('ns', 'http://ws.mfsafrica.com');
+			$xpath->registerNamespace('ax21', 'http://mfs/xsd');
+
+			// Extract values using XPath queries
+			$statusCode = $xpath->evaluate("string(//ax21:status_code)");
+			$account_holder_name = $xpath->evaluate("string(//ax21:account_holder_name)");
+			$partnerCode = $xpath->evaluate("string(//ax21:partner_code)"); 
+
+			$arrayResponse = [
+				'status_code' => $statusCode,
+				'account_holder_name' => $account_holder_name,
+				'partner_code' => $partnerCode,
+			];
+			     
+		} catch (\Exception $e) {
+			return [
+				'success' => false, 
+				'response' => 'Provided bank or account number are not active'
+			];
+		}
+
+		// Return structured response
+		return [
+			'success' => true,
+			'response' => $arrayResponse
+		];	 
+	}
+	
 	public function getOnafricBank($request)
     {  
 		$xmlRequest = <<<XML
@@ -513,7 +593,7 @@ class OnafricService
 			"thirdPartyTransId" => $thirdPartyTransId 
 		];
 		
-		//Log::info('query status request', ['request' => $requestBody]);
+		Log::info('query status request', ['request' => $requestBody]);
 		
 		// Generate the mfsSign
 		$mfsSign = $this->generateMfsSign($thirdPartyTransId);
@@ -535,7 +615,7 @@ class OnafricService
 		])
 		->post($this->onafricAsyncCallService.'/status', $requestBody); // Send requestBody instead of $data
 		
-		//Log::info('query status response', ['response' => $response->json()]);
+		Log::info('query status response', ['response' => $response->json()]);
 		// Handle the response
 		if ($response->successful()) {
 			return [
