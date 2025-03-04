@@ -63,12 +63,12 @@
 					<div class="row"> 
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Sender Date Of Birth <span class="text-danger">*</span></label>
-							<input id="sender_placeofbirth" name="sender_placeofbirth" placeholder="Sender Date Of Birth." type="text" class="form-control form-control-lg content-3" value="" required/>
+							<input id="sender_placeofbirth" name="sender_placeofbirth" placeholder="Sender Date Of Birth." type="text" class="form-control form-control-lg content-3" value="" required />
 						</div>
  
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Purpose Of Transfer <span class="text-danger">*</span></label>
-							<input id="purposeOfTransfer" name="purposeOfTransfer" placeholder="Enter Purpose Of Transfer such as Health/Medical Expense or Education." type="text" class="form-control form-control-lg content-3" required/>
+							<input id="purposeOfTransfer" name="purposeOfTransfer" placeholder="Enter Purpose Of Transfer such as Health/Medical Expense or Education." type="text" class="form-control form-control-lg content-3" required />
 						</div>
 						
 						<div class="mb-4 col-md-6">
@@ -170,7 +170,11 @@
 			.prop('disabled', true) 
 			.addClass('loading-span') 
 			.html('<span class="spinner-border"></span>');
-			
+			console.log($('#sender_placeofbirth').val());
+			if(!$('#sender_placeofbirth').val())
+			{
+ 				toastrMsg('warning', 'The sender date of birth is required');
+			}
 			var formData = {};
 			$(this).find('input, select, checkbox').each(function() {
 				var inputName = $(this).attr('name');
