@@ -183,15 +183,17 @@
 		$beneficiaryForm.submit(function(event) 
 		{
 			event.preventDefault();   
-			$('#beneficiaryUpdate')
-			.prop('disabled', true) 
-			.addClass('loading-span') 
-			.html('<span class="spinner-border"></span>');
+			
 			if(!$('#sender_placeofbirth').val())
 			{
  				toastrMsg('warning', 'The sender date of birth is required');
 				return;
 			}
+			$('#beneficiaryUpdate')
+			.prop('disabled', true) 
+			.addClass('loading-span') 
+			.html('<span class="spinner-border"></span>');
+			
 			var formData = {};
 			$(this).find('input, select, checkbox').each(function() {
 				var inputName = $(this).attr('name');
