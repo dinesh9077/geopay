@@ -435,10 +435,11 @@ class OnafricService
 						"amount" => (string) $txnAmount,
 						"currencyCode" => $payoutCurrency
 					],
-					"sendFee" => [
-						"amount" => (string) $sendFee,
-						"currencyCode" => $this->defaultCurrency
-					],
+					"sendFee" => null,
+					// "sendFee" => [
+					// 	"amount" => (string) $sendFee,
+					// 	"currencyCode" => $this->defaultCurrency
+					// ],
 					"sender" => [
 						"msisdn" => $beneficiary['sender_mobile'] ?? '',
 						"fromCountry" => $beneficiary['sender_country_code'] ?? '',
@@ -660,10 +661,11 @@ class OnafricService
 						"amount" => (string) $txnAmount,
 						"currencyCode" => $payoutCurrency
 					],
-					"sendFee" => [
-						"amount" => (string) $sendFee,
-						"currencyCode" => $this->defaultCurrency
-					],
+					"sendFee" => null,
+					// "sendFee" => [
+					// 	"amount" => (string) $sendFee,
+					// 	"currencyCode" => $this->defaultCurrency
+					// ],
 					"sender" => [
 						"msisdn" => $beneficiary['sender_mobile'] ?? '',
 						"fromCountry" => $beneficiary['sender_country_code'] ?? '',
