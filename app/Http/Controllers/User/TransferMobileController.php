@@ -495,10 +495,8 @@ class TransferMobileController extends Controller
 	
 	public function transferToMobileWebhook(Request $request)
 	{
-		// Log the incoming request for debugging 
-		Log::info('Webhook received', [
-			'request' => json_encode($request->all(), JSON_PRETTY_PRINT)
-		]);
+		// Log the incoming request for debugging
+		Log::info('Webhook received', ['data' => $request->all()]);
  
 		if (!$request->all()) {
 			return response()->json(['error' => 'Empty request'], 400);

@@ -472,11 +472,8 @@ class OnafricService
 				]
 			]
 		];
-
-		Log::info('Send Mobile Request', [
-			'request' => json_encode($requestBody, JSON_PRETTY_PRINT)
-		]);
-
+	  
+		Log::info('send mobile request', ['request' => $requestBody]);
 		// Generate the mfsSign
 		$mfsSign = $this->generateMfsSign($batchId);
 	  
@@ -496,10 +493,8 @@ class OnafricService
 			'verify' => false, // Disable SSL verification if needed
 		])
 		->post($this->onafricAsyncCallService.'/callService', $requestBody); // Send requestBody instead of $data
-	   
-		Log::info('Send Mobile Response', [
-			'request' => json_encode($response->json(), JSON_PRETTY_PRINT)
-		]);
+	  
+		Log::info('send mobile response', ['response' => $response->json()]);
 		// Handle the response
 		if ($response->successful()) {
 			
@@ -708,10 +703,7 @@ class OnafricService
 				]
 			]
 		];
-		Log::info('Send Bank Request', [
-			'request' => json_encode($requestBody, JSON_PRETTY_PRINT)
-		]);
-
+		Log::info('send bank request', ['request' => $requestBody]);
 		// Generate the mfsSign
 		$mfsSign = $this->generateMfsSign($batchId);
 	  
@@ -731,10 +723,8 @@ class OnafricService
 			'verify' => false, // Disable SSL verification if needed
 		])
 		->post($this->onafricAsyncCallService.'/callService', $requestBody); // Send requestBody instead of $data
-
-		Log::info('Send Bank Response', [
-			'request' => json_encode($response->json(), JSON_PRETTY_PRINT)
-		]);
+	  
+		Log::info('send bank response', ['response' => $response->json()]);
 		// Handle the response
 		if ($response->successful()) {
 			return [
