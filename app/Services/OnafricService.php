@@ -651,7 +651,7 @@ class OnafricService
 				[
 					"instructionType" => [
 						"destAcctType" => 2,
-						"amountType" => 1
+						"amountType" => 2
 					],
 					"amount" => [
 						"amount" => (string) $txnAmount,
