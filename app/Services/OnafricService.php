@@ -640,9 +640,10 @@ class OnafricService
 		$batchId = "BATCH-" . $uuid . "-" . $timestamp;  
 		$requestTimestamp = $request->timestamp;
 		$thirdPartyTransId = $request->order_id;  
-		$txnAmount = $request->txnAmount;
-		$sendFee = $this->sendFees;
-		 
+		$txnAmount = $request->payoutCurrencyAmount;
+		$sendFee = $this->sendFees; 
+		$payoutCurrency = $beneficiary['payoutCurrency'] ?? '';
+
 		$requestBody = [
 			"corporateCode" => $this->onafricCorporate,
 			"password" => $this->onafricPassword, 
@@ -655,7 +656,7 @@ class OnafricService
 					],
 					"amount" => [
 						"amount" => (string) $txnAmount,
-						"currencyCode" => $this->defaultCurrency
+						"currencyCode" => $payoutCurrency
 					],
 					"sendFee" => [
 						"amount" => (string) $sendFee,
