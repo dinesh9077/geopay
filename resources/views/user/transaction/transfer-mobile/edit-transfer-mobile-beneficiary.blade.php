@@ -61,13 +61,17 @@
 					</div>
 					<div class="row"> 
 						<div class="mb-4 col-md-6">
-							<label class="content-3 mb-0">Purpose Of Transfer</label>
-							<input id="purposeOfTransfer" name="purposeOfTransfer" placeholder="Enter Purpose Of Transfer such as Health/Medical Expense or Education." type="text" class="form-control form-control-lg content-3" value="{{ $edit['purposeOfTransfer'] ?? '' }}" />
+							<label class="content-3 mb-0">Sender Date Of Birth <span class="text-danger">*</span></label>
+							<input id="sender_placeofbirth" name="sender_placeofbirth" placeholder="Sender Date Of Birth." type="text" class="form-control form-control-lg content-3"  value="{{ $edit['sender_placeofbirth'] ?? '' }}" required/>
+						</div>	
+						<div class="mb-4 col-md-6">
+							<label class="content-3 mb-0">Purpose Of Transfer <span class="text-danger">*</span></label>
+							<input id="purposeOfTransfer" name="purposeOfTransfer" placeholder="Enter Purpose Of Transfer such as Health/Medical Expense or Education." type="text" class="form-control form-control-lg content-3" value="{{ $edit['purposeOfTransfer'] ?? '' }}" required/>
 						</div>
 						
 						<div class="mb-4 col-md-6">
-							<label class="content-3 mb-0">Source Of Funds</label>
-							<input id="sourceOfFunds" name="sourceOfFunds" placeholder="Enter Source Of Funds Common sources include Salary/Wages, Investment Income or Savings." type="text" class="form-control form-control-lg content-3" value="{{ $edit['sourceOfFunds'] ?? '' }}" />
+							<label class="content-3 mb-0">Source Of Funds <span class="text-danger">*</span></label>
+							<input id="sourceOfFunds" name="sourceOfFunds" placeholder="Enter Source Of Funds Common sources include Salary/Wages, Investment Income or Savings." type="text" class="form-control form-control-lg content-3" value="{{ $edit['sourceOfFunds'] ?? '' }}" required/>
 						</div> 
 					</div>
 				</form>

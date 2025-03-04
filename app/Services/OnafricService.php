@@ -427,7 +427,7 @@ class OnafricService
 				[
 					"instructionType" => [
 						"destAcctType" => 1,
-						"amountType" => 1
+						"amountType" => 2
 					],
 					"amount" => [
 						"amount" => (string) $txnAmount,
@@ -651,7 +651,7 @@ class OnafricService
 				[
 					"instructionType" => [
 						"destAcctType" => 2,
-						"amountType" => 1
+						"amountType" => 2
 					],
 					"amount" => [
 						"amount" => (string) $txnAmount,
@@ -673,7 +673,7 @@ class OnafricService
 						"email" => null,
 						"dateOfBirth" => null,
 						"document" => null,
-						"placeOfBirth" => null,
+						"placeOfBirth" => $beneficiary['sender_placeofbirth'] ?? '',,
 					],
 					"recipient" => [
 						"msisdn" => $beneficiary['receivercontactnumber'] ?? '',
