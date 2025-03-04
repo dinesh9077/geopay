@@ -673,7 +673,7 @@ class OnafricService
 						"email" => null,
 						"dateOfBirth" => null,
 						"document" => null,
-						"placeOfBirth" => $beneficiary['sender_placeofbirth'] ?? '',,
+						"placeOfBirth" => $beneficiary['sender_placeofbirth'] ?? '',
 					],
 					"recipient" => [
 						"msisdn" => $beneficiary['receivercontactnumber'] ?? '',
