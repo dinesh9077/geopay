@@ -10,7 +10,7 @@
 					<div class="row">  
 						<div class="mb-4 col-lg-6">
 							<label class="content-3 mb-0">Country <span class="text-danger">*</span></label>
-							<select id="payoutCurrency" name="payoutCurrency" class="form-control form-control-lg content-3 select2" >
+							<select id="payoutCurrency" name="payoutCurrency" class="form-control form-control-lg content-3 select2" required>
 								<option value="">Select Country</option>
 								@foreach($countries as $country) 
 									<option value="{{ $country['value'] }}" data-service-name="{{ $country['service_name'] }}" data-payout-country="{{ $country['data'] }}" data-country-name="{{ $country['label'] }}" data-iso="{{ $country['iso'] }}" {{ isset($edit['payoutCurrency']) && $edit['payoutCurrency'] === $country['value'] ? 'selected' : '' }}>{{ $country['label'] }}</option>
@@ -19,7 +19,7 @@
 						</div> 
 						<div class="mb-4 col-lg-6">
 							<label class="content-3 mb-0">Bank Name <span class="text-danger">*</span></label>
-							<select id="bankId" name="bankId" class="form-control form-control-lg content-3 select2" >
+							<select id="bankId" name="bankId" class="form-control form-control-lg content-3 select2" required>
 								<option value="">Select Bank Name</option>
 								@if($beneficiary->service_name == "lightnet")
 									@foreach($banks as $bank) 

@@ -63,7 +63,7 @@
 					<div class="row"> 
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Sender Date Of Birth <span class="text-danger">*</span></label>
-							<input id="sender_placeofbirth" name="sender_placeofbirth" placeholder="Sender Date Of Birth." type="text" class="form-control form-control-lg content-3" required/>
+							<input id="sender_placeofbirth" name="sender_placeofbirth" placeholder="Sender Date Of Birth." type="text" class="form-control form-control-lg content-3" value="" required/>
 						</div>
  
 						<div class="mb-4 col-md-6">
