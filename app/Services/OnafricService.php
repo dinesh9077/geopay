@@ -415,9 +415,11 @@ class OnafricService
 		$timestamp = now()->format('YmdHis'); 
 		$batchId = "BATCH-" . $uuid . "-" . $timestamp;  
 		$requestTimestamp = $request->timestamp;
-		$thirdPartyTransId = $request->order_id;  
-		$txnAmount = $request->txnAmount;
+		$thirdPartyTransId = $request->order_id;   
 		$sendFee = $request->sendFee ?? 0;
+
+		$txnAmount = $request->payoutCurrencyAmount; 
+		$payoutCurrency = $beneficiary['payoutCurrency'] ?? '';
 		 
 		$requestBody = [
 			"corporateCode" => $this->onafricCorporate,
@@ -431,11 +433,11 @@ class OnafricService
 					],
 					"amount" => [
 						"amount" => (string) $txnAmount,
-						"currencyCode" => /* $country->currency_code ?? */ $this->defaultCurrency
+						"currencyCode" => $payoutCurrency
 					],
 					"sendFee" => [
 						"amount" => (string) $sendFee,
-						"currencyCode" => /* $country->currency_code ?? */ $this->defaultCurrency
+						"currencyCode" => $this->defaultCurrency
 					],
 					"sender" => [
 						"msisdn" => $beneficiary['sender_mobile'] ?? '',
