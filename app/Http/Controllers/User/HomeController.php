@@ -49,7 +49,7 @@ class HomeController extends Controller
         // $response = curl_exec($curl);
 
         // curl_close($curl);
-        // echo $response;
+        // echo $response; 
 
 		// Generate QR Code with the mobile number
 		$mobileNumber = auth()->user()->formatted_number ?? '';
