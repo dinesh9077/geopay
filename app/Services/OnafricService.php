@@ -412,9 +412,7 @@ class OnafricService
 			return $output; 
 		} catch (\Exception $e) {
 			return '<option value="">No banks available</option>';
-		}
-
-		return '<option value="">No banks available</option>';
+		}  
 	}  
 	
 	public function generateBearerToken($timestamp)
