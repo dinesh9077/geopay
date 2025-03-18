@@ -9,6 +9,7 @@
 	use App\Models\Faq;
 	use App\Models\UserLimit;
 	use App\Models\LightnetCountry;
+	use App\Models\Country;
 	use App\Models\OnafricChannel;
 	use App\Models\LightnetCatalogue;
 	use App\Http\Traits\WebResponseTrait; 
@@ -1001,4 +1002,23 @@
 				return $this->errorResponse($e->getMessage()); 
 			}  
 		}
+		
+		public function thirdPartyKeyOnafricBankLists(Request $request)
+		{
+			try {
+
+				$onafricCountries = Country::select('id', 'iso3 as data', 'currency_code as value', 'nicename as label', DB::raw("'onafric' as service_name"), DB::raw("1 as status"), 'created_at', 'updated_at', DB::raw("'flat' as markdown_type"), DB::raw("0 as markdown_charge"), 'iso')
+				->whereIn('nicename', $this->onafricService->bankAvailableCountry())
+				->get();
+				foreach($onafricCountries as $onafricCountry) 
+				{
+					$response = $this->onafricService->getOnafricBankFetch($onafricCountry->iso);
+				}
+				 
+				return $this->successResponse("bank list fetch successfully"); 
+			} catch (\Throwable $e) {
+				DB::rollBack();  
+				return $this->errorResponse($e->getMessage()); 
+			}  
+		} 
 	}

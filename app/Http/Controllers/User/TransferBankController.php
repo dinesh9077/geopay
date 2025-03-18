@@ -56,6 +56,7 @@ class TransferBankController extends Controller
 	public function transferToBankBeneficiary()
 	{  
 		$countries = $this->countries()->toArray();
+		dd($countries);
 		$catalogues = LightnetCatalogue::where('category_name', 'transfer to bank')
 		->where('service_name', 'lightnet')
 		->whereNotNull('data')

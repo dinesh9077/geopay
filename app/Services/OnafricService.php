@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Crypt; // Remove Crypt facade if not used
 use Auth;
 use App\Models\Country;
+use App\Models\OnafricBank;
 class OnafricService
 {
     protected $onafricCorporate;
@@ -289,7 +290,7 @@ class OnafricService
 		];	 
 	}
 	
-	public function getOnafricBank($request)
+	public function getOnafricBankFetch($payoutIso)
     {  
 		$xmlRequest = <<<XML
 		<?xml version="1.0" encoding="utf-8"?>
@@ -300,7 +301,7 @@ class OnafricService
 				<ns:corporate_code>{$this->onafricCorporate}</ns:corporate_code>
 				<ns:password>{$this->onafricPassword}</ns:password>
 			  </ns:login>
-			  <ns:to_country>{$request['payoutIso']}</ns:to_country>
+			  <ns:to_country>{$payoutIso}</ns:to_country>
 			</ns:get_banks>
 		  </soap:Body>
 		</soap:Envelope>
@@ -373,20 +374,39 @@ class OnafricService
 				// Add bank_limit to the bank data
 				$bankData['bank_limit'] = $bankLimitData;
 
-				// Push the bank data to the results array
-				$results[] = $bankData; 
+				OnafricBank::updateOrCreate(
+					[
+						'payout_iso' => $payoutIso,
+						'mfs_bank_code' => $bankData['mfs_bank_code'],
+					],
+					[
+						'bank_name' => $bankData['bank_name'], 
+						'response' => $bankData,
+						'updated_at' => now()
+					]
+				); 
 			}
-			
+			return true;
+		} catch (\Exception $e) {
+			return false;
+		} 
+	}
+
+	public function getOnafricBank($request)
+    {   
+		try 
+		{
+			$onafricBanks = OnafricBank::where('payout_iso', $request['payoutIso'])->get();  
 			$output = '<option value="">Select Bank Name</option>';
-			foreach($results as $result) 
+			foreach ($onafricBanks as $onafricBank) {
 			{
-				$selected = ($request['bankId'] ?? '') == $result['mfs_bank_code'] ? 'selected' : '';
+				$selected = ($request['bankId'] ?? '') == $onafricBank->mfs_bank_code ? 'selected' : '';
 				$output .= sprintf(
 					'<option value="%s" data-bank-name="%s" %s>%s</option>',
-					htmlspecialchars($result['mfs_bank_code'] ?? '', ENT_QUOTES, 'UTF-8'),
-					htmlspecialchars($result['bank_name'] ?? '', ENT_QUOTES, 'UTF-8'),
+					htmlspecialchars($onafricBank->mfs_bank_code ?? '', ENT_QUOTES, 'UTF-8'),
+					htmlspecialchars($onafricBank->bank_name ?? '', ENT_QUOTES, 'UTF-8'),
 					htmlspecialchars($selected, ENT_QUOTES, 'UTF-8'),
-					htmlspecialchars($result['bank_name'] ?? '', ENT_QUOTES, 'UTF-8')
+					htmlspecialchars($onafricBank->bank_name ?? '', ENT_QUOTES, 'UTF-8')
 				);
 			}
 			return $output; 
