@@ -398,7 +398,7 @@ class OnafricService
 		{
 			$onafricBanks = OnafricBank::where('payout_iso', $request['payoutIso'])->get();  
 			$output = '<option value="">Select Bank Name</option>';
-			foreach ($onafricBanks as $onafricBank) {
+			foreach ($onafricBanks as $onafricBank)  
 			{
 				$selected = ($request['bankId'] ?? '') == $onafricBank->mfs_bank_code ? 'selected' : '';
 				$output .= sprintf(
