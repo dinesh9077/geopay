@@ -57,8 +57,10 @@
 	
 	// Handle Country Change for Bank List
 	$('#editTransferBankBeneficiaryForm #payoutCurrency').change(function() { 
-		var payoutCountry = $(this).find(':selected').data('payout-country');
-		var formData = { payoutCountry: payoutCountry };
+		var payoutCountry = $(this).find(':selected').data('payout-country'); 
+		var payoutIso = $(this).find(':selected').data('iso'); 
+		var serviceName = $(this).find(':selected').data('service-name');
+		var formData = { payoutCountry: payoutCountry, serviceName: serviceName, payoutIso: payoutIso };
 		const encrypted_data = encryptData(JSON.stringify(formData));
 		
 		// Show Loading Indicator
