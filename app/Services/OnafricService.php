@@ -874,16 +874,14 @@ class OnafricService
 		// Handle the response
 		if ($response->successful()) {
 			return [
-				'success' => true,
-				'request' => $requestBody, 
+				'success' => true, 
 				'response' => $response->json(),  
 			];
 		}
 
 		// If the response was unsuccessful, return an error response
 		return [
-			'success' => false,
-			'request' => $requestBody, // Return the request sent
+			'success' => false, 
 			'response' => json_decode($response->body(), true), // Return the error response body
 		];
 	}
