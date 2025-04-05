@@ -193,7 +193,7 @@ class ReceiveMoneyController extends Controller
 			$beneficiaryFirstName = $request->beneficiary_name; 
 			$mobileNumber = str_replace('+', '', $request->mobile_code.''.$request->mobile_no);
 			
-			$unitConvertCurrency =  $country->payoutCurrency;
+			$unitConvertCurrency =  $request->payoutCurrency;
 			$payoutCurrencyAmount = $request->payoutCurrencyAmount;
 			$aggregatorCurrencyAmount = $request->aggregatorCurrencyAmount;
 			$exchangeRate = $request->exchangeRate; 
