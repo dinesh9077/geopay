@@ -60,7 +60,8 @@ class OnafricService
 			"Burkina Faso" => ['Mobicash'], 
 			"Zambia" => ['MTN'],
 			"Guinea" => ['Orange', 'MTN'],
-			"Democratic Republic of the Congo" => ['Vodafone', 'Orange', 'Airtel']
+			"Democratic Republic of the Congo" => ['Vodafone', 'Orange', 'Airtel'],
+			"Beyonic" => ['beyonic']
 		];   
 	}
 	
