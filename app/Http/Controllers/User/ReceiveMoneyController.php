@@ -257,7 +257,7 @@ class ReceiveMoneyController extends Controller
 	public function storeMobileCollectionCallback(Request $request)
 	{
 		// Log the incoming request for debugging
-		//Log::info('Webhook received', ['data' => $request->all()]);
+		Log::info('Mobile Collection Webhook received', ['data' => $request->all()]);
  
 		if (!$request->all()) {
 			return response()->json(['error' => 'Empty request'], 400);
