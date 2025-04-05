@@ -6,7 +6,7 @@
 	use App\Http\Controllers\Auth\ResetPasswordController;
 	use App\Http\Controllers\User\{
 		HomeController, SettingController, TransactionController, KycController, 
-		TransferBankController, AirtimeController, TransferMobileController
+		TransferBankController, AirtimeController, TransferMobileController, ReceiveMoneyController
 	};
 	use App\Http\Controllers\FrontController;
 	/*
@@ -112,10 +112,10 @@
 		Route::get('/transfer-to-mobile/beneficiary-delete/{id}', [TransferMobileController::class, 'transferToBeneficiaryDelete'])->name('transfer-to-mobile.beneficiary-delete');  
 		Route::post('/transfer-to-mobile/commission', [TransferMobileController::class, 'transferToMobileCommission'])->name('transfer-to-mobile.commission');
 		 
-		//Add Mobile Money
-		Route::get('/add-money', function () {
-			return view('user.transaction.add-money.index');
-		})->name('add-money');  
+		//Add Mobile Money  
+		Route::get('/add-money', [ReceiveMoneyController::class, 'addMoney'])->name('add-money'); 
+		Route::post('/mobile-collection-store', [ReceiveMoneyController::class, 'storeMobileCollection'])->name('mobile-collection.store');Route::post('/mobile-collection-commission', [ReceiveMoneyController::class, 'storeMobileCollectionCommission'])->name('mobile-collection.commission'); 
+		Route::post('/mobile-collection-callback', [ReceiveMoneyController::class, 'storeMobileCollectionCallback'])->name('mobile-collection.callback'); 
 		
 		//Transaction List 
 		Route::get('/transaction-list', [TransactionController::class, 'index'])->name('transaction-list');

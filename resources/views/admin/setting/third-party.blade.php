@@ -19,6 +19,7 @@
 				'lightnet_setting',
 				'onafric_mobile_setting',
 				'onafric_bank_setting',
+				'onafric_mobile_collection_setting',
 			];
 
 			// Filter only tabs that the user has permission to view
@@ -29,75 +30,85 @@
 		@endphp
 		<ul class="nav nav-tabs nav-tabs-line" id="lineTab" role="tablist">
 			@if (config("permission.metamap_setting.view"))
-			<li class="nav-item">
-				<a class="nav-link {{ $firstTab == 'metamap_setting' ? 'active' : '' }}" id="metamap-line-tab" data-bs-toggle="tab" href="#line-metamap" role="tab" aria-controls="line-metamap" aria-selected="true">Meta Map</a>
-			</li>
+				<li class="nav-item">
+					<a class="nav-link {{ $firstTab == 'metamap_setting' ? 'active' : '' }}" id="metamap-line-tab" data-bs-toggle="tab" href="#line-metamap" role="tab" aria-controls="line-metamap" aria-selected="true">Meta Map</a>
+				</li>
 			@endif
 			@if (config("permission.smtp_mail_setting.view"))
-			<li class="nav-item">
-				<a class="nav-link {{ $firstTab == 'smtp_mail_setting' ? 'active' : '' }}" id="smtpmail-line-tab" data-bs-toggle="tab" href="#line-smtpmail" role="tab" aria-controls="line-smtpmail" aria-selected="false">SMTP Mail</a>
-			</li> 
+				<li class="nav-item">
+					<a class="nav-link {{ $firstTab == 'smtp_mail_setting' ? 'active' : '' }}" id="smtpmail-line-tab" data-bs-toggle="tab" href="#line-smtpmail" role="tab" aria-controls="line-smtpmail" aria-selected="false">SMTP Mail</a>
+				</li> 
 			@endif
 			@if (config("permission.smsplus_setting.view"))
-			<li class="nav-item {{ $firstTab == 'smsplus_setting' ? 'active' : '' }}">
-				<a class="nav-link" id="smsplus-line-tab" data-bs-toggle="tab" href="#line-smsplus" role="tab" aria-controls="line-smsplus" aria-selected="false">SMS Plus</a>
-			</li> 
+				<li class="nav-item {{ $firstTab == 'smsplus_setting' ? 'active' : '' }}">
+					<a class="nav-link" id="smsplus-line-tab" data-bs-toggle="tab" href="#line-smsplus" role="tab" aria-controls="line-smsplus" aria-selected="false">SMS Plus</a>
+				</li> 
 			@endif
 			@if (config("permission.internation_airtime_setting.view"))
-			<li class="nav-item">
-				<a class="nav-link {{ $firstTab == 'internation_airtime_setting' ? 'active' : '' }}" id="dtone-line-tab" data-bs-toggle="tab" href="#line-dtone" role="tab" aria-controls="line-dtone" aria-selected="false">International Airtime (dtone)</a>
-			</li> 
+				<li class="nav-item">
+					<a class="nav-link {{ $firstTab == 'internation_airtime_setting' ? 'active' : '' }}" id="dtone-line-tab" data-bs-toggle="tab" href="#line-dtone" role="tab" aria-controls="line-dtone" aria-selected="false">International Airtime (dtone)</a>
+				</li> 
 			@endif
 			@if (config("permission.lightnet_setting.view"))
-			<li class="nav-item">
-				<a class="nav-link {{ $firstTab == 'lightnet_setting' ? 'active' : '' }}" onclick="getLightNetView(event)" id="lightnet-line-tab" data-bs-toggle="tab" href="#line-lightnet" role="tab" aria-controls="line-lightnet" aria-selected="false">Lightnet</a>
-			</li> 
+				<li class="nav-item">
+					<a class="nav-link {{ $firstTab == 'lightnet_setting' ? 'active' : '' }}" onclick="getLightNetView(event)" id="lightnet-line-tab" data-bs-toggle="tab" href="#line-lightnet" role="tab" aria-controls="line-lightnet" aria-selected="false">Lightnet</a>
+				</li> 
 			@endif
 			@if (config("permission.onafric_mobile_setting.view"))
-			<li class="nav-item">
-				<a class="nav-link {{ $firstTab == 'onafric_mobile_setting' ? 'active' : '' }}" onclick="getOnafricMobileView(event)" id="onafriq-line-tab" data-bs-toggle="tab" href="#line-onafriq-mobile" role="tab" aria-controls="line-onafriq" aria-selected="false">Onafriq (Mobile Money)</a>
-			</li> 
+				<li class="nav-item">
+					<a class="nav-link {{ $firstTab == 'onafric_mobile_setting' ? 'active' : '' }}" onclick="getOnafricMobileView(event)" id="onafriq-line-tab" data-bs-toggle="tab" href="#line-onafriq-mobile" role="tab" aria-controls="line-onafriq" aria-selected="false">Onafriq (Mobile Money)</a>
+				</li> 
 			@endif
 			@if (config("permission.onafric_bank_setting.view"))
-			<li class="nav-item">
-				<a class="nav-link {{ $firstTab == 'onafric_bank_setting' ? 'active' : '' }}" id="onafriq-line-tab" data-bs-toggle="tab" href="#line-onafriq-bank" role="tab" aria-controls="line-onafriq" aria-selected="false">Onafriq (Bank)</a>
-			</li> 
+				<li class="nav-item">
+					<a class="nav-link {{ $firstTab == 'onafric_bank_setting' ? 'active' : '' }}" id="onafriq-line-tab" data-bs-toggle="tab" href="#line-onafriq-bank" role="tab" aria-controls="line-onafriq" aria-selected="false">Onafriq (Bank)</a>
+				</li> 
+			@endif 
+			@if (config("permission.onafric_mobile_collection_setting.view"))
+				<li class="nav-item">
+					<a class="nav-link {{ $firstTab == 'onafric_mobile_collection_setting' ? 'active' : '' }}" id="onafriq-line-tab" data-bs-toggle="tab" href="#line-onafriq-mobile-collection" role="tab" aria-controls="line-onafriq" aria-selected="false">Mobile Collection (Onafric)</a>
+				</li> 
 			@endif 
 		</ul>
 		<div class="tab-content mt-3" id="lineTabContent">
 			@if (config("permission.metamap_setting.view"))
-			<div class="tab-pane fade {{ $firstTab == 'metamap_setting' ? 'show active' : '' }}" id="line-metamap" role="tabpanel" aria-labelledby="metamap-line-tab"> 
-				@include('admin.setting.partial.meta-map')
-			</div>
+				<div class="tab-pane fade {{ $firstTab == 'metamap_setting' ? 'show active' : '' }}" id="line-metamap" role="tabpanel" aria-labelledby="metamap-line-tab"> 
+					@include('admin.setting.partial.meta-map')
+				</div>
 			@endif
 			@if (config("permission.smtp_mail_setting.view"))
-			<div class="tab-pane fade {{ $firstTab == 'smtp_mail_setting' ? 'show active' : '' }}" id="line-smtpmail" role="tabpanel" aria-labelledby="smtpmail-line-tab"> 
-				@include('admin.setting.partial.smtp-mail')
-			</div>
+				<div class="tab-pane fade {{ $firstTab == 'smtp_mail_setting' ? 'show active' : '' }}" id="line-smtpmail" role="tabpanel" aria-labelledby="smtpmail-line-tab"> 
+					@include('admin.setting.partial.smtp-mail')
+				</div>
 			@endif
 			@if (config("permission.smsplus_setting.view"))
-			<div class="tab-pane fade {{ $firstTab == 'smsplus_setting' ? 'show active' : '' }}" id="line-smsplus" role="tabpanel" aria-labelledby="smsplus-line-tab">
-				@include('admin.setting.partial.sms-plus')
-			</div>
+				<div class="tab-pane fade {{ $firstTab == 'smsplus_setting' ? 'show active' : '' }}" id="line-smsplus" role="tabpanel" aria-labelledby="smsplus-line-tab">
+					@include('admin.setting.partial.sms-plus')
+				</div>
 			@endif
 			@if (config("permission.internation_airtime_setting.view"))
-			<div class="tab-pane fade {{ $firstTab == 'internation_airtime_setting' ? 'show active' : '' }}" id="line-dtone" role="tabpanel" aria-labelledby="dtone-line-tab">
-				@include('admin.setting.partial.international-airtime')
-			</div> 
+				<div class="tab-pane fade {{ $firstTab == 'internation_airtime_setting' ? 'show active' : '' }}" id="line-dtone" role="tabpanel" aria-labelledby="dtone-line-tab">
+					@include('admin.setting.partial.international-airtime')
+				</div> 
 			@endif
 			@if (config("permission.lightnet_setting.view"))
-			<div class="tab-pane fade {{ $firstTab == 'lightnet_setting' ? 'show active' : '' }}" id="line-lightnet" role="tabpanel" aria-labelledby="lightnet-line-tab">
-				@include('admin.setting.partial.lightnet')
-			</div> 
+				<div class="tab-pane fade {{ $firstTab == 'lightnet_setting' ? 'show active' : '' }}" id="line-lightnet" role="tabpanel" aria-labelledby="lightnet-line-tab">
+					@include('admin.setting.partial.lightnet')
+				</div> 
 			@endif
 			@if (config("permission.onafric_mobile_setting.view"))
-			<div class="tab-pane fade {{ $firstTab == 'onafric_mobile_setting' ? 'show active' : '' }}" id="line-onafriq-mobile" role="tabpanel" aria-labelledby="onafriq-line-tab"> 
-				@include('admin.setting.partial.onafric-mobile')
-			</div>
+				<div class="tab-pane fade {{ $firstTab == 'onafric_mobile_setting' ? 'show active' : '' }}" id="line-onafriq-mobile" role="tabpanel" aria-labelledby="onafriq-line-tab"> 
+					@include('admin.setting.partial.onafric-mobile')
+				</div>
 			@endif 
 			@if (config("permission.onafric_bank_setting.view"))
 				<div class="tab-pane fade {{ $firstTab == 'onafric_bank_setting' ? 'show active' : '' }}" id="line-onafriq-bank" role="tabpanel" aria-labelledby="onafriq-line-tab"> 
 					@include('admin.setting.partial.onafric-bank')
+				</div>
+			@endif 
+			@if (config("permission.onafric_mobile_collection_setting.view"))
+				<div class="tab-pane fade {{ $firstTab == 'onafric_mobile_collection_setting' ? 'show active' : '' }}" id="line-onafriq-mobile-collection" role="tabpanel" aria-labelledby="onafriq-line-tab"> 
+					@include('admin.setting.partial.onafric-mobile-collection')
 				</div>
 			@endif 
 		</div>

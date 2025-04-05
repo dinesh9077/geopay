@@ -21,6 +21,7 @@
 							<option value="">Service Type</option>
 							<option value="lightnet">Lightnet</option>
 							<option value="onafric">Onafric</option>
+							<option value="onafric mobile collection">Onafric Mobile Collection</option>
 						</select>
 					</div> 
 					<div class="mb-3">

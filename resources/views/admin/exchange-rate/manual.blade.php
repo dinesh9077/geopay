@@ -210,7 +210,7 @@
 		{
 			modalOpen = true;
 			closemodal(); 
-			$.get("{{route('admin.manual.exchange-rate.import')}}", function(res)
+			$.get("{{ route('admin.manual.exchange-rate.import') }}", function(res)
 			{
 				const result = decryptData(res.response);
 				$('body').find('#modal-view-render').html(result.view);

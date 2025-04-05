@@ -24,6 +24,8 @@ class OnafricService
         $this->onafricAsyncCallService = rtrim(config('setting.onafric_async_callservice') ?? '', '/');
 		$this->defaultCurrency = Config('setting.default_currency') ?? 'USD';
 		$this->sendFees = Config('setting.onafric_bank_send_fees') ?? '1.5';
+		$this->onafricCollectionToken = Config('setting.onafric_collection_token') ?? '';
+		$this->onafricCollectionApiUrl = Config('setting.onafric_collection_api_url') ?? '';
     }
 	
 	public function bankAvailableCountry()
@@ -41,6 +43,50 @@ class OnafricService
 		];   
 	}
 	
+	public function collectionAvailableCountry()
+	{
+		return [
+			"Ivory Coast" => [
+				'Moov', 'MTN', 'Orange'
+			],
+			"Kenya" => ['MPESA'],
+			"Rwanda" => ['Airtel', 'MTN'], 
+			"Tanzania" => ['Vodacom', 'Airtel'],
+			"Uganda" => ['Airtel', 'MTN'],
+			"Cameroon" => ['MTN', 'Orange'], 
+			"Benin" => ['MTN', 'Moov'],
+			"Senegal" => ['Orange'],
+			"Togo" => ['Moov', 'Togocel'], 
+			"Burkina Faso" => ['Mobicash'], 
+			"Zambia" => ['MTN'],
+			"Guinea" => ['Orange', 'MTN'],
+			"Democratic Republic of the Congo" => ['Vodafone', 'Orange', 'Airtel']
+		];   
+	}
+	
+	public function collectionCountry()
+	{
+		$africanCountries = $this->collectionAvailableCountry();
+
+		$countries = Country::whereIn('nicename', array_keys($africanCountries)) // fix here: use keys
+			->get();
+
+		$countriesWithFlags = $countries->transform(function ($country) use ($africanCountries) {
+			// Add full flag URL
+			if ($country->country_flag) {
+				$country->country_flag = asset('country/' . $country->country_flag);
+			}
+
+			// Add available channels from the hardcoded list
+			$countryName = $country->nicename;
+			$country->available_channels = $africanCountries[$countryName] ?? [];
+
+			return $country;
+		});
+
+		return $countriesWithFlags;
+	}
+ 
 	public function country()
 	{
 		$africanCountries = $this->availableCountry();
@@ -680,10 +726,6 @@ class OnafricService
 						"currencyCode" => $payoutCurrency
 					],
 					"sendFee" => null,
-					// "sendFee" => [
-					// 	"amount" => (string) $sendFee,
-					// 	"currencyCode" => $this->defaultCurrency
-					// ],
 					"sender" => [
 						"msisdn" => $beneficiary['sender_mobile'] ?? '',
 						"fromCountry" => $beneficiary['sender_country_code'] ?? '',
@@ -726,7 +768,7 @@ class OnafricService
 				]
 			]
 		];
-		Log::info('send bank request', ['request' => $requestBody]);
+		//Log::info('send bank request', ['request' => $requestBody]);
 		// Generate the mfsSign
 		$mfsSign = $this->generateMfsSign($batchId);
 	  
@@ -747,13 +789,61 @@ class OnafricService
 		])
 		->post($this->onafricAsyncCallService.'/callService', $requestBody); // Send requestBody instead of $data
 	  
-		Log::info('send bank response', ['response' => $response->json()]);
+		//Log::info('send bank response', ['response' => $response->json()]);
 		// Handle the response
 		if ($response->successful()) {
 			return [
 				'success' => true,
 				'request' => $requestBody, // Return the request sent
 				'response' => $response->json(), // Return the API response
+			];
+		}
+
+		// If the response was unsuccessful, return an error response
+		return [
+			'success' => false,
+			'request' => $requestBody, // Return the request sent
+			'response' => json_decode($response->body(), true), // Return the error response body
+		];
+	}
+	
+	public function sendMobileCollectionTransaction($request)
+	{     
+		$thirdPartyTransId = $request->order_id;  
+		$txnAmount = $request->payoutCurrencyAmount;
+		$mobileNumber = str_replace('+', '', $request->mobile_no);
+		$payoutCurrency = $request->payoutCurrency;
+
+		$requestBody = [
+			"phonenumber" => $mobileNumber,
+			"amount" => $txnAmount, 
+			"currency" => $payoutCurrency, 
+			"description" => $request->notes, 
+			"callback_url" => route('mobile-collection.callback'), 
+			"metadata" => ['order_id' => $thirdPartyTransId], 
+			"send_instructions" => 'True', 
+		]; 
+		
+		// Generate the bearer token 
+		$bearerToken = $this->onafricCollectionToken; 
+		 
+		// Send the API request using Laravel's HTTP client
+		$response = Http::withHeaders([
+			'Authorization' => 'Token ' . $bearerToken, 
+			'Content-Type' => 'application/json',
+		])
+		->withOptions([
+			'verify' => false, // Disable SSL verification if needed
+		])
+		->post($this->onafricCollectionApiUrl.'/collectionrequests', $requestBody); // Send requestBody instead of $data
+	  
+		//Log::info('send bank response', ['response' => $response->json()]);
+		// Handle the response
+		if ($response->successful()) {
+			return [
+				'success' => true,
+				'request' => $requestBody, 
+				'response' => $response->json(),  
 			];
 		}
 

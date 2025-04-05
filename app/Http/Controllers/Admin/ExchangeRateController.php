@@ -37,23 +37,20 @@
 		
 		public function manualExchangeRateAjax(Request $request)
 		{
-			if ($request->ajax()) {
-				// Define the columns for ordering and searching
+			if ($request->ajax()) { 
 				$columns = ['id', 'created_by', 'service_name', 'country_name', 'currency', 'exchange_rate', 'aggregator_rate',  'markdown_charge', 'updated_at', 'action'];
 				
-				$search = $request->input('search'); // Global search value
-				$start = $request->input('start'); // Offset for pagination
-				$limit = $request->input('length'); // Limit for pagination
+				$search = $request->input('search');  
+				$start = $request->input('start');  
+				$limit = $request->input('length'); 
 				$orderColumnIndex = $request->input('order.0.column', 0);
-				$orderDirection = $request->input('order.0.dir', 'asc'); // Default order direction
+				$orderDirection = $request->input('order.0.dir', 'asc'); 
 				
 				$type = $request->input('type'); 
-				
-				// Base query with relationship for country
+				 
 				$query = ExchangeRate::with('createdBy:id,name')
 				->where('type', $type);
-				
-				// Apply search filter if present
+				 
 				if (!empty($search)) {
 					$query->where(function ($q) use ($search) {
 						$q->orWhere('currency', 'LIKE', "%{$search}%") 
@@ -69,8 +66,8 @@
 					});
 				}
 				
-				$totalData = $query->count(); // Total records before pagination
-				$totalFiltered = $totalData; // Total records after filtering
+				$totalData = $query->count(); 
+				$totalFiltered = $totalData; 
 				
 				// Apply ordering, limit, and offset for pagination
 				$values = $query
@@ -87,7 +84,7 @@
 					$data[] = [
 					'id' => $i,
 						'created_by' => $value->createdBy ? $value->createdBy->name : 'N/A', 
-						'service_name' => $value->service_name,
+						'service_name' => ucfirst(str_replace('_', ' ', $value->service_name)),
 						'country_name' => $value->country_name,
 						'currency' => $value->currency,
 						'exchange_rate' => $value->exchange_rate, 
@@ -202,7 +199,7 @@
 				foreach ($data as $row) 
 				{
 					ExchangeRate::updateOrInsert(
-						['currency' => $row['currency'], 'type' => $row['type']], // Unique key to check for existing records
+						['country_name' => $row['country_name'], 'currency' => $row['currency'], 'type' => $row['type']], // Unique key to check for existing records
 						[
 						'country_name' => $row['country_name'],
 						'exchange_rate' => $row['exchange_rate'],
@@ -211,6 +208,7 @@
 						'markdown_type' => $row['markdown_type'],
 						'markdown_charge' => $row['markdown_charge'],
 						'status' => $row['status'],
+						'service_name' => $row['service_name'],
 						'created_at' => $row['created_at'], 
 						'updated_at' => $row['updated_at'], 
 						]
