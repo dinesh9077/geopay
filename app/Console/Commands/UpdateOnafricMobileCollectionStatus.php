@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 use App\Services\OnafricService;
 use Log;
 	
-class UpdateOnafricStatus extends Command
+class UpdateOnafricMobileCollectionStatus extends Command
 {
     /**
      * The name and signature of the console command.
