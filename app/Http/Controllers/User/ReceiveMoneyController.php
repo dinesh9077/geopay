@@ -106,7 +106,7 @@ class ReceiveMoneyController extends Controller
 	  
 		// Validation rules
 		$validator = Validator::make($request->all(), [
-			'country_code'   => 'required|integer', 
+			'country_code'   => 'required|string', 
 			'channel'   => 'required|string',   
 			'mobile_no'   => 'required|integer', 
 			'txnAmount'      => 'required|numeric|gt:0', 
