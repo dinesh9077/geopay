@@ -191,7 +191,7 @@ class ReceiveMoneyController extends Controller
 			
 			// Check if necessary fields exist to prevent undefined index warnings
 			$beneficiaryFirstName = $request->beneficiary_name; 
-			$mobileNumber = str_replace('+', '', $request->mobile_no);
+			$mobileNumber = str_replace('+', '', $request->mobile_code.''.$request->mobile_no);
 			
 			$unitConvertCurrency =  $country->payoutCurrency;
 			$payoutCurrencyAmount = $request->payoutCurrencyAmount;

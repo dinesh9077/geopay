@@ -812,7 +812,7 @@ class OnafricService
 	{     
 		$thirdPartyTransId = $request->order_id;  
 		$txnAmount = $request->payoutCurrencyAmount;
-		$mobileNumber = str_replace('+', '', $request->mobile_no);
+		$mobileNumber = str_replace('+', '', $request->mobile_code.''.$request->mobile_no);
 		$payoutCurrency = $request->payoutCurrency;
 
 		$requestBody = [
