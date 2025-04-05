@@ -197,7 +197,7 @@ class ReceiveMoneyController extends Controller
 			$payoutCurrencyAmount = $request->payoutCurrencyAmount;
 			$aggregatorCurrencyAmount = $request->aggregatorCurrencyAmount;
 			$exchangeRate = $request->exchangeRate; 
-			$confirmationId = $request['order_id'];
+			$confirmationId = $response['response']['id'] ?? null;
 			
 			$beneficiaryName = trim("$beneficiaryFirstName"); // Using trim to remove any leading/trailing spaces
 

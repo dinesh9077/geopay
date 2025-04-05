@@ -855,4 +855,36 @@ class OnafricService
 			'response' => json_decode($response->body(), true), // Return the error response body
 		];
 	}
+	
+	public function getCollectionStatus($requestId)
+	{        
+		$bearerToken = $this->onafricCollectionToken; 
+		 
+		// Send the API request using Laravel's HTTP client
+		$response = Http::withHeaders([
+			'Authorization' => 'Token ' . $bearerToken, 
+			'Content-Type' => 'application/json',
+		])
+		->withOptions([
+			'verify' => false, // Disable SSL verification if needed
+		])
+		->get($this->onafricCollectionApiUrl.'/collectionrequests/'.$requestId); // Send requestBody instead of $data
+	  
+		//Log::info('send bank response', ['response' => $response->json()]);
+		// Handle the response
+		if ($response->successful()) {
+			return [
+				'success' => true,
+				'request' => $requestBody, 
+				'response' => $response->json(),  
+			];
+		}
+
+		// If the response was unsuccessful, return an error response
+		return [
+			'success' => false,
+			'request' => $requestBody, // Return the request sent
+			'response' => json_decode($response->body(), true), // Return the error response body
+		];
+	}
 }
