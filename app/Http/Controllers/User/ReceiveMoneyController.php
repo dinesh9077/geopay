@@ -263,15 +263,15 @@ class ReceiveMoneyController extends Controller
 			return response()->json(['error' => 'Empty request'], 400);
 		}
  
-		$thirdPartyTransId = $request->input('metadata.order_id');
-		$txnStatus = strtolower($request->input('status'));
+		$thirdPartyTransId = $request->input('data.collection_request.id');
+		$txnStatus = strtolower($request->input('data.collection_request.status'));
 
 		if (!$thirdPartyTransId || !$txnStatus) {
 			return response()->json(['error' => 'Invalid or missing transaction data'], 422);
 		}
  
 		// Find the transaction based on thirdPartyTransId
-		$transaction = Transaction::where('order_id', $thirdPartyTransId)->first();
+		$transaction = Transaction::where('unique_identifier', $thirdPartyTransId)->where('platform_provider', 'onafric mobile collection')->first();
 
 		if (!$transaction) {
 			Log::warning("Transaction not found for order_id: $thirdPartyTransId");
@@ -288,7 +288,7 @@ class ReceiveMoneyController extends Controller
 		$transaction->touch(); // Updates the `updated_at` timestamp
 		$transaction->save();
 		
-		if(strtolower($txnStatus) == 'success')
+		if(strtolower($txnStatus) == 'successful')
 		{
 			$transaction->user->increment('balance', $transaction->txn_amount); 
 		}
