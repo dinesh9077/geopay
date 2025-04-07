@@ -257,7 +257,7 @@ class ReceiveMoneyController extends Controller
 	public function storeMobileCollectionCallback(Request $request)
 	{
 		// Log the incoming request for debugging
-		Log::info('Mobile Collection Webhook received', ['data' => $request->all()]);
+		//Log::info('Mobile Collection Webhook received', ['data' => $request->all()]);
  
 		if (!$request->all()) {
 			return response()->json(['error' => 'Empty request'], 400);
@@ -265,6 +265,8 @@ class ReceiveMoneyController extends Controller
  
 		$thirdPartyTransId = $request->input('data.collection_request.id');
 		$txnStatus = strtolower($request->input('data.collection_request.status'));
+		Log::info('collection_request_id', ['id' => $thirdPartyTransId]);
+		Log::info('collection_request_status', ['status' => $txnStatus]);
 
 		if (!$thirdPartyTransId || !$txnStatus) {
 			return response()->json(['error' => 'Invalid or missing transaction data'], 422);
