@@ -49,7 +49,7 @@
 	
 	
 	Route::match(['get', 'post'], '/onafric/webhook/{webhookIds}', [TransferMobileController::class, 'transferToMobileWebhook']);
-		
+	Route::match(['get', 'post'], '/mobile-collection-callback', [ReceiveMoneyController::class, 'storeMobileCollectionCallback'])->name('mobile-collection.callback'); 
 	Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	{     
 		// Meta Kyc
@@ -115,7 +115,7 @@
 		//Add Mobile Money  
 		Route::get('/add-money', [ReceiveMoneyController::class, 'addMoney'])->name('add-money'); 
 		Route::post('/mobile-collection-store', [ReceiveMoneyController::class, 'storeMobileCollection'])->name('mobile-collection.store');Route::post('/mobile-collection-commission', [ReceiveMoneyController::class, 'storeMobileCollectionCommission'])->name('mobile-collection.commission'); 
-		Route::post('/mobile-collection-callback', [ReceiveMoneyController::class, 'storeMobileCollectionCallback'])->name('mobile-collection.callback'); 
+		
 		
 		//Transaction List 
 		Route::get('/transaction-list', [TransactionController::class, 'index'])->name('transaction-list');
