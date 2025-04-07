@@ -46,10 +46,10 @@
 	Route::post('/password/resend-otp', [ResetPasswordController::class, 'resendOtp'])->name('password.resendOtp')->middleware('webdecrypt.request');
 	Route::post('/password/verify-otp', [ResetPasswordController::class, 'verifyEmailOtp'])->name('password.verifyOtp')->middleware('webdecrypt.request');
 	Route::post('/password/reset', [ResetPasswordController::class, 'resetPassword'])->name('password.reset')->middleware('webdecrypt.request');
-	
-	
+	 
 	Route::match(['get', 'post'], '/onafric/webhook/{webhookIds}', [TransferMobileController::class, 'transferToMobileWebhook']);
-	Route::match(['get', 'post'], '/mobile-collection-callback', [ReceiveMoneyController::class, 'storeMobileCollectionCallback'])->name('mobile-collection.callback'); 
+	Route::match(['get', 'post'], '/mobile-collection-callback', [ReceiveMoneyController::class, 'storeMobileCollectionCallback'])->name('mobile-collection.callback');
+	
 	Route::middleware(['webdecrypt.request', 'kycStatus'])->group(function ()
 	{     
 		// Meta Kyc
