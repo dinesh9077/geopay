@@ -202,12 +202,7 @@ class ReceiveMoneyController extends Controller
 			$beneficiaryName = trim("$beneficiaryFirstName"); // Using trim to remove any leading/trailing spaces
 
 			// Build the comment using sprintf for better readability
-			$comments = sprintf(
-				"You have successfully transferred %s USD to %s, of mobile No: %s.",
-				number_format($netAmount, 2), // Ensure txnAmount is formatted to 2 decimal places
-				$beneficiaryName,
-				$mobileNumber
-			);
+			$comments = "Transaction is being processed. You will be notified once it's completed.";
 
 			// Create transaction record
 			$transaction = Transaction::create([
@@ -265,8 +260,10 @@ class ReceiveMoneyController extends Controller
  
 		$thirdPartyTransId = $request->input('data.collection_request.id');
 		$txnStatus = strtolower($request->input('data.collection_request.status'));
-		Log::info('collection_request_id', ['id' => $thirdPartyTransId]);
-		Log::info('collection_request_status', ['status' => $txnStatus]);
+		$errorMsg = strtolower($request->input('data.collection_request.error_message'));
+		
+		/* Log::info('collection_request_id', ['id' => $thirdPartyTransId]);
+		Log::info('collection_request_status', ['status' => $txnStatus]); */
 
 		if (!$thirdPartyTransId || !$txnStatus) {
 			return response()->json(['error' => 'Invalid or missing transaction data'], 422);
@@ -276,7 +273,7 @@ class ReceiveMoneyController extends Controller
 		$transaction = Transaction::where('unique_identifier', $thirdPartyTransId)->where('platform_provider', 'onafric mobile collection')->first();
 
 		if (!$transaction) {
-			Log::warning("Transaction not found for order_id: $thirdPartyTransId");
+			//Log::warning("Transaction not found for order_id: $thirdPartyTransId");
 			return response()->json(['error' => 'Transaction not found'], 404);
 		}
 		
@@ -287,13 +284,16 @@ class ReceiveMoneyController extends Controller
 
 		// Update transaction status
 		$transaction->txn_status = strtolower($txnStatus);
-		$transaction->touch(); // Updates the `updated_at` timestamp
+		$transaction->comments = $errorMsg ?? $transaction->comments;
+		$transaction->touch();
 		$transaction->save();
 		
 		if(strtolower($txnStatus) == 'successful')
 		{
 			$transaction->user->increment('balance', $transaction->txn_amount); 
-		}
+			$transaction->comments = "Payment received successfully. Wallet updated."; 
+			$transaction->save();
+		} 
 		return response()->json(['message' => 'Transaction updated successfully'], 200);
 	}
 }

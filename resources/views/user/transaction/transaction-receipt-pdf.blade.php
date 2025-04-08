@@ -394,7 +394,62 @@
 									{{ Helper::decimalsprint($transaction->unit_amount, 2) }} {{ $transaction->unit_currency }}</p>
 								</td>
 							</tr>
-						
+						@elseif ($transaction->platform_name == 'add money') 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">NET AMOUNT</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Receive Money</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									Mobile Collection</p>
+								</td>
+							</tr>  
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Collection Request Id</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->unique_identifier }}</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">EXCHANGE RATE </span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+										{{ $transaction->rates }}
+									</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">COUNTERPARTY NAME</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $receiveName }} {{ $receiveNumber }}</p>
+								</td>
+							</tr>
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Mobile No</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->mobile_number }}</p>
+								</td>
+							</tr> 
 						@endif
 
 						<tr> 

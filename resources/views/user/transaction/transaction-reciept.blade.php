@@ -167,9 +167,77 @@
 		<tr>
 			<th class="content-4 d-flex justify-content-between text-nowrap">DESTINATION AMOUNT <span class="mx-1">:</span></th>
 			<td class="content-4">{{ Helper::decimalsprint($transaction->unit_amount, 2) }} {{ $transaction->unit_currency }}</td>
+		</tr> 
+	@elseif($transaction->platform_name === 'transfer to mobile')
+		<tr>
+            <th class="content-4 d-flex justify-content-between text-nowrap">FROM ACCOUNT <span class="mx-1">:</span></th>
+            <td class="content-4">{{ $userName }} {{ $userNumber }}</td>
+        </tr>
+        <tr>
+            <th class="content-4 d-flex justify-content-between text-nowrap">Transaction Id <span class="mx-1">:</span></th>
+            <td class="content-4">{{ $transaction->unique_identifier ?? 'N/A' }}</td>
+        </tr> 
+        <tr>
+            <th class="content-4 d-flex justify-content-between text-nowrap">Sender Mobile <span class="mx-1">:</span></th>
+            <td class="content-4">{{ $transaction->beneficiary_request['data']['sender_mobile'] ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">Counterparty Name <span class="mx-1">:</span></th>
+			<td class="content-4">
+				{{ isset($transaction->beneficiary_request['data']['recipient_name']) && isset($transaction->beneficiary_request['data']['recipient_surname']) ? 
+					$transaction->beneficiary_request['data']['recipient_name'] . ' ' . $transaction->beneficiary_request['data']['recipient_surname'] : 'N/A' }}
+			</td>
+		</tr> 
+        <tr>
+            <th class="content-4 d-flex justify-content-between text-nowrap">Mobile <span class="mx-1">:</span></th>
+            <td class="content-4">{{ $transaction->beneficiary_request['data']['recipient_mobile'] ?? 'N/A' }}</td>
+        </tr> 
+        <tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">UNIT AMOUNT <span class="mx-1">:</span></th>
+			<td class="content-4">{{ $transaction->unit_rates}}</td>
 		</tr>
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">PLATFORM FEES <span class="mx-1">:</span></th>
+			<td class="content-4">{{ $transaction->fees }}</td>
+		</tr> 
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">NET AMOUNT <span class="mx-1">:</span></th>
+			<td class="content-4">{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</td>
+		</tr>
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">EXCHANGE RATE <span class="mx-1">:</span></th>
+			<td class="content-4">{{ $transaction->rates }}</td>
+		</tr>
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">DESTINATION AMOUNT <span class="mx-1">:</span></th>
+			<td class="content-4">{{ Helper::decimalsprint($transaction->unit_amount, 2) }} {{ $transaction->unit_currency }}</td>
+		</tr>
+	@elseif($transaction->platform_name === 'add money')	
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">NET AMOUNT <span class="mx-1">:</span></th>
+			<td class="content-4">{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</td>
+		</tr> 
+        <tr>
+            <th class="content-4 d-flex justify-content-between text-nowrap">Receive Money <span class="mx-1">:</span></th>
+            <td class="content-4">Mobile Collection</td>
+        </tr> 
+        <tr>
+            <th class="content-4 d-flex justify-content-between text-nowrap">Collection Request Id <span class="mx-1">:</span></th>
+            <td class="content-4">{{ $transaction->unique_identifier }}</td>
+        </tr> 
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">EXCHANGE RATE <span class="mx-1">:</span></th>
+			<td class="content-4">{{ $transaction->rates }}</td>
+		</tr>
+        <tr>
+            <th class="content-4 d-flex justify-content-between text-nowrap">COUNTERPARTY NAME <span class="mx-1">:</span></th>
+            <td class="content-4">{{ $receiveName }} {{ $receiveNumber }}</td>
+        </tr>
+        <tr>
+            <th class="content-4 d-flex justify-content-between text-nowrap">Mobile No <span class="mx-1">:</span></th>
+            <td class="content-4">{{ $transaction->mobile_number }}</td>
+        </tr>
     @endif
-
     <tr>
         <th class="content-4 d-flex justify-content-between text-nowrap">PAYMENT DATE <span class="mx-1">:</span></th>
         <td class="content-4">{{ $transaction->created_at->format('Y-m-d') }}</td>

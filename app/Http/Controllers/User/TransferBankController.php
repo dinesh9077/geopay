@@ -652,13 +652,12 @@ class TransferBankController extends Controller
 
 			// Build the comment using sprintf for better readability
 			$comments = sprintf(
-				"You have successfully transferred %s %s to %s, of bank: %s.",
+				"Your bank transfer of %s %s to %s was successful",
 				number_format($netAmount, 2),  
-				$remitCurrency,
-				$beneficiaryName,
+				$remitCurrency, 
 				$bankName
 			);
-
+			
 			// Create transaction record
 			$transaction = Transaction::create([
 				'user_id' => $user->id,

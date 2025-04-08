@@ -443,12 +443,12 @@ class TransferMobileController extends Controller
 
 			// Build the comment using sprintf for better readability
 			$comments = sprintf(
-				"You have successfully transferred %s USD to %s, of mobile No: %s.",
+				"Your mobile money transfer of %s USD to %s (%s) was successful.",
 				number_format($netAmount, 2), // Ensure txnAmount is formatted to 2 decimal places
 				$beneficiaryName,
 				$mobileNumber
-			);
-
+			); 
+			
 			// Create transaction record
 			$transaction = Transaction::create([
 				'user_id' => $user->id,
