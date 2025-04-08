@@ -29,6 +29,7 @@ class OnafricService
 		$this->onafricRateCollectionApiUrl = Config('setting.onafric_rate_api_url') ?? '';
 		$this->onafricRateCollectionPartnerCode = Config('setting.onafric_rate_partner_code') ?? '';
 		$this->onafricRateCollectionAuthKey = Config('setting.onafric_rate_auth_key') ?? '';
+		$this->onafricRateCollectionAccountId = Config('setting.onafric_collection_account_id') ?? '';
     }
 	
 	public function bankAvailableCountry()
@@ -817,17 +818,8 @@ class OnafricService
 		$txnAmount = $request->payoutCurrencyAmount;
 		$mobileNumber = str_replace('+', '', $request->mobile_code . $request->mobile_no);
 		$payoutCurrency = $request->payoutCurrency;
-		$account = $request->account ?? '';
-		/* $requestBody = [
-			"phonenumber" => $mobileNumber,
-			"amount" => $txnAmount, 
-			"currency" => $payoutCurrency, 
-			"description" => $request->notes, 
-			"callback_url" => route('mobile-collection.callback'), 
-			"metadata" => ['order_id' => $thirdPartyTransId], 
-			"send_instructions" => 'True', 
-		];  */
-		
+		$account = $this->onafricRateCollectionAccountId ?? '';
+		  
 		// Base payload
 		$requestBody = [
 			"phonenumber" => "+" . $mobileNumber,
@@ -850,6 +842,21 @@ class OnafricService
 				"request_currency" => $payoutCurrency ?? "CDF",  
 				"reason" => $request->notes ?? "DRC Multi-currency Collection",
 				"send_instructions" => true,
+			]);
+		}
+		elseif ($payoutCurrency === 'NGN') {
+			// Nigerian Baxi collection
+			$requestBody = array_merge($requestBody, [
+				"account" => $account,
+				"reason" => $request->notes ?? '',
+				"send_instructions" => true,
+				"enable_email_bill" => true,
+				"enable_merchant_pull" => false,
+				"customer_email" => $request->beneficiary_email ?? "",
+				"first_name" => $request->beneficiary_name ?? "",
+				"last_name" => "",
+				"instructions" => $request->notes ?? "",
+				"expiry_date" => "",
 			]);
 		} else {
 			// General cross-border collection

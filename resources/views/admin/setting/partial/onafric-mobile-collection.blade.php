@@ -7,6 +7,10 @@
 					<input type="url" class="form-control" id="onafric_collection_api_url" name="onafric_collection_api_url" placeholder="Api Url" value="{{ config('setting.onafric_collection_api_url') ?? '' }}" >
 				</div> 
 				<div class="mb-3 col-md-6">
+					<label for="exampleInputUsername1" class="form-label">Account Id</label>
+					<input type="text" class="form-control" id="onafric_collection_account_id" name="onafric_collection_account_id" placeholder="Account Id" value="{{ config('setting.onafric_collection_account_id') ?? '' }}" >
+				</div> 
+				<div class="mb-3 col-md-6">
 					<label for="exampleInputUsername1" class="form-label">Token</label>
 					<input type="text" class="form-control" id="onafric_collection_token" name="onafric_collection_token" placeholder="Token" value="{{ config('setting.onafric_collection_token') ?? '' }}">
 				</div>
@@ -20,8 +24,8 @@
 				<div class="mb-3 col-md-6">
 					<label for="exampleInputUsername1" class="form-label">Commission Charge Flat/%</label>
 					<input type="text" class="form-control" id="onafric_collection_commission_charge" name="onafric_collection_commission_charge" autocomplete="off" placeholder="Commission Charge Flat/%" value="{{ config('setting.onafric_collection_commission_charge') ?? 0 }}" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
-				</div>
-				
+				</div> 
+				<div class="mb-3 col-md-6"> </div>  
 				<div class="mb-3 col-md-6">
 					<label for="exampleInputUsername1" class="form-label">Rate Api Url</label>
 					<input type="url" class="form-control" id="onafric_rate_api_url" name="onafric_rate_api_url" placeholder="Rate Api Url" value="{{ config('setting.onafric_rate_api_url') ?? '' }}" >

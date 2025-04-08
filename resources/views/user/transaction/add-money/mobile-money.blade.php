@@ -29,6 +29,10 @@
 			<label for="txnAmount" class="form-label">Beneficiary Name </label>
 			<input id="beneficiary_name" name="beneficiary_name" class="form-control form-control-lg content-3 default-input" placeholder="Beneficiary Name"> 
 		</div> 
+		<div class="col-12 mb-3 beneficiary_email" style="display:none;"> 
+			<label for="txnAmount" class="form-label">Beneficiary Email </label>
+			<input id="beneficiary_email" name="beneficiary_email" class="form-control form-control-lg content-3 default-input" placeholder="Beneficiary Email"> 
+		</div> 
         <div class="col-12 mb-3">
 			<label for="notes" class="form-label">Notes </label>
 			<textarea name="notes" id="notes" class="form-control form-control-lg default-input" placeholder="Account Description"></textarea>
@@ -59,6 +63,12 @@
 				width: "100%"
 			}).on('select2:select', function (e) {
 				let selectedData = e.params.data; 
+				
+				$('.beneficiary_email').hide(); 
+				if(selectedData.iso == "NG")
+				{
+					$('.beneficiary_email').show();
+				}
 				$(this).attr('data-iso', selectedData.iso).attr('data-name', selectedData.text); 
 			});
 			 
@@ -80,8 +90,10 @@
 				return $('<span>'+flagImg+' '+country.text+'</span>');
 			}
 			
-			$mobileCollectionForm.find('#country_code').change(function(){
+			$mobileCollectionForm.find('#country_code').change(function()
+			{
 				const selectedCountryId = parseInt($(this).val());
+				 
 				const country = collectionCountries.find(c => c.id === selectedCountryId);
 
 				let options = '<option value="">Select Channel</option>';
@@ -113,7 +125,7 @@
 			
 			formData['category_name'] = 'add money'; 
 			formData['service_name'] = 'onafric mobile collection';  
-		  
+			
 			// Encrypt data before sending
 			const encrypted_data = encryptData(JSON.stringify(formData));
 			
