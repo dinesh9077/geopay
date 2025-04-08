@@ -866,7 +866,7 @@ class OnafricService
 				"send_instructions" => true,
 			]);
 		}
-	 
+		 
 		// Send the API request using Laravel's HTTP client
 		$response = Http::withHeaders([
 			'Authorization' => 'Token ' . $this->onafricCollectionToken, 
@@ -877,7 +877,7 @@ class OnafricService
 		])
 		->post($this->onafricCollectionApiUrl.'/collectionrequests', $requestBody); // Send requestBody instead of $data
 	  
-		//Log::info('send bank response', ['response' => $response->json()]);
+		 
 		// Handle the response
 		if ($response->successful()) {
 			return [

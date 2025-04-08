@@ -167,7 +167,7 @@ class ReceiveMoneyController extends Controller
 			}
 			  
 			$response = $this->onafricService->sendMobileCollectionTransaction($request);
-			 
+			\Log::info('collection request and response', ['response' => $response]); 
 			if (!$response['success']) {
 				$errorFetch = array_keys($response['response'])[0] ?? '';
 				$errorMsg = $response['response']['errors'][0]['message'] ?? ($response['response'][$errorFetch][0] ?? 'An error occurred.'); 
