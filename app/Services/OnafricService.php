@@ -26,6 +26,9 @@ class OnafricService
 		$this->sendFees = Config('setting.onafric_bank_send_fees') ?? '1.5';
 		$this->onafricCollectionToken = Config('setting.onafric_collection_token') ?? '';
 		$this->onafricCollectionApiUrl = Config('setting.onafric_collection_api_url') ?? '';
+		$this->onafricRateCollectionApiUrl = Config('setting.onafric_rate_api_url') ?? '';
+		$this->onafricRateCollectionPartnerCode = Config('setting.onafric_rate_partner_code') ?? '';
+		$this->onafricRateCollectionAuthKey = Config('setting.onafric_rate_auth_key') ?? '';
     }
 	
 	public function bankAvailableCountry()
@@ -809,13 +812,13 @@ class OnafricService
 	}
 	
 	public function sendMobileCollectionTransaction($request)
-	{     
-		$thirdPartyTransId = $request->order_id;  
+	{      
+		$thirdPartyTransId = $request->order_id;
 		$txnAmount = $request->payoutCurrencyAmount;
-		$mobileNumber = str_replace('+', '', $request->mobile_code.''.$request->mobile_no);
+		$mobileNumber = str_replace('+', '', $request->mobile_code . $request->mobile_no);
 		$payoutCurrency = $request->payoutCurrency;
-
-		$requestBody = [
+		$account = $request->account ?? '';
+		/* $requestBody = [
 			"phonenumber" => $mobileNumber,
 			"amount" => $txnAmount, 
 			"currency" => $payoutCurrency, 
@@ -823,18 +826,47 @@ class OnafricService
 			"callback_url" => route('mobile-collection.callback'), 
 			"metadata" => ['order_id' => $thirdPartyTransId], 
 			"send_instructions" => 'True', 
-		]; 
+		];  */
 		
-		// Generate the bearer token 
-		$bearerToken = $this->onafricCollectionToken; 
-		 
+		// Base payload
+		$requestBody = [
+			"phonenumber" => "+" . $mobileNumber,
+			"amount" => $txnAmount,
+			"currency" => $payoutCurrency,
+			"callback_url" => route('mobile-collection.callback'),
+			"metadata" => [
+				"order_id" => $thirdPartyTransId,
+			],
+		];
+		
+		// Determine payload type based on currency and country
+		if ($payoutCurrency === 'BXC') { 
+			$requestBody['reason'] = $request->notes ?? 'BXC Collection';
+		} elseif ($payoutCurrency === 'CDF') {
+			// DRC collection
+			$requestBody["currency"] = $this->defaultCurrency;
+			$requestBody = array_merge($requestBody, [
+				"account" => $account,
+				"request_currency" => $payoutCurrency ?? "CDF",  
+				"reason" => $request->notes ?? "DRC Multi-currency Collection",
+				"send_instructions" => true,
+			]);
+		} else {
+			// General cross-border collection
+			$requestBody = array_merge($requestBody, [
+				"account" => $account,
+				"reason" => $request->notes ?? 'Cross-border Collection',
+				"send_instructions" => true,
+			]);
+		}
+	 
 		// Send the API request using Laravel's HTTP client
 		$response = Http::withHeaders([
-			'Authorization' => 'Token ' . $bearerToken, 
+			'Authorization' => 'Token ' . $this->onafricCollectionToken, 
 			'Content-Type' => 'application/json',
 		])
 		->withOptions([
-			'verify' => false, // Disable SSL verification if needed
+			'verify' => false, 
 		])
 		->post($this->onafricCollectionApiUrl.'/collectionrequests', $requestBody); // Send requestBody instead of $data
 	  
@@ -871,6 +903,32 @@ class OnafricService
 		->get($this->onafricCollectionApiUrl.'/collectionrequests/'.$requestId); // Send requestBody instead of $data
 	  
 		//Log::info('send bank response', ['response' => $response->json()]);
+		// Handle the response
+		if ($response->successful()) {
+			return [
+				'success' => true, 
+				'response' => $response->json(),  
+			];
+		}
+
+		// If the response was unsuccessful, return an error response
+		return [
+			'success' => false, 
+			'response' => json_decode($response->body(), true), // Return the error response body
+		];
+	}
+	
+	public function getCollectionRates()
+	{        
+		$partnerCode = $this->onafricRateCollectionPartnerCode; 
+		$authKey = $this->onafricRateCollectionAuthKey; 
+		 
+		// Send the API request using Laravel's HTTP client
+		$response = Http::withHeaders([
+			'AuthKey' => $authKey,  
+		]) 
+		->get($this->onafricRateCollectionApiUrl.'?pCode='.$partnerCode); 
+	   
 		// Handle the response
 		if ($response->successful()) {
 			return [

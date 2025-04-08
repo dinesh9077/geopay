@@ -164,6 +164,9 @@
 				<button class="nav-link" id="airtime-tab" data-bs-toggle="tab" data-bs-target="#airtime" data-platform="international airtime" type="button" role="tab" aria-controls="airtime" aria-selected="true"> International Airtime </button>
 			</li> 
 			<li class="nav-item" role="presentation">
+				<button class="nav-link" id="geopay-tab" data-bs-toggle="tab" data-bs-target="#geopay-tab" data-platform="add money" type="button" role="tab" aria-controls="geopay-tab" aria-selected="true">Add Money </button>
+			</li>
+			<li class="nav-item" role="presentation">
 				<button class="nav-link" id="geopay-tab" data-bs-toggle="tab" data-bs-target="#geopay-tab" data-platform="geopay to geopay wallet" type="button" role="tab" aria-controls="geopay-tab" aria-selected="true"> Geopay To Geopay Wallet </button>
 			</li>
 			<li class="nav-item" role="presentation">

@@ -28,6 +28,7 @@
                 <select class="form-control default-input content-3 select2" name="platform_name" id="platform_name">
                     <option value="">ALL</option>
                     <option value="international airtime">International Airtime</option>
+                    <option value="add money">Add Money</option>
                     <option value="geopay to geopay wallet">Geopay To Geopay Wallet</option>
                     <option value="admin transfer">Admin Transfer</option>
                     <option value="transfer to bank">transfer to bank</option>

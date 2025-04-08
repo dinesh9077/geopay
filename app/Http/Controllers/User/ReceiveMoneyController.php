@@ -292,6 +292,7 @@ class ReceiveMoneyController extends Controller
 		{
 			$transaction->user->increment('balance', $transaction->txn_amount); 
 			$transaction->comments = "Payment received successfully. Wallet updated."; 
+			$transaction->api_response = $request->all(); 
 			$transaction->save();
 		} 
 		return response()->json(['message' => 'Transaction updated successfully'], 200);

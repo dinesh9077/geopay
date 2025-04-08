@@ -10,6 +10,7 @@
                 <select class="form-control default-input content-3 select2" name="channel" id="channel">  
 					<option value="lightnet">Lightnet</option> 
 					<option value="onafric">Onafric</option> 
+					<option value="onafric mobile collection">onafric mobile collection</option> 
                 </select>
             </div> 
 			@if (config('permission.live_exchange_rate.edit')) 

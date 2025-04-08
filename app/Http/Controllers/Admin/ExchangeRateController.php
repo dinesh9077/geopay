@@ -408,6 +408,10 @@
 						$this->getOnafricRates($channel);
 						break;  // Add break to stop execution after this case
 
+					case 'onafric mobile collection':
+						$this->getOnafricMobileCollectionRates($channel);
+						break;  // Add break to stop execution after this case
+
 					default:
 						// Optional: Handle unexpected values
 						throw new \Exception("Invalid channel: $channel");
@@ -556,6 +560,64 @@
 			}
 		}
 		
+		public function getOnafricMobileCollectionRates($channel)
+		{
+			$response = $this->onafricService->getCollectionRates();
+
+			// Validate response and rate data
+			if (empty($response['success']) || ($response['response']['code'] ?? null) !== "200") {
+				return;
+			}
+
+			$responseData = collect($response['response']['data'] ?? [])->filter()->unique('toCurrency');
+
+			if ($responseData->isEmpty()) {
+				return;
+			}
+
+			$countries = $this->onafricService->collectionCountry();
+			$currentDate = now()->toDateString();
+
+			// Fetch existing rates once to avoid multiple DB calls
+			$existingRates = LiveExchangeRate::where('channel', $channel)->get()->keyBy('currency');
+
+			foreach ($countries as $country) {
+				$currency = $country->currency_code;
+				$rate = $responseData->firstWhere('toCurrency', $currency)['fxRate'] ?? 0;
+
+				if (!$rate) {
+					continue; // Skip if no rate found
+				}
+
+				$existingRate = $existingRates[$currency] ?? null;
+
+				$markdownType = $existingRate->markdown_type ?? 'flat';
+				$markdownTypeCharge = $existingRate->markdown_charge ?? 0;
+
+				$markdownCharge = $markdownType === 'flat'
+					? max($markdownTypeCharge, 0)
+					: max(($rate * $markdownTypeCharge / 100), 0);
+
+				$markdownRate = $rate - $markdownCharge;
+
+				LiveExchangeRate::updateOrCreate(
+					[
+						'channel' => $channel,
+						'currency' => $currency,
+					],
+					[
+						'country_name'     => $country->nicename,
+						'aggregator_rate'  => $rate,
+						'markdown_rate'    => $markdownRate,
+						'markdown_type'    => $markdownType,
+						'markdown_charge'  => $markdownTypeCharge,
+						'status'           => 1,
+						'updated_at'       => $currentDate,
+					]
+				);
+			}
+		}
+ 
 		public function liveExchangeRateEdit($id)
 		{
 			$liverate = LiveExchangeRate::find($id);

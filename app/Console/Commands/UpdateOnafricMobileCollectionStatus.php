@@ -72,9 +72,9 @@ class UpdateOnafricMobileCollectionStatus extends Command
 				
 				if(strtolower($txn_status) == 'successful')
 				{
-					$transaction->user->increment('balance', $transaction->txn_amount); 
-				}
-				
+					$transaction->user->increment('balance', $transaction->txn_amount);  
+					$transaction->update(['comments' => "Payment received successfully. Wallet updated."]); 
+				} 
 			} 
 			catch (\Throwable $e) 
 			{  
