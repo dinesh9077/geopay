@@ -1,0 +1,148 @@
+<?php
+	namespace App\Http\Controllers\Api;
+	
+	use App\Http\Controllers\Controller;
+	use Illuminate\Http\Request;
+	use App\Models\{ 
+		User, Banner, Faq, Setting, Country, Transaction 
+	};
+	use Illuminate\Support\Facades\{Http, Storage, Hash, DB, Log, Auth, Notification};
+	use App\Http\Traits\ApiResponseTrait;
+	use Validator;
+	use ImageManager, Helper;
+	use App\Notifications\WalletTransactionNotification;
+	
+	class TransactionController extends Controller
+	{ 
+		use ApiResponseTrait;  
+		
+		public function walletToWalletStore(Request $request)
+		{ 
+			$user = auth()->user();
+			
+			// Validation rules
+			$validator = Validator::make($request->all(), [
+				'country_id' => 'required|integer|exists:countries,id', // Check if country_id exists in the 'countries' table
+				'mobile_number' => 'required|integer',
+				'amount' => 'required|numeric|gt:0',
+				'notes' => 'nullable|string',
+			]);
+			
+			// Retrieve country details (if exists)
+			$country = Country::find($request->country_id);
+			
+			// Custom validation logic
+			$validator->after(function ($validator) use ($request, $user, $country)
+			{
+				if ($request->input('country_id') && $request->input('mobile_number')) 
+				{
+					$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
+					
+					// Check if user is trying to pay themselves
+					if ($formattedNumber === $user->formatted_number) {
+						$validator->errors()->add('mobile_number', 'You cannot transfer funds to your own account.');
+					}
+					
+					// Check if the mobile number is registered
+					if (!User::where('formatted_number', $formattedNumber)->exists()) {
+						$validator->errors()->add('mobile_number', 'The provided mobile number is not registered.');
+					}
+					
+					// Check if the mobile number is registered and KYC is approved
+					if (!User::where('formatted_number', $formattedNumber)->where('is_kyc_verify', 1)->exists()) {
+						$validator->errors()->add('mobile_number', 'The mobile number entered is not linked to an account with approved KYC. Please complete your KYC verification to proceed.');
+					}
+					
+					// Check if user has sufficient balance
+					if ($request->input('amount') > $user->balance) {
+						$validator->errors()->add('amount', 'Insufficient balance to complete this transaction.');
+					}
+				}
+			});
+			
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors());
+			}
+			 
+			try {
+				
+				DB::beginTransaction();
+				
+				$txnAmount = $request->amount;
+				$countryId = $request->country_id;
+				$notes = $request->notes;
+				
+				// Format the mobile number again to ensure correct recipient
+				$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
+				
+				// Retrieve the recipient user
+				$toUser = User::where('formatted_number', $formattedNumber)->first();
+				
+				// Check if recipient user is found
+				if (!$toUser) {
+					return $this->errorResponse('Recipient user not found.');
+				}
+				
+				// Update sender's balance (debit the amount)
+				$user->decrement('balance', $txnAmount);
+				
+				// Update receiver's balance (credit the amount)
+				$toUser->increment('balance', $txnAmount);
+				
+				$fromComment = 'You have successfully transferred ' . $txnAmount . ' USD to ' . $toUser->first_name . ' ' . $toUser->last_name . '.';
+				$toComment = $user->first_name . ' ' . $user->last_name . ' has sent you ' . $txnAmount . ' USD to your wallet.';
+				
+				$orderId = "GPWW-".$user->id."-".time();
+				// Create a transaction record
+				$creditTransaction = Transaction::create([
+					'user_id' => $toUser->id,
+					'receiver_id' => $toUser->id,
+					'platform_name' => 'geopay to geopay wallet',
+					'platform_provider' => 'geopay to geopay wallet',
+					'transaction_type' => 'credit', // Indicating that the user is debiting funds
+					'country_id' => $toUser->country_id,
+					'txn_amount' => $txnAmount,
+					'txn_status' => 'success', // Assuming the transaction is successful
+					'comments' => $toComment,
+					'notes' => $notes,
+					'order_id' => $orderId,
+					'created_at' => now(),
+					'updated_at' => now(),
+				]);
+				
+				Helper::updateLogName($creditTransaction->id, Transaction::class, 'wallet to wallet transaction', $toUser->id);
+				
+				// Create a transaction record
+				$debitTransaction = Transaction::create([
+					'user_id' => $user->id,
+					'receiver_id' => $user->id,
+					'platform_name' => 'geopay to geopay wallet',
+					'platform_provider' => 'geopay to geopay wallet',
+					'transaction_type' => 'debit', // Indicating that the user is debiting funds
+					'country_id' => $user->country_id,
+					'txn_amount' => $txnAmount,
+					'txn_status' => 'success', // Assuming the transaction is successful
+					'comments' => $fromComment,
+					'notes' => $notes,
+					'order_id' => $orderId,
+					'created_at' => now(),
+					'updated_at' => now(),
+				]);
+				
+				Helper::updateLogName($debitTransaction->id, Transaction::class, 'wallet to wallet transaction', $user->id);
+				
+				Notification::send($user, new WalletTransactionNotification($user, $toUser, $txnAmount, $fromComment, $notes)); // Sender Notification
+				Notification::send($toUser, new WalletTransactionNotification($user, $toUser, $txnAmount, $toComment, $notes)); // Receiver Notification
+				
+				DB::commit();
+				
+				// Success response
+				return $this->successResponse('The wallet transaction was completed successfully.');
+			} 
+			catch (\Throwable $e)
+			{ 
+				DB::rollBack();
+				return $this->errorResponse($e->getMessage());
+			} 
+		}
+	}

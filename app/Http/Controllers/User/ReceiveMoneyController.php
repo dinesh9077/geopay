@@ -101,7 +101,7 @@ class ReceiveMoneyController extends Controller
 	}
 	
 	public function storeMobileCollection(Request $request)
-	{ 
+	{  
 		$user = Auth::user();
 	  
 		// Validation rules

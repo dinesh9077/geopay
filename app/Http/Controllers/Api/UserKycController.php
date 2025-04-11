@@ -14,6 +14,7 @@
 		public function metamapWebhook(Request $request)
 		{  
 			$data = $request->all(); 
+			\Log::info('metamap', ['data' => $data]);
 			if (empty($data['flowId']) || $data['flowId'] != config('setting.meta_verification_flow_id')) {
 				return;
 			}

@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\Auth\{
     RegisterController, LoginController, 
 };
 use App\Http\Controllers\Api\{
-   SettingController, UserKycController
+   SettingController, UserKycController, TransactionControllerAirtimeController, ReceiveMoneyController
 };
 
 /*
@@ -66,5 +66,22 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
 		Route::post('user-reset-password', [SettingController::class, 'userResetPassword']);  
 		
 		Route::get('common-details', [SettingController::class, 'commonDetails']);   
+		
+		//Wallet To Wallet 
+		Route::post('wallet-to-wallet', [TransactionController::class, 'walletToWalletStore']); 
+		
+		//Add Money
+		Route::prefix('collection')->group(function () 
+		{ 
+			Route::get('country-list', [ReceiveMoneyController::class, 'collectionCountryList']);
+			Route::post('commission', [ReceiveMoneyController::class, 'collectionCommission']);
+			Route::post('store', [ReceiveMoneyController::class, 'storeTransaction']);
+		});
+		
+		//Internation Airtime 
+		Route::prefix('international-airtime')->group(function () 
+		{  
+			Route::post('operator', [AirtimeController::class, 'operator']); 
+		});
     });
 });
