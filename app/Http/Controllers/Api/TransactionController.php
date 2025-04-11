@@ -61,7 +61,7 @@
 			});
 			
 			if ($validator->fails()) {
-				return $this->validateResponse($validator->errors()->first());
+				return $this->validateResponse($validator->errors());
 			}
 			 
 			try {
