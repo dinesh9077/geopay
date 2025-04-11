@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\Auth\{
 };
 use App\Http\Controllers\Api\{
    SettingController, UserKycController, TransactionController, AirtimeController,
-   ReceiveMoneyController, AirtimeController, TransferBankController
+   ReceiveMoneyController, TransferBankController
 };
 
 /*
