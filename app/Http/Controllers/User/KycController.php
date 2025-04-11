@@ -114,6 +114,7 @@ class KycController extends Controller
 	// Corporate / Company Kyc
 	public function corporateKyc()
 	{
+		error_reporting(0);
 		// Fetch the authenticated user and their company details with the related documents
 		$user = Auth::user();
 		$companyDetail = $user->companyDetail()->with(['companyDocuments', 'companyDirectors'])->first();

@@ -107,9 +107,7 @@
 		}
 		
 		public function internationalAirtimeStore(Request $request)
-		{   
-			dd($request->all());
-			
+		{    
 			if($request->wholesale_unit_amount > $request->retail_unit_amount)
 			{
 				return $this->errorResponse('Technical issue detected. Please contact support.');
@@ -118,15 +116,15 @@
 			$user = auth()->user(); 
 			// Validation rules
 			$validator = Validator::make($request->all(), [
-			'product_name' => 'required|string', 
-			'wholesale_unit_amount' => 'required|numeric', 
-			'retail_unit_amount' => 'required|numeric', 
-			'country_code' => 'required|string', 
-			'operator_id' => 'required|integer',
-			'product_id' => 'required|integer',
-			'mobile_number' => 'required|integer', 
-			'is_operator_match' => 'required|integer|in:0,1', 
-			'notes' => 'nullable|string',
+				'product_name' => 'required|string', 
+				'wholesale_unit_amount' => 'required|numeric', 
+				'retail_unit_amount' => 'required|numeric', 
+				'country_code' => 'required|string', 
+				'operator_id' => 'required|integer',
+				'product_id' => 'required|integer',
+				'mobile_number' => 'required|integer', 
+				'is_operator_match' => 'required|integer|in:0,1', 
+				'notes' => 'nullable|string',
 			]);
 			
 			// Custom validation logic

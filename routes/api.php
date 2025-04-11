@@ -6,8 +6,8 @@ use App\Http\Controllers\Api\Auth\{
     RegisterController, LoginController, 
 };
 use App\Http\Controllers\Api\{
-   SettingController, UserKycController, TransactionControllerAirtimeController,
-   ReceiveMoneyController, AirtimeController
+   SettingController, UserKycController, TransactionController, AirtimeController,
+   ReceiveMoneyController, AirtimeController, TransferBankController
 };
 
 /*
@@ -86,6 +86,12 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
 			Route::post('products', [AirtimeController::class, 'products']); 
 			Route::post('mobile-validate', [AirtimeController::class, 'mobileValidate']); 
 			Route::post('store-transaction', [AirtimeController::class, 'storeTransaction']); 
+		});
+		
+		//Transfer Bank
+		Route::prefix('transfer-bank')->group(function () 
+		{  
+			Route::get('country-list', [TransferBankController::class, 'countryList']);  
 		});
     });
 });
