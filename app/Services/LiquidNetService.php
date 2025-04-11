@@ -396,5 +396,25 @@ class LiquidNetService
 		return $output;
 
 	}
+	
+	public function getAgentLists($request)
+	{
+		$timestamp = time();
+		$body = [
+			'agentSessionId' => (string) $timestamp,
+			'paymentMode' => 'B',
+			'payoutCountry' => (string) $request->payoutCountry,
+		];
 
+		// Call the service API
+		$response = $this->serviceApi('post', '/GetAgentList', $timestamp, $body);
+		
+		// Initialize the output
+		if (!isset($response['success']) || !$response['success'] && $response['response']['code'] !== 0) {
+			return [];
+		} 
+		// Process bank list
+		$banks = $response['response']['locationDetail'] ?? []; 
+		return $banks; 
+	} 
 }

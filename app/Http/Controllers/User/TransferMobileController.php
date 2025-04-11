@@ -261,7 +261,7 @@ class TransferMobileController extends Controller
 			}
 
 			// Log ID before deletion
-			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to bank beneficiary');
+			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to mobile beneficiary');
 
 			// Delete the beneficiary
 			$beneficiary->delete();

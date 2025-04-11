@@ -302,7 +302,7 @@ class TransferBankController extends Controller
 		
 		$states = $this->lightnetStates($payoutCountry);
 		 
-		$countries = $this->countries()->toArray();
+		$countries = $this->countries()->where('service_name', 'lightnet')->toArray();
 		$view = view('user.transaction.transfer-bank.lightnet-fields', compact('fieldList', 'catalogue', 'countries', 'states', 'editData'))->render();
 		return $view;
 	}

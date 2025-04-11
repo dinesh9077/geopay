@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\Auth\{
 };
 use App\Http\Controllers\Api\{
    SettingController, UserKycController, TransactionController, AirtimeController,
-   ReceiveMoneyController, TransferBankController
+   ReceiveMoneyController, TransferBankController, TransferMobileController
 };
 
 /*
@@ -64,9 +64,11 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
 	Route::middleware(['decrypt.request'])->group(function () 
 	{ 
 		Route::post('user-profile-update', [SettingController::class, 'userProfileUpdate']);   
-		Route::post('user-reset-password', [SettingController::class, 'userResetPassword']);  
-		
+		Route::post('user-reset-password', [SettingController::class, 'userResetPassword']);   
 		Route::get('common-details', [SettingController::class, 'commonDetails']);   
+		
+		//Transaction list
+		Route::post('transaction-list', [TransactionController::class, 'transactionList']); 
 		
 		//Wallet To Wallet 
 		Route::post('wallet-to-wallet', [TransactionController::class, 'walletToWalletStore']); 
@@ -92,6 +94,27 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
 		Route::prefix('transfer-bank')->group(function () 
 		{  
 			Route::get('country-list', [TransferBankController::class, 'countryList']);  
+			Route::post('beneficiary-list', [TransferBankController::class, 'beneficiaryList']);  
+			Route::post('beneficiary-delete/{id}', [TransferBankController::class, 'beneficiaryDelete'])->withoutMiddleware('decrypt.request'); 
+			Route::post('beneficiary-store', [TransferBankController::class, 'beneficiaryStore']); 
+			Route::post('beneficiary-update/{id}', [TransferBankController::class, 'beneficiaryUpdate']);  
+			Route::post('commission', [TransferBankController::class, 'commission']);  
+			Route::post('store-transaction', [TransferBankController::class, 'storeTransaction']);  
+			Route::post('bank-list', [TransferBankController::class, 'bankList']);  
+			Route::post('get-fields-by-bank', [TransferBankController::class, 'getFieldByBank']);  
+		});
+		
+		//Transfer Money
+		Route::prefix('transfer-mobile-money')->group(function () 
+		{  
+			Route::get('country-list', [TransferMobileController::class, 'countryList']);  
+			Route::post('beneficiary-list', [TransferMobileController::class, 'beneficiaryList']);  
+			Route::post('beneficiary-delete/{id}', [TransferMobileController::class, 'beneficiaryDelete'])->withoutMiddleware('decrypt.request'); 
+			Route::post('fields-view', [TransferMobileController::class, 'getOnafricFieldView']);  
+			Route::post('beneficiary-store', [TransferMobileController::class, 'beneficiaryStore']);  
+			Route::post('beneficiary-update/{id}', [TransferMobileController::class, 'beneficiaryUpdate']);  
+			Route::post('commission', [TransferMobileController::class, 'commission']);  
+			Route::post('store-transaction', [TransferMobileController::class, 'storeTransaction']);     
 		});
     });
 });

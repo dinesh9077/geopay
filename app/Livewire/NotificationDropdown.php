@@ -31,7 +31,7 @@ class NotificationDropdown extends Component
         // Fetch unread notifications 
 		$allNotifications = $user->notifications()->latest()->limit(6)->get();
         // Format notifications for display
-        $this->notifications =  $allNotifications->map(function ($notification) 
+        $this->notifications = $allNotifications->map(function ($notification) 
 		{ 
             return [
                 'id' => $notification->id,

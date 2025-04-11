@@ -145,4 +145,59 @@
 				return $this->errorResponse($e->getMessage());
 			} 
 		}
+		
+		public function transactionList(Request $request)
+		{
+			// Global search value
+			$start = $request->input('start'); 
+			$limit = $request->input('limit');  
+			$orderDirection = 'desc';   
+			$search = $request->input('search');
+
+			$query = Transaction::where('user_id', auth()->user()->id);
+
+			// Apply filters dynamically based on request inputs
+			if ($request->filled('platform_name')) {
+				$query->where('platform_name', $request->platform_name);
+			}
+
+			if ($request->filled(['start_date', 'end_date'])) {
+				if ($request->start_date === $request->end_date) {
+					// If both dates are the same, use 'whereDate' for exact match
+					$query->whereDate('created_at', $request->start_date);
+				} else {
+					// Otherwise, use 'whereBetween' for the range
+					$query->whereBetween('created_at', [$request->start_date, $request->end_date]);
+				}
+			}
+
+
+			if ($request->filled('txn_status')) {
+				$query->where('txn_status', $request->txn_status);
+			}
+
+			// Apply search filter if present
+			if (!empty($search)) {
+				$query->where(function ($q) use ($search) {
+					$q->orWhere('platform_name', 'LIKE', "%{$search}%")
+						->orWhere('order_id', 'LIKE', "%{$search}%")
+						->orWhere('comments', 'LIKE', "%{$search}%")
+						->orWhere('notes', 'LIKE', "%{$search}%")
+						->orWhere('transaction_type', 'LIKE', "%{$search}%")
+						->orWhere('txn_amount', 'LIKE', "%{$search}%")
+						->orWhere('created_at', 'LIKE', "%{$search}%");
+				});
+			}
+  
+			// Apply ordering, limit, and offset for pagination
+			$values = $query
+				->orderBy('id', $orderDirection) 
+				->offset($start)
+				->limit($limit)
+				->get()->map(function ($item) {
+					return collect($item)->except(['api_request', 'api_response', 'beneficiary_request', 'api_response_second']);
+				}); 	
+			 
+			return $this->successResponse('transaction fetched successfully.', $values);	
+		}
 	}
