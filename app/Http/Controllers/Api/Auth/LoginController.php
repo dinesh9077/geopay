@@ -63,6 +63,7 @@
 				$user->profile_image = $user->profile_image ? url('storage/profile', $user->profile_image) : url('admin/default-profile.png');
 				$user->token = $token;
 				$user->metamap = $user->userKyc()->exists(); 
+				$user->default_currency = config('setting.default_currency', 'USD'); 
 
 				Helper::loginLog('login', $user, 'App'); 
 

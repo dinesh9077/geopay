@@ -6,7 +6,8 @@ use App\Http\Controllers\Api\Auth\{
     RegisterController, LoginController, 
 };
 use App\Http\Controllers\Api\{
-   SettingController, UserKycController, TransactionControllerAirtimeController, ReceiveMoneyController
+   SettingController, UserKycController, TransactionControllerAirtimeController,
+   ReceiveMoneyController, AirtimeController
 };
 
 /*
@@ -82,6 +83,9 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
 		Route::prefix('international-airtime')->group(function () 
 		{  
 			Route::post('operator', [AirtimeController::class, 'operator']); 
+			Route::post('products', [AirtimeController::class, 'products']); 
+			Route::post('mobile-validate', [AirtimeController::class, 'mobileValidate']); 
+			Route::post('store-transaction', [AirtimeController::class, 'storeTransaction']); 
 		});
     });
 });
