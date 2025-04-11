@@ -62,6 +62,7 @@
 				$user->load('companyDetail'); 
 				$user->profile_image = $user->profile_image ? url('storage/profile', $user->profile_image) : url('admin/default-profile.png');
 				$user->token = $token;
+				$user->metamap = $user->userKyc()->exists(); 
 
 				Helper::loginLog('login', $user, 'App'); 
 
