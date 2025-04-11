@@ -187,7 +187,7 @@ class TransactionController extends Controller
     }
 	
 	public function walletToWalletStore(Request $request)
-	{
+	{ 
 		$user = auth()->user();
 		
 		// Validation rules
