@@ -110,7 +110,7 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
 			Route::get('country-list', [TransferMobileController::class, 'countryList']);  
 			Route::post('beneficiary-list', [TransferMobileController::class, 'beneficiaryList']);  
 			Route::post('beneficiary-delete/{id}', [TransferMobileController::class, 'beneficiaryDelete'])->withoutMiddleware('decrypt.request'); 
-			Route::post('fields-view', [TransferMobileController::class, 'getOnafricFieldView']);  
+			Route::post('fields-view', [TransferMobileController::class, 'getOnafricFieldView'])->withoutMiddleware('decrypt.request');  
 			Route::post('beneficiary-store', [TransferMobileController::class, 'beneficiaryStore']);  
 			Route::post('beneficiary-update/{id}', [TransferMobileController::class, 'beneficiaryUpdate']);  
 			Route::post('commission', [TransferMobileController::class, 'commission']);  
