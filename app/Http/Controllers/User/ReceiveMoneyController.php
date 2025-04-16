@@ -165,12 +165,12 @@ class ReceiveMoneyController extends Controller
 					"Current total transactions: {$remitCurrency} {$transactionAmount}."
 				);
 			}
-			  
+			 
 			$response = $this->onafricService->sendMobileCollectionTransaction($request);
 			\Log::info('collection request and response', ['response' => $response]);  
 			if (!$response['success']) {
 				$errorFetch = array_keys($response['response'])[0] ?? '';
-				$errorMsg = $response['response']['errors'][0]['message'] ?? ($response['response'][$errorFetch][0] ?? 'An error occurred.'); 
+				$errorMsg = $response['response']['errors'][0]['message'] ?? ($response['response'][$errorFetch][0] ?? ($response['response']['detail'] ?? 'An error occurred.')); 
 				throw new \Exception($errorMsg);
 			}
 			
