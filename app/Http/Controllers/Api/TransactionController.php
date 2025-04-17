@@ -195,7 +195,9 @@
 				->offset($start)
 				->limit($limit)
 				->get()->map(function ($item) {
-					return collect($item)->except(['api_request', 'api_response', 'beneficiary_request', 'api_response_second']);
+					return collect($item)
+					->put('receipt_url', url('transaction-receipt-pdf', $item->id))
+					->except(['api_request', 'api_response', 'beneficiary_request', 'api_response_second']);
 				}); 	
 			 
 			return $this->successResponse('transaction fetched successfully.', $values);	
