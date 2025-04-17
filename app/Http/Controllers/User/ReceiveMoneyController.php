@@ -258,10 +258,10 @@ class ReceiveMoneyController extends Controller
 			return response()->json(['error' => 'Empty request'], 400);
 		}
  
-		$thirdPartyTransId = $request->input('data.collection_request.id');
-		$txnStatus = strtolower($request->input('data.collection_request.status'));
-		$errorMsg = $request->input('data.collection_request.error_message');
-		$instructions = $request->input('data.collection_request.instructions');
+		$thirdPartyTransId = $request->input('data.id');
+		$txnStatus = strtolower($request->input('data.status'));
+		$errorMsg = $request->input('data.error_message');
+		$instructions = $request->input('data.instructions');
 		
 		/* Log::info('collection_request_id', ['id' => $thirdPartyTransId]);
 		Log::info('collection_request_status', ['status' => $txnStatus]); */
