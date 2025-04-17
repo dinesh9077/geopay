@@ -3,7 +3,7 @@
 @section('header_title', 'Transaction List')
 @section('content')
 <style>
-	.swal2-image.custom-image-class {
+	.swal2-image.custom-image-class {
 	position: absolute;
 	top: -10px;
 	right: 10px;
@@ -18,8 +18,8 @@
 				<option value="geopay to geopay wallet">Geopay To Geopay Wallet</option>
 				<option value="add money">Add Money</option>
 				<option value="international airtime">International Airtime</option>
-				<option value="transfer to bank">transfer to bank</option>
-				<option value="transfer to mobile">transfer to mobile</option>
+				<option value="transfer to bank">transfer to bank</option>
+				<option value="transfer to mobile">transfer to mobile</option>
 				<option value="admin transfer">Admin Transfer</option>
 			</select>
 		</div>

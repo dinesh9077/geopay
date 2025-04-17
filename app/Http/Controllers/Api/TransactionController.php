@@ -198,8 +198,22 @@
 					return collect($item)
 					->put('receipt_url', url('transaction-receipt-pdf', $item->id))
 					->except(['api_request', 'api_response', 'beneficiary_request', 'api_response_second']);
-				}); 	
-			 
-			return $this->successResponse('transaction fetched successfully.', $values);	
+				});
+
+			$data['data'] = $values;
+			$txnStatuses = Transaction::select('txn_status')
+			->groupBy('txn_status')
+			->pluck('txn_status');
+			$data['txnStatuses'] = $txnStatuses;
+			$transactionTypes = [
+				'geopay to geopay wallet',
+				'add money',
+				'international airtime',
+				'transfer to bank',
+				'transfer to mobile',
+				'admin transfer',
+			];
+			$data['transactionTypes'] = $transactionTypes;
+			return $this->successResponse('transaction fetched successfully.', $data);	
 		}
 	}
