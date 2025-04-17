@@ -260,7 +260,8 @@ class ReceiveMoneyController extends Controller
  
 		$thirdPartyTransId = $request->input('data.collection_request.id');
 		$txnStatus = strtolower($request->input('data.collection_request.status'));
-		$errorMsg = strtolower($request->input('data.collection_request.error_message'));
+		$errorMsg = $request->input('data.collection_request.error_message');
+		$instructions = $request->input('data.collection_request.instructions');
 		
 		/* Log::info('collection_request_id', ['id' => $thirdPartyTransId]);
 		Log::info('collection_request_status', ['status' => $txnStatus]); */
@@ -284,7 +285,7 @@ class ReceiveMoneyController extends Controller
 
 		// Update transaction status
 		$transaction->txn_status = strtolower($txnStatus);
-		$transaction->comments = $errorMsg ?? $transaction->comments;
+		$transaction->comments = !empty($errorMsg) ? $errorMsg : (!empty($instructions) ? $instructions : $transaction->comments);
 		$transaction->touch();
 		$transaction->save();
 		
