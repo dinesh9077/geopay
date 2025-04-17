@@ -815,7 +815,7 @@ class OnafricService
 	public function sendMobileCollectionTransaction($request)
 	{      
 		$thirdPartyTransId = $request->order_id;
-		$txnAmount = $request->payoutCurrencyAmount;
+		$txnAmount = (int)$request->payoutCurrencyAmount;
 		$mobileNumber = str_replace('+', '', $request->mobile_code . $request->mobile_no);
 		$payoutCurrency = $request->payoutCurrency;
 		$account = $this->onafricRateCollectionAccountId ?? '';
