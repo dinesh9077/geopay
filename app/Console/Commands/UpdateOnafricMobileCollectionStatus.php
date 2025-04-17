@@ -69,7 +69,7 @@ class UpdateOnafricMobileCollectionStatus extends Command
 				
 				// Update transaction status
 				$txn_status = strtolower($response['response']['status'] ?? $transaction->txn_status);
-				$errorMsg =  !empty($response['response']['error_message']) ? $response['response']['error_message'] ? (!empty($response['response']['instructions']) ? $response['response']['instructions'] : $transaction->comments);
+				$errorMsg =  !empty($response['response']['error_message']) ? $response['response']['error_message'] : (!empty($response['response']['instructions']) ? $response['response']['instructions'] : $transaction->comments);
 				$transaction->update(['txn_status' => strtolower($txn_status), 'comments' => $errorMsg]);  
 				
 				if(strtolower($txn_status) == 'successful')
