@@ -61,6 +61,7 @@ class UpdateOnafricMobileCollectionStatus extends Command
 			try { 
 				 
 				$response = $this->onafricService->getCollectionStatus($transaction->unique_identifier);
+				\Log::info($response);
 				// Return 0 on failure or unexpected response
 				if (!$response['success']) {
 					continue; // Skip to the next transaction
