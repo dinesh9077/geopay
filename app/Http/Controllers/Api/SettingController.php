@@ -10,7 +10,8 @@
 	use App\Http\Traits\ApiResponseTrait;
 	use Validator;
 	use ImageManager;
- 
+	use Carbon\Carbon;
+
 	class SettingController extends Controller
 	{ 
 		use ApiResponseTrait;  
@@ -155,5 +156,24 @@
 				return $country;
 			});
 			return $this->successResponse('country fetched.', $countriesWithFlags);
+		}
+
+		public function notificationList()
+		{
+			// Get the authenticated user
+			$user = auth()->user();
+
+			// Mark all notifications as read
+			$user->notifications->markAsRead();
+
+			$user->notifications()->where('created_at', '<', Carbon::now()->subDays(2))->delete();
+
+			// Get recent notifications from the last 2 days
+			$recentNotifications = $user->notifications()
+				->where('created_at', '>=', Carbon::now()->subDays(2))
+				->orderByDesc('id')
+				->get();
+
+			return $this->successResponse('notification fetched.', $recentNotifications);
 		}
 	}

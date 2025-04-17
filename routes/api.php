@@ -59,8 +59,9 @@ Route::get('country-list', [SettingController::class, 'countryList']);
 Route::middleware(['auth:api', 'ensure.token'])->group(function () 
 {
     Route::post('logout', [LoginController::class, 'logout']); 
-	Route::post('user-details', [LoginController::class, 'userDetails']); 
-	
+	Route::post('user-details', [LoginController::class, 'userDetails']);
+	Route::get('notification-list', [SettingController::class, 'notificationList']);
+
 	Route::middleware(['decrypt.request'])->group(function () 
 	{ 
 		Route::post('user-profile-update', [SettingController::class, 'userProfileUpdate']);   
@@ -115,6 +116,6 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
 			Route::post('beneficiary-update/{id}', [TransferMobileController::class, 'beneficiaryUpdate']);  
 			Route::post('commission', [TransferMobileController::class, 'commission']);  
 			Route::post('store-transaction', [TransferMobileController::class, 'storeTransaction']);     
-		});
-    });
+		}); 
+	});
 });
