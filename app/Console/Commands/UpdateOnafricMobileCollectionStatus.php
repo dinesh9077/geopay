@@ -49,7 +49,7 @@ class UpdateOnafricMobileCollectionStatus extends Command
 		// Fetch transactions that need status updates
 		$transactions = Transaction::select('id', 'user_id', 'txn_status', 'platform_provider', 'order_id', 'unique_identifier')
 		->where('platform_provider', 'onafric mobile collection')
-		->whereNotIn('txn_status', ['successful'])
+		->whereNotIn('txn_status', ['successful', 'failed'])
 		->get();
 		
 		if ($transactions->isEmpty()) {
