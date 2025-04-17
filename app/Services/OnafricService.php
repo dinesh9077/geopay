@@ -825,7 +825,7 @@ class OnafricService
 			"phonenumber" => "+" . $mobileNumber,
 			"amount" => $txnAmount,
 			"currency" => $payoutCurrency,
-			"callback_url" => route('mobile-collection.callback'),
+			//"callback_url" => route('mobile-collection.callback'),
 			"metadata" => [
 				"order_id" => $thirdPartyTransId,
 			],
