@@ -334,4 +334,6 @@ class RegisterController extends Controller
 		
 		return $this->smsService->verifyOtp($request->mobile_number, $request->otp, false);
 	}
+	
+	
 }

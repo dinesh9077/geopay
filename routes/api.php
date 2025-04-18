@@ -51,8 +51,11 @@ Route::middleware(['decrypt.request'])->group(function ()
       
     // User Metamap Webhook
     Route::post('/metamap-webhook', [UserKycController::class, 'metamapWebhook'])->withoutMiddleware('decrypt.request');
+	 
 });
 
+
+ 
 Route::get('country-list', [SettingController::class, 'countryList']);   
 
 // Authenticated Routes
@@ -61,7 +64,10 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
     Route::post('logout', [LoginController::class, 'logout']); 
 	Route::post('user-details', [LoginController::class, 'userDetails']);
 	Route::get('notification-list', [SettingController::class, 'notificationList']);
-
+	
+	//Company Kyc
+	Route::get('/company-kyc-details', [UserKycController::class, 'companyKycDetails']);
+	
 	Route::middleware(['decrypt.request'])->group(function () 
 	{ 
 		Route::post('user-profile-update', [SettingController::class, 'userProfileUpdate']);   

@@ -3,10 +3,10 @@
 
 	use App\Http\Controllers\Controller;
 	use Illuminate\Http\Request;
-	use App\Models\{User, UserKyc};
+	use App\Models\{User, UserKyc, BusinessType, DocumentType};
 	use Illuminate\Support\Facades\{Http, Storage, DB, Log};
 	use App\Http\Traits\ApiResponseTrait;
-	use Validator;
+	use Validator, Auth;
  
 	class UserKycController extends Controller
 	{ 
@@ -164,4 +164,33 @@
 			Storage::disk('public')->deleteDirectory("kyc-videos/{$userId}");
 			Storage::disk('public')->deleteDirectory("kyc-documents/{$userId}");
 		} 
+		
+		//Company KYC
+		public function companyKycDetails()
+		{
+			error_reporting(0);
+			// Fetch the authenticated user and their company details with the related documents
+			$user = Auth::user();
+			$companyDetail = $user->companyDetail()->with(['companyDocuments', 'companyDirectors'])->first();
+
+			// Calculate the step number based on the company's step number, defaulting to 1 if not found
+			$stepNumber = $companyDetail ? ($companyDetail->step_number + 1 ?? 1) : 1;
+			
+			// Get company documents, group them by document_type
+			$companyDocument = $companyDetail 
+			? $companyDetail->companyDocuments->groupBy('document_type')->map(function ($documents) {
+				return $documents->first(); // Get the first document in each group
+			})->toArray()
+			: [];
+			
+			$businessTypes = BusinessType::whereStatus(1)->get();
+			$documentTypes = DocumentType::whereStatus(1)->get();
+			$data = [];
+			$data['companyDetail'] = $companyDetail;
+			$data['stepNumber'] = $stepNumber;
+			$data['businessTypes'] = $businessTypes;
+			$data['documentTypes'] = $documentTypes;
+			$data['companyDocument'] = $companyDocument;
+			return $this->successResponse('Kyc details fetched.', $data); 
+		}
 	}
