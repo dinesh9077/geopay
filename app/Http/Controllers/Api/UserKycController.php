@@ -4,11 +4,11 @@
 	use App\Http\Controllers\Controller;
 	use Illuminate\Http\Request;
 	use App\Models\{
-		User, UserKyc, BusinessType, DocumentType, CompanyDetail, CompanyDirector
+		User, UserKyc, BusinessType, DocumentType, CompanyDetail, CompanyDirector, CompanyDocument
 	};
 	use Illuminate\Support\Facades\{Http, Storage, DB, Log};
 	use App\Http\Traits\ApiResponseTrait;
-	use Validator, Auth;
+	use Validator, Auth, ImageManager;
  
 	class UserKycController extends Controller
 	{ 
@@ -310,5 +310,106 @@
 				DB::rollBack();
 				return $this->errorResponse($e->getMessage());
 			}
+		}
+		
+		public function companyKycDocumentStore(Request $request)
+		{ 
+			if (empty($request->company_director_id) || count(array_filter($request->company_director_id)) == 0) {
+				return $this->errorResponse('At least one company director document is required.');
+			}
+
+			try { 
+				DB::beginTransaction();
+ 
+				$user = Auth::user();
+				 
+				$companyDetail = CompanyDetail::where('id', $request->company_details_id)->first();
+				 
+				$documents = $request->company_director_id;
+
+				foreach ($documents as $directorId => $documentGroups)
+				{ 
+					foreach ($documentGroups as $documentTypeId => $files) 
+					{
+						$documentType = DocumentType::where('id', $documentTypeId)->first();
+						// Array to hold file paths
+						$storedFiles = [];
+						  
+						// Validate and process each file in the request
+						foreach ($files as $key => $file) {
+								 
+							// Get the file extension
+							$extension = $file->getClientOriginalExtension();
+							// If company details exist, update document (optional files)
+							if ($companyDetail) {
+								
+								// Check if the document already exists for this company
+								$existingDocs = DB::table('company_documents')
+									->where('company_details_id', $companyDetail->id)
+									->where('document_type_id', $documentTypeId)
+									->where('company_director_id', $directorId) 
+									->get();
+
+								if ($existingDocs->isNotEmpty()) {
+									foreach ($existingDocs as $existingDoc) {
+										// Construct the full path for the old document
+										$fullPath = 'company_documents/'.$companyDetail->user_id.'/'.$existingDoc->document;
+										
+										// Delete the old image using ImageManager
+										ImageManager::imgDelete($fullPath);
+										
+										// Delete the record from the database
+										DB::table('company_documents')->where('id', $existingDoc->id)->delete();
+									}
+								}
+
+								// If no existing document, move the new file
+								$storedFile = ImageManager::move('company_documents/'.$companyDetail->user_id, $file, $extension);
+								$storedFiles[] = [
+									'company_details_id' => $companyDetail->id,
+									'company_director_id' => $directorId,
+									'document_type_id' => $documentTypeId,
+									'document_type' => $documentType->name,
+									'document' => $storedFile,  // Store the file name returned by move()
+									'status' => 0,  
+									'created_at' => now(),
+									'updated_at' => now(),
+								];
+								
+							} else {
+								// If no company details, move the new file (required for new company details)
+								$storedFile = ImageManager::move('company_documents/'.$companyDetail->user_id, $file, $extension);
+								$storedFiles[] = [
+									'company_details_id' => $companyDetail->id,
+									'company_director_id' => $directorId,
+									'document_type_id' => $documentTypeId,
+									'document_type' => $documentType->name,
+									'document' => $storedFile,  // Store the file name returned by move()
+									'status' => 0,
+									'created_at' => now(),
+									'updated_at' => now(),
+								];
+							}
+						 
+						}
+					
+						// Insert new documents into the database if needed
+						if (count($storedFiles) > 0) {
+							DB::table('company_documents')->insert($storedFiles);  
+						}
+						
+						if(!CompanyDocument::where('company_details_id', $companyDetail->id)->where('status', 2)->exists())
+						{ 
+							CompanyDetail::where('id', $request->company_details_id)->update(['is_update_kyc' => 1]);
+						}
+					}
+				}
+				DB::commit();
+				return $this->successResponse('KYC all documents uploaded successfully.', ['data' => []]);
+				
+			} catch (\Throwable $e) { 
+				DB::rollBack();
+				return $this->errorResponse($e->getMessage());
+			} 
 		}
 	}
