@@ -192,7 +192,7 @@ class KycController extends Controller
     }
 	
 	public function corporateKycStep(Request $request, $step)
-	{  
+	{   
 		$user = Auth::user();
 		
 		// Common validation rules for each step

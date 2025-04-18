@@ -64,12 +64,13 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
     Route::post('logout', [LoginController::class, 'logout']); 
 	Route::post('user-details', [LoginController::class, 'userDetails']);
 	Route::get('notification-list', [SettingController::class, 'notificationList']);
-	
-	//Company Kyc
-	Route::get('/company-kyc-details', [UserKycController::class, 'companyKycDetails']);
-	
+	 
 	Route::middleware(['decrypt.request'])->group(function () 
 	{ 
+		//Company Kyc
+		Route::get('/company-kyc-details', [UserKycController::class, 'companyKycDetails']);
+		Route::post('/company-kyc/step/{number}', [UserKycController::class, 'companyKycStepStore']);
+	
 		Route::post('user-profile-update', [SettingController::class, 'userProfileUpdate']);   
 		Route::post('user-reset-password', [SettingController::class, 'userResetPassword']);   
 		Route::get('common-details', [SettingController::class, 'commonDetails']);   
