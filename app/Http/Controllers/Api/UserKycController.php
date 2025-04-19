@@ -404,6 +404,7 @@
 						}
 					}
 				}
+				$user->update(['is_upload_document' => 1])
 				DB::commit();
 				return $this->successResponse('KYC all documents uploaded successfully.', ['data' => []]);
 				
