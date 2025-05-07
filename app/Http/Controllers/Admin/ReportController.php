@@ -91,7 +91,7 @@ class ReportController extends Controller
 
                 $data[] = [
                     'id' => $i,
-                    'user_name' => $value->user->first_name,
+                    'user_name' => $value->user->first_name ?? 'N/A',
                     'platform_name' => $value->platform_name,
                     'order_id' => $value->order_id,
                     'fees' => Helper::decimalsprint($value->fees, 2) . ' ' . config('setting.default_currency'),
