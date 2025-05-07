@@ -122,7 +122,12 @@
 	});
 	
 	// Initialize Flatpickr for date inputs
-	flatpickr("#receiveridexpiredate, #receiveridissuedate,  #receiverdateofbirth, #senderidissuedate, #senderidexpiredate, #senderdateofbirth", {
+	flatpickr("#receiverdateofbirth, #senderdateofbirth", {
+		dateFormat: "Y-m-d",
+		maxDate: "today"
+	});
+	
+	flatpickr("#receiveridexpiredate, #receiveridissuedate,  #senderidissuedate, #senderidexpiredate", {
 		dateFormat: "Y-m-d"
 	});
 	
