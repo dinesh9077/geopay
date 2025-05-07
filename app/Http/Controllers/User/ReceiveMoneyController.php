@@ -22,7 +22,8 @@ use App\Services\{
 	MasterService, OnafricService
 }; 
 use App\Notifications\WalletTransactionNotification;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Notification; 
+use App\Notifications\AirtimeRefundNotification;
 use Helper;
 use Carbon\Carbon;  
 
@@ -202,7 +203,7 @@ class ReceiveMoneyController extends Controller
 			$beneficiaryName = trim("$beneficiaryFirstName"); // Using trim to remove any leading/trailing spaces
 
 			// Build the comment using sprintf for better readability
-			$comments = "Transaction is being processed. You will be notified once it's completed.";
+			$comments = "Your transaction is being processed. A request has been sent to the sender – please ask them to approve it. You will be notified once the transaction is completed. Thank you for relying on GEOPAY for fast and reliable money requests.";
 
 			// Create transaction record
 			$transaction = Transaction::create([
@@ -241,8 +242,11 @@ class ReceiveMoneyController extends Controller
 
 			// Log the transaction creation
 			Helper::updateLogName($transaction->id, Transaction::class, 'add mobile collection transaction', $user->id); 
+			
+			Notification::send($user, new AirtimeRefundNotification($user, $txnAmount, $transaction->id, $comments, $transaction->notes, ucfirst($txnStatus)));
+			
 			DB::commit();  
-			return $this->successResponse("Transaction is being processed. You will be notified once it's completed.", ['userBalance' => Helper::decimalsprint($user->balance, 2), 'currencyCode' => config('setting.default_currency')]);
+			return $this->successResponse("Your transaction is being processed. A request has been sent to the sender – please ask them to approve it. You will be notified once the transaction is completed.", ['userBalance' => Helper::decimalsprint($user->balance, 2), 'currencyCode' => config('setting.default_currency')]);
 		} catch (\Throwable $e) {
 			DB::rollBack();  
 			return $this->errorResponse($e->getMessage()); 

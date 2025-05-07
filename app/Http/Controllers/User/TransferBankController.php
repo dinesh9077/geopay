@@ -17,6 +17,7 @@ use App\Services\{
     LiquidNetService, OnafricService
 };
 use App\Notifications\WalletTransactionNotification;
+use App\Notifications\AirtimeRefundNotification;
 use Carbon\Carbon;
 use Helper;
  
@@ -652,9 +653,8 @@ class TransferBankController extends Controller
 
 			// Build the comment using sprintf for better readability
 			$comments = sprintf(
-				"Your bank transfer of %s %s to %s was successful",
-				number_format($netAmount, 2),  
-				$remitCurrency, 
+				"Your bank transfer of $%s to %s has been successfully completed. Thanks for using GEOPAY for your seamless bank-to-bank transfers.",
+				number_format($netAmount, 2), 
 				$bankName
 			);
 			
@@ -713,7 +713,9 @@ class TransferBankController extends Controller
 				
 				$successMsg = $commitResponse['response']['message'];
 			}
- 
+			
+			Notification::send($user, new AirtimeRefundNotification($user, $netAmount, $transaction->id, $comments, $transaction->notes, ucfirst($txnStatus)));
+			
 			DB::commit();  
 			return $this->successResponse($successMsg ?? 'TXN Successfully Accepted.');
 		} catch (\Throwable $e) {
