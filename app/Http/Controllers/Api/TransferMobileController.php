@@ -267,7 +267,7 @@
 
 				// Build the comment using sprintf for better readability
 				$comments = sprintf(
-					"Your mobile money transfer of %s USD to %s (%s) was successful.",
+					"You have successfully transferred $%s to %s (%s) via Mobile Money.Thank you for trusting GEOPAY for instant mobile money transactions.",
 					number_format($netAmount, 2), // Ensure txnAmount is formatted to 2 decimal places
 					$beneficiaryName,
 					$mobileNumber
@@ -309,6 +309,7 @@
 
 				// Log the transaction creation
 				Helper::updateLogName($transaction->id, Transaction::class, 'transfer to mobile transaction', $user->id); 
+				Notification::send($user, new AirtimeRefundNotification($user, $netAmount, $transaction->id, $comments, $transaction->notes, ucfirst($txnStatus)));
 				DB::commit();  
 				return $this->successResponse('The order has been accepted.', ['userBalance' => Helper::decimalsprint($user->balance, 2), 'currencyCode' => config('setting.default_currency')]);
 			} catch (\Throwable $e) {

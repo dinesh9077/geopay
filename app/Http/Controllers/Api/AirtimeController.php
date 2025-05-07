@@ -12,6 +12,7 @@
 	use Illuminate\Support\Facades\Validator;
 	use App\Http\Traits\ApiResponseTrait;
 	use App\Notifications\WalletTransactionNotification;
+	use App\Notifications\AirtimeRefundNotification;
 	use Illuminate\Support\Facades\Notification;
 	use Helper;
 	use Carbon\Carbon;
@@ -182,7 +183,9 @@
 				}
 				// Deduct balance
 				$user->decrement('balance', $txnAmount); 
-				$comments = "You have successfully recharged $txnAmount USD for $productName.";
+				
+				$comments = "Your recharge of ${$txnAmount} for $productName has been successfully processed. We appreciate your continued trust in GEOPAY for your mobile top-ups.";
+				
 				// Create transaction record
 				$transaction = Transaction::create([
 				'user_id' => $user->id,
@@ -219,6 +222,8 @@
 				
 				// Log the transaction creation
 				Helper::updateLogName($transaction->id, Transaction::class, 'international airtime transaction', $user->id);
+				
+				Notification::send($user, new AirtimeRefundNotification($user, $txnAmount, $transaction->id, $comments, $transaction->notes, ucfirst($txnStatus)));
 				
 				DB::commit(); 
 				// Success response

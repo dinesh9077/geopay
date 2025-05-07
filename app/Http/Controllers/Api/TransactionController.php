@@ -89,7 +89,7 @@
 				// Update receiver's balance (credit the amount)
 				$toUser->increment('balance', $txnAmount);
 				
-				$fromComment = 'You have successfully transferred ' . $txnAmount . ' USD to ' . $toUser->first_name . ' ' . $toUser->last_name . '.';
+				$fromComment = 'You have successfully transferred ' . $txnAmount . ' USD to ' . $toUser->first_name . ' ' . $toUser->last_name . ' via Wallet-to-Wallet. Thank you for choosing GEOPAY for secure wallet transfers.';
 				$toComment = $user->first_name . ' ' . $user->last_name . ' has sent you ' . $txnAmount . ' USD to your wallet.';
 				
 				$orderId = "GPWW-".$user->id."-".time();

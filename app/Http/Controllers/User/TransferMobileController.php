@@ -521,7 +521,10 @@ class TransferMobileController extends Controller
 		$transaction->txn_status = strtolower($txnStatus);
 		$transaction->touch(); // Updates the `updated_at` timestamp
 		$transaction->save();
- 
+		
+		$user = $transaction->user;
+		Notification::send($user, new AirtimeRefundNotification($user, $transaction->txn_amount, $transaction->id, $transaction->comments, $transaction->notes, ucfirst($transaction->txn_status)));
+		
 		return response()->json(['message' => 'Transaction updated successfully'], 200);
 	}
 }

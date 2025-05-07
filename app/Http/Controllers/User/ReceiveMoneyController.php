@@ -293,6 +293,7 @@ class ReceiveMoneyController extends Controller
 		$transaction->touch();
 		$transaction->save();
 		
+		$user = $transaction->user;
 		if(strtolower($txnStatus) == 'successful')
 		{
 			$transaction->user->increment('balance', $transaction->txn_amount); 
@@ -300,6 +301,8 @@ class ReceiveMoneyController extends Controller
 			$transaction->api_response = $request->all(); 
 			$transaction->save();
 		} 
+		
+		Notification::send($user, new AirtimeRefundNotification($user, $transaction->txn_amount, $transaction->id, $transaction->comments, $transaction->notes, ucfirst($transaction->txn_status)));
 		return response()->json(['message' => 'Transaction updated successfully'], 200);
 	}
 }
