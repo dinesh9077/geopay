@@ -57,7 +57,12 @@
 	});
 	
 	// Initialize Flatpickr for date inputs 
-	flatpickr("#sender_placeofbirth, #idExpiry", {
-		dateFormat: "Y-m-d"
+	flatpickr("#sender_placeofbirth", {
+		dateFormat: "Y-m-d",
+		maxDate: "today"
 	});
+	
+	flatpickr("#idExpiry", {
+		dateFormat: "Y-m-d"
+	}); 
 </script>

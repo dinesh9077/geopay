@@ -157,10 +157,12 @@
 			width: "100%"
 		});
 		
-		// Initialize Flatpickr for date inputs
+		// Initialize Flatpickr for date inputs with future dates disabled
 		flatpickr("#sender_placeofbirth, #recipient_dateofbirth", {
-			dateFormat: "Y-m-d"
+			dateFormat: "Y-m-d",
+			maxDate: "today"
 		});
+
 		  
 		// Attach the submit event handler 
 		$beneficiaryForm.submit(function(event) 

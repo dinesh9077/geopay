@@ -181,8 +181,7 @@
 					$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
 					throw new \Exception($errorMsg);
 				}
-				//Log::info($response);
-				// Transaction variables
+				
 				$txnAmount = $request->input('retail_unit_amount') + $request->input('platform_fees');
 				$productName = $request->input('product_name');
 				$mobileNumber = '+' . ltrim($request->input('mobile_number'), '+');

@@ -518,6 +518,11 @@
 					$field['inputType'] = "select";
 					$field['options'] = $catalogue->has('SOF') ? collect($catalogue->get('SOF')->data ?? [])->pluck('value', 'data')->toArray() : [];
 				}
+				elseif ($fieldName == "receiveridexpiredate" || $fieldName == "receiveridissuedate" || $fieldName == "receiverdateofbirth" || $fieldName == "senderidissuedate" || $fieldName == "senderidexpiredate" || $fieldName == "senderdateofbirth") 
+				{
+					$field['inputType'] = "date";
+					$field['options'] = [];
+				}
 				$fieldLists[] = $field;
 			} 
 			return $fieldLists;
