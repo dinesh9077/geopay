@@ -403,7 +403,8 @@
 				{ 
 					toastrMsg(res.status, res.message);  
 					resetForm($transferToMobileForm);  
-					Livewire.dispatch('refreshRecentTransactions'); 
+					Livewire.dispatch('refreshRecentTransactions');
+					Livewire.dispatch('refreshNotificationDropdown');
 					Livewire.dispatch('updateBalance'); 
 					
 					const decodeRes = decryptData(res.response);

@@ -149,6 +149,7 @@
 						toastrMsg(res.status, res.message);  
 						resetForm($mobileCollectionForm);  
 						Livewire.dispatch('refreshRecentTransactions'); 
+						Livewire.dispatch('refreshNotificationDropdown');
 						Livewire.dispatch('updateBalance'); 
 						
 						const decodeRes = decryptData(res.response);
