@@ -68,7 +68,7 @@ class LoginController extends Controller
 			$user = User::where('email', $request->email)->first();
 			if(!$user)
 			{ 
-				return $this->errorResponse('User not found.');
+				return $this->errorResponse('No account found. Please register first.');
 			}
 			
 			// Check user status and verification
