@@ -3,8 +3,7 @@
 	
 	use App\Http\Controllers\Controller;
 	use Illuminate\Http\Request;
-	use App\Models\Country;
-	use App\Notifications\AirtimeRefundNotification;
+	use App\Models\Country; 
 	use App\Models\Transaction;
 	use App\Models\User;
 	use Illuminate\Support\Facades\DB;
