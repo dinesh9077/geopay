@@ -12,7 +12,7 @@
 	use Illuminate\Support\Facades\Validator;
 	use App\Http\Traits\WebResponseTrait;
 	use App\Notifications\WalletTransactionNotification; 
-	use Helper;
+	use Helper, Notification;
 	use Carbon\Carbon;
 	use App\Services\AirtimeService;
 	use Barryvdh\DomPDF\Facade\Pdf;
