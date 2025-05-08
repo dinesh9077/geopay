@@ -15,7 +15,9 @@
 		use ApiResponseTrait;  
 		public function metamapWebhook(Request $request)
 		{  
-			$data = $request->all();  
+			$data = $request->all();
+			Log::info('Request Data:', $data);
+			
 			if (empty($data['flowId']) || $data['flowId'] != config('setting.meta_verification_flow_id')) {
 				return;
 			}
