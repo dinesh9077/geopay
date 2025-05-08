@@ -317,8 +317,7 @@
 			}
 
 			Transaction::where('unique_identifier', $uniqueIdentifier)->update(['txn_status' => $txnStatus]);
-			return response()->json(['message' => 'Transaction status updated', 'transaction' => $transaction]);
-
+			  
 			return response()->json(['error' => 'Transaction not found'], 404);
 		} 
 	}
