@@ -62,7 +62,8 @@
 				$user->load('companyDetail'); 
 				$user->profile_image = $user->profile_image ? url('storage/profile', $user->profile_image) : url('admin/default-profile.png');
 				$user->token = $token;
-				$user->metamap = $user->userKyc()->exists(); 
+				$user->metamap = $user->userKyc()->where('verification_status', 'verified')->exists(); 
+				$user->metamap_status = $user->userKyc->verification_status ?? 'pending'; 
 				$user->default_currency = config('setting.default_currency', 'USD'); 
 
 				Helper::loginLog('login', $user, 'App'); 
