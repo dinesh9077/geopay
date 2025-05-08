@@ -194,7 +194,7 @@
 				{
 					$productRes = $productResponse['response'];
 				}
-				// Deduct balance
+				// Deduct balanced
 				$user->decrement('balance', $txnAmount); 
 				$comments = "Your recharge of $ {$txnAmount} for $productName has been successfully processed. We appreciate your continued trust in GEOPAY for your mobile top-ups.";
 				// Create transaction record
