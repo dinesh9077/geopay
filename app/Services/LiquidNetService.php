@@ -130,6 +130,7 @@ class LiquidNetService
 			"receiverState" => $beneficiary['receiverstate'] ?? '',
 			"receiverAreaTown" => $beneficiary['receiverareatown'] ?? '',
 			"receiverCity" => $beneficiary['receivercity'] ?? '',
+			"receiverZipCode" => $beneficiary['receiverzipcode'] ?? '', 
 			"receiverCountry" => $beneficiary['payoutCountry'] ?? '',
 			"receiverIdType" => $beneficiary['receiveridtype'] ?? '',
 			"receiverIdTypeRemarks" => $beneficiary['receiveridtyperemarks'] ?? '',
