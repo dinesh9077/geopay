@@ -21,6 +21,7 @@
 		MasterService, LiquidNetService, OnafricService
 	}; 
 	use App\Notifications\WalletTransactionNotification;
+	use App\Notifications\AirtimeRefundNotification;
 	use Illuminate\Support\Facades\Notification;
 	use Helper;
 	use Carbon\Carbon;
