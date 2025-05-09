@@ -312,7 +312,7 @@
 				Helper::updateLogName($transaction->id, Transaction::class, 'transfer to mobile transaction', $user->id); 
 				Notification::send($user, new AirtimeRefundNotification($user, $netAmount, $transaction->id, $comments, $transaction->notes, ucfirst($txnStatus)));
 				DB::commit();  
-				return $this->successResponse('The order has been accepted.', ['userBalance' => Helper::decimalsprint($user->balance, 2), 'currencyCode' => config('setting.default_currency')]);
+				return $this->successResponse('Mobile transfer has been successfully processed.', ['userBalance' => Helper::decimalsprint($user->balance, 2), 'currencyCode' => config('setting.default_currency')]);
 			} catch (\Throwable $e) {
 				DB::rollBack();  
 				return $this->errorResponse($e->getMessage()); 
