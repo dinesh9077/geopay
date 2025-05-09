@@ -158,7 +158,7 @@ class LiquidNetService
 			"ReceiverNationality" => $beneficiary['payoutCountry'] ?? '',
 			"receiverIdIssueDate" => $beneficiary['receiveridissuedate'] ?? '',
 			"receiverIdExpireDate" => $beneficiary['receiveridexpiredate'] ?? '',
-			"receiverDistrict" => $beneficiary['receiverdistrict'] ?? '',,
+			"receiverDistrict" => $beneficiary['receiverdistrict'] ?? '',
 			"receiptCpf" => $beneficiary['receiptcpf'] ?? '',
 			"remarks" => $request->notes,
 			"receiverDateOfBirth" => $beneficiary['receiverdateofbirth'] ?? '',
