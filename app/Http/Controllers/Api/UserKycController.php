@@ -27,10 +27,9 @@
 			}
 			 
 			$verificationId = basename($data['resource']);
-			
+			$user_id = $data['metadata']['user_id'];
 			if (in_array($data['eventName'], ["verification_started"]) && isset($data['metadata']['user_id'])) 
-			{  
-				$user_id = $data['metadata']['user_id'];
+			{   
 				$user_email = isset($data['metadata']['user_email']) ? $data['metadata']['user_email'] : null; 
 				$step_id = 'pending';
 				 
@@ -46,7 +45,7 @@
 				return;
 			}
 			 
-			$metaKycDetail = UserKyc::where('verification_id', $verificationId)->first();
+			$metaKycDetail = UserKyc::where('user_id', $user_id)->first();
 			if (!$metaKycDetail) {
 				return;
 			}
@@ -97,11 +96,12 @@
 			// Update the KYC record in the database
 			DB::transaction(function () use ($response, $documentImages, $storedVideoUrl, $data, $userId) 
 			{
-				UserKyc::where('verification_id', $response['id']) 
+				UserKyc::where('user_id', $userId) 
 				->update([
 				'verification_status' => in_array($response['identity']['status'] ?? 'reviewNeeded', ['reviewNeeded', 'verified']) 
                                 ? $response['identity']['status'] 
                                 : 'reviewNeeded',
+				'verification_id' => $response['id'],
 				'identification_id' => $response['identity']['id'],
 				'document' => json_encode($documentImages),
 				'video' => $storedVideoUrl,
