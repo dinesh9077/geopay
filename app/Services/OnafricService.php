@@ -836,10 +836,11 @@ class OnafricService
 			$requestBody['reason'] = $request->notes ?? 'BXC Collection';
 		} elseif ($payoutCurrency === 'CDF') {
 			// DRC collection
-			$requestBody["currency"] = $this->defaultCurrency; 
+			$requestBody["currency"] = $this->defaultCurrency;
+			$requestBody["amount"] = $request->txnAmount;
 			$requestBody = array_merge($requestBody, [
 				"account" => $account,
-				"request_currency" => $payoutCurrency ?? "CDF",  
+				"request_currency" => $this->defaultCurrency ?? "CDF",  
 				"reason" => $request->notes ?? "DRC Multi-currency Collection",
 				"send_instructions" => true,
 			]);
