@@ -813,7 +813,7 @@ class OnafricService
 	}
 	
 	public function sendMobileCollectionTransaction($request)
-	{      
+	{       
 		$thirdPartyTransId = $request->order_id;
 		$txnAmount = (int)$request->payoutCurrencyAmount;
 		$mobileNumber = str_replace('+', '', $request->mobile_code . $request->mobile_no);
@@ -837,18 +837,18 @@ class OnafricService
 		} elseif ($payoutCurrency === 'CDF') {
 			// DRC collection
 			$requestBody["currency"] = $this->defaultCurrency;
+			$requestBody["amount"] = $request->txnAmount;
 			$requestBody = array_merge($requestBody, [
 				"account" => $account,
 				"request_currency" => $payoutCurrency ?? "CDF",  
 				"reason" => $request->notes ?? "DRC Multi-currency Collection",
 				"send_instructions" => true,
 			]);
-		}
-		elseif ($payoutCurrency === 'NGN') {
-			// Nigerian Baxi collection
+		} elseif ($payoutCurrency === 'NGN') {
+			// Nigerian Baxi collection 
 			$requestBody = array_merge($requestBody, [
 				"account" => $account,
-				"reason" => $request->notes ?? '',
+				"description" => $request->notes ?? '',
 				"send_instructions" => true,
 				"enable_email_bill" => true,
 				"enable_merchant_pull" => false,
@@ -857,16 +857,17 @@ class OnafricService
 				"last_name" => "",
 				"instructions" => $request->notes ?? "",
 				"expiry_date" => "",
+				"max_attempts" => 0
 			]);
 		} else {
 			// General cross-border collection
 			$requestBody = array_merge($requestBody, [
 				"account" => $account,
-				"reason" => $request->notes ?? 'Cross-border Collection',
+				"reason" => $request->notes ?? '',
 				"send_instructions" => true,
 			]);
 		}
-		 
+		dd($requestBody);
 		// Send the API request using Laravel's HTTP client
 		$response = Http::withHeaders([
 			'Authorization' => 'Token ' . $this->onafricCollectionToken, 
