@@ -867,7 +867,7 @@ class OnafricService
 				"send_instructions" => true,
 			]);
 		}
-		dd($requestBody);
+		 
 		// Send the API request using Laravel's HTTP client
 		$response = Http::withHeaders([
 			'Authorization' => 'Token ' . $this->onafricCollectionToken, 
