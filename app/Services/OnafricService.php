@@ -813,7 +813,8 @@ class OnafricService
 	}
 	
 	public function sendMobileCollectionTransaction($request)
-	{       
+	{  
+	
 		$thirdPartyTransId = $request->order_id;
 		$txnAmount = (int)$request->payoutCurrencyAmount;
 		$mobileNumber = str_replace('+', '', $request->mobile_code . $request->mobile_no);
@@ -837,10 +838,11 @@ class OnafricService
 		} elseif ($payoutCurrency === 'CDF') {
 			// DRC collection
 			$requestBody["currency"] = $this->defaultCurrency;
-			$requestBody["amount"] = $request->txnAmount;
+			$requestBody["amount"] = (int)$request->payoutCurrencyAmount;
 			$requestBody = array_merge($requestBody, [
 				"account" => $account,
-				"request_currency" => $this->defaultCurrency ?? "CDF",  
+				// "request_currency" => $this->defaultCurrency ?? "CDF",  
+				"request_currency" => "CDF",  
 				"reason" => $request->notes ?? "DRC Multi-currency Collection",
 				"send_instructions" => true,
 			]);
