@@ -129,7 +129,7 @@ class ReceiveMoneyController extends Controller
 				$validator->errors()->add('txnAmount', 'The payout currency amount must be greater than 0.');
 			}
 			
-			if($request->country_code == 240 && $request->channel === "Vodafone" && $request->payoutCurrencyAmount >= 1000)
+			if($request->country_code == 240 && $request->channel === "Vodafone" && $request->payoutCurrencyAmount <= 1000)
 			{
 				$validator->errors()->add('txnAmount', 'The minimum allowed amount is 1000 CDF for DRC Vodafone.');
 			}
