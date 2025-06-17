@@ -131,7 +131,7 @@ class ReceiveMoneyController extends Controller
 			
 			if($request->country_code == 240 && $request->channel === "Vodafone" && $request->txnAmount < 1)
 			{
-				$validator->errors()->add('txnAmount', 'The minimum allowed receivable amount in 1000 CDF for DRC Vodafone.');
+				$validator->errors()->add('txnAmount', 'The minimum allowed receivable amount in 1 USD for DRC Vodafone.');
 			}
 		});
 
