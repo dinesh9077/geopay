@@ -835,14 +835,13 @@ class OnafricService
 		// Determine payload type based on currency and country
 		if ($payoutCurrency === 'BXC') { 
 			$requestBody['reason'] = $request->notes ?? 'BXC Collection';
-		} elseif ($payoutCurrency === 'CDF') {
+		} elseif ($request->country_code == 240) {
 			// DRC collection
 			$requestBody["currency"] = $this->defaultCurrency;
-			$requestBody["amount"] = (int)$request->payoutCurrencyAmount;
+			$requestBody["amount"] = $request->txnAmount;
 			$requestBody = array_merge($requestBody, [
 				"account" => $account,
-				// "request_currency" => $this->defaultCurrency ?? "CDF",  
-				"request_currency" => "CDF",  
+				"request_currency" => $this->defaultCurrency ?? "USD",   
 				"reason" => $request->notes ?? "DRC Multi-currency Collection",
 				"send_instructions" => true,
 			]);
