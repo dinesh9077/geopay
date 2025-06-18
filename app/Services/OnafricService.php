@@ -61,10 +61,10 @@ class OnafricService
 			"Benin" => ['MTN', 'Moov'],
 			"Senegal" => ['Orange'],
 			"Togo" => ['Moov', 'Togocel'], 
-			"Burkina Faso" => ['Mobicash'], 
+			"Burkina Faso" => ['Mobicash', 'Orange', 'Moov'], 
 			"Zambia" => ['MTN'],
 			"Guinea" => ['Orange', 'MTN'],
-			"Democratic Republic of the Congo" => ['Vodafone', 'Orange', 'Airtel'],
+			"Democratic Republic of the Congo" => ['Vodafone', 'Orange', 'Airtel'], 
 			"Beyonic" => ['beyonic']
 		];   
 	}
