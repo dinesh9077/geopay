@@ -65,6 +65,7 @@ class OnafricService
 			"Zambia" => ['MTN'],
 			"Guinea" => ['Orange', 'MTN'],
 			"Democratic Republic of the Congo" => ['Vodafone', 'Orange', 'Airtel'], 
+			"Nigeria" => ['Baxi'],
 			"Beyonic" => ['beyonic']
 		];   
 	}
