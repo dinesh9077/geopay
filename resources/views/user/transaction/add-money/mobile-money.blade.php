@@ -29,9 +29,20 @@
 			<label for="txnAmount" class="form-label">Beneficiary Name </label>
 			<input id="beneficiary_name" name="beneficiary_name" class="form-control form-control-lg content-3 default-input" placeholder="Beneficiary Name"> 
 		</div> 
+		 
+		<div class="col-12 mb-3 beneficiary_email" style="display:none;"> 
+			<label for="txnAmount" class="form-label">Beneficiary Last Name </label>
+			<input id="beneficiary_last_name" name="beneficiary_last_name" class="form-control form-control-lg content-3 default-input" placeholder="Beneficiary Last Name"> 
+		</div> 
+
 		<div class="col-12 mb-3 beneficiary_email" style="display:none;"> 
 			<label for="txnAmount" class="form-label">Beneficiary Email </label>
 			<input id="beneficiary_email" name="beneficiary_email" class="form-control form-control-lg content-3 default-input" placeholder="Beneficiary Email"> 
+		</div> 
+		
+		<div class="col-12 mb-3 beneficiary_email" style="display:none;"> 
+			<label for="txnAmount" class="form-label">Expired Date </label>
+			<input id="expired_date" type="date" name="expired_date" class="form-control form-control-lg content-3 default-input" placeholder="Expired Date"> 
 		</div> 
         <div class="col-12 mb-3">
 			<label for="notes" class="form-label">Notes </label>
@@ -65,9 +76,11 @@
 				let selectedData = e.params.data; 
 				
 				$('.beneficiary_email').hide(); 
+				$('#beneficiary_name').closest('div').find('label').text('Beneficiary Name');
 				if(selectedData.iso == "NG")
 				{
-					$('.beneficiary_email').show();
+					$('#beneficiary_name').closest('div').find('label').text('Beneficiary First Name');	
+					$('.beneficiary_email').show(); 
 				}
 				$(this).attr('data-iso', selectedData.iso).attr('data-name', selectedData.text); 
 			});

@@ -856,9 +856,9 @@ class OnafricService
 				"enable_merchant_pull" => false,
 				"customer_email" => $request->beneficiary_email ?? "",
 				"first_name" => $request->beneficiary_name ?? "",
-				"last_name" => "",
+				"last_name" => $request->beneficiary_last_name ?? "",
 				"instructions" => $request->notes ?? "",
-				"expiry_date" => "",
+				"expiry_date" => $request->expired_date ?? "",
 				"max_attempts" => 0
 			]);
 		} else {
