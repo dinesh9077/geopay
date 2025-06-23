@@ -81,9 +81,11 @@
 				
 				$('.beneficiary_email').hide(); 
 				$('#beneficiary_name').closest('div').find('label').text('Beneficiary Name');
+				$('#beneficiary_name').attr('placeholder', 'Beneficiary Name');
 				if(selectedData.iso == "NG")
 				{
 					$('#beneficiary_name').closest('div').find('label').text('Beneficiary First Name');	
+					$('#beneficiary_name').attr('placeholder', 'Beneficiary First Name');
 					$('.beneficiary_email').show(); 
 				}
 				$(this).attr('data-iso', selectedData.iso).attr('data-name', selectedData.text); 
