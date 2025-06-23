@@ -58,7 +58,11 @@
 	<script>
 		var $mobileCollectionForm = $('#mobileCollectionForm');  
 		var collectionCountries = @json($collectionCountries);
-		 
+		
+		flatpickr("#expired_date", {
+			dateFormat: "Y-m-d"
+		});
+
 		$(document).ready(function() {
 			$mobileCollectionForm.find('.select2').select2();
 			// Initialize Select2 for the individual form
