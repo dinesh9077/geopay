@@ -92,7 +92,8 @@
 				$('#beneficiary_name').attr('placeholder', 'Beneficiary Name');
 				$('#request_currency').prop('required', false);
 				$('.request_currency').hide;
-
+				alert(selectedData.iso)
+				alert(selectedData.id)
 				if(selectedData.iso == "NG")
 				{
 					$('#beneficiary_name').closest('div').find('label').text('Beneficiary First Name');	
