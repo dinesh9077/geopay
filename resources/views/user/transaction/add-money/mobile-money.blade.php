@@ -19,7 +19,15 @@
 				<input id="mobile_no" type="number" name="mobile_no" class="form-control form-control-lg default-input mobile-number mb-3" placeholder="Enter Mobile No (eg.2444765454)" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));"/>
 			</div>
         </div>
-        
+		<div class="col-12 mb-3 request_currency" style="display:none;"> 
+			<label for="country_code" class="form-label">Request Currency <span class="text-danger">*</span></label>
+			<select id="request_currency" name="request_currency" class="form-control form-control-lg default-input mb-3 select2" >
+				<option value="">Request Currency</option> 
+				<option value="USD">USD</option> 
+				<option value="CDF">CDF</option> 
+			</select>
+		</div>
+		
 		<div class="col-12 mb-3"> 
 			<label for="txnAmount" class="form-label">Amount <span class="text-danger">*</span></label>
 			<input id="txnAmount" name="txnAmount" class="form-control form-control-lg content-3 default-input"  placeholder="Enter Amount in {{config('setting.default_currency')}} (eg : 100 or eg : 0.0)" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));"> 
@@ -82,11 +90,17 @@
 				$('.beneficiary_email').hide(); 
 				$('#beneficiary_name').closest('div').find('label').text('Beneficiary Name');
 				$('#beneficiary_name').attr('placeholder', 'Beneficiary Name');
+				$('#request_currency').prop('required', false).hide();
+
 				if(selectedData.iso == "NG")
 				{
 					$('#beneficiary_name').closest('div').find('label').text('Beneficiary First Name');	
 					$('#beneficiary_name').attr('placeholder', 'Beneficiary First Name');
 					$('.beneficiary_email').show(); 
+				}
+				else if(selectedData.iso == "CD" && selectedData.id == "240")
+				{
+					$('#request_currency').prop('required', true).show();
 				}
 				$(this).attr('data-iso', selectedData.iso).attr('data-name', selectedData.text); 
 			});

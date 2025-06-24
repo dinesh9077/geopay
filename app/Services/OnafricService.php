@@ -820,6 +820,7 @@ class OnafricService
 		$txnAmount = (int)$request->payoutCurrencyAmount;
 		$mobileNumber = str_replace('+', '', $request->mobile_code . $request->mobile_no);
 		$payoutCurrency = $request->payoutCurrency;
+		$requestCurrency = $request->request_currency;
 		$account = $this->onafricRateCollectionAccountId ?? '';
 		  
 		// Base payload
@@ -839,10 +840,11 @@ class OnafricService
 		} elseif ($request->country_code == 240) {
 			// DRC collection
 			$requestBody["currency"] = $this->defaultCurrency;
-			$requestBody["amount"] = $request->txnAmount;
+			$requestBody["amount"] = $requestCurrency === "USD" ? $request->txnAmount : $request->payoutCurrencyAmount;
 			$requestBody = array_merge($requestBody, [
 				"account" => $account,
-				"request_currency" => $this->defaultCurrency ?? "USD",   
+				//"request_currency" => $this->defaultCurrency ?? "USD",   
+				"request_currency" => $requestCurrency,
 				"reason" => $request->notes ?? "DRC Multi-currency Collection",
 				"send_instructions" => true,
 			]);
