@@ -90,7 +90,8 @@
 				$('.beneficiary_email').hide(); 
 				$('#beneficiary_name').closest('div').find('label').text('Beneficiary Name');
 				$('#beneficiary_name').attr('placeholder', 'Beneficiary Name');
-				$('#request_currency').prop('required', false).hide();
+				$('#request_currency').prop('required', false);
+				$('.request_currency').hide;
 
 				if(selectedData.iso == "NG")
 				{
@@ -100,7 +101,8 @@
 				}
 				else if(selectedData.iso == "CD" && selectedData.id == "240")
 				{
-					$('#request_currency').prop('required', true).show();
+					$('#request_currency').prop('required', true);
+					$('.request_currency').show;
 				}
 				$(this).attr('data-iso', selectedData.iso).attr('data-name', selectedData.text); 
 			});
