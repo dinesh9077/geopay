@@ -840,7 +840,7 @@ class OnafricService
 		} elseif ($request->country_code == 240) {
 			// DRC collection
 			$requestBody["currency"] = $this->defaultCurrency;
-			$requestBody["amount"] = $requestCurrency === "USD" ? $request->txnAmount : $request->payoutCurrencyAmount;
+			$requestBody["amount"] = $requestCurrency === "USD" ? (int)$request->txnAmount : (int)$request->payoutCurrencyAmount;
 			$requestBody = array_merge($requestBody, [
 				"account" => $account,
 				//"request_currency" => $this->defaultCurrency ?? "USD",   
