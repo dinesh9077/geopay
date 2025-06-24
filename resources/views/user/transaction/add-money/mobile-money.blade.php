@@ -20,8 +20,8 @@
 			</div>
         </div>
 		<div class="col-12 mb-3 request_currency" style="display:none;"> 
-			<label for="country_code" class="form-label">Request Currency <span class="text-danger">*</span></label>
-			<select id="request_currency" name="request_currency" class="form-control form-control-lg default-input mb-3 select2" >
+			<label for="request_currency" class="form-label">Request Currency <span class="text-danger">*</span></label>
+			<select id="request_currency" name="request_currency" class="form-control form-control-lg default-input mb-3">
 				<option value="">Request Currency</option> 
 				<option value="USD">USD</option> 
 				<option value="CDF">CDF</option> 
