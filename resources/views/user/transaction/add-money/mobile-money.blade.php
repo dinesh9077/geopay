@@ -91,9 +91,8 @@
 				$('#beneficiary_name').closest('div').find('label').text('Beneficiary Name');
 				$('#beneficiary_name').attr('placeholder', 'Beneficiary Name');
 				$('#request_currency').prop('required', false);
-				$('.request_currency').hide;
-				alert(selectedData.iso)
-				alert(selectedData.id)
+				$('.request_currency').hide();
+				 
 				if(selectedData.iso == "NG")
 				{
 					$('#beneficiary_name').closest('div').find('label').text('Beneficiary First Name');	
@@ -103,7 +102,7 @@
 				else if(selectedData.iso == "CD" && selectedData.id == "240")
 				{
 					$('#request_currency').prop('required', true);
-					$('.request_currency').show;
+					$('.request_currency').show();
 				}
 				$(this).attr('data-iso', selectedData.iso).attr('data-name', selectedData.text); 
 			});
