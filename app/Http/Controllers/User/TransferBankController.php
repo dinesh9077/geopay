@@ -189,7 +189,7 @@ class TransferBankController extends Controller
 			$bankName = $dataArr['bankName'] ?? '';
 
 			// Skip beneficiaries with missing required data
-			if (empty($firstName) || empty($lastName)) {
+			if (empty($firstName)) {
 				continue;
 			}
 
