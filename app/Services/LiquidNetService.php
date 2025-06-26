@@ -138,12 +138,12 @@ class LiquidNetService
 			"receiverOccupationRemark" => $beneficiary['receiveroccupationremark'] ?? '',
 			"receiverIdNumber" => $beneficiary['receiveridnumber'] ?? '',
 			"receiverEmail" => $beneficiary['receiveremail'] ?? '',
-			"receiverNativeFirstname" => "",
-			"receiverNativeMiddleName" => "",
-			"receiverNativeLastname" => "",
-			"senderSecondaryIdType" => "",
-			"senderSecondaryIdNumber" => "",
-			"senderNativeLastname" => "",
+			"receiverNativeFirstname" => $beneficiary['receivernativefirstname'] ?? '',
+			"receiverNativeMiddleName" => $beneficiary['receivernativemiddleName'] ?? '',
+			"receiverNativeLastname" => $beneficiary['receivernativelastname'] ?? '',
+			"senderSecondaryIdType" => $beneficiary['sendersecondaryidType'] ?? '',
+			"senderSecondaryIdNumber" => $beneficiary['sendersecondaryidNumber'] ?? '',
+			"senderNativeLastname" => $beneficiary['sendernativelastname'] ?? '',
 			"calcBy" => "P",
 			"transferAmount" => (string) $aggregatorCurrencyAmount,
 			"remitCurrency" => $this->defaultCurrency,
@@ -163,6 +163,7 @@ class LiquidNetService
 			"receiptCpf" => $beneficiary['receiptcpf'] ?? '',
 			"remarks" => $request->notes,
 			"receiverDateOfBirth" => $beneficiary['receiverdateofbirth'] ?? '',
+			"receiverGender" => $beneficiary['receivergender'] ?? '',
 			"receiverAccountType" => ""
 		]; 
 		$signatureString = $this->hmacAuthGenerate($method, $apiUrl, $requestTimestamp, $requestBody);
