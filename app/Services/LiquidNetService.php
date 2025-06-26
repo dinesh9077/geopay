@@ -141,7 +141,7 @@ class LiquidNetService
 			"receiverNativeFirstname" => $beneficiary['receivernativefirstname'] ?? '',
 			"receiverNativeMiddleName" => $beneficiary['receivernativemiddleName'] ?? '',
 			"receiverNativeLastname" => $beneficiary['receivernativelastname'] ?? '',
-			"ReceiverNativeAddress" => $beneficiary['Receivernativeaddress'] ?? '',
+			"ReceiverNativeAddress" => $beneficiary['receivernativeaddress'] ?? '',
 			"senderSecondaryIdType" => $beneficiary['sendersecondaryidType'] ?? '',
 			"senderSecondaryIdNumber" => $beneficiary['sendersecondaryidNumber'] ?? '',
 			"senderNativeLastname" => $beneficiary['sendernativelastname'] ?? '',
