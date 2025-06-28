@@ -128,7 +128,8 @@
 	});
 	
 	flatpickr("#receiveridexpiredate, #receiveridissuedate,  #senderidissuedate, #senderidexpiredate", {
-		dateFormat: "Y-m-d"
+		dateFormat: "Y-m-d",
+		allowInput: true
 	});
 	
 </script>
