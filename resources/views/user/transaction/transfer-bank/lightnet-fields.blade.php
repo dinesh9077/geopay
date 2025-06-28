@@ -125,7 +125,9 @@
 	flatpickr("#receiverdateofbirth, #senderdateofbirth", {
 		dateFormat: "Y-m-d",
 		maxDate: "today",
-		allowInput: true
+		allowInput: true,
+		disableMobile: true,        // always use desktop calendar (helpful on mobile)
+   		monthSelectorType: "dropdown" // ensure month and year are dropdowns
 	});
 	
 	flatpickr("#receiveridexpiredate, #receiveridissuedate,  #senderidissuedate, #senderidexpiredate", {
