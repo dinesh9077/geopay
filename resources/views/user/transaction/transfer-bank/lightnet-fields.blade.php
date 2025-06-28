@@ -39,14 +39,14 @@
 				@endforeach
 			</select>
 			 
-		@elseif (in_array($fieldName, ["receiverstate", "senderstate"]))  
+		{{-- @elseif (in_array($fieldName, ["receiverstate", "senderstate"]))  
 			<select id="{{ $fieldName }}" name="{{ $fieldName }}" class="form-control form-control-lg content-3 select2" @if ($field['required']) required @endif>
 				<option value="" disabled selected>Select {{ $field['fieldLabel'] }}</option> 
 				@foreach($states as $row) 
 					<option value="{{ $row['data'] }}" {{ $editData && isset($editData[$fieldName]) ? ($row['data'] == $editData[$fieldName] ? 'selected' : '' ) : '' }}>{{ $row['value'] }}</option>
 				@endforeach
 			</select>
-			 
+			  --}}
 		@elseif ($fieldName == "senderbeneficiaryrelationship") 
 			<select id="{{ $fieldName }}" name="{{ $fieldName }}" class="form-control form-control-lg content-3 select2" @if ($field['required']) required @endif>
 				<option value="" disabled selected>Select {{ $field['fieldLabel'] }}</option> 
