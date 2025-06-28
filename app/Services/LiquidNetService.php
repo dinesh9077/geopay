@@ -85,6 +85,10 @@ class LiquidNetService
 		$senderLastname = $user->last_name ?? '';
 		$senderMobile = $user->formatted_number ? ltrim(trim($user->formatted_number), '+') : '';
 		$senderCountry = $user->country->iso3 ?? '';
+		if($senderCountry == "IND")
+		{
+			$senderCountry = 'PHL';
+		} 
 		
 		$aggregatorCurrencyAmount = (int) round($request->aggregatorCurrencyAmount); 
 		
