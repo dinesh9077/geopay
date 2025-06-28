@@ -638,8 +638,8 @@ class TransferBankController extends Controller
 			$user->decrement('balance', $netAmount); 
 			
 			// Check if necessary fields exist to prevent undefined index warnings
-			$beneficiaryFirstName = $beneficiary->data['receiverfirstname'] ?? $beneficiary->data['beneficiaryFirstName'];
-			$beneficiaryLastName = $beneficiary->data['receiverlastname'] ?? $beneficiary->data['beneficiaryLastName'];
+			$beneficiaryFirstName = $beneficiary->data['receiverfirstname'] ?? ($beneficiary->data['beneficiaryFirstName'] ?? '');
+			$beneficiaryLastName = $beneficiary->data['receiverlastname'] ?? ($beneficiary->data['beneficiaryLastName'] ?? '');
 			$bankName = $beneficiary->data['bankName'] ?? 'Unknown Bank';
 			$bankId = $beneficiary->data['bankId'] ?? '';
 			$mobileNumber = $beneficiary->data['receivercontactnumber'] ?? '';
