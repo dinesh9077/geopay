@@ -124,7 +124,8 @@
 	// Initialize Flatpickr for date inputs
 	flatpickr("#receiverdateofbirth, #senderdateofbirth", {
 		dateFormat: "Y-m-d",
-		maxDate: "today"
+		maxDate: "today",
+		allowInput: true
 	});
 	
 	flatpickr("#receiveridexpiredate, #receiveridissuedate,  #senderidissuedate, #senderidexpiredate", {
