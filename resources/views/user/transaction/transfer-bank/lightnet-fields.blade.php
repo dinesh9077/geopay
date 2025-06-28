@@ -126,7 +126,7 @@
 		dateFormat: "Y-m-d",
 		maxDate: "today",
 		allowInput: true,  
-   		monthSelectorType: "dropdown" // ensure month and year are dropdowns
+   		monthSelectorType: "dropdown"
 	});
 	
 	flatpickr("#receiveridexpiredate, #receiveridissuedate,  #senderidissuedate, #senderidexpiredate", {
