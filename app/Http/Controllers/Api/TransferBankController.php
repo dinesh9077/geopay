@@ -562,25 +562,29 @@
 		}
 		
 		public function beneficiaryStore(Request $request)
-		{    
-			if($request->service_name == "onafric")
-			{
-				$bankaccountnumber = $request->bankaccountnumber; 
+		{      
+			if ($request->service_name == "onafric") {
+				$bankaccountnumber = $request->bankaccountnumber;
 				$payoutIso = $request->payoutIso;
 				$bankId = $request->bankId;
-				
+
 				$response = $this->onafricService->getValidateBankRequest($payoutIso, $bankId, $bankaccountnumber);
-			 
+
 				if (
-					!isset($response['success']) || 
-					!$response['success'] || 
+					!isset($response['success']) ||
+					!$response['success'] ||
 					(isset($response['response']['status_code']) && !in_array($response['response']['status_code'], ["Active"]))
 				) {
-					   
 					return $this->errorResponse('Provided bank or account number are not active');
-				}  
+				}
+			} else { 
+				$payoutCountry = $request->payoutCountry;
+				$senderCountry = $user->country->iso3 ?? '';
+				if ($payoutCountry == $senderCountry) {
+					return $this->errorResponse('Domestic remittance is not allowed. Please select a receiver country different from the sender country.');
+				}
 			}
-			
+
 			try {
 				
 				$user = Auth::user();
