@@ -8,6 +8,7 @@
 	use App\Models\Banner;
 	use App\Models\Faq;
 	use App\Models\UserLimit;
+	use App\Models\OnafriqCountry;
 	use App\Models\LightnetCountry;
 	use App\Models\Country;
 	use App\Models\OnafricChannel;
@@ -481,8 +482,104 @@
 				// Return error response
 				return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again.'.$e->getMessage()]);
 			}
-		}
+		} 
+		
+		public function thirdPartyKeyOnafricCollectionUpdate(Request $request)
+		{
+			DB::beginTransaction();
+			 
+			try { 
+				OnafriqCountry::where('service_name', 'collection')->whereNotIn('id', $request->ids ?? [])->delete();
+				foreach ($request->input('country_name') as $index => $countryName) 
+				{
+					$channelsArray = array_map('trim', explode(',', $request->channels[$index] ?? ''));
+					$id = $request->ids[$index] ?? null;
 
+					if($id)
+					{ 
+						$country = OnafriqCountry::find($id);
+						if ($country) {
+							$country->update([
+								'service_name' => 'collection',
+								'country_name' => $countryName,
+								'channels' => $channelsArray,
+								'updated_at' => now(),
+							]); 
+						}
+					}
+					else
+					{
+						 // Create new record one by one
+						OnafriqCountry::create([
+							'service_name' => 'collection',
+							'country_name' => $countryName,
+							'channels' => $channelsArray,
+							'created_at' => now(),
+							'updated_at' => now(),
+						]);
+					}
+				} 
+				// Commit the transaction if everything went well
+				DB::commit();
+				
+				// Return success response
+				return response()->json(['status' => 'success', 'message' => 'Country updated successfully']);
+				
+			} catch (\Exception $e) {
+				// Rollback the transaction in case of any errors
+				DB::rollBack();
+ 
+				// Return error response
+				return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again.'.$e->getMessage()]);
+			}
+		} 
+		
+		public function thirdPartyKeyOnafricBankTransferUpdate(Request $request)
+		{
+			DB::beginTransaction();
+			 
+			try { 
+				OnafriqCountry::where('service_name', 'bank-transfer')->whereNotIn('id', $request->ids ?? [])->delete();
+				foreach ($request->input('country_name') as $index => $countryName) 
+				{ 
+					$id = $request->ids[$index] ?? null;
+
+					if($id)
+					{ 
+						$country = OnafriqCountry::find($id);
+						if ($country) {
+							$country->update([
+								'service_name' => 'bank-transfer',
+								'country_name' => $countryName, 
+								'updated_at' => now(),
+							]); 
+						}
+					}
+					else
+					{
+						 // Create new record one by one
+						OnafriqCountry::create([
+							'service_name' => 'bank-transfer',
+							'country_name' => $countryName, 
+							'created_at' => now(),
+							'updated_at' => now(),
+						]);
+					}
+				} 
+				// Commit the transaction if everything went well
+				DB::commit();
+				
+				// Return success response
+				return response()->json(['status' => 'success', 'message' => 'Country updated successfully']);
+				
+			} catch (\Exception $e) {
+				// Rollback the transaction in case of any errors
+				DB::rollBack();
+ 
+				// Return error response
+				return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again.'.$e->getMessage()]);
+			}
+		} 
 		
 		public function UserLimitUpdate(Request $request)
 		{    
@@ -886,9 +983,14 @@
 		}
 		
 		// Third Party keys
-		public function ThirdPartyKey()
+		public function thirdPartyKey()
 		{
-			return view('admin.setting.third-party');
+			$countries = $this->masterService->getCountries(); 
+			$collectionCountries = OnafriqCountry::where('service_name', 'collection')->get();
+			$onafricBankCountries = OnafriqCountry::where('service_name', 'bank-transfer')->get();
+			$collectionCountryCount = count($collectionCountries);
+			$onafriqBankCountryCount = count($onafricBankCountries);
+			return view('admin.setting.third-party', compact('countries', 'collectionCountries', 'onafricBankCountries', 'collectionCountryCount', 'onafriqBankCountryCount'));
 		}
 		
 		public function thirdPartyKeyUpdate(Request $request)

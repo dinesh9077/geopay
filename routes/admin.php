@@ -63,7 +63,12 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
     Route::post('/third-party-key/lightnet-country-update', [SettingController::class, 'thirdPartyKeyCountryUpdate'])->name('third-party-key.lightnet-country-update');
 	
 	Route::get('/third-party-key/onafric-mobile-view', [SettingController::class, 'thirdPartyKeyOnafricMobileView'])->name('third-party-key.onafric-mobile-view');
+	Route::get('/third-party-key/onafric-collection-view', [SettingController::class, 'thirdPartyKeyOnafricCollectionView'])->name('third-party-key.onafric-collection-view');
 	Route::post('/third-party-key/onafric-mobile-update', [SettingController::class, 'thirdPartyKeyOnafricMobileUpdate'])->name('third-party-key.onafric-mobile-update')->withoutMiddleware('webdecrypt.request');
+	
+	Route::post('/third-party-key/onafric-bank-transfer-update', [SettingController::class, 'thirdPartyKeyOnafricBankTransferUpdate'])->name('third-party-key.onafric-bank-transfer-update')->withoutMiddleware('webdecrypt.request');
+	
+	Route::post('/third-party-key/onafric-collection-update', [SettingController::class, 'thirdPartyKeyOnafricCollectionUpdate'])->name('third-party-key.onafric-collection-update')->withoutMiddleware('webdecrypt.request');
 	
 	Route::post('third-party-key/onafric-mobile-webhook', [SettingController::class, 'thirdPartyKeyOnafricBankLists'])->name('third-party-key.onafric-mobile-webhook')->withoutMiddleware('webdecrypt.request');
     Route::post('third-party-key/onafric-bank-list', [SettingController::class, 'thirdPartyKeyOnafricBankLists'])->name('third-party-key.onafric-bank-list')->withoutMiddleware('webdecrypt.request');

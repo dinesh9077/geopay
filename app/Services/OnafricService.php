@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Crypt; // Remove Crypt facade if not used
 use Auth;
 use App\Models\Country;
+use App\Models\OnafriqCountry;
 use App\Models\OnafricBank;
 class OnafricService
 {
@@ -34,9 +35,7 @@ class OnafricService
 	
 	public function bankAvailableCountry()
 	{
-		return [
-			"Uganda", "Kenya", "Nigeria", "South Africa" 
-		];   
+		return OnafriqCountry::where('service_name', 'bank-transfer')->pluck('country_name')->toArray();   
 	}
 	
 	public function availableCountry()
@@ -49,31 +48,13 @@ class OnafricService
 	
 	public function collectionAvailableCountry()
 	{
-		return [
-			"Ivory Coast" => [
-				'Moov', 'MTN', 'Orange'
-			],
-			"Kenya" => ['MPESA'],
-			"Rwanda" => ['Airtel', 'MTN'], 
-			"Tanzania" => ['Vodacom', 'Airtel'],
-			"Uganda" => ['Airtel', 'MTN'],
-			"Cameroon" => ['MTN', 'Orange'], 
-			"Benin" => ['MTN', 'Moov'],
-			"Senegal" => ['Orange'],
-			"Togo" => ['Moov', 'Togocel'], 
-			"Burkina Faso" => ['Mobicash', 'Orange', 'Moov'], 
-			"Zambia" => ['MTN'],
-			"Guinea" => ['Orange', 'MTN'],
-			"Democratic Republic of the Congo" => ['Vodafone', 'Orange', 'Airtel'], 
-			"Nigeria" => ['Baxi'],
-			"Beyonic" => ['beyonic']
-		];   
+		return OnafriqCountry::where('service_name', 'collection')->pluck('channels', 'country_name')->toArray(); 
 	}
 	
 	public function collectionCountry()
 	{
 		$africanCountries = $this->collectionAvailableCountry();
-
+		 
 		$countries = Country::whereIn('nicename', array_keys($africanCountries)) // fix here: use keys
 			->get();
 

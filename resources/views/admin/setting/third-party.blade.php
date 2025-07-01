@@ -119,7 +119,11 @@
 @push('js')
 <script>
 	var $forms = $('#metaMapForm, #smsPlusForm, #dtonePlusForm, #lightnetPlusForm, #onafricForm, #onafricBankForm');
-
+	
+	$('.select2').select2({ 
+		width: "100%"
+	})
+			
 	$forms.submit(function (event) {
 		event.preventDefault();
 		var $form = $(this); // Reference the current form being submitted
@@ -239,5 +243,145 @@
 			$onafricMobileView.html('<p>Error fetching data</p>');
 		});
 	} 
+	
+	//collection country
+	var $onafricCollectionCountryform = $('#onafricCollectionCountryform');
+	var i = @json($collectionCountryCount);
+	
+	function addCollectionCountry(obj, event)
+	{
+		event.preventDefault();
+		i++;
+		var html =`
+			<div class="row mt-3" id="remove_row">
+				<div class="col-md-3">
+					<label class="form-label">Country Name</label>
+					<select name="country_name[]" id="country_name_${i}" class="form-control select2" required>
+						<option value="">Select Country</option>
+						@foreach($countries as $country)
+							<option value="{{ $country->nicename}}">{{ $country->nicename}}</option>
+						@endforeach
+					</select>
+				</div>
+				<input type="hidden" name="ids[]" id="id" value="">
+				<div class="col-md-5">
+					<label class="form-label">Channel Name</label>
+					<input type="text" class="form-control" name="channels[]" value="">
+				</div>
+				
+				<div class="col-md-4 d-flex align-items-end gap-3"> 
+					<button type="button" class="btn btn-danger" onclick="removeCollectionCountry(this)">Remove Country</button>  
+				</div>
+			</div>
+		`;
+		
+		$onafricCollectionCountryform.find('#collectionCountryAppend').append(html);
+		$('.select2').select2({ 
+			width: "100%"
+		})
+	}
+	
+	function removeCollectionCountry(obj)
+	{
+		$(obj).closest('#remove_row').remove();
+	}
+	
+	$onafricCollectionCountryform.submit(function (event) {
+		event.preventDefault(); 
+
+		let submitButton = $onafricCollectionCountryform.find('[type="submit"]');
+		submitButton.prop('disabled', true).addClass('loading-span').html('<span class="spinner-border"></span>');
+
+		let formData = new FormData(this); // Correct way to capture form fields
+
+		$.ajax({
+			url: $(this).attr('action'),
+			type: $(this).attr('method'),
+			data: formData,
+			processData: false, // Prevent automatic data processing
+			contentType: false, // Prevent setting content-type header
+			cache: false,
+			dataType: 'json',
+			success: function (res) {   
+				submitButton.prop('disabled', false).removeClass('loading-span').html('Submit');
+				$('.error_msg').remove(); 
+
+				toastrMsg(res.status, res.message);  
+			},
+			error: function (xhr) {
+				submitButton.prop('disabled', false).removeClass('loading-span').html('Submit');
+				console.error(xhr.responseText);
+				toastrMsg("error", "Something went wrong. Please try again.");
+			}
+		});
+	});
+	
+	//Onafric Bank country
+	var $onafricOnafricBankCountryform = $('#onafricOnafricBankCountryform');
+	var i = @json($onafriqBankCountryCount);
+	
+	function addOnacfricBankCountry(obj, event)
+	{
+		event.preventDefault();
+		i++;
+		var html =`
+			<div class="row mt-3" id="remove_row">
+				<div class="col-md-6">
+					<label class="form-label">Country Name</label>
+					<select name="country_name[]" id="bank_country_name_${i}" class="form-control select2" required>
+						<option value="">Select Country</option>
+						@foreach($countries as $country)
+							<option value="{{ $country->nicename}}">{{ $country->nicename}}</option>
+						@endforeach
+					</select>
+				</div>
+				<input type="hidden" name="ids[]" id="id" value="">
+				  
+				<div class="col-md-4 d-flex align-items-end gap-3"> 
+					<button type="button" class="btn btn-danger" onclick="removeOnacfricBankCountry(this)">Remove Country</button>  
+				</div>
+			</div>
+		`;
+		
+		$onafricOnafricBankCountryform.find('#onafricBankCountryAppend').append(html);
+		$('.select2').select2({ 
+			width: "100%"
+		})
+	}
+	
+	function removeOnacfricBankCountry(obj)
+	{
+		$(obj).closest('#remove_row').remove();
+	}
+	
+	$onafricOnafricBankCountryform.submit(function (event) {
+		event.preventDefault(); 
+
+		let submitButton = $onafricOnafricBankCountryform.find('[type="submit"]');
+		submitButton.prop('disabled', true).addClass('loading-span').html('<span class="spinner-border"></span>');
+
+		let formData = new FormData(this); // Correct way to capture form fields
+
+		$.ajax({
+			url: $(this).attr('action'),
+			type: $(this).attr('method'),
+			data: formData,
+			processData: false, // Prevent automatic data processing
+			contentType: false, // Prevent setting content-type header
+			cache: false,
+			dataType: 'json',
+			success: function (res) {   
+				submitButton.prop('disabled', false).removeClass('loading-span').html('Submit');
+				$('.error_msg').remove(); 
+
+				toastrMsg(res.status, res.message);  
+			},
+			error: function (xhr) {
+				submitButton.prop('disabled', false).removeClass('loading-span').html('Submit');
+				console.error(xhr.responseText);
+				toastrMsg("error", "Something went wrong. Please try again.");
+			}
+		});
+	});
 </script>
 @endpush				

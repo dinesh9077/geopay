@@ -22,11 +22,72 @@
 					<input type="text" class="form-control" id="onafric_bank_commission_charge" name="onafric_bank_commission_charge" autocomplete="off" placeholder="Commission Charge Flat/%" value="{{ config('setting.onafric_bank_commission_charge') ?? 0 }}" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
 				</div>
 				@if (config("permission.onafric_bank_setting.edit")) 
-				<div class="d-flex justify-content-end">
-					<button type="submit" class="btn btn-primary me-2">Submit</button> 
-				</div>
+					<div class="d-flex justify-content-end">
+						<button type="submit" class="btn btn-primary me-2">Submit</button> 
+					</div>
 				@endif
 			</form> 
+			<hr>
+			<div class="row mt-3" id="onafricCollectionView">   
+				<div class="container">
+					<form id="onafricOnafricBankCountryform" action="{{ route('admin.third-party-key.onafric-bank-transfer-update')}}" method="POST">
+						@csrf
+						<div id="countries-form"> 
+							<div class="d-flex align-item-center justify-content-between mb-3">
+								<h3 >Country List  </h3>     
+							</div>
+							<div class="country-section mb-3 ms-3" id="onafricBankCountryAppend"> 
+								@if(count($onafricBankCountries) > 0)
+									@foreach($onafricBankCountries as $key => $collectionCountry)
+										<div class="row" id="remove_row">
+											<div class="col-md-6">
+												<label class="form-label">Country Name</label>
+												<select name="country_name[]" id="bank_country_name_{{ $key }}" class="form-control select2" required>
+													<option value="">Select Country</option>
+													@foreach($countries as $country)
+														<option value="{{ $country->nicename }}" {{ $collectionCountry->country_name == $country->nicename ? 'selected' : '' }}>{{ $country->nicename}}</option>
+													@endforeach
+												</select>
+											</div>
+											<input type="hidden" name="ids[]" id="id" value="{{ $collectionCountry->id }}">
+											 
+											<div class="col-md-4 d-flex align-items-end gap-3"> 
+												@if($key == 0)
+													<button type="button" class="btn btn-primary" onclick="addOnacfricBankCountry(this, event)">Add Country</button>  
+												@else
+													<button type="button" class="btn btn-danger" onclick="removeOnacfricBankCountry(this)">Remove Country</button>  
+												@endif
+											</div>	
+										</div>
+									@endforeach
+								@else  
+									<div class="row" id="remove_row">
+										<div class="col-md-6">
+											<label class="form-label">Country Name</label>
+											<select name="country_name[]" id="bank_country_name" class="form-control select2" required>
+												<option value="">Select Country</option>
+												@foreach($countries as $country)
+												<option value="{{ $country->nicename }}">{{ $country->nicename}}</option>
+												@endforeach
+											</select>
+										</div>
+										<input type="hidden" name="ids[]" id="id" value=""> 
+										
+										<div class="col-md-4 d-flex align-items-end gap-3"> 
+											<button type="button" class="btn btn-primary" onclick="addOnacfricBankCountry(this, event)">Add Country</button>  
+										</div>
+									</div>
+								@endif 
+							</div>	 
+						</div>
+						@if (config("permission.onafric_bank_setting.edit"))
+							<div class="d-flex justify-content-end">
+								<button type="submit" class="btn btn-success">Save</button>
+							</div>
+						@endif
+					</form>
+				</div> 
+			</div>
 		</div>
 	</div>
 </div> 

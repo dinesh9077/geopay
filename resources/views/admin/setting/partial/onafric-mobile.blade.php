@@ -27,9 +27,9 @@
 					<input type="text" class="form-control" id="onafric_unique_key" name="onafric_unique_key" autocomplete="off" placeholder="Unique Key" value="{{ config('setting.onafric_unique_key') }}">
 				</div>    
 				@if (config("permission.onafric_mobile_setting.edit")) 
-				<div class="d-flex justify-content-end">
-					<button type="submit" class="btn btn-primary me-2">Submit</button> 
-				</div>
+					<div class="d-flex justify-content-end">
+						<button type="submit" class="btn btn-primary me-2">Submit</button> 
+					</div>
 				@endif
 			</form>
 			<hr>

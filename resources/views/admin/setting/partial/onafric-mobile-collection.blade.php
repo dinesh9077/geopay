@@ -39,11 +39,79 @@
 					<input type="text" class="form-control" id="onafric_rate_auth_key" name="onafric_rate_auth_key" placeholder="Rate Auth Key" value="{{ config('setting.onafric_rate_auth_key') ?? '' }}" >
 				</div>  
 				@if (config("permission.onafric_mobile_collection_setting.edit")) 
-					<div class="d-flex justify-content-end">
-						<button type="submit" class="btn btn-primary me-2">Submit</button> 
-					</div>
+				<div class="d-flex justify-content-end">
+					<button type="submit" class="btn btn-primary me-2">Submit</button> 
+				</div>
 				@endif
 			</form> 
+			<hr>
+			<div class="row mt-3" id="onafricCollectionView">   
+				<div class="container">
+					<form id="onafricCollectionCountryform" action="{{ route('admin.third-party-key.onafric-collection-update')}}" method="POST">
+						@csrf
+						<div id="countries-form"> 
+							<div class="d-flex align-item-center justify-content-between mb-3">
+								<h3 >Country List  </h3>     
+							</div>
+							<div class="country-section mb-3 ms-3" id="collectionCountryAppend"> 
+								@if(count($collectionCountries) > 0)
+									@foreach($collectionCountries as $key => $collectionCountry)
+										<div class="row" id="remove_row">
+											<div class="col-md-3">
+												<label class="form-label">Country Name</label>
+												<select name="country_name[]" id="country_name_{{ $key }}" class="form-control select2" required>
+													<option value="">Select Country</option>
+													@foreach($countries as $country)
+														<option value="{{ $country->nicename }}" {{ $collectionCountry->country_name == $country->nicename ? 'selected' : '' }}>{{ $country->nicename}}</option>
+													@endforeach
+												</select>
+											</div>
+											<input type="hidden" name="ids[]" id="id" value="{{ $collectionCountry->id }}">
+											<div class="col-md-5">
+												<label class="form-label">Channel Name</label>
+												<input type="text" class="form-control" name="channels[]" value="{{ collect($collectionCountry->channels)->implode(',')}}">
+											</div>
+											<div class="col-md-4 d-flex align-items-end gap-3"> 
+												@if($key == 0)
+													<button type="button" class="btn btn-primary" onclick="addCollectionCountry(this, event)">Add Country</button>  
+												@else
+													<button type="button" class="btn btn-danger" onclick="removeCollectionCountry(this)">Remove Country</button>  
+												@endif
+											</div>	
+										</div>
+									@endforeach
+								@else  
+									<div class="row" id="remove_row">
+										<div class="col-md-3">
+											<label class="form-label">Country Name</label>
+											<select name="country_name[]" id="country_name" class="form-control select2" required>
+												<option value="">Select Country</option>
+												@foreach($countries as $country)
+												<option value="{{ $country->nicename }}">{{ $country->nicename}}</option>
+												@endforeach
+											</select>
+										</div>
+										<input type="hidden" name="ids[]" id="id" value="">
+										<div class="col-md-5">
+											<label class="form-label">Channel Name</label>
+											<input type="text" class="form-control" name="channels[]" value="">
+										</div>
+										
+										<div class="col-md-4 d-flex align-items-end gap-3"> 
+											<button type="button" class="btn btn-primary" onclick="addCollectionCountry(this, event)">Add Country</button>  
+										</div>
+									</div>
+								@endif 
+							</div>	 
+						</div>
+						@if (config("permission.onafric_mobile_collection_setting.edit"))
+						<div class="d-flex justify-content-end">
+							<button type="submit" class="btn btn-success">Save</button>
+						</div>
+						@endif
+					</form>
+				</div> 
+			</div> 
 		</div>
-	</div>
+	</div> 
 </div>  
