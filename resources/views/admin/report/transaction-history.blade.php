@@ -195,6 +195,9 @@
                         "data": "platform_name"
                     },
                     {
+                        "data": "platform_provider"
+                    },
+                    {
                         "data": "order_id"
                     },
                     {

@@ -32,7 +32,7 @@ class ReportController extends Controller
     public function transactionReportAjax(Request $request)
     { 
         if ($request->ajax()) {
-            $columns = ['id', 'platform_name', 'order_id', 'fees', 'txn_amount', 'unit_convert_exchange', 'comments', 'notes', 'status', 'created_at', 'created_at', 'action'];
+            $columns = ['id', 'platform_name', 'platform_provider', 'order_id', 'fees', 'txn_amount', 'unit_convert_exchange', 'comments', 'notes', 'status', 'created_at', 'created_at', 'action'];
 
             $start = $request->input('start');
             $limit = $request->input('length');
@@ -67,6 +67,7 @@ class ReportController extends Controller
             if (!empty($search)) {
                 $query->where(function ($q) use ($search) {
                     $q->orWhere('platform_name', 'LIKE', "%{$search}%")
+                        ->orWhere('platform_provider', 'LIKE', "%{$search}%")
                         ->orWhere('order_id', 'LIKE', "%{$search}%")
                         ->orWhere('comments', 'LIKE', "%{$search}%")
                         ->orWhere('transaction_type', 'LIKE', "%{$search}%")
@@ -93,6 +94,7 @@ class ReportController extends Controller
                     'id' => $i,
                     'user_name' => $value->user->first_name ?? 'N/A',
                     'platform_name' => $value->platform_name,
+                    'platform_provider' => $value->platform_provider,
                     'order_id' => $value->order_id,
                     'fees' => Helper::decimalsprint($value->fees, 2) . ' ' . config('setting.default_currency'),
                     'transaction_type' => '<span class="text-' . ($value->transaction_type == 'debit' ? 'danger' : 'success') . '">' . e($value->transaction_type) . '</span>', 
