@@ -174,8 +174,8 @@
 			
 			@php
                 $allTransactions = [
-                    'transaction_mobile_money_onafric' => ['route' => 'admin.transaction.mobile-money-onafric', 'label' => 'Oafric Mobile Money'],
-                    'transaction_bank_onafric' => ['route' => 'admin.transaction.bank-onafric', 'label' => 'Oafric Transfer Bank'],
+                    'transaction_mobile_money_onafric' => ['route' => 'admin.transaction.mobile-money-onafric', 'label' => 'Onafric Mobile Money'],
+                    'transaction_bank_onafric' => ['route' => 'admin.transaction.bank-onafric', 'label' => 'Onafric Transfer Bank'],
                     'transaction_bank_lightnet' => ['route' => 'admin.transaction.bank-lightnet', 'label' => 'Lightnet Transfer Bank'],
                 ];
             @endphp
