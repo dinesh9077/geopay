@@ -44,31 +44,36 @@
 					<a class="nav-link" id="smsplus-line-tab" data-bs-toggle="tab" href="#line-smsplus" role="tab" aria-controls="line-smsplus" aria-selected="false">SMS Plus</a>
 				</li> 
 			@endif
-			@if (config("permission.internation_airtime_setting.view"))
-				<li class="nav-item">
-					<a class="nav-link {{ $firstTab == 'internation_airtime_setting' ? 'active' : '' }}" id="dtone-line-tab" data-bs-toggle="tab" href="#line-dtone" role="tab" aria-controls="line-dtone" aria-selected="false">International Airtime (dtone)</a>
-				</li> 
-			@endif
-			@if (config("permission.lightnet_setting.view"))
-				<li class="nav-item">
-					<a class="nav-link {{ $firstTab == 'lightnet_setting' ? 'active' : '' }}" onclick="getLightNetView(event)" id="lightnet-line-tab" data-bs-toggle="tab" href="#line-lightnet" role="tab" aria-controls="line-lightnet" aria-selected="false">Lightnet</a>
-				</li> 
-			@endif
-			@if (config("permission.onafric_mobile_setting.view"))
-				<li class="nav-item">
-					<a class="nav-link {{ $firstTab == 'onafric_mobile_setting' ? 'active' : '' }}" onclick="getOnafricMobileView(event)" id="onafriq-line-tab" data-bs-toggle="tab" href="#line-onafriq-mobile" role="tab" aria-controls="line-onafriq" aria-selected="false">Onafriq (Mobile Money)</a>
-				</li> 
-			@endif
-			@if (config("permission.onafric_bank_setting.view"))
-				<li class="nav-item">
-					<a class="nav-link {{ $firstTab == 'onafric_bank_setting' ? 'active' : '' }}" id="onafriq-line-tab" data-bs-toggle="tab" href="#line-onafriq-bank" role="tab" aria-controls="line-onafriq" aria-selected="false">Onafriq (Bank)</a>
-				</li> 
-			@endif 
 			@if (config("permission.onafric_mobile_collection_setting.view"))
 				<li class="nav-item">
-					<a class="nav-link {{ $firstTab == 'onafric_mobile_collection_setting' ? 'active' : '' }}" id="onafriq-line-tab" data-bs-toggle="tab" href="#line-onafriq-mobile-collection" role="tab" aria-controls="line-onafriq" aria-selected="false">Mobile Collection (Onafric)</a>
+					<a class="nav-link {{ $firstTab == 'onafric_mobile_collection_setting' ? 'active' : '' }}" id="onafriq-line-tab" data-bs-toggle="tab" href="#line-onafriq-mobile-collection" role="tab" aria-controls="line-onafriq" aria-selected="false">Onafric - Mobile Money - Add Service</a>
+				</li> 
+			@endif
+			
+			@if (config("permission.onafric_mobile_setting.view"))
+				<li class="nav-item">
+					<a class="nav-link {{ $firstTab == 'onafric_mobile_setting' ? 'active' : '' }}" onclick="getOnafricMobileView(event)" id="onafriq-line-tab" data-bs-toggle="tab" href="#line-onafriq-mobile" role="tab" aria-controls="line-onafriq" aria-selected="false">Onafric - Mobile Money - Pay Service</a>
+				</li> 
+			@endif
+			
+			@if (config("permission.internation_airtime_setting.view"))
+				<li class="nav-item">
+					<a class="nav-link {{ $firstTab == 'internation_airtime_setting' ? 'active' : '' }}" id="dtone-line-tab" data-bs-toggle="tab" href="#line-dtone" role="tab" aria-controls="line-dtone" aria-selected="false">International Airtime (dtone) - Pay Service</a>
+				</li> 
+			@endif
+			
+			@if (config("permission.lightnet_setting.view"))
+				<li class="nav-item">
+					<a class="nav-link {{ $firstTab == 'lightnet_setting' ? 'active' : '' }}" onclick="getLightNetView(event)" id="lightnet-line-tab" data-bs-toggle="tab" href="#line-lightnet" role="tab" aria-controls="line-lightnet" aria-selected="false">Lightnet - Transfer To Bank - Pay Service</a>
+				</li> 
+			@endif
+			
+			@if (config("permission.onafric_bank_setting.view"))
+				<li class="nav-item">
+					<a class="nav-link {{ $firstTab == 'onafric_bank_setting' ? 'active' : '' }}" id="onafriq-line-tab" data-bs-toggle="tab" href="#line-onafriq-bank" role="tab" aria-controls="line-onafriq" aria-selected="false">Onafric - Transfer To Bank - Pay Service</a>
 				</li> 
 			@endif 
+			 
 		</ul>
 		<div class="tab-content mt-3" id="lineTabContent">
 			@if (config("permission.metamap_setting.view"))
