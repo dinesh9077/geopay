@@ -20,28 +20,35 @@
                     <span class="link-title">Dashboard</span>
                 </a>
             </li>
-
-            @php
-                $manageStaffs = [
-                    'role' => ['route' => 'admin.roles', 'label' => 'Roles'],
-                    'staff' => ['route' => 'admin.staff', 'label' => 'Staff'],
+			
+			 @php
+                $manageUsers = [
+                    'active_user' => ['route' => 'admin.user.active', 'label' => 'Active User'],
+                    'pending_user' => ['route' => 'admin.user.pending', 'label' => 'Pending User'],
+                    'block_user' => ['route' => 'admin.user.block', 'label' => 'Blocked User'],
                 ];
+
+                // Define additional routes that should open the dropdown without a menu item
+                $extraRoutes = ['admin.user.edit', 'admin.user.login-history'];
+
+                // Combine routes for dropdown open logic
+                $allRoutes = array_merge(array_column($manageUsers, 'route'), $extraRoutes);
             @endphp
 
-            @if (collect($manageStaffs)->keys()->some(fn($key) => config("permission.$key.view")))
+            @if (collect($manageUsers)->keys()->some(fn($key) => config("permission.$key.view")))
                 <li
-                    class="nav-item {{ collect($manageStaffs)->contains(fn($item) => request()->routeIs($item['route'])) ? 'active' : '' }}">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#manageStaff" role="button"
-                        aria-expanded="{{ collect($manageStaffs)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}"
-                        aria-controls="manageStaff">
+                    class="nav-item {{ collect($allRoutes)->contains(fn($route) => request()->routeIs($route)) ? 'active' : '' }}">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#manageUsers" role="button"
+                        aria-expanded="{{ collect($allRoutes)->contains(fn($route) => request()->routeIs($route)) ? 'true' : 'false' }}"
+                        aria-controls="manageUsers">
                         <i class="link-icon" data-feather="users"></i>
-                        <span class="link-title">Manage Staff</span>
+                        <span class="link-title">Manage Users</span>
                         <i class="link-arrow" data-feather="chevron-down"></i>
                     </a>
-                    <div class="collapse {{ collect($manageStaffs)->contains(fn($item) => request()->routeIs($item['route'])) ? 'show' : '' }}"
-                        id="manageStaff">
+                    <div class="collapse {{ collect($allRoutes)->contains(fn($route) => request()->routeIs($route)) ? 'show' : '' }}"
+                        id="manageUsers">
                         <ul class="nav sub-menu">
-                            @foreach ($manageStaffs as $key => $item)
+                            @foreach ($manageUsers as $key => $item)
                                 @if (config("permission.$key.view"))
                                     <li class="nav-item">
                                         <a href="{{ route($item['route']) }}"
@@ -55,7 +62,7 @@
                     </div>
                 </li>
             @endif
-
+			 
             @php
                 $manageCompanies = [
                     'active_company' => ['route' => 'admin.companies.active', 'label' => 'Active Company'],
@@ -129,35 +136,27 @@
                     </a>
                 </li>
             @endif
-
-            @php
-                $manageUsers = [
-                    'active_user' => ['route' => 'admin.user.active', 'label' => 'Active User'],
-                    'pending_user' => ['route' => 'admin.user.pending', 'label' => 'Pending User'],
-                    'block_user' => ['route' => 'admin.user.block', 'label' => 'Blocked User'],
+			
+			@php
+                $manageStaffs = [
+                    'role' => ['route' => 'admin.roles', 'label' => 'Roles'],
+                    'staff' => ['route' => 'admin.staff', 'label' => 'Staff'],
                 ];
-
-                // Define additional routes that should open the dropdown without a menu item
-                $extraRoutes = ['admin.user.edit', 'admin.user.login-history'];
-
-                // Combine routes for dropdown open logic
-                $allRoutes = array_merge(array_column($manageUsers, 'route'), $extraRoutes);
             @endphp
-
-            @if (collect($manageUsers)->keys()->some(fn($key) => config("permission.$key.view")))
+			@if (collect($manageStaffs)->keys()->some(fn($key) => config("permission.$key.view")))
                 <li
-                    class="nav-item {{ collect($allRoutes)->contains(fn($route) => request()->routeIs($route)) ? 'active' : '' }}">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#manageUsers" role="button"
-                        aria-expanded="{{ collect($allRoutes)->contains(fn($route) => request()->routeIs($route)) ? 'true' : 'false' }}"
-                        aria-controls="manageUsers">
+                    class="nav-item {{ collect($manageStaffs)->contains(fn($item) => request()->routeIs($item['route'])) ? 'active' : '' }}">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#manageStaff" role="button"
+                        aria-expanded="{{ collect($manageStaffs)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}"
+                        aria-controls="manageStaff">
                         <i class="link-icon" data-feather="users"></i>
-                        <span class="link-title">Manage Users</span>
+                        <span class="link-title">Manage Staff</span>
                         <i class="link-arrow" data-feather="chevron-down"></i>
                     </a>
-                    <div class="collapse {{ collect($allRoutes)->contains(fn($route) => request()->routeIs($route)) ? 'show' : '' }}"
-                        id="manageUsers">
+                    <div class="collapse {{ collect($manageStaffs)->contains(fn($item) => request()->routeIs($item['route'])) ? 'show' : '' }}"
+                        id="manageStaff">
                         <ul class="nav sub-menu">
-                            @foreach ($manageUsers as $key => $item)
+                            @foreach ($manageStaffs as $key => $item)
                                 @if (config("permission.$key.view"))
                                     <li class="nav-item">
                                         <a href="{{ route($item['route']) }}"
@@ -171,6 +170,8 @@
                     </div>
                 </li>
             @endif
+			
+           
 			
 			@php
                 $allTransactions = [
