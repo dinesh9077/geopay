@@ -5,93 +5,92 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt; // Remove Crypt facade if not used
-use Auth;
+use Auth, Log;
 class LiquidNetService
 {
-    protected $appId;
-    protected $apiKey;
-    protected $baseUrl;
+	protected $appId;
+	protected $apiKey;
+	protected $baseUrl;
 
-    public function __construct()
-    {
-        $this->appId = config('setting.lightnet_apikey');
-        $this->apiKey = config('setting.lightnet_secretkey');
-        $this->baseUrl = config('setting.lightnet_url');
-        $this->defaultCurrency = Config('setting.default_currency') ?? 'USD';
-    }
+	public function __construct()
+	{
+		$this->appId = config('setting.lightnet_apikey');
+		$this->apiKey = config('setting.lightnet_secretkey');
+		$this->baseUrl = config('setting.lightnet_url');
+		$this->defaultCurrency = Config('setting.default_currency') ?? 'USD';
+	}
 
-    public function hmacAuthGenerate(string $method, string $apiUrl, string $requestTimeStamp, array $requestBody = [])
-    { 
+	public function hmacAuthGenerate(string $method, string $apiUrl, string $requestTimeStamp, array $requestBody = [])
+	{
 		$jsonRequestBody = json_encode($requestBody);
-        $requestUri = strtolower(urlencode($apiUrl));
+		$requestUri = strtolower(urlencode($apiUrl));
 
-        $requestHttpMethod = strtoupper($method);
+		$requestHttpMethod = strtoupper($method);
 
-        $nonce = Str::uuid()->toString();
+		$nonce = Str::uuid()->toString();
 
-        $requestContentBase64String = '';
-        if (!empty($jsonRequestBody)) {
-            $requestContentHash = md5($jsonRequestBody, true);
-            $requestContentBase64String = base64_encode($requestContentHash);
-        }
+		$requestContentBase64String = '';
+		if (!empty($jsonRequestBody)) {
+			$requestContentHash = md5($jsonRequestBody, true);
+			$requestContentBase64String = base64_encode($requestContentHash);
+		}
 
-        $signatureRawData = sprintf('%s%s%s%s%s%s', $this->appId, $requestHttpMethod, $requestUri, $requestTimeStamp, $nonce, $requestContentBase64String);
-        $secretKeyByteArray = base64_decode($this->apiKey);
+		$signatureRawData = sprintf('%s%s%s%s%s%s', $this->appId, $requestHttpMethod, $requestUri, $requestTimeStamp, $nonce, $requestContentBase64String);
+		$secretKeyByteArray = base64_decode($this->apiKey);
 
-        $signatureBytes = hash_hmac('sha256', $signatureRawData, $secretKeyByteArray, true);
+		$signatureBytes = hash_hmac('sha256', $signatureRawData, $secretKeyByteArray, true);
 
-        $requestSignatureBase64String = base64_encode($signatureBytes);
+		$requestSignatureBase64String = base64_encode($signatureBytes);
 
-        $signatureString = sprintf('%s:%s:%s:%s', $this->appId, $requestSignatureBase64String, $nonce, $requestTimeStamp);
-		  
-        return $signatureString;
-	} 
-	
+		$signatureString = sprintf('%s:%s:%s:%s', $this->appId, $requestSignatureBase64String, $nonce, $requestTimeStamp);
+
+		return $signatureString;
+	}
+
 	public function serviceApi(string $method, string $url, string $requestTimeStamp, array $requestBody = [])
-    {
-        $apiUrl = $this->baseUrl . $url; 
+	{
+		$apiUrl = $this->baseUrl . $url;
 		$signatureString = $this->hmacAuthGenerate($method, $apiUrl, $requestTimeStamp, $requestBody);
-        $response = Http::withHeaders([
-            'Authorization' => "hmacauth {$signatureString}",
-            'Content-Type' => 'application/json',
-        ])
-		->withOptions([
-			'verify' => false,
-		])
-		->{$method}($apiUrl, $requestBody);
+		$response = Http::withHeaders([
+					'Authorization' => "hmacauth {$signatureString}",
+					'Content-Type' => 'application/json',
+				])
+					->withOptions([
+						'verify' => false,
+					])
+			->{$method}($apiUrl, $requestBody);
 
-        // Handle Successful Response
+		// Handle Successful Response
 		if ($response->successful()) {
 			return [
-				'success' => true, 
+				'success' => true,
 				'response' => $response->json()
 			];
 		}
 		return [
-			'success' => false, 
+			'success' => false,
 			'response' => json_decode($response->body(), true)
-		];	
+		];
 	}
-	
+
 	public function sendTransaction($request, $beneficiary)
-    {
-        $apiUrl = $this->baseUrl . '/SendTransaction'; 
-		$method = 'post'; 
+	{
+		$apiUrl = $this->baseUrl . '/SendTransaction';
+		$method = 'post';
 		$requestTimestamp = $request->timestamp;
 		$orderId = $request->order_id;
 		$user = Auth::user();
-		
+
 		$senderFirstname = $user->first_name ?? '';
 		$senderLastname = $user->last_name ?? '';
 		$senderMobile = $user->formatted_number ? ltrim(trim($user->formatted_number), '+') : '';
 		$senderCountry = $user->country->iso3 ?? '';
-		if($senderCountry == "IND")
-		{
+		if ($senderCountry == "IND") {
 			$senderCountry = 'PHL';
-		} 
-		
-		$aggregatorCurrencyAmount = (int) round($request->aggregatorCurrencyAmount); 
-		
+		}
+
+		$aggregatorCurrencyAmount = (int) round($request->aggregatorCurrencyAmount);
+
 		$requestBody = [
 			"agentSessionId" => (string) $requestTimestamp,
 			"agentTxnId" => $orderId,
@@ -119,7 +118,7 @@ class LiquidNetService
 			"senderOccupationRemarks" => $beneficiary['senderoccupationremarks'] ?? '',
 			"senderSourceOfFund" => $beneficiary['sendersourceoffund'] ?? '',
 			"senderSourceOfFundRemarks" => $beneficiary['sendersourceoffundremarks'] ?? '',
-			"senderEmail" =>  $beneficiary['senderemail'] ?? '',
+			"senderEmail" => $beneficiary['senderemail'] ?? '',
 			"senderNativeFirstname" => $beneficiary['senderNativeFirstname'] ?? '',
 			"senderBeneficiaryRelationship" => $beneficiary['senderbeneficiaryrelationship'] ?? '',
 			"senderBeneficiaryRelationshipRemarks" => $beneficiary['senderbeneficiaryrelationshipremarks'] ?? '',
@@ -134,7 +133,7 @@ class LiquidNetService
 			"receiverState" => $beneficiary['receiverstate'] ?? '',
 			"receiverAreaTown" => $beneficiary['receiverareatown'] ?? '',
 			"receiverCity" => $beneficiary['receivercity'] ?? '',
-			"receiverZipCode" => $beneficiary['receiverzipcode'] ?? '', 
+			"receiverZipCode" => $beneficiary['receiverzipcode'] ?? '',
 			"receiverCountry" => $beneficiary['payoutCountry'] ?? '',
 			"receiverIdType" => $beneficiary['receiveridtype'] ?? '',
 			"receiverIdTypeRemarks" => $beneficiary['receiveridtyperemarks'] ?? '',
@@ -170,145 +169,145 @@ class LiquidNetService
 			"receiverDateOfBirth" => $beneficiary['receiverdateofbirth'] ?? '',
 			"receiverGender" => $beneficiary['receivergender'] ?? '',
 			"receiverAccountType" => ""
-		]; 
+		];
 		$signatureString = $this->hmacAuthGenerate($method, $apiUrl, $requestTimestamp, $requestBody);
-        $response = Http::withHeaders([
-            'Authorization' => "hmacauth {$signatureString}",
-            'Content-Type' => 'application/json',
-        ])
-		->withOptions([
-			'verify' => false,
-		])
-		->{$method}($apiUrl, $requestBody);
-		 
-        // Handle Successful Response
+		$response = Http::withHeaders([
+					'Authorization' => "hmacauth {$signatureString}",
+					'Content-Type' => 'application/json',
+				])
+					->withOptions([
+							'verify' => false,
+						])
+			->{$method}($apiUrl, $requestBody);
+
+		// Handle Successful Response
 		if ($response->successful()) {
 			return [
-				'success' => true,  
+				'success' => true,
 				'request' => $requestBody,
 				'response' => $response->json()
 			];
 		}
 		return [
-			'success' => false, 
+			'success' => false,
 			'request' => $requestBody,
 			'response' => json_decode($response->body(), true)
-		];	
+		];
 	}
-	
+
 	public function commitTransaction($confirmationId, $remitCurrency)
-    {
-        $apiUrl = $this->baseUrl . '/CommitTransaction'; 
-		$method = 'post'; 
-		$requestTimestamp = time();  
-		 
+	{
+		$apiUrl = $this->baseUrl . '/CommitTransaction';
+		$method = 'post';
+		$requestTimestamp = time();
+
 		$requestBody = [
 			"agentSessionId" => (string) $requestTimestamp,
 			"confirmationId" => $confirmationId,
 			"remitCurrency" => $remitCurrency
-		]; 
-		
+		];
+
 		$signatureString = $this->hmacAuthGenerate($method, $apiUrl, $requestTimestamp, $requestBody);
-        $response = Http::withHeaders([
-            'Authorization' => "hmacauth {$signatureString}",
-            'Content-Type' => 'application/json',
-        ])
-		->withOptions([
-			'verify' => false,
-		])
-		->{$method}($apiUrl, $requestBody);
-		 
-        // Handle Successful Response
+		$response = Http::withHeaders([
+					'Authorization' => "hmacauth {$signatureString}",
+					'Content-Type' => 'application/json',
+				])
+					->withOptions([
+							'verify' => false,
+						])
+			->{$method}($apiUrl, $requestBody);
+
+		// Handle Successful Response
 		if ($response->successful()) {
 			return [
-				'success' => true,  
+				'success' => true,
 				'request' => $requestBody,
 				'response' => $response->json()
 			];
 		}
 		return [
-			'success' => false, 
+			'success' => false,
 			'request' => $requestBody,
 			'response' => json_decode($response->body(), true)
-		];	
+		];
 	}
-	
+
 	public function getTXNStatus($orderId)
-    {
-		$apiUrl = $this->baseUrl . '/QueryTXNStatus'; 
-		$method = 'post'; 
-		$requestTimestamp = time();  
-		 
+	{
+		$apiUrl = $this->baseUrl . '/QueryTXNStatus';
+		$method = 'post';
+		$requestTimestamp = time();
+
 		$requestBody = [
 			"agentSessionId" => (string) $requestTimestamp,
 			"agentTxnId" => $orderId
-		]; 
-		
+		];
+
 		$signatureString = $this->hmacAuthGenerate($method, $apiUrl, $requestTimestamp, $requestBody);
-        $response = Http::withHeaders([
-            'Authorization' => "hmacauth {$signatureString}",
-            'Content-Type' => 'application/json',
-        ])
-		->withOptions([
-			'verify' => false,
-		])
-		->{$method}($apiUrl, $requestBody);
-		 
-        // Handle Successful Response
+		$response = Http::withHeaders([
+					'Authorization' => "hmacauth {$signatureString}",
+					'Content-Type' => 'application/json',
+				])
+					->withOptions([
+							'verify' => false,
+						])
+			->{$method}($apiUrl, $requestBody);
+
+		// Handle Successful Response
 		if ($response->successful()) {
 			return [
-				'success' => true,   
+				'success' => true,
 				'response' => $response->json()
 			];
 		}
 		return [
-			'success' => false,  
+			'success' => false,
 			'response' => json_decode($response->body(), true)
-		];	
+		];
 	}
-	
+
 	public function getRateHistory($payoutCountry, $payoutCurrency, $currentDate)
-    {
-		$apiUrl = $this->baseUrl . '/getratehistory'; 
-		$method = 'post'; 
-		$requestTimestamp = time();  
-		 
+	{
+		$apiUrl = $this->baseUrl . '/getratehistory';
+		$method = 'post';
+		$requestTimestamp = time();
+
 		$requestBody = [
 			"agentSessionId" => (string) $requestTimestamp,
 			"payoutCountry" => (string) $payoutCountry,
 			"payoutCurrency" => (string) $payoutCurrency,
 			"date" => (string) $currentDate
-		]; 
-		
+		];
+
 		$signatureString = $this->hmacAuthGenerate($method, $apiUrl, $requestTimestamp, $requestBody);
-        $response = Http::withHeaders([
-            'Authorization' => "hmacauth {$signatureString}",
-            'Content-Type' => 'application/json',
-        ])
-		->withOptions([
-			'verify' => false,
-		])
-		->{$method}($apiUrl, $requestBody);
-		 
-        // Handle Successful Response
+		$response = Http::withHeaders([
+					'Authorization' => "hmacauth {$signatureString}",
+					'Content-Type' => 'application/json',
+				])
+					->withOptions([
+							'verify' => false,
+						])
+			->{$method}($apiUrl, $requestBody);
+
+		// Handle Successful Response
 		if ($response->successful()) {
 			return [
-				'success' => true,   
+				'success' => true,
 				'response' => $response->json()
 			];
 		}
 		return [
-			'success' => false,  
+			'success' => false,
 			'response' => json_decode($response->body(), true)
-		];	
+		];
 	}
-	
+
 	public function getEcho($data)
 	{
 		$apiUrl = $data['lightnet_url'] . '/GetEcho';
 		$method = 'post';
 		$requestTimestamp = time(); // Use this for consistent timestamp
-		 
+
 		$requestBody = [
 			"agentSessionId" => (string) $requestTimestamp
 		];
@@ -350,13 +349,13 @@ class LiquidNetService
 		);
 
 		$response = Http::withHeaders([
-			'Authorization' => "hmacauth {$signatureString}",
-			'Content-Type' => 'application/json',
-		])
-		->withOptions([
-			'verify' => false, // Avoid SSL verification issues
-		])
-		->{$method}($apiUrl, $requestBody);
+					'Authorization' => "hmacauth {$signatureString}",
+					'Content-Type' => 'application/json',
+				])
+					->withOptions([
+							'verify' => false, // Avoid SSL verification issues
+						])
+			->{$method}($apiUrl, $requestBody);
 
 		// Handle Successful Response
 		if ($response->successful()) {
@@ -371,7 +370,7 @@ class LiquidNetService
 			'response' => json_decode($response->body(), true)
 		];
 	}
-	
+
 	public function getAgentList($request)
 	{
 		$timestamp = time();
@@ -381,16 +380,22 @@ class LiquidNetService
 			'payoutCountry' => (string) $request->payoutCountry,
 		];
 
+		// Log the request body before making the API call
+		//Log::info('🔹 Sending request to /GetAgentList', ['body' => $body]);
+
 		// Call the service API
 		$response = $this->serviceApi('post', '/GetAgentList', $timestamp, $body);
-		
+
+		// Log the response after the API call
+		//Log::info('🔸 Response from /GetAgentList', ['response' => $response]);
+
 		// Initialize the output
 		if (!isset($response['success']) || !$response['success'] && $response['response']['code'] !== 0) {
 			return '<option value="">No banks available</option>';
-		} 
+		}
 		// Process bank list
 		$banks = $response['response']['locationDetail'] ?? [];
-		
+
 		$output = '<option value="">Select Bank Name</option>';
 		foreach ($banks as $bank) {
 			$output .= sprintf(
@@ -403,7 +408,7 @@ class LiquidNetService
 		return $output;
 
 	}
-	
+
 	public function getAgentLists($request)
 	{
 		$timestamp = time();
@@ -415,13 +420,13 @@ class LiquidNetService
 
 		// Call the service API
 		$response = $this->serviceApi('post', '/GetAgentList', $timestamp, $body);
-		
+
 		// Initialize the output
 		if (!isset($response['success']) || !$response['success'] && $response['response']['code'] !== 0) {
 			return [];
-		} 
+		}
 		// Process bank list
-		$banks = $response['response']['locationDetail'] ?? []; 
-		return $banks; 
-	} 
+		$banks = $response['response']['locationDetail'] ?? [];
+		return $banks;
+	}
 }
