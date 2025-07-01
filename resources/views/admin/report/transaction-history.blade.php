@@ -86,6 +86,7 @@
                         <th>#</th>
                         <th>User Name</th>
                         <th>Service Name</th>
+                        <th>Platform Provider</th>
                         <th>Order Id</th>
                         <th>Fees</th>
                         <th>Transaction Type</th>
