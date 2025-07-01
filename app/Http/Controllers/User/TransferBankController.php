@@ -131,7 +131,7 @@ class TransferBankController extends Controller
 			{
 				return $this->errorResponse('Domestic remittance is not allowed. Please select a receiver country different from the sender country.');
 			}
-		}
+		} 
 		
 		try {
 			 
