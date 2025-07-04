@@ -47,7 +47,7 @@ class LiquidNetService
 		return $signatureString;
 	}
 	
-	/* public function getEcho($data)
+	public function getEcho($data)
 	{
 		$apiUrl = $data['lightnet_url'] . '/GetEcho';
 		$method = 'post';
@@ -114,9 +114,9 @@ class LiquidNetService
 			'success' => false,
 			'response' => json_decode($response->body(), true)
 		];
-	} */
+	} 
 	
-	public function getEcho($data)
+	/* public function getEcho($data)
 	{
 		$apiUrl = $data['lightnet_url'] . '/GetEcho';
 		$method = 'post';
@@ -201,7 +201,7 @@ class LiquidNetService
 			'success' => false,
 			'response' => json_decode($response->body(), true)
 		];
-	}
+	} */
  
 	public function serviceApi(string $method, string $url, string $requestTimeStamp, array $requestBody = [])
 	{
