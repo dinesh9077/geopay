@@ -101,7 +101,7 @@ class LiquidNetService
 			'verify' => false, // Avoid SSL verification issues
 		])
 		->{$method}($apiUrl, $requestBody);
-		dd($response->json());
+		 
 		// Handle Successful Response
 		if ($response->successful()) {
 			return [
