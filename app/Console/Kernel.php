@@ -12,9 +12,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        //$schedule->command('transaction:update-onafric-collection-status')->everyMinute(); // Corrected method name
-        $schedule->command('transaction:update-lightnet-status')->everyTwoMinutes(); // Corrected method name
-		//$schedule->command('transaction:update-onafric-status')->everyTenMinutes(); // Corrected method name
+        $schedule->command('transaction:update-onafric-collection-status')->everyMinute();
+        $schedule->command('transaction:update-lightnet-status')->everyTwoMinutes();
+		$schedule->command('transaction:update-onafric-status')->everyTwoMinutes();
 		$schedule->command('fetch:lightnet-exchange-rates')->hourly(); 
     }
 

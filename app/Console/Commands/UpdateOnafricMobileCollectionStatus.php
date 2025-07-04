@@ -58,21 +58,22 @@ class UpdateOnafricMobileCollectionStatus extends Command
 		
 		foreach ($transactions as $transaction)
 		{
-			try { 
-				 
+			try {   
 				$response = $this->onafricService->getCollectionStatus($transaction->unique_identifier);
-				\Log::info($response);
-				// Return 0 on failure or unexpected response
+				 
 				if (!$response['success']) {
-					continue; // Skip to the next transaction
+					continue; 
 				} 
 				
 				// Update transaction status
-				$txn_status = strtolower($response['response']['status'] ?? $transaction->txn_status);
-				$errorMsg =  !empty($response['response']['error_message']) ? $response['response']['error_message'] : (!empty($response['response']['instructions']) ? $response['response']['instructions'] : $transaction->comments);
-				$transaction->update(['txn_status' => strtolower($txn_status), 'comments' => $errorMsg]);  
+				$txnStatus = strtolower($response['response']['status'] ?? $transaction->txn_status);
+				$errorMsg = $response['response']['error_message'] 
+					?? $response['response']['instructions'] 
+					?? $transaction->comments;
+					
+				$transaction->update(['txn_status' => $txnStatus, 'comments' => $errorMsg]);  
 				
-				if(strtolower($txn_status) == 'successful')
+				if($txnStatus === 'successful')
 				{
 					$transaction->user->increment('balance', $transaction->txn_amount);  
 					$transaction->update(['comments' => "Payment received successfully. Wallet updated."]); 
@@ -80,7 +81,7 @@ class UpdateOnafricMobileCollectionStatus extends Command
 			} 
 			catch (\Throwable $e) 
 			{  
-				//\Log::error("Error updating transaction ID {$transaction->id}: {$e->getMessage()}"); 
+				\Log::error("Error updating transaction ID {$transaction->id}: {$e->getMessage()}"); 
 			}
 		}
 		
