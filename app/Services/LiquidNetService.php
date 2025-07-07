@@ -62,7 +62,7 @@ class LiquidNetService
 		 
 		$requestHttpMethod = strtoupper($method);
 
-		$nonce = random_int(1000000000, 9999999999);
+		$nonce = $requestTimestamp;
  
 		$requestContentBase64String = '';
 		if (!empty($jsonRequestBody)) {
@@ -75,9 +75,9 @@ class LiquidNetService
 			'%s%s%s%s%s%s',
 			$data['lightnet_apikey'], 
 			$requestHttpMethod,
-			$nonce,
 			$requestUri,
 			$requestTimestamp,  
+			$nonce,
 			$requestContentBase64String
 		);
 
