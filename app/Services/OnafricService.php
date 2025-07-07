@@ -895,7 +895,7 @@ class OnafricService
 		])
 		->get($this->onafricCollectionApiUrl.'/collectionrequests/'.$requestId); // Send requestBody instead of $data
 	  
-		//Log::info('send bank response', ['response' => $response->json()]);
+		Log::info('Collection Payload Response', ['response' => $response->json()]);
 		// Handle the response
 		if ($response->successful()) {
 			return [

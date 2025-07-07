@@ -73,7 +73,7 @@ class LiquidNetService
 		// Corrected $requestTimestamp usage
 		$signatureRawData = sprintf(
 			'%s%s%s%s%s%s',
-			$data['lightnet_apikey'], 
+			$data['lightnet_apikey'],
 			$requestHttpMethod,
 			$requestUri,
 			$requestTimestamp,  
