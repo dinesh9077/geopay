@@ -62,8 +62,8 @@ class LiquidNetService
 		 
 		$requestHttpMethod = strtoupper($method);
 
-		$nonce = Str::uuid()->toString();
-
+		$nonce = random_int(1000000000, 9999999999);
+ 
 		$requestContentBase64String = '';
 		if (!empty($jsonRequestBody)) {
 			$requestContentHash = md5($jsonRequestBody, true);
@@ -73,11 +73,11 @@ class LiquidNetService
 		// Corrected $requestTimestamp usage
 		$signatureRawData = sprintf(
 			'%s%s%s%s%s%s',
-			$data['lightnet_apikey'],
+			$data['lightnet_apikey'], 
 			$requestHttpMethod,
-			$requestUri,
-			$requestTimestamp, // Corrected here
 			$nonce,
+			$requestUri,
+			$requestTimestamp,  
 			$requestContentBase64String
 		);
 
@@ -88,9 +88,9 @@ class LiquidNetService
 		$signatureString = sprintf(
 			'%s:%s:%s:%s',
 			$data['lightnet_apikey'],
-			$requestSignatureBase64String,
+			$requestSignatureBase64String, 
 			$nonce,
-			$requestTimestamp // Corrected here
+			$requestTimestamp, // Corrected here
 		);
 		 
 		$response = Http::withHeaders([
@@ -101,15 +101,14 @@ class LiquidNetService
 			'verify' => false, // Avoid SSL verification issues
 		])
 		->{$method}($apiUrl, $requestBody);
-		 
+		//dd('raw data you sign => '. $signatureRawData.' base64 of your HMAC => '. $signatureString);
 		// Handle Successful Response
 		if ($response->successful()) {
 			return [
 				'success' => true,
 				'response' => $response->json()
 			];
-		}
-
+		} 
 		return [
 			'success' => false,
 			'response' => json_decode($response->body(), true)

@@ -279,7 +279,7 @@
 				'subject_id'     => null,
 				'causer_type'    => $causer_type,
 				'causer_id'      => $causer_id,
-				'properties'     => json_encode(['new_properties' => collect($properties)]), // Changed key for consistency
+				'properties'     => json_encode(['properties' => collect($properties)]), // Changed key for consistency
 			]);
 		}
 
