@@ -277,9 +277,9 @@
 				// Deduct balance
 				$user->decrement('balance', $netAmount); 
 				
-				// Check if necessary fields exist to prevent undefined index warnings
-				$beneficiaryFirstName = $beneficiary->data['receiverfirstname'] ?? $beneficiary->data['beneficiaryFirstName'];
-				$beneficiaryLastName = $beneficiary->data['receiverlastname'] ?? $beneficiary->data['beneficiaryLastName'];
+				// Check if necessary fields exist to prevent undefined index warnings 
+				$beneficiaryFirstName = $beneficiary->data['receiverfirstname'] ?? ($beneficiary->data['beneficiaryFirstName'] ?? '');
+				$beneficiaryLastName = $beneficiary->data['receiverlastname'] ?? ($beneficiary->data['beneficiaryLastName'] ?? '');
 				$bankName = $beneficiary->data['bankName'] ?? 'Unknown Bank';
 				$bankId = $beneficiary->data['bankId'] ?? '';
 				$mobileNumber = $beneficiary->data['receivercontactnumber'] ?? '';
