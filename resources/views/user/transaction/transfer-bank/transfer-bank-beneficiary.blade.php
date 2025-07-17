@@ -149,7 +149,7 @@
 
 			if (flag) {
 				return $(
-					'<span><img src="' + flag + '" class="me-2" style="width: 20px; height: 15px; object-fit: cover;" />' + name + '</span>'
+					'<span><img src="' + flag + '" class="me-2" style="width: 20px; height: 20px; object-fit: cover;" />' + name + '</span>'
 				);
 			}
 			return $('<span>' + name + '</span>');
