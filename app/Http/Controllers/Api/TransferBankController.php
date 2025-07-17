@@ -9,8 +9,7 @@
 	use App\Models\{
 		Country, Transaction, Beneficiary, User, 
 		LightnetCatalogue, LiveExchangeRate, ExchangeRate, 
-		LightnetCountry,
-	OnafricBank
+		LightnetCountry, OnafricBank
 	};
 	use App\Http\Traits\ApiResponseTrait;
 	use App\Services\{
@@ -376,7 +375,13 @@
 				
 				case 'onafric':
 					return $this->successResponse('bank fetched successfully.',
-						OnafricBank::where('payout_iso', $request->payoutIso)->get()  
+						OnafricBank::select(
+							'mfs_bank_code as locationId',
+							'bank_name as locationName',
+							DB::raw("'' as optionalField")
+						)
+						->where('payout_iso', $request->payoutIso)
+						->get() 
 					);
 				
 				default:
