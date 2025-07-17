@@ -9,7 +9,8 @@
 	use App\Models\{
 		Country, Transaction, Beneficiary, User, 
 		LightnetCatalogue, LiveExchangeRate, ExchangeRate, 
-		LightnetCountry
+		LightnetCountry,
+	OnafricBank
 	};
 	use App\Http\Traits\ApiResponseTrait;
 	use App\Services\{
