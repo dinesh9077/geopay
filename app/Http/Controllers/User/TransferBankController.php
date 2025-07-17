@@ -58,7 +58,7 @@ class TransferBankController extends Controller
 		->whereNotNull('label')
 		->get()
 		->map(function ($map) {
-			$map->country_flag = optional($map->country)->country_flag;
+			$map->country_flag = optional($map->country)->country_flag ?? '';
 			return $map;
 		});
 		
