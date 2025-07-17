@@ -13,7 +13,7 @@
 							<select id="payoutCurrency" name="payoutCurrency" class="form-control form-control-lg content-3 select2" required>
 								<option value="">Select Country</option>
 								@foreach($countries as $country) 
-									<option value="{{ $country['value'] }}" data-service-name="{{ $country['service_name'] }}" data-payout-country="{{ $country['data'] }}" data-country-name="{{ $country['label'] }}" data-iso="{{ $country['iso'] }}">{{ $country['label'] }}</option>
+									<option value="{{ $country['value'] }}" data-flag="{{ $country['country_flag'] ?? '' }}" data-service-name="{{ $country['service_name'] }}" data-payout-country="{{ $country['data'] }}" data-country-name="{{ $country['label'] }}" data-iso="{{ $country['iso'] }}">{{ $country['label'] }}</option>
 								@endforeach
 							</select>
 						</div>
@@ -130,6 +130,33 @@
 		dateFormat: "Y-m-d"
 	});
 	 
+	$(document).ready(function () {
+		$('#payoutCurrency').select2({
+			templateResult: formatCountryOption,
+			templateSelection: formatCountryOption,
+			placeholder: "Select Country",
+			allowClear: true,
+			width: "100%",
+			dropdownParent: $('#addTransferBankBeneficiary') 
+		});
+
+		function formatCountryOption(state) {
+			if (!state.id) {
+				return state.text;
+			}
+			const flag = $(state.element).data('flag');
+			const name = state.text;
+
+			if (flag) {
+				return $(
+					'<span><img src="' + flag + '" class="me-2" style="width: 20px; height: 15px; object-fit: cover;" />' + name + '</span>'
+				);
+			}
+			return $('<span>' + name + '</span>');
+		}
+	});
+
+
 	// Handle Country Change for Bank List
 	$('#transferBankBeneficiaryForm #payoutCurrency').change(function() { 
 		var payoutCountry = $(this).find(':selected').data('payout-country'); 
