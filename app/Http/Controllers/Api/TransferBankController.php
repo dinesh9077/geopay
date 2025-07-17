@@ -416,17 +416,17 @@
 		public function getOnafricFieldView()
 		{ 
 			return [
-				["fieldName" => "bankaccountnumber", "fieldLabel" => "Beneficiary Account Number", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => '1', 'maxLength' => '100', 'options' => []],
-				["fieldName" => "receivercontactnumber", "fieldLabel" => "Recipient Mobile Number", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => '1', 'maxLength' => '100', 'options' => []],
-				["fieldName" => "receiverfirstname", "fieldLabel" => "Recipient Name", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => '1', 'maxLength' => '100', 'options' => []],
-				["fieldName" => "receiverlastname", "fieldLabel" => "Recipient Surname", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => '1', 'maxLength' => '100', 'options' => []],
-				["fieldName" => "receiveraddress", "fieldLabel" => "Recipient Address", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => '1', 'maxLength' => '100', 'options' => []],
-				["fieldName" => "sender_placeofbirth", "fieldLabel" => "Sender Date Of Birth", "required" => true, "inputType" => "date", "dynamicField" => false, 'minLength' => '1', 'maxLength' => '100', 'options' => []],
-				["fieldName" => "purposeOfTransfer", "fieldLabel" => "Purpose Of Transfer", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => '1', 'maxLength' => '100', 'options' => []],
-				["fieldName" => "sourceOfFunds", "fieldLabel" => "Source Of Funds", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => '1', 'maxLength' => '100', 'options' => []],
-				["fieldName" => "idNumber", "fieldLabel" => "Document Id Number", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => '1', 'maxLength' => '100', 'options' => []],
-				["fieldName" => "idType", "fieldLabel" => "Document Id Type", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => '1', 'maxLength' => '100', 'options' => []],
-				["fieldName" => "idExpiry", "fieldLabel" => "Document Id Expiry", "required" => false, "inputType" => "date", "dynamicField" => false, 'minLength' => '1', 'maxLength' => '100', 'options' => []]
+				["fieldName" => "bankaccountnumber", "fieldLabel" => "Beneficiary Account Number", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "receivercontactnumber", "fieldLabel" => "Recipient Mobile Number", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "receiverfirstname", "fieldLabel" => "Recipient Name", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "receiverlastname", "fieldLabel" => "Recipient Surname", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "receiveraddress", "fieldLabel" => "Recipient Address", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "sender_placeofbirth", "fieldLabel" => "Sender Date Of Birth", "required" => true, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "purposeOfTransfer", "fieldLabel" => "Purpose Of Transfer", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "sourceOfFunds", "fieldLabel" => "Source Of Funds", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "idNumber", "fieldLabel" => "Document Id Number", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "idType", "fieldLabel" => "Document Id Type", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "idExpiry", "fieldLabel" => "Document Id Expiry", "required" => false, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []]
 			]; 
 		}
 		
