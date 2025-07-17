@@ -819,14 +819,14 @@ class CompaniesController extends Controller
     {
         $transaction = Transaction::with(['user', 'receive'])->findOrFail($transactionId);
         //return view('user.transaction.transaction-receipt-pdf', compact('transaction'));
+ 
+		$html = view('user.transaction.transaction-receipt-pdf', compact('transaction'))->render();
+ 
+		$pdf = PDF::setOptions([
+			'isHtml5ParserEnabled' => true,
+			'isRemoteEnabled' => true
+		])->loadHtml($html, 'UTF-8');
 
-        $pdf = Pdf::loadView('user.transaction.transaction-receipt-pdf', compact('transaction'));
-        $pdf->set_option('isHtml5ParserEnabled', true);
-        $pdf->set_option('isPhpEnabled', true);
-        $pdf->set_option('isHtml5ParserEnabled', true);
-        $pdf->set_option('isPhpEnabled', true);
-        $pdf->set_option('isHtml5ParserEnabled', true);
-        $pdf->set_option('isPhpEnabled', true);
         return $pdf->download($transaction->order_id . '-receipt.pdf');
     }
 	
