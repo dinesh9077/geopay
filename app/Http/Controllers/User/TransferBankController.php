@@ -23,7 +23,7 @@ use Helper;
  
 class TransferBankController extends Controller
 { 
-	use WebResponseTrait;
+	use WebResponseTrait; 
 	protected $liquidNetService;
 	protected $onafricService;
     public function __construct()
@@ -41,17 +41,44 @@ class TransferBankController extends Controller
 	
 	public function countries()
 	{
-		$lightnetCountry = LightnetCountry::select('id', 'data', 'value', 'label', 'service_name', 'status', 'created_at', 'updated_at', 'markdown_type', 'markdown_charge', DB::raw("'' as iso"))
-        ->whereNotNull('label')
-        ->get(); 
-
-		$onafricCountry = Country::select('id', 'iso3 as data', 'currency_code as value', 'nicename as label', DB::raw("'onafric' as service_name"), DB::raw("1 as status"), 'created_at', 'updated_at', DB::raw("'flat' as markdown_type"), DB::raw("0 as markdown_charge"), 'iso')
+		$lightnetCountry = LightnetCountry::with('country')
+		->select(
+			'id',
+			'data',
+			'value',
+			'label',
+			'service_name',
+			'status',
+			'created_at',
+			'updated_at',
+			'markdown_type',
+			'markdown_charge',
+			DB::raw("'' as iso")
+		)
+		->whereNotNull('label')
+		->get()
+		->map(function ($map) {
+			$map->country_flag = optional($map->country)->country_flag;
+			return $map;
+		});
+		
+		$onafricCountry = Country::select('id', 'country_flag', 'iso3 as data', 'currency_code as value', 'nicename as label', DB::raw("'onafric' as service_name"), DB::raw("1 as status"), 'created_at', 'updated_at', DB::raw("'flat' as markdown_type"), DB::raw("0 as markdown_charge"), 'iso')
 		->whereIn('nicename', $this->onafricService->bankAvailableCountry())
 		->get();
+		
 
 		// Merge both collections
 		$countries = $lightnetCountry->merge($onafricCountry)->sortBy('label')->values();
-		return $countries;
+		 
+		$countriesWithFlags = $countries->transform(function ($country)  {
+			// Add full flag URL
+			if ($country->country_flag) {
+				$country->country_flag = asset('country/' . $country->country_flag);
+			} 
+			return $country;
+		});
+	 
+		return $countriesWithFlags; 
 	}
  
 	public function transferToBankBeneficiary()

@@ -17,7 +17,15 @@
 						<select id="country_code" name="country_code" class="form-control form-control-lg content-3 default-input select3" >
 							<option value="">Select Country</option>
 							@foreach($countries as $country) 
-								<option value="{{ $country['value'] }}" data-service-name="{{ $country['service_name'] }}" data-country-name="{{ $country['label'] }}" data-payout-country="{{ $country['data'] }}" data-iso="{{ $country['iso'] }}">{{ $country['label'] }}</option>
+								<option 
+									value="{{ $country['value'] }}" 
+									data-flag="{{ $country['country_flag'] ?? '' }}"
+									data-service-name="{{ $country['service_name'] }}" 
+									data-country-name="{{ $country['label'] }}" 
+									data-payout-country="{{ $country['data'] }}" 
+									data-iso="{{ $country['iso'] }}">
+									{{ $country['label'] }}
+								</option>
 							@endforeach
 						</select>
 					</div>
@@ -57,7 +65,34 @@
 	$('#transferToBankForm .select3').select2({ 
 		width: "100%"
 	});
-	
+
+	$(document).ready(function() {
+		$('#country_code').select2({
+			templateResult: formatCountryOption,
+			templateSelection: formatCountryOption,
+			placeholder: "Select Country"
+		});
+
+		function formatCountryOption (state) {
+			if (!state.id) {
+				return state.text;
+			}
+
+			var flag = $(state.element).data('flag');
+			var countryName = state.text;
+
+			if (flag) {
+				return $(
+					'<span><img src="' + flag + '" class="me-2" style="width: 20px; height: 20px; object-fit: cover;" />' + countryName + '</span>'
+				);
+			} else {
+				return $(
+					'<span>' + countryName + '</span>'
+				);
+			}
+		}
+	});
+		
 	function addTransferBankBeneficiary(obj, event)
 	{
 		event.preventDefault();
