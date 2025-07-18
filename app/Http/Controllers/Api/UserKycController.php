@@ -98,15 +98,15 @@
 			{
 				UserKyc::where('user_id', $userId) 
 				->update([
-				'verification_status' => in_array($response['identity']['status'] ?? 'reviewNeeded', ['reviewNeeded', 'verified']) 
-                                ? $response['identity']['status'] 
-                                : 'reviewNeeded',
-				'verification_id' => $response['id'],
-				'identification_id' => $response['identity']['id'],
-				'document' => json_encode($documentImages),
-				'video' => $storedVideoUrl,
-				'meta_response' => json_encode($data),
-				'updated_at' => now()
+					'verification_status' => in_array($response['identity']['status'] ?? 'reviewNeeded', ['reviewNeeded', 'verified']) 
+									? $response['identity']['status'] 
+									: 'reviewNeeded',
+					'verification_id' => $response['id'],
+					'identification_id' => $response['identity']['id'],
+					'document' => json_encode($documentImages),
+					'video' => $storedVideoUrl,
+					'meta_response' => json_encode($response),
+					'updated_at' => now()
 				]);
 				
 				// Determine KYC verification status
