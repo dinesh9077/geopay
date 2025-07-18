@@ -188,12 +188,13 @@ class TransactionController extends Controller
     }
 	
 	public function walletToWalletStore(Request $request)
-	{ 
+	{  
 		$user = auth()->user();
 		
 		// Validation rules
 		$validator = Validator::make($request->all(), [
 			'country_id' => 'required|integer|exists:countries,id', // Check if country_id exists in the 'countries' table
+			'mobile_code' => 'required|string',
 			'mobile_number' => 'required|integer',
 			'amount' => 'required|numeric|gt:0',
 			'notes' => 'nullable|string',
@@ -207,8 +208,8 @@ class TransactionController extends Controller
 		{
 			if ($request->input('country_id') && $request->input('mobile_number')) 
 			{
-				$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
-
+				$formattedNumber = '+' . ltrim(($request->mobile_code ?? $country->isdcode ?? '') . $request->mobile_number, '+');
+ 
 				// Check if user is trying to pay themselves
 				if ($formattedNumber === $user->formatted_number) {
 					$validator->errors()->add('mobile_number', 'You cannot transfer funds to your own account.');
@@ -243,9 +244,8 @@ class TransactionController extends Controller
 			$countryId = $request->country_id;
 			$notes = $request->notes;
 
-			// Format the mobile number again to ensure correct recipient
-			$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
-			
+			// Format the mobile number again to ensure correct recipient 
+			$formattedNumber = '+' . ltrim(($request->mobile_code ?? $country->isdcode ?? '') . $request->mobile_number, '+');
 			// Retrieve the recipient user
 			$toUser = User::where('formatted_number', $formattedNumber)->first();
 

@@ -109,7 +109,8 @@ class ReceiveMoneyController extends Controller
 		$validator = Validator::make($request->all(), [
 			'country_code'   => 'required|integer', 
 			'channel'   => 'required|string',   
-			'mobile_no'   => 'required|string', 
+			'mobile_code'   => 'required|string', 
+			'mobile_no'   => 'required|integer', 
 			'txnAmount'      => 'required|numeric|gt:0', 
 			'notes'          => 'nullable|string|max:255',  
 		]);
@@ -197,7 +198,7 @@ class ReceiveMoneyController extends Controller
 			
 			// Check if necessary fields exist to prevent undefined index warnings
 			$beneficiaryFirstName = $request->beneficiary_name; 
-			$mobileNumber = str_replace('+', '', $request->mobile_code.''.$request->mobile_no);
+			$mobileNumber = ltrim($request->mobile_code . $request->mobile_no, '+'); 
 			
 			$unitConvertCurrency =  $request->payoutCurrency;
 			$payoutCurrencyAmount = $request->payoutCurrencyAmount;

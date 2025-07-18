@@ -16,15 +16,19 @@
 						</select>
 					</div>
 					<div class="col-12 mb-3">
-						<label for="country_id" class="form-label">Mobile (mobile number without code) <span class="text-danger">*</span></label>
-						<input type="number" id="mobile_number" name="mobile_number" class="form-control form-control-lg default-input mobile-number" placeholder="Enter your mobile number without code" oninput="this.value = this.value.replace(/\D/g, '')"/>
+						<label for="mobile_number" class="form-label">Enter Mobile No (eg.2444765454) <span class="text-danger">*</span></label> 
+						<div class="d-flex align-items-center gap-2">
+							<input id="mobile_code" type="text" name="mobile_code" class="form-control form-control-lg default-input mobile-number mb-3 px-2" style="max-width: 65px;" placeholder="+91" readonly />
+							<input id="mobile_number" type="number" name="mobile_number" class="form-control form-control-lg default-input mobile-number mb-3" placeholder="Enter Mobile No (eg.2444765454)" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));"/>
+						</div> 
 					</div>
+					
 					<div class="col-12 mb-3">	
-						<label for="country_id" class="form-label">Amount <span class="text-danger">*</span></label>
+						<label for="amount" class="form-label">Amount <span class="text-danger">*</span></label>
 						<input id="amount" name="amount" type="text" class="form-control form-control-lg default-input" placeholder="Enter Amount in USD (eg : 100 or eg : 0.0)" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
 					</div>
 					<div class="col-12 mb-3">
-						<label for="country_id" class="form-label">Notes</label>
+						<label for="notes" class="form-label">Notes</label>
 						<textarea name="notes" id="notes" class="form-control form-control-lg default-input" id="" placeholder="Account Description"></textarea>
 					</div> 
 				</div>
@@ -76,7 +80,13 @@
 				const flagImg = '<img src="'+country.flag+'" style="width: 20px; height: 20px; margin-right: 4px; margin-bottom: 4px;" />';
 				return $('<span>'+flagImg+' '+country.text+'</span>');
 			}
-		 
+			
+			$walletForm.find('#country_id').change(function()
+			{
+				const selectedCountryId = parseInt($(this).val()); 
+				const country = countries.find(c => c.id === selectedCountryId); 
+				$walletForm.find('#mobile_code').val(country.isdcode ? '+' + country.isdcode : '');
+			});	 
 		});
 		
 		// Attach the submit event handler

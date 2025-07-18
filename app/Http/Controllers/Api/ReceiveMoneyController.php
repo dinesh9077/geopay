@@ -110,7 +110,8 @@
 			$validator = Validator::make($request->all(), [
 				'country_code'   => 'required|integer', 
 				'channel'   => 'required|string',   
-				'mobile_no'   => 'required|string', 
+				'mobile_code'   => 'required|string', 
+				'mobile_no'   => 'required|integer', 
 				'txnAmount'      => 'required|numeric|gt:0', 
 				'notes'          => 'nullable|string|max:255',  
 			]);
@@ -192,9 +193,8 @@
 				//$user->decrement('balance', $netAmount); 
 				
 				// Check if necessary fields exist to prevent undefined index warnings
-				$beneficiaryFirstName = $request->beneficiary_name; 
-				$mobileNumber = str_replace('+', '', $request->mobile_code.''.$request->mobile_no);
-				
+				$beneficiaryFirstName = $request->beneficiary_name;  
+				$mobileNumber = ltrim($request->mobile_code . $request->mobile_no, '+'); 
 				$unitConvertCurrency =  $request->payoutCurrency;
 				$payoutCurrencyAmount = $request->payoutCurrencyAmount;
 				$aggregatorCurrencyAmount = $request->aggregatorCurrencyAmount;
