@@ -186,27 +186,44 @@ class ResetPasswordController extends Controller
 	
 	public function resetPassword(Request $request)
 	{ 
+		$user = User::where('email', $request->email)->first();
+		if (!$user) {
+			return $this->errorResponse('User not found.');
+		}
+		
 		$validator = Validator::make($request->all(), [
 			'email' => 'required|email',
 			'password' => [
 				'required',
 				'string',
-				'min:8',  // Minimum 8 characters
-				'confirmed',  // Check if password_confirmation matches
-				function ($attribute, $value, $fail) {
+				'confirmed',
+				'min:8',
+				function ($attribute, $value, $fail) use ($user) {
+					$errors = [];
+
+					// Check strength rules first
 					if (!preg_match('/[A-Z]/', $value)) {
-						return $fail('The ' . $attribute . ' must contain at least one uppercase letter.');
+						$errors[] = 'The password must contain at least one uppercase letter.';
 					}
 					if (!preg_match('/[a-z]/', $value)) {
-						return $fail('The ' . $attribute . ' must contain at least one lowercase letter.');
+						$errors[] = 'The password must contain at least one lowercase letter.';
 					}
 					if (!preg_match('/\d/', $value)) {
-						return $fail('The ' . $attribute . ' must contain at least one number.');
+						$errors[] = 'The password must contain at least one number.';
 					}
 					if (!preg_match('/[\W_]/', $value)) {
-						return $fail('The ' . $attribute . ' must contain at least one special character.');
+						$errors[] = 'The password must contain at least one special character.';
 					}
-				},
+
+					// Only check old == new after all other rules are valid
+					if (count($errors) === 0 && Hash::check($value, $user->password)) {
+						$errors[] = 'The new password must be different from the old password.';
+					}
+
+					foreach ($errors as $message) {
+						$fail($message);
+					}
+				}
 			],
 		]);
 
@@ -219,13 +236,7 @@ class ResetPasswordController extends Controller
 			DB::beginTransaction();
 			$email = $request->email; 
 			$newPassword = $request->password;
- 
-			// Fetch user by email
-			$user = User::where('email', $email)->first();
-			if (!$user) {
-				return $this->errorResponse('User not found.');
-			}
-
+  
 			// Update user's password
 			$user->password = Hash::make($newPassword); // Hash the password securely
 			$user->save();
