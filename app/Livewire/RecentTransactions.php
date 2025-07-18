@@ -33,7 +33,7 @@ class RecentTransactions extends Component
         if ($user) {
             $this->transactions = Transaction::where('receiver_id', $user->id) 
                 ->orderByDesc('id')
-                ->limit(6)
+                ->limit(10)
                 ->get(); 
 			 
         } else {

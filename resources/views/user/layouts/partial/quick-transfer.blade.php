@@ -1,6 +1,6 @@
 <div class="col-lg-4 col-xxl-3">
-    <div class="p-4 border text-center quick-transfer-container">
-        <!-- First Row: Avatar Selection (Screenshot Design) -->
+    <!--<div class="p-4 border text-center quick-transfer-container">
+        <!{1}** First Row: Avatar Selection (Screenshot Design) **{1}>
         <div class="slick-slider qt-slick-slider mb-3">
             <div class="element element-1">
                 <div class="d-flex flex-column align-items-center">
@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="d-flex align-items-center">
-            <!-- <span style="font-size: 10px; color: white; white-space: nowrap; margin-right: 10px;">Write Amount</span> -->
+            <!{1}** <span style="font-size: 10px; color: white; white-space: nowrap; margin-right: 10px;">Write Amount</span> **{1}>
             <div class="input-group rounded-pill bg-light pe-0 mt-4">
                 <input placeholder="Write Amount" type="text" class="number-input form-control form-control-lg bg-transparent border-0 content-3">
                 <button type="button" class="btn btn-secondary rounded-pill px-4 content-3">
@@ -36,6 +36,6 @@
                 </button>
             </div>
         </div>
-    </div>
+    </div>-->
 	<livewire:recent-transactions /> 
 </div>
