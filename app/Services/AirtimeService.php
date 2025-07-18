@@ -108,7 +108,7 @@
 			$postParams = [
 				'mobile_number' => $mobileNumber,
 			];
-
+			
 			// API Request
 			$response = Http::withHeaders($headers)->post("{$this->baseUrl}/lookup/mobile-number", $postParams);
 
@@ -261,8 +261,10 @@
 				'Content-Type' => 'application/json',
 			];
 			
-			$mobile_number = '+' . ltrim($request->mobile_number, '+');
-			
+			$mobile_code = $request->mobile_code ?? '';
+			$mobile_num = $request->mobile_number ?? '';
+			$mobile_number = '+' . ltrim($mobile_code . $mobile_num, '+');
+		 
 			$txnId = $request->order_id;
 			// API Request Parameters 
 			$transactionRequest = [

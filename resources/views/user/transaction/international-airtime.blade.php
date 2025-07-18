@@ -33,10 +33,19 @@
 					<div class="col-12 mb-3" id="payableAmountHtml" style="display:none;">  
 					</div>
 					
-					<div class="col-12 mb-3">
+				<!--	<div class="col-12 mb-3">
 						<label for="product_id" class="form-label">Mobile (eg:265244476305)  <span class="text-danger">*</span></label>
 						<input type="number" id="mobile_number" name="mobile_number" class="form-control form-control-lg default-input mobile-number" placeholder="Enter your mobile number with country code"/>
+					</div>-->
+					
+					<div class="col-12 mb-3">
+						<label for="mobile_number" class="form-label">Enter Mobile No (eg.244476305) <span class="text-danger">*</span></label> 
+						<div class="d-flex align-items-center gap-2">
+							<input id="mobile_code" type="text" name="mobile_code" class="form-control form-control-lg default-input mobile-number mb-3 px-2" style="max-width: 65px;" placeholder="+91" readonly />
+							<input id="mobile_number" type="number" name="mobile_number" class="form-control form-control-lg default-input mobile-number mb-3" placeholder="Enter Mobile No (eg.244476305)" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));"/>
+						</div> 
 					</div>
+					
 					 
 					<div class="col-12 mb-3">
 						<label for="product_id" class="form-label">Notes</label>
@@ -95,7 +104,13 @@
 			const flagImg = '<img src="'+country.flag+'" style="width: 20px; height: 20px; margin-right: 4px; margin-bottom: 4px;" />';
 			return $('<span>'+flagImg+' '+country.text+'</span>');
 		}
-	 
+		
+		$airtimeForm.find('#country_code').change(function()
+		{
+			const selectedCountryIso = $(this).val(); 
+			const country = countries.find(c => c.iso3 === selectedCountryIso); 
+			$airtimeForm.find('#mobile_code').val(country.isdcode ? '+' + country.isdcode : '');
+		});	  
 	});
 	 
 	$('#country_code').change(function ()
@@ -298,6 +313,7 @@
 	$('#mobile_number').on('input', function () {
 		clearTimeout(debounceTimer); // Clear any previous timer
 		const mobileNumber = $(this).val();
+		const mobileCode = $airtimeForm.find('#mobile_code').val() || '';
 		const operatorId = $('#operator_id :selected').val(); // Assume there's an operator dropdown
 		if(!operatorId)
 		{
@@ -305,16 +321,17 @@
 		}
 		if (mobileNumber.length > 0) {
 			debounceTimer = setTimeout(() => {
-				validatePhoneNumber(mobileNumber, operatorId);
+				validatePhoneNumber(mobileCode, mobileNumber, operatorId);
 			}, 700); // Wait 500ms after the last keystroke
 		}
 	});
 
-	function validatePhoneNumber(mobileNumber, operatorId) 
+	function validatePhoneNumber(mobileCode, mobileNumber, operatorId) 
 	{
 		let formData = {};
 
 		// Collect form data
+		formData['mobile_code'] = mobileCode;
 		formData['mobile_number'] = mobileNumber;
 		formData['operator_id'] = operatorId;
 
@@ -349,7 +366,7 @@
 						var errorSpan = $('<span>')
 							.addClass('error_msg text-danger content-4') // Add required classes
 							.text(res.message); // Set the error message text
-						inputField.parent().append(errorSpan); // Append the error message
+						inputField.parent().parent().append(errorSpan); // Append the error message
 					}
 				} else {
 					// If success, append a hidden input with value 1
@@ -434,7 +451,15 @@
 						.addClass('error_msg text-danger content-4') 
 						.attr('id', key + 'Error')
 						.text(value[0]);  
-						inputField.parent().append(errorSpan); 
+						
+						if(key === "mobile_number")
+						{
+							inputField.parent().parent().append(errorSpan);
+						}
+						else
+						{
+							inputField.parent().append(errorSpan); 
+						}
 					});
 				}
 				else

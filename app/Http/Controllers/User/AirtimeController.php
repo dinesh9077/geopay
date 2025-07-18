@@ -87,7 +87,10 @@
 		{ 
 			try
 			{
-				$mobile_number = '+' . ltrim($request->mobile_number, '+');
+				$mobile_code = $request->mobile_code ?? '';
+				$mobile_num = $request->mobile_number ?? '';
+				$mobile_number = '+' . ltrim($mobile_code . $mobile_num, '+');
+
 				$operator_id = $request->operator_id;
 				$response =  $this->airtimeService->getValidatePhoneByOperator($mobile_number, $operator_id, true); 
 				
@@ -112,7 +115,7 @@
 				return $this->errorResponse('Technical issue detected. Please contact support.');
 			}
 			
-			$user = auth()->user(); 
+			$user = auth()->user();  
 			// Validation rules
 			$validator = Validator::make($request->all(), [
 				'product_name' => 'required|string', 
@@ -121,7 +124,8 @@
 				'country_code' => 'required|string', 
 				'operator_id' => 'required|integer',
 				'product_id' => 'required|integer',
-				'mobile_number' => 'required|integer', 
+				'mobile_code' => 'required|string', 
+				'mobile_number' => 'required|string', 
 				'is_operator_match' => 'required|integer|in:0,1', 
 				'notes' => 'nullable|string',
 			]);
@@ -183,7 +187,10 @@
 				
 				$txnAmount = $request->input('retail_unit_amount') + $request->input('platform_fees');
 				$productName = $request->input('product_name');
-				$mobileNumber = '+' . ltrim($request->input('mobile_number'), '+');
+				
+				$mobile_code = $request->mobile_code ?? '';
+				$mobile_num = $request->mobile_number ?? '';
+				$mobileNumber = '+' . ltrim($mobile_code . $mobile_num, '+');
 				
 				$txnStatus = strtolower($response['response']['status']['message']) ?? 'process';
 				
@@ -200,36 +207,36 @@
 				$comments = "Your recharge of $ {$txnAmount} for $productName has been successfully processed. We appreciate your continued trust in GEOPAY for your mobile top-ups.";
 				// Create transaction record
 				$transaction = Transaction::create([
-				'user_id' => $user->id,
-				'receiver_id' => $user->id,
-				'platform_name' => 'international airtime',
-				'platform_provider' => 'airtime',
-				'transaction_type' => 'debit',
-				'country_id' => $user->country_id,
-				'txn_amount' => $txnAmount,
-				'txn_status' => $txnStatus,
-				'comments' => $comments,
-				'notes' => $request->input('notes'),
-				'unique_identifier' => $response['response']['external_id'] ?? '',
-				'product_name' => $productName,
-				'operator_id' => $request->input('operator_id'),
-				'product_id' => $productId,
-				'mobile_number' => $mobileNumber,
-				'unit_currency' => $request->input('destination_currency', ''),
-				'unit_amount' => $request->input('destination_rates', 0),
-				'unit_rates' => $request->input('retail_unit_amount', 0),
-				'rates' => $request->input('retail_rates', 0),
-				'unit_convert_currency' => $request->input('wholesale_unit_currency', ''),
-				'unit_convert_amount' => $request->input('wholesale_unit_amount', ''),
-				'unit_convert_exchange' => $request->input('wholesale_rates', 0),
-				'api_request' => $response['request'],
-				'api_response' => $response['response'],
-				'api_response_second' => $productRes,
-				'order_id' => $request->order_id,
-				'fees' => $request->input('platform_fees'),
-				'total_charge' => $txnAmount,
-				'created_at' => now(),
-				'updated_at' => now(),
+					'user_id' => $user->id,
+					'receiver_id' => $user->id,
+					'platform_name' => 'international airtime',
+					'platform_provider' => 'airtime',
+					'transaction_type' => 'debit',
+					'country_id' => $user->country_id,
+					'txn_amount' => $txnAmount,
+					'txn_status' => $txnStatus,
+					'comments' => $comments,
+					'notes' => $request->input('notes'),
+					'unique_identifier' => $response['response']['external_id'] ?? '',
+					'product_name' => $productName,
+					'operator_id' => $request->input('operator_id'),
+					'product_id' => $productId,
+					'mobile_number' => $mobileNumber,
+					'unit_currency' => $request->input('destination_currency', ''),
+					'unit_amount' => $request->input('destination_rates', 0),
+					'unit_rates' => $request->input('retail_unit_amount', 0),
+					'rates' => $request->input('retail_rates', 0),
+					'unit_convert_currency' => $request->input('wholesale_unit_currency', ''),
+					'unit_convert_amount' => $request->input('wholesale_unit_amount', ''),
+					'unit_convert_exchange' => $request->input('wholesale_rates', 0),
+					'api_request' => $response['request'],
+					'api_response' => $response['response'],
+					'api_response_second' => $productRes,
+					'order_id' => $request->order_id,
+					'fees' => $request->input('platform_fees'),
+					'total_charge' => $txnAmount,
+					'created_at' => now(),
+					'updated_at' => now(),
 				]);
 				
 				// Log the transaction creation

@@ -71,10 +71,13 @@
 		{ 
 			try
 			{
-				$mobile_number = '+' . ltrim($request->mobile_number, '+');
+				$mobile_code = $request->mobile_code ?? '';
+				$mobile_num = $request->mobile_number ?? '';
+				$mobile_number = '+' . ltrim($mobile_code . $mobile_num, '+');
+				
 				$operator_id = $request->operator_id;
 				$response =  $this->airtimeService->getValidatePhoneByOperator($mobile_number, $operator_id, true); 
-				
+				 
 				if (!$response['success']) 
 				{	 
 					$errorMsg = is_array($response['response']) ? $response['response']['errors'][0]['message'] : 'The operator is not identified for this mobile number.';
@@ -99,15 +102,16 @@
 			$user = auth()->user(); 
 			// Validation rules
 			$validator = Validator::make($request->all(), [
-			'product_name' => 'required|string', 
-			'wholesale_unit_amount' => 'required|numeric', 
-			'retail_unit_amount' => 'required|numeric', 
-			'country_code' => 'required|string', 
-			'operator_id' => 'required|integer',
-			'product_id' => 'required|integer',
-			'mobile_number' => 'required|integer', 
-			'is_operator_match' => 'required|integer|in:0,1', 
-			'notes' => 'nullable|string',
+				'product_name' => 'required|string', 
+				'wholesale_unit_amount' => 'required|numeric', 
+				'retail_unit_amount' => 'required|numeric', 
+				'country_code' => 'required|string', 
+				'operator_id' => 'required|integer',
+				'product_id' => 'required|integer',
+				'mobile_code' => 'required|string', 
+				'mobile_number' => 'required|string', 
+				'is_operator_match' => 'required|integer|in:0,1', 
+				'notes' => 'nullable|string',
 			]);
 			
 			// Custom validation logic
@@ -168,7 +172,10 @@
 				// Transaction variables
 				$txnAmount = $request->input('retail_unit_amount') + $request->input('platform_fees');
 				$productName = $request->input('product_name');
-				$mobileNumber = '+' . ltrim($request->input('mobile_number'), '+');
+				
+				$mobile_code = $request->mobile_code ?? '';
+				$mobile_num = $request->mobile_number ?? '';
+				$mobileNumber = '+' . ltrim($mobile_code . $mobile_num, '+');
 				
 				$txnStatus = strtolower($response['response']['status']['message']) ?? 'process';
 				

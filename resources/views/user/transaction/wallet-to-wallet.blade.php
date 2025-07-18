@@ -144,7 +144,14 @@
 							.addClass('error_msg text-danger content-4') 
 							.attr('id', key + 'Error')
 							.text(value[0]);  
-							inputField.parent().append(errorSpan); 
+							if(key === "mobile_number")
+							{
+								inputField.parent().parent().append(errorSpan);
+							}
+							else
+							{
+								inputField.parent().append(errorSpan); 
+							}
 						});
 					}
 					else

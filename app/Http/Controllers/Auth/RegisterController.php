@@ -80,21 +80,28 @@ class RegisterController extends Controller
 				'required',
 				'string',
 				'confirmed',
-				'min:8',  // Minimum 8 characters 
+				'min:8',
 				function ($attribute, $value, $fail) {
+					$errors = [];
+
+					// Check strength rules first
 					if (!preg_match('/[A-Z]/', $value)) {
-						return $fail('The ' . $attribute . ' must contain at least one uppercase letter.');
+						$errors[] = 'The password must contain at least one uppercase letter.';
 					}
 					if (!preg_match('/[a-z]/', $value)) {
-						return $fail('The ' . $attribute . ' must contain at least one lowercase letter.');
+						$errors[] = 'The password must contain at least one lowercase letter.';
 					}
 					if (!preg_match('/\d/', $value)) {
-						return $fail('The ' . $attribute . ' must contain at least one number.');
+						$errors[] = 'The password must contain at least one number.';
 					}
 					if (!preg_match('/[\W_]/', $value)) {
-						return $fail('The ' . $attribute . ' must contain at least one special character.');
+						$errors[] = 'The password must contain at least one special character.';
 					}
-				},
+ 
+					foreach ($errors as $message) {
+						$fail($message);
+					}
+				}
 			],
 			'country_id' => 'required|integer',
 			'terms' => 'required|integer|in:1',
@@ -162,21 +169,28 @@ class RegisterController extends Controller
 				'required',
 				'string',
 				'confirmed',
-				'min:8',  // Minimum 8 characters 
+				'min:8',
 				function ($attribute, $value, $fail) {
+					$errors = [];
+
+					// Check strength rules first
 					if (!preg_match('/[A-Z]/', $value)) {
-						return $fail('The ' . $attribute . ' must contain at least one uppercase letter.');
+						$errors[] = 'The password must contain at least one uppercase letter.';
 					}
 					if (!preg_match('/[a-z]/', $value)) {
-						return $fail('The ' . $attribute . ' must contain at least one lowercase letter.');
+						$errors[] = 'The password must contain at least one lowercase letter.';
 					}
 					if (!preg_match('/\d/', $value)) {
-						return $fail('The ' . $attribute . ' must contain at least one number.');
+						$errors[] = 'The password must contain at least one number.';
 					}
 					if (!preg_match('/[\W_]/', $value)) {
-						return $fail('The ' . $attribute . ' must contain at least one special character.');
+						$errors[] = 'The password must contain at least one special character.';
 					}
-				},
+ 
+					foreach ($errors as $message) {
+						$fail($message);
+					}
+				}
 			],
 			'country_id' => 'required|integer',
 			'terms' => 'required|integer|in:1',
