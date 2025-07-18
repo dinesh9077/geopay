@@ -24,7 +24,7 @@
 			$validator = Validator::make($request->all(), [
 				'country_id' => 'required|integer|exists:countries,id', // Check if country_id exists in the 'countries' table
 				'mobile_code' => 'required|string',
-				'mobile_number' => 'required|integer',
+				'mobile_number' => 'required|string',
 				'amount' => 'required|numeric|gt:0',
 				'notes' => 'nullable|string',
 			]);
