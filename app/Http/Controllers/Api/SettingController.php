@@ -61,28 +61,49 @@
 		
 		public function userResetPassword(Request $request)
 		{
-			// Validate the input
+			$user = auth()->user();
+
+			// Step 1: Validate everything including old password
 			$validator = Validator::make($request->all(), [
-				'old_password' => 'required',
+				'old_password' => [
+					'required',
+					function ($attribute, $value, $fail) use ($user) {
+						if (!Hash::check($value, $user->password)) {
+							$fail('The old password is incorrect.');
+						}
+					}
+				],
 				'password' => [
 					'required',
 					'string',
 					'confirmed',
-					'min:8',  // Minimum 8 characters 
-					function ($attribute, $value, $fail) {
+					'min:8',
+					function ($attribute, $value, $fail) use ($user) {
+						$errors = [];
+
+						// Check strength rules first
 						if (!preg_match('/[A-Z]/', $value)) {
-							return $fail('The ' . $attribute . ' must contain at least one uppercase letter.');
+							$errors[] = 'The password must contain at least one uppercase letter.';
 						}
 						if (!preg_match('/[a-z]/', $value)) {
-							return $fail('The ' . $attribute . ' must contain at least one lowercase letter.');
+							$errors[] = 'The password must contain at least one lowercase letter.';
 						}
 						if (!preg_match('/\d/', $value)) {
-							return $fail('The ' . $attribute . ' must contain at least one number.');
+							$errors[] = 'The password must contain at least one number.';
 						}
 						if (!preg_match('/[\W_]/', $value)) {
-							return $fail('The ' . $attribute . ' must contain at least one special character.');
+							$errors[] = 'The password must contain at least one special character.';
 						}
-					},
+
+						// Only check old == new after all other rules are valid
+						if (count($errors) === 0 && Hash::check($value, $user->password)) {
+							$errors[] = 'The new password must be different from the old password.';
+						}
+
+						foreach ($errors as $message) {
+							$fail($message);
+						}
+					}
 				],
 			], [
 				'password.confirmed' => 'The new password confirmation does not match.',
@@ -92,15 +113,10 @@
 				return $this->validateResponse($validator->errors());
 			}
 
+			// Step 2: Update the password
 			try {
 				DB::beginTransaction();
 
-				$user = auth()->user(); 
-				if (!Hash::check($request->old_password, $user->password)) {
-					return $this->errorResponse('The old password is incorrect.');
-				}
-
-				// Update the user's password
 				$user->password = Hash::make($request->password);
 				$user->password_changed_at = now();
 				$user->xps = base64_encode($request->password);
@@ -111,10 +127,9 @@
 				return $this->successResponse('Your password has been updated successfully.');
 			} catch (\Throwable $e) {
 				DB::rollBack();
-
 				return $this->errorResponse('An error occurred while updating the password. Please try again later.');
 			}
-		}
+		} 
 		
 		public function commonDetails()
 		{

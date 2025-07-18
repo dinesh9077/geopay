@@ -29,20 +29,39 @@
 @push('js')
 <script>
 	$(document).ready(function() {
-		// Event listener for search input
 		$('#faqSearch').on('keyup', function() {
 			var searchQuery = $(this).val().toLowerCase(); 
-			// Loop through all FAQ items
-			$('.accordion-item').each(function() {
+			var matchFound = false;
+
+			$('.accordion-item').each(function(index) {
 				var title = $(this).find('.accordion-button').text().toLowerCase();
-				
-				// If the title includes the search query, show the item; otherwise, hide it
-				if (title.indexOf(searchQuery) !== -1) {
-					$(this).show();  // Show the FAQ item
+				var description = $(this).find('.accordion-body').text().toLowerCase();
+				var collapseBody = $(this).find('.accordion-collapse');
+
+				if (title.includes(searchQuery) || description.includes(searchQuery)) {
+					$(this).show();
+
+					// Only open the first matching accordion
+					if (!matchFound) {
+						matchFound = true;
+						// Open this one
+						collapseBody.addClass('show');
+					} else {
+						collapseBody.removeClass('show');
+					}
 				} else {
-					$(this).hide();  // Hide the FAQ item
+					$(this).hide();
+					collapseBody.removeClass('show');
 				}
 			});
+
+			// If no matches found, open the first visible (default/fallback)
+			if (!matchFound) {
+				var firstItem = $('.accordion-item:visible').first();
+				if (firstItem.length) {
+					firstItem.find('.accordion-collapse').addClass('show');
+				}
+			}
 		});
 	});
 </script>

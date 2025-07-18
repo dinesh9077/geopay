@@ -50,10 +50,8 @@ Route::middleware(['decrypt.request'])->group(function ()
     Route::post('reset-password', [LoginController::class, 'resetPassword']);
       
     // User Metamap Webhook
-    Route::post('/metamap-webhook', [UserKycController::class, 'metamapWebhook'])->withoutMiddleware('decrypt.request');
-	 
+    Route::post('/metamap-webhook', [UserKycController::class, 'metamapWebhook'])->withoutMiddleware('decrypt.request'); 
 });
-
 
  
 Route::get('country-list', [SettingController::class, 'countryList']);   
