@@ -39,7 +39,7 @@
 		
 		public function collectionCountryList()
 		{
-			$collectionCountries = $this->onafricService->collectionCountry();
+			$collectionCountries = $this->onafricService->collectionCountry(); 
 			return $this->successResponse('country fetched.', $collectionCountries);
 		}
 		
