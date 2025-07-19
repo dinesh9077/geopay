@@ -120,9 +120,9 @@ class ReceiveMoneyController extends Controller
 			$netAmount = (float) $request->input('netAmount', 0);
 			$aggregatorCurrencyAmount = (float) $request->input('aggregatorCurrencyAmount', 0);
 			  
-			if ($netAmount > $user->balance) {
-				$validator->errors()->add('txnAmount', 'Insufficient balance to complete this transaction.');
-			}
+			// if ($netAmount > $user->balance) {
+			// 	$validator->errors()->add('txnAmount', 'Insufficient balance to complete this transaction.');
+			// }
 			
 			if (!$request->filled('aggregatorCurrencyAmount')) {
 				$validator->errors()->add('txnAmount', 'The payout currency amount field is required.');
