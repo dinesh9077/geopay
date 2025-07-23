@@ -340,18 +340,18 @@
 		 
 		public function beneficiaryStore(Request $request)
 		{    
-			$recipient_country_code = $request->recipient_country_code; 
-			$recipient_mobile = $request->recipient_mobile;
-			$response = $this->onafricService->getAccountRequest($recipient_country_code, $recipient_mobile);
+			// $recipient_country_code = $request->recipient_country_code; 
+			// $recipient_mobile = $request->recipient_mobile;
+			// $response = $this->onafricService->getAccountRequest($recipient_country_code, $recipient_mobile);
 			
-			if (
-				!isset($response['success']) || 
-				!$response['success'] || 
-				(isset($response['response']['status_code']) && $response['response']['status_code'] != "Active")
-			) {
+			// if (
+			// 	!isset($response['success']) || 
+			// 	!$response['success'] || 
+			// 	(isset($response['response']['status_code']) && $response['response']['status_code'] != "Active")
+			// ) {
 				   
-				return $this->errorResponse('Provided country and mobile number are not active');
-			}
+			// 	return $this->errorResponse('Provided country and mobile number are not active');
+			// }
 			
 			try { 
 				$user = Auth::user();
@@ -404,20 +404,20 @@
 				// Ensure beneficiary->data is an array
 				$beneficiaryDataArray = is_array($beneficiary->data) ? $beneficiary->data : [];
 		
-				if ($recipient_country_code !== ($beneficiaryDataArray['recipient_country_code'] ?? '') ||
-					$recipient_mobile !== ($beneficiaryDataArray['recipient_mobile'] ?? '')) 
-				{
-					$response = $this->onafricService->getAccountRequest($recipient_country_code, $recipient_mobile);
+				// if ($recipient_country_code !== ($beneficiaryDataArray['recipient_country_code'] ?? '') ||
+				// 	$recipient_mobile !== ($beneficiaryDataArray['recipient_mobile'] ?? '')) 
+				// {
+				// 	$response = $this->onafricService->getAccountRequest($recipient_country_code, $recipient_mobile);
 					
-					if (
-						!isset($response['success']) || 
-						!$response['success'] || 
-						(isset($response['response']['status_code']) && $response['response']['status_code'] != "Active")
-					) {
+				// 	if (
+				// 		!isset($response['success']) || 
+				// 		!$response['success'] || 
+				// 		(isset($response['response']['status_code']) && $response['response']['status_code'] != "Active")
+				// 	) {
 						   
-						return $this->errorResponse('Provided country and mobile number are not active');
-					}	
-				}
+				// 		return $this->errorResponse('Provided country and mobile number are not active');
+				// 	}	
+				// }
 				$beneficiaryData = $request->except('_token');
 				$beneficiaryData['sender_country'] = $user->country->id ?? '';
 				$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
