@@ -33,12 +33,12 @@ class HomeController extends Controller
     */
     public function index()
     {
-		echo '<pre>';
-		print_r(json_decode(auth()->user()->userKyc->meta_response, true));
-		echo '</pre>';
-		die;
+		// echo '<pre>';
+		// print_r(json_decode(auth()->user()->userKyc->meta_response, true));
+		// echo '</pre>';
+		// die;
 
-        dd(json_decode(auth()->user()->userKyc->meta_response));
+        //dd(json_decode(auth()->user()->userKyc->meta_response));
 		// Generate QR Code with the mobile number
 		$mobileNumber = auth()->user()->formatted_number ?? '';
         
