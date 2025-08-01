@@ -267,7 +267,8 @@ class OnafricService
           </soap:Body>
         </soap:Envelope> 
         XML; 
-		//Log::info('get_rate request', ['request' => $xmlRequest]);
+		
+		Log::info('bank validate request', ['request' => $xmlRequest]);
 		// Send the request
 		$response = Http::withHeaders([
 			'Content-Type' => 'text/xml; charset=utf-8',
@@ -280,7 +281,7 @@ class OnafricService
 		// Debug the raw XML response
 		$xmlResponse = $response->body();
 	    
-		//Log::info('get_rate response', ['response' => $xmlResponse]);
+		Log::info('bank validate request', ['response' => $xmlResponse]);
 	 
 		try 
 		{    
