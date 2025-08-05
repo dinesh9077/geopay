@@ -428,6 +428,7 @@ class OnafricService
 					'country_code' => $bankData['country_code'],
 				]; 
 			}
+			
 			Log::info('Final Bank Log Array:', $bankLogArr);
 			if(count($bankMfsDataArr) > 0)
 			{
