@@ -384,6 +384,8 @@ class OnafricService
 			// Prepare an array to store the results
 			$results = [];
 			$bankMfsDataArr = [];
+			$bankLogArr = [];
+			
 			// Iterate over each <return> node
 			foreach ($entries as $entry) {
 				$bankData = [];
@@ -419,8 +421,14 @@ class OnafricService
 						'updated_at' => now()
 					]
 				);
-				$bankMfsDataArr[] = $bankData['mfs_bank_code']; 
+				$bankMfsDataArr[] = $bankData['mfs_bank_code'];
+				$bankLogArr[] = [
+					'bank_name' => $bankData['bank_name'],
+					'mfs_bank_code' => $bankData['mfs_bank_code'],
+					'country_code' => $bankData['country_code'],
+				]; 
 			}
+			Log::info('Final Bank Log Array:', $bankLogArr);
 			if(count($bankMfsDataArr) > 0)
 			{
 				OnafricBank::where('payout_iso', $payoutIso)->whereNotIn('mfs_bank_code', $bankMfsDataArr)->delete();
