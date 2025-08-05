@@ -103,14 +103,14 @@
 	});
 
 	// Detect if the developer tools are open and prevent right-click while in this state
-	setInterval(function() {
-		if (devToolsOpen) {
-			// Disable right-click on the page while developer tools are open
-			document.body.style.pointerEvents = 'none';  
-		} else {
-			document.body.style.pointerEvents = 'auto';  // Allow interaction once developer tools are closed
-		}
-	}, 1000);
+	// setInterval(function() {
+		// if (devToolsOpen) {
+			Disable right-click on the page while developer tools are open
+			// document.body.style.pointerEvents = 'none';  
+		// } else {
+			// document.body.style.pointerEvents = 'auto';  // Allow interaction once developer tools are closed
+		// }
+	// }, 1000);
 
 	document.onkeydown = function(event) {
 		// Preventing common developer tools and inspect element shortcuts
@@ -133,8 +133,7 @@
 			(event.key === 'F11') || // F11 - Full Screen, can sometimes be used to enter DevTools in some browsers
 			(event.altKey && event.key === 'F12') // Alt + F12 - Developer Tools in some browsers
 		) {
-			event.preventDefault(); 
-			alert(12)
+			event.preventDefault();  
 		}
  
 		if (event.button === 2) {

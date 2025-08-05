@@ -383,7 +383,7 @@ class OnafricService
 
 			// Prepare an array to store the results
 			$results = [];
-
+			$bankMfsDataArr = [];
 			// Iterate over each <return> node
 			foreach ($entries as $entry) {
 				$bankData = [];
@@ -407,7 +407,7 @@ class OnafricService
 
 				// Add bank_limit to the bank data
 				$bankData['bank_limit'] = $bankLimitData;
-
+					
 				OnafricBank::updateOrCreate(
 					[
 						'payout_iso' => $payoutIso,
@@ -418,8 +418,13 @@ class OnafricService
 						'response' => $bankData,
 						'updated_at' => now()
 					]
-				); 
+				);
+				$bankMfsDataArr[] = $bankData['mfs_bank_code']; 
 			}
+			if(count($bankMfsDataArr) > 0)
+			{
+				OnafricBank::where('payout_iso', $payoutIso)->whereNotIn('mfs_bank_code', $bankMfsDataArr)->delete();
+			} 
 			return true;
 		} catch (\Exception $e) {
 			return false;
