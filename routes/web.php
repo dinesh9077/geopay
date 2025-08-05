@@ -20,7 +20,12 @@
 		|
 	*/
 	
-	Route::get('/', [FrontController::class, 'index']);
+	//Route::get('/', [FrontController::class, 'index']);
+ 
+	Route::get('/', function () {
+		return redirect()->route('login');
+	});
+
 	Route::get('/terms-and-condition', [FrontController::class, 'termAndCondition'])->name('terms-and-condition');
 	
 	//Auth::routes(); 
