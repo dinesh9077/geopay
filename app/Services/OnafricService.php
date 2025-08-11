@@ -453,8 +453,12 @@ class OnafricService
 					'<option value="%s" data-bank-name="%s" %s>%s</option>',
 					htmlspecialchars($onafricBank->mfs_bank_code ?? '', ENT_QUOTES, 'UTF-8'),
 					htmlspecialchars($onafricBank->bank_name ?? '', ENT_QUOTES, 'UTF-8'),
-					htmlspecialchars($selected, ENT_QUOTES, 'UTF-8'),
-					htmlspecialchars($onafricBank->bank_name ?? '', ENT_QUOTES, 'UTF-8')
+					$selected,
+					htmlspecialchars(
+						($onafricBank->bank_name ?? '') . ' (' . ($onafricBank->mfs_bank_code ?? '') . ')',
+						ENT_QUOTES,
+						'UTF-8'
+					)
 				);
 			}
 			return $output; 
