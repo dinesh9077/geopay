@@ -19,7 +19,8 @@
 	use App\Notifications\AirtimeRefundNotification;
 	use Carbon\Carbon;
 	use Helper;  
- 
+	use App\Enums\LightnetStatus;
+	
 	class TransferBankController extends Controller
 	{ 
 		use ApiResponseTrait;  
@@ -274,7 +275,7 @@
 						throw new \Exception($errorMsg);
 					}
 					$confirmationId = $response['response']['confirmationId'];
-					$txnStatus = 'pending';
+					$txnStatus = 'processing';
 				}
 				else
 				{
@@ -375,7 +376,12 @@
 					// Safely fetch the transaction and update it
 					if ($transaction) {
 						$commitTransaction = Transaction::find($transaction->id);
-						$commitTransaction->update(['api_response_second' => $commitResponse['response'], 'txn_status' => strtolower($commitResponse['response']['status'])]);
+						$statusLabel = LightnetStatus::from($commitResponse['response']['status'])->label(); 
+						if($statusLabel === "cancelled and refunded")
+						{
+							$commitTransaction->processAutoRefund($statusLabel);
+						}
+						$commitTransaction->update(['api_response_second' => $commitResponse['response'], 'txn_status' => $statusLabel]);
 					}
 					
 					$successMsg = $commitResponse['response']['message'];
