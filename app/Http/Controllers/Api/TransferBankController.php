@@ -408,6 +408,7 @@
 							DB::raw("'' as optionalField")
 						)
 						->where('payout_iso', $request->payoutIso)
+						->where('status', 1)
 						->get() 
 					);
 				

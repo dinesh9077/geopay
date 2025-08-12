@@ -68,6 +68,8 @@ Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(fun
 	
 	Route::post('/third-party-key/onafric-bank-transfer-update', [SettingController::class, 'thirdPartyKeyOnafricBankTransferUpdate'])->name('third-party-key.onafric-bank-transfer-update')->withoutMiddleware('webdecrypt.request');
 	
+	Route::post('/third-party-key/onafric-bank-status-update', [SettingController::class, 'thirdPartyKeyOnafricBankStatusUpdate'])->name('third-party-key.onafric-bank-status-update')->withoutMiddleware('webdecrypt.request');
+	
 	Route::post('/third-party-key/onafric-collection-update', [SettingController::class, 'thirdPartyKeyOnafricCollectionUpdate'])->name('third-party-key.onafric-collection-update')->withoutMiddleware('webdecrypt.request');
 	
 	Route::post('third-party-key/onafric-mobile-webhook', [SettingController::class, 'thirdPartyKeyOnafricBankLists'])->name('third-party-key.onafric-mobile-webhook')->withoutMiddleware('webdecrypt.request');

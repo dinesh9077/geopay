@@ -12,8 +12,9 @@ class OnafricBank extends Model
     protected $fillable = [
         'mfs_bank_code',
         'payout_iso',
-        'bank_name',
-        'response'
+        'bank_name', 
+        'response',
+        'status'
     ];
 
     // Optional: Cast fields to correct data types

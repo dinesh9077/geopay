@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('mfs_bank_code')->nullable();
             $table->string('bank_name')->nullable();
             $table->longText('response')->nullable();
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }

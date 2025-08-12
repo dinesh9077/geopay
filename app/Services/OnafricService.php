@@ -417,7 +417,7 @@ class OnafricService
 					],
 					[
 						'bank_name' => $bankData['bank_name'], 
-						'response' => $bankData,
+						'response' => $bankData, 
 						'updated_at' => now()
 					]
 				);
@@ -444,7 +444,7 @@ class OnafricService
     {   
 		try 
 		{
-			$onafricBanks = OnafricBank::where('payout_iso', $request['payoutIso'])->get();  
+			$onafricBanks = OnafricBank::where('payout_iso', $request['payoutIso'])->where('status', 1)->get();  
 			$output = '<option value="">Select Bank Name</option>';
 			foreach ($onafricBanks as $onafricBank)  
 			{

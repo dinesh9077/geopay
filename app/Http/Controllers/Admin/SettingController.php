@@ -12,6 +12,7 @@
 	use App\Models\LightnetCountry;
 	use App\Models\Country;
 	use App\Models\OnafricChannel;
+	use App\Models\OnafricBank;
 	use App\Models\LightnetCatalogue;
 	use App\Http\Traits\WebResponseTrait; 
 	use App\Services\LiquidNetService; 
@@ -579,7 +580,26 @@
 				// Return error response
 				return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again.'.$e->getMessage()]);
 			}
-		} 
+		}
+		
+		public function thirdPartyKeyOnafricBankStatusUpdate(Request $request)
+		{
+			try {
+				$onafricBank = OnafricBank::findOrFail($request->id);
+				$onafricBank->update(['status' => $request->status]);
+
+				return response()->json([
+					'status'  => 'success',
+					'message' => 'Status updated successfully'
+				]);
+			} catch (\Exception $e) {
+				return response()->json([
+					'status'  => 'error',
+					'message' => 'Something went wrong. ' . $e->getMessage()
+				], 500);
+			}
+		}
+ 
 		
 		public function UserLimitUpdate(Request $request)
 		{    
@@ -988,9 +1008,10 @@
 			$countries = $this->masterService->getCountries(); 
 			$collectionCountries = OnafriqCountry::where('service_name', 'collection')->get();
 			$onafricBankCountries = OnafriqCountry::where('service_name', 'bank-transfer')->get();
+			$onafricBankLists = OnafricBank::orderBy('payout_iso')->orderBy('mfs_bank_code')->get();
 			$collectionCountryCount = count($collectionCountries);
 			$onafriqBankCountryCount = count($onafricBankCountries);
-			return view('admin.setting.third-party', compact('countries', 'collectionCountries', 'onafricBankCountries', 'collectionCountryCount', 'onafriqBankCountryCount'));
+			return view('admin.setting.third-party', compact('countries', 'collectionCountries', 'onafricBankCountries', 'collectionCountryCount', 'onafriqBankCountryCount', 'onafricBankLists'));
 		}
 		
 		public function thirdPartyKeyUpdate(Request $request)

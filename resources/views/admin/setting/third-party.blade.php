@@ -2,6 +2,7 @@
 @section('title', config('setting.site_name') . ' - Third party Key')
 
 @section('content')
+ 
 <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
 	<div>
 		<h4 class="mb-3 mb-md-0">Third Party Credential</h4>
@@ -387,6 +388,11 @@
 				toastrMsg("error", "Something went wrong. Please try again.");
 			}
 		});
+	});
+	
+	$('#bankOnaficListDatatable').DataTable({
+		lengthChange: false,  
+		autoWidth: false 
 	});
 </script>
 @endpush				
