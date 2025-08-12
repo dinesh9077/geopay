@@ -20,6 +20,7 @@
 	use Carbon\Carbon;
 	use Helper;  
 	use App\Enums\LightnetStatus;
+	use App\Enums\OnafricStatus;
 	
 	class TransferBankController extends Controller
 	{ 
@@ -295,8 +296,9 @@
 						throw new \Exception($errMessage);
 					}
 					$confirmationId = $request['order_id'];
-					
-					$txnStatus = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'pending';
+					 
+					$onafricStatus  = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'Accepted';
+					$txnStatus = OnafricStatus::from($onafricStatus)->label();
 				}
 				
 				$txnAmount = $request->input('txnAmount');

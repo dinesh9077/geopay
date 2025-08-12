@@ -25,6 +25,7 @@
 	use Illuminate\Support\Facades\Notification;
 	use Helper;
 	use Carbon\Carbon;
+	use App\Enums\OnafricStatus;
  
 	class TransferMobileController extends Controller
 	{ 
@@ -245,9 +246,10 @@
 					
 					throw new \Exception($errMessage);
 				}
-				
-				$txnStatus = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'pending';
-				
+				 
+				$onafricStatus = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'Accepted';
+				$txnStatus = OnafricStatus::from($onafricStatus)->label();
+			
 				$txnAmount = $request->input('txnAmount');
 				$netAmount = $request->input('netAmount');
 				

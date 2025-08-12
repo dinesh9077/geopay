@@ -26,6 +26,7 @@ use App\Notifications\AirtimeRefundNotification;
 use Illuminate\Support\Facades\Notification;
 use Helper;
 use Carbon\Carbon;  
+use App\Enums\OnafricStatus;
 
 class TransferMobileController extends Controller
 { 
@@ -422,7 +423,8 @@ class TransferMobileController extends Controller
 				throw new \Exception($errMessage);
 			}
 			
-			$txnStatus = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'pending';
+			$onafricStatus = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'Accepted';
+			$txnStatus = OnafricStatus::from($onafricStatus)->label();
 			
 			$txnAmount = $request->input('txnAmount');
 			$netAmount = $request->input('netAmount');
@@ -507,7 +509,7 @@ class TransferMobileController extends Controller
 		}
  
 		$thirdPartyTransId = $request->input('thirdPartyTransId');
-		$txnStatus = $request->input('status.message'); // Message as status update
+		$onafricStatus = $request->input('status.message'); // Message as status update
  
 		// Find the transaction based on thirdPartyTransId
 		$transaction = Transaction::where('order_id', $thirdPartyTransId)->first();
@@ -517,8 +519,13 @@ class TransferMobileController extends Controller
 			return response()->json(['error' => 'Transaction not found'], 404);
 		}
 
-		// Update transaction status
-		$transaction->txn_status = strtolower($txnStatus);
+		// Update transaction status 
+		$txnStatus = OnafricStatus::from($onafricStatus)->label();
+		if($txnStatus === "cancelled and refunded")	
+		{
+			$transaction->processAutoRefund($txnStatus);
+		}
+		$transaction->txn_status = $txnStatus;
 		$transaction->touch(); // Updates the `updated_at` timestamp
 		$transaction->save();
 		

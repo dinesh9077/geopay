@@ -13,6 +13,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Carbon\Carbon;
 use App\Models\Notification;
 use App\Enums\LightnetStatus;
+use App\Enums\OnafricStatus;
 
 class HomeController extends Controller
 {
@@ -42,7 +43,7 @@ class HomeController extends Controller
         //dd(json_decode(auth()->user()->userKyc->meta_response));
 		// Generate QR Code with the mobile number
 		
-		/* $status = LightnetStatus::from('CANCEL')->label();
+		/* $status = OnafricStatus::from('Accepted')->label();
 		echo $status;
 		die; */
 		$mobileNumber = auth()->user()->formatted_number ?? '';

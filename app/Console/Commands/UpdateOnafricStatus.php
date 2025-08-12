@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Http;
 use App\Services\OnafricService;
+use App\Enums\OnafricStatus;
 use Log;
 	
 class UpdateOnafricStatus extends Command
@@ -49,7 +50,8 @@ class UpdateOnafricStatus extends Command
 		// Fetch transactions that need status updates
 		$transactions = Transaction::select('id', 'user_id', 'txn_status', 'platform_provider', 'order_id')
 		->where('platform_provider', 'onafric')
-		->whereNotIn('txn_status', ['success'])
+		->where('is_refunded', 0)
+		->whereNotIn('txn_status', ['paid', 'cancelled and refunded'])
 		->get();
 		
 		if ($transactions->isEmpty()) {
@@ -66,10 +68,18 @@ class UpdateOnafricStatus extends Command
 					continue; // Skip to the next transaction
 				} 
 				
-				// Update transaction status
-				$txn_status = strtolower($response['response']['data']['status']['message'] ?? $transaction->txn_status);
-				 
-				$transaction->update(['txn_status' => strtolower($txn_status)]);  
+				// Update transaction status 
+				$txn_status = $transaction->txn_status;
+				if(!empty($response['response']['data']['status']['message']))
+				{
+					$txn_status = OnafricStatus::from($response['response']['data']['status']['message'])->label(); 
+					if($txn_status === "cancelled and refunded")
+					{
+						$transaction->processAutoRefund($txn_status);
+					}
+				}
+				
+				$transaction->update(['txn_status' => $txn_status]);  
 			} 
 			catch (\Throwable $e) 
 			{  

@@ -546,7 +546,7 @@ class OnafricService
 			]
 		];
 	  
-		Log::info('send mobile request', ['request' => $requestBody]);
+		//Log::info('send mobile request', ['request' => $requestBody]);
 		// Generate the mfsSign
 		$mfsSign = $this->generateMfsSign($batchId);
 	  
@@ -567,7 +567,7 @@ class OnafricService
 		])
 		->post($this->onafricAsyncCallService.'/callService', $requestBody); // Send requestBody instead of $data
 	  
-		Log::info('send mobile response', ['response' => $response->json()]);
+		//Log::info('send mobile response', ['response' => $response->json()]);
 		// Handle the response
 		if ($response->successful()) {
 			
@@ -666,7 +666,7 @@ class OnafricService
 			"thirdPartyTransId" => $thirdPartyTransId 
 		];
 		
-		Log::info('query status request', ['request' => $requestBody]);
+		//Log::info('query status request', ['request' => $requestBody]);
 		
 		// Generate the mfsSign
 		$mfsSign = $this->generateMfsSign($thirdPartyTransId);
@@ -688,7 +688,7 @@ class OnafricService
 		])
 		->post($this->onafricAsyncCallService.'/status', $requestBody); // Send requestBody instead of $data
 		
-		Log::info('query status response', ['response' => $response->json()]);
+		//Log::info('query status response', ['response' => $response->json()]);
 		// Handle the response
 		if ($response->successful()) {
 			return [
@@ -913,7 +913,7 @@ class OnafricService
 		])
 		->get($this->onafricCollectionApiUrl.'/collectionrequests/'.$requestId); // Send requestBody instead of $data
 	  
-		Log::info('Collection Response', ['response' => $response->json()]);
+		//Log::info('Collection Response', ['response' => $response->json()]);
 		// Handle the response
 		if ($response->successful()) {
 			return [
