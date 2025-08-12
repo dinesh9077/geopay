@@ -13,7 +13,7 @@
 							<select id="payoutCurrency" name="payoutCurrency" class="form-control form-control-lg content-3 select2" required>
 								<option value="">Select Country</option>
 								@foreach($countries as $country) 
-									<option value="{{ $country['value'] }}" data-service-name="{{ $country['service_name'] }}" data-payout-country="{{ $country['data'] }}" data-country-name="{{ $country['label'] }}" data-iso="{{ $country['iso'] }}" {{ isset($edit['payoutCurrency']) && $edit['payoutCurrency'] === $country['value'] ? 'selected' : '' }}>{{ $country['label'] }}</option>
+									<option value="{{ $country['value'] }}" data-service-name="{{ $country['service_name'] }}" data-payout-country="{{ $country['data'] }}" data-country-name="{{ $country['label'] }}" data-iso="{{ $country['iso'] }}" data-isdcode="{{ $country['isdcode'] }}" {{ isset($edit['payoutCurrency']) && $edit['payoutCurrency'] === $country['value'] ? 'selected' : '' }}>{{ $country['label'] }}</option>
 								@endforeach
 							</select>
 						</div> 
@@ -90,7 +90,8 @@
 		var payoutCurrency = $beneficiaryForm.find('#payoutCurrency').val();
 		var payoutCountry = $beneficiaryForm.find('#payoutCurrency :selected').data('payout-country');
 		var serviceName = $beneficiaryForm.find('#payoutCurrency :selected').data('service-name');
-
+		var isdcode = $beneficiaryForm.find('#payoutCurrency :selected').data('isdcode');
+		alert(isdcode)
 		if (!locationId || !payoutCurrency || !payoutCountry || !serviceName) { 
 			toastrMsg('error', 'Missing required data for form submission.'); 
 			return;
@@ -100,7 +101,8 @@
 			payoutCountry: payoutCountry,
 			payoutCurrency: payoutCurrency,
 			serviceName: serviceName,
-			locationId: locationId
+			locationId: locationId,
+			isdcode: isdcode
 		};
 
 		const encrypted_data = encryptData(JSON.stringify(formData));

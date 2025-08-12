@@ -242,7 +242,8 @@ class LiquidNetService
 		$senderCountry = $user->country->iso3 ?? '';
 		  
 		$aggregatorCurrencyAmount = (int) round($request->aggregatorCurrencyAmount);
-
+		$mobileNumber = ltrim(($beneficiary['mobile_code'] ?? ''), '+').($beneficiary['receivercontactnumber'] ?? '');
+		
 		$requestBody = [
 			"agentSessionId" => (string) $requestTimestamp,
 			"agentTxnId" => $orderId,
@@ -281,7 +282,7 @@ class LiquidNetService
 			"receiverMiddleName" => "",
 			"receiverLastName" => $beneficiary['receiverlastname'] ?? '',
 			"receiverAddress" => $beneficiary['receiveraddress'] ?? '',
-			"receiverContactNumber" => $beneficiary['receivercontactnumber'] ?? '',
+			"receiverContactNumber" => $mobileNumber ?? '',
 			"receiverState" => $beneficiary['receiverstate'] ?? '',
 			"receiverAreaTown" => $beneficiary['receiverareatown'] ?? '',
 			"receiverCity" => $beneficiary['receivercity'] ?? '',

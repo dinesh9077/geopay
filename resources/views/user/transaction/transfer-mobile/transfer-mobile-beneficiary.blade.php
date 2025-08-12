@@ -24,10 +24,13 @@
 						</div>
 						
 						<div class="mb-4 col-md-6">
-							<label class="content-3 mb-0">Recipient mobile number e.g. 250700800900.<span class="text-danger">*</span></label>
-							<input id="recipient_mobile" name="recipient_mobile" placeholder="Enter Recipient mobile number" type="text" class="form-control form-control-lg content-3" oninput="this.value = this.value.replace(/\D/g, '')" required />
+							<label for="country_code" class="content-3 mb-0">Recipient mobile number (eg.700800900) <span class="text-danger">*</span></label> 
+							<div class="d-flex align-items-center gap-2">
+								<input id="mobile_code" type="text" name="mobile_code" class="form-control form-control-lg content-3 mobile-number px-2" style="max-width: 65px;" placeholder="+91" readonly />
+								<input id="recipient_mobile" type="number" name="recipient_mobile" class="form-control form-control-lg content-3" placeholder="Enter Recipient mobile number" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));" required />
+							</div> 
 						</div>
-						
+						 
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Recipient Name <span class="text-danger">*</span></label>
 							<input id="recipient_name" name="recipient_name" placeholder="Enter Recipient Name" type="text" class="form-control form-control-lg content-3" required />
@@ -142,11 +145,14 @@
 				selectedCountry.channels.forEach(function(channel) {
 					channelDropdown.append('<option value="' + channel.id + '" data-channel-name="' + channel.channel + '">' + channel.channel + '</option>');
 				});
+				
+				$beneficiaryForm.find('#mobile_code').val('+' + (selectedCountry.isdcode || '')); 
 			} else {
 				// If no channels available for the country, disable the dropdown or set a default message
 				const channelDropdown = $beneficiaryForm.find('#channel');
 				channelDropdown.empty();
 				channelDropdown.append('<option disabled>No channels available</option>');
+				$beneficiaryForm.find('#mobile_code').val(''); 
 			}
 		});
 

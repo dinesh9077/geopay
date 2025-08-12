@@ -74,7 +74,14 @@ class TransferMobileController extends Controller
 			$user = Auth::user();
 			 
 			DB::beginTransaction();
-			$beneficiaryData = $request->except('_token');
+			$beneficiaryData = $request->except('_token', 'recipient_mobile', 'mobile_code');
+			
+			$mobile_code = $request->mobile_code ?? '';
+			$mobile_num = $request->recipient_mobile ?? '';
+			//$mobile_number = ltrim($mobile_code . $mobile_num, '+');
+				
+			$beneficiaryData['recipient_mobile'] = $mobile_num ?? '';
+			$beneficiaryData['mobile_code'] = $mobile_code ?? '';
 			$beneficiaryData['sender_country'] = $user->country->id ?? '';
 			$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 			$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
@@ -129,7 +136,7 @@ class TransferMobileController extends Controller
 			$data = $beneficiary->data ?? [];
 			$firstName = $data['recipient_name'] ?? '';
 			$lastName = $data['recipient_surname'] ?? ''; 
-			$recipientMobile = $data['recipient_mobile'] ?? ''; 
+			$recipientMobile = ($data['mobile_code'] ?? '').($data['recipient_mobile'] ?? ''); 
 
 			// Skip beneficiaries with missing required data
 			if (empty($firstName) || empty($lastName)) {
@@ -217,7 +224,15 @@ class TransferMobileController extends Controller
             //         return $this->errorResponse('Provided country and mobile number are not active');
             //     }	
     		// }
-			$beneficiaryData = $request->except('_token');
+			$beneficiaryData = $request->except('_token', 'recipient_mobile', 'mobile_code');
+			
+			$mobile_code = $request->mobile_code ?? '';
+			$mobile_num = $request->recipient_mobile ?? '';
+			//$mobile_number = ltrim($mobile_code . $mobile_num, '+');
+				
+			$beneficiaryData['recipient_mobile'] = $mobile_num ?? '';
+			$beneficiaryData['mobile_code'] = $mobile_code ?? '';
+			
 			$beneficiaryData['sender_country'] = $user->country->id ?? '';
 			$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 			$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
@@ -435,7 +450,7 @@ class TransferMobileController extends Controller
 			// Check if necessary fields exist to prevent undefined index warnings
 			$beneficiaryFirstName = $beneficiary->data['recipient_name'] ?? '';
 			$beneficiaryLastName = $beneficiary->data['recipient_surname'] ?? ''; 
-			$mobileNumber = $beneficiary->data['recipient_mobile'] ?? '';
+			$mobileNumber = ltrim(($beneficiary->data['mobile_code'] ?? ''), '+').($beneficiary->data['recipient_mobile'] ?? '');
 			$payoutCurrency = $beneficiary->data['payoutCurrency'] ?? '';
 			$payoutCurrencyAmount = $request->payoutCurrencyAmount;
 			$aggregatorCurrencyAmount = $request->aggregatorCurrencyAmount;

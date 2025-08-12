@@ -1,10 +1,13 @@
 <div class="mb-4 col-md-6">
 	<label class="content-3 mb-0">Bank Account Number <span class="text-danger">*</span></label>
 	<input id="bankaccountnumber" name="bankaccountnumber" placeholder="Enter Bank Account Number" type="text" class="form-control form-control-lg content-3" oninput="this.value = this.value.replace(/\D/g, '')" value="{{ $editData && isset($editData['bankaccountnumber']) ? $editData['bankaccountnumber'] : '' }}" required />
-</div>
+</div> 
 <div class="mb-4 col-md-6">
-	<label class="content-3 mb-0">Recipient mobile number e.g. 250700800900.<span class="text-danger">*</span></label>
-	<input id="receivercontactnumber" name="receivercontactnumber" placeholder="Enter Recipient mobile number" type="text" class="form-control form-control-lg content-3" oninput="this.value = this.value.replace(/\D/g, '')" value="{{ $editData && isset($editData['receivercontactnumber']) ? $editData['receivercontactnumber'] : '' }}" required />
+	<label for="country_code" class="content-3 mb-0">Recipient mobile number (eg.700800900) <span class="text-danger">*</span></label> 
+	<div class="d-flex align-items-center gap-2">
+		<input id="mobile_code" type="text" name="mobile_code" class="form-control form-control-lg content-3 mobile-number px-2" style="max-width: 65px;" placeholder="+91" value="{{ $editData && isset($editData['mobile_code']) ? $editData['mobile_code'] : '+'.$isdcode }}" readonly />
+		<input id="receivercontactnumber" type="number" name="receivercontactnumber" class="form-control form-control-lg content-3" placeholder="Enter Recipient mobile number" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));" value="{{ $editData && isset($editData['receivercontactnumber']) ? $editData['receivercontactnumber'] : '' }}" required />
+	</div> 
 </div>
 
 <div class="mb-4 col-md-6">

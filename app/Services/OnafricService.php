@@ -490,7 +490,8 @@ class OnafricService
 
 		$txnAmount = $request->payoutCurrencyAmount; 
 		$payoutCurrency = $beneficiary['payoutCurrency'] ?? '';
-		 
+		$mobileNumber = ltrim(($beneficiary['mobile_code'] ?? ''), '+').($beneficiary['recipient_mobile'] ?? '');
+		
 		$requestBody = [
 			"corporateCode" => $this->onafricCorporate,
 			"password" => $this->onafricPassword, 
@@ -525,7 +526,7 @@ class OnafricService
 						"placeOfBirth" => $beneficiary['sender_placeofbirth'] ?? '',
 					],
 					"recipient" => [
-						"msisdn" => $beneficiary['recipient_mobile'] ?? '',
+						"msisdn" => $mobileNumber ?? '',
 						"toCountry" => $beneficiary['recipient_country_code'] ?? '',
 						"name" => $beneficiary['recipient_name'] ?? '',
 						"surname" => $beneficiary['recipient_surname'] ?? '',
@@ -716,7 +717,9 @@ class OnafricService
 		$txnAmount = $request->payoutCurrencyAmount;
 		$sendFee = $this->sendFees; 
 		$payoutCurrency = $beneficiary['payoutCurrency'] ?? '';
-
+		
+		$mobileNumber = ltrim(($beneficiary['mobile_code'] ?? ''), '+').($beneficiary['receivercontactnumber'] ?? '');
+		
 		$requestBody = [
 			"corporateCode" => $this->onafricCorporate,
 			"password" => $this->onafricPassword, 
@@ -747,7 +750,7 @@ class OnafricService
 						"placeOfBirth" => $beneficiary['sender_placeofbirth'] ?? '',
 					],
 					"recipient" => [
-						"msisdn" => $beneficiary['receivercontactnumber'] ?? '',
+						"msisdn" => $mobileNumber ?? '',
 						"toCountry" => $beneficiary['payoutIso'] ?? '',
 						"name" => $beneficiary['receiverfirstname'] ?? '',
 						"surname" => $beneficiary['receiverlastname'] ?? '',

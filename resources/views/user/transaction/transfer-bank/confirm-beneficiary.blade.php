@@ -45,7 +45,7 @@
 						<label class="content-3 mb-1 d-flex justify-content-between">Mobile Number <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ optional($beneficiary->dataArr)['receivercontactnumber'] ?? 'N/A' }}</span>
+						<span class="content-3 text-secondary">{{ optional($beneficiary->dataArr)['mobile_code'] ?? '' }}{{ optional($beneficiary->dataArr)['receivercontactnumber'] ?? 'N/A' }}</span>
 					</div>
 
 					<!-- First Name -->

@@ -61,10 +61,11 @@ class TransferBankController extends Controller
 		->get()
 		->map(function ($map) {
 			$map->country_flag = optional($map->country)->country_flag ?? '';
+			$map->isdcode = optional($map->country)->isdcode ?? '';
 			return $map;
 		});
 		
-		$onafricCountry = Country::select('id', 'country_flag', 'iso3 as data', 'currency_code as value', 'nicename as label', DB::raw("'onafric' as service_name"), DB::raw("1 as status"), 'created_at', 'updated_at', DB::raw("'flat' as markdown_type"), DB::raw("0 as markdown_charge"), 'iso')
+		$onafricCountry = Country::select('id', 'country_flag', 'iso3 as data', 'currency_code as value', 'nicename as label', DB::raw("'onafric' as service_name"), DB::raw("1 as status"), 'created_at', 'updated_at', DB::raw("'flat' as markdown_type"), DB::raw("0 as markdown_charge"), 'iso', 'isdcode')
 		->whereIn('nicename', $this->onafricService->bankAvailableCountry())
 		->get();
 		
@@ -168,7 +169,7 @@ class TransferBankController extends Controller
 			$beneficiaryData = $request->except('_token');
 			
 			if($beneficiaryData['service_name'] == "onafric")
-			{
+			{ 
 				$beneficiaryData['sender_country'] = $user->country->id ?? '';
 				$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 				$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
@@ -276,29 +277,32 @@ class TransferBankController extends Controller
 		$payoutIso = $request->payoutIso;
 		$serviceName = $request->serviceName;
 		$locationId = $request->locationId;
+		$isdcode = $request->isdcode;
 		
 		if($serviceName == "lightnet")
 		{
-			$view = $this->getLightnetFieldView($payoutCountry, $payoutCurrency, $locationId); 
+			$view = $this->getLightnetFieldView($payoutCountry, $payoutCurrency, $locationId, $isdcode); 
 		}
 		else
 		{
-			$view = $this->getOnafricFieldView($payoutCountry, $payoutCurrency, $locationId); 
+			$view = $this->getOnafricFieldView($payoutCountry, $payoutCurrency, $locationId, $isdcode); 
 		}
 
 		// Return success response with rendered view
 		return $this->successResponse('success', ['view' => $view]); 
 	}
 	
-	public function getOnafricFieldView($payoutCountry, $payoutCurrency, $locationId, $editData = null)
+	public function getOnafricFieldView($payoutCountry, $payoutCurrency, $locationId, $isdcode, $editData = null)
 	{ 
 		$countries = $this->countries()->whereIn('label', $this->onafricService->bankAvailableCountry()); 
-		$view = view('user.transaction.transfer-bank.onafric-fields', compact('countries', 'editData'))->render();
+	 
+		$view = view('user.transaction.transfer-bank.onafric-fields', compact('countries', 'isdcode', 'editData'))->render();
 		return $view;
 	}
 	
-	public function getLightnetFieldView($payoutCountry, $payoutCurrency, $locationId, $editData = null)
+	public function getLightnetFieldView($payoutCountry, $payoutCurrency, $locationId, $isdcode, $editData = null)
 	{
+		error_reporting(0);
 		$timestamp = time();
 		$body = [
 			'agentSessionId' => (string) $timestamp,
@@ -339,7 +343,7 @@ class TransferBankController extends Controller
 		$states = $this->lightnetStates($payoutCountry);
 		 
 		$countries = $this->countries()->where('service_name', 'lightnet')->toArray();
-		$view = view('user.transaction.transfer-bank.lightnet-fields', compact('fieldList', 'catalogue', 'countries', 'states', 'editData'))->render();
+		$view = view('user.transaction.transfer-bank.lightnet-fields', compact('isdcode', 'fieldList', 'catalogue', 'countries', 'states', 'editData'))->render();
 		return $view;
 	}
 	
@@ -379,7 +383,7 @@ class TransferBankController extends Controller
 		$countries = $this->countries()->toArray(); 
 		$beneficiary = Beneficiary::find($id);
 		$edit = $beneficiary->data;
-		   
+		
 		if($beneficiary->service_name == "lightnet")
 		{
 			$timestamp = time();
@@ -393,12 +397,12 @@ class TransferBankController extends Controller
 			$response = $this->liquidNetService->serviceApi('post', '/GetAgentList', $timestamp, $body); 
 			$banks = $response['response']['locationDetail'] ?? [];
 			
-			$fieldView = $this->getLightnetFieldView($edit['payoutCountry'], $edit['payoutCurrency'], $edit['bankId'], $edit); 
+			$fieldView = $this->getLightnetFieldView($edit['payoutCountry'], $edit['payoutCurrency'], $edit['bankId'], $edit['mobile_code'] ?? null, $edit); 
 		}
 		else
 		{
 			$banks = $this->onafricService->getOnafricBank(['payoutIso' => $edit['payoutIso'] ?? '', 'bankId' => $edit['bankId'] ?? '']);
-			$fieldView = $this->getOnafricFieldView($edit['payoutCountry'], $edit['payoutCurrency'], $edit['bankId'], $edit); 
+			$fieldView = $this->getOnafricFieldView($edit['payoutCountry'], $edit['payoutCurrency'], $edit['bankId'], $edit['mobile_code'] ?? null, $edit); 
 		}
 		 
 		$view = view('user.transaction.transfer-bank.edit-transfer-bank-beneficiary', compact('countries', 'beneficiary', 'edit', 'banks', 'fieldView'))->render();
@@ -678,7 +682,7 @@ class TransferBankController extends Controller
 			$beneficiaryLastName = $beneficiary->data['receiverlastname'] ?? ($beneficiary->data['beneficiaryLastName'] ?? '');
 			$bankName = $beneficiary->data['bankName'] ?? 'Unknown Bank';
 			$bankId = $beneficiary->data['bankId'] ?? '';
-			$mobileNumber = $beneficiary->data['receivercontactnumber'] ?? '';
+			$mobileNumber = ltrim(($beneficiary->data['mobile_code'] ?? ''), '+').($beneficiary->data['receivercontactnumber'] ?? '');
 			$payoutCurrency = $beneficiary->data['payoutCurrency'] ?? '';
 			$payoutCurrencyAmount = $request->payoutCurrencyAmount;
 			$aggregatorCurrencyAmount = $request->aggregatorCurrencyAmount;

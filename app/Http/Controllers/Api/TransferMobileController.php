@@ -61,10 +61,10 @@
 			 
 			// Fetch beneficiaries with filters
 			$beneficiaries = Beneficiary::where('user_id', $userId)
-				->where('category_name', $categoryName)
-				->where('service_name', $serviceName)
-				->where('data->recipient_country', $recipientCountry) 
-				->get(); 
+			->where('category_name', $categoryName)
+			->where('service_name', $serviceName)
+			->where('data->recipient_country', $recipientCountry) 
+			->get(); 
 
 			// Return response
 			return $this->successResponse('beneficiary list fetched', $beneficiaries);
@@ -258,8 +258,8 @@
 				
 				// Check if necessary fields exist to prevent undefined index warnings
 				$beneficiaryFirstName = $beneficiary->data['recipient_name'] ?? '';
-				$beneficiaryLastName = $beneficiary->data['recipient_surname'] ?? ''; 
-				$mobileNumber = $beneficiary->data['recipient_mobile'] ?? '';
+				$beneficiaryLastName = $beneficiary->data['recipient_surname'] ?? '';  
+				$mobileNumber = ltrim(($beneficiary->data['mobile_code'] ?? ''), '+').($beneficiary->data['recipient_mobile'] ?? '');
 				$payoutCurrency = $beneficiary->data['payoutCurrency'] ?? '';
 				$payoutCurrencyAmount = $request->payoutCurrencyAmount;
 				$aggregatorCurrencyAmount = $request->aggregatorCurrencyAmount;
@@ -359,7 +359,14 @@
 				$user = Auth::user();
 				 
 				DB::beginTransaction();
-				$beneficiaryData = $request->except('_token');
+				$beneficiaryData = $request->except('_token', 'recipient_mobile', 'mobile_code');
+			
+				$mobile_code = $request->mobile_code ?? '';
+				$mobile_num = $request->recipient_mobile ?? '';
+				//$mobile_number = ltrim($mobile_code . $mobile_num, '+');
+					
+				$beneficiaryData['recipient_mobile'] = $mobile_num ?? '';
+				$beneficiaryData['mobile_code'] = $mobile_code ?? '';
 				$beneficiaryData['sender_country'] = $user->country->id ?? '';
 				$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 				$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
@@ -420,7 +427,14 @@
 				// 		return $this->errorResponse('Provided country and mobile number are not active');
 				// 	}	
 				// }
-				$beneficiaryData = $request->except('_token');
+				$beneficiaryData = $request->except('_token', 'recipient_mobile', 'mobile_code');
+			
+				$mobile_code = $request->mobile_code ?? '';
+				$mobile_num = $request->recipient_mobile ?? '';
+				//$mobile_number = ltrim($mobile_code . $mobile_num, '+');
+					
+				$beneficiaryData['recipient_mobile'] = $mobile_num ?? '';
+				$beneficiaryData['mobile_code'] = $mobile_code ?? '';
 				$beneficiaryData['sender_country'] = $user->country->id ?? '';
 				$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 				$beneficiaryData['sender_country_name'] = $user->country->name ?? '';

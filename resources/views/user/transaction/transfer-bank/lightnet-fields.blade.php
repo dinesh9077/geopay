@@ -5,13 +5,15 @@
 	@endphp
 	 
 	<div class="mb-4 col-md-6">
+		 
 		<label class="content-3 mb-0">
 			{{ $field['fieldLabel'] }}
 			@if ($field['required'])
 				<span class="text-danger">*</span>
 			@endif
 		</label>
-
+		 
+		
 		@if (in_array($fieldName, ["beneficiarytype", "remittertype"]))  
 			<select id="{{ $fieldName }}" name="{{ $fieldName }}" class="form-control form-control-lg content-3 select2" required>
 				<option value="" disabled selected>Select {{ $field['fieldLabel'] }}</option> 
@@ -97,6 +99,22 @@
 				@endif
 			</select>
 			
+		@elseif ($fieldName == "receivercontactnumber") 
+			<div class="d-flex align-items-center gap-2">
+				<input id="mobile_code" type="text" name="mobile_code" class="form-control form-control-lg content-3 mobile-number px-2" style="max-width: 65px;" placeholder="+91" value="{{ $editData && isset($editData['mobile_code']) ? $editData['mobile_code'] : '+'.$isdcode }}" readonly />
+				<input
+					id="{{ $fieldName }}"
+					name="{{ $fieldName }}"
+					placeholder="Enter {{ $field['fieldLabel'] }}"
+					type="text"
+					class="form-control form-control-lg content-3"
+					value="{{ $editData && isset($editData[$fieldName]) ? $editData[$fieldName] : '' }}"
+					@if ($field['required']) required @endif
+					@if (isset($field['minLength'])) minlength="{{ $field['minLength'] }}" @endif
+					@if (isset($field['maxLength'])) maxlength="{{ $field['maxLength'] }}" @endif
+				/>
+			</div> 
+	 
 		@else
 			<!-- Generate a text input -->
 			<input

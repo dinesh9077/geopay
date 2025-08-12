@@ -312,7 +312,7 @@
 				$beneficiaryLastName = $beneficiary->data['receiverlastname'] ?? ($beneficiary->data['beneficiaryLastName'] ?? '');
 				$bankName = $beneficiary->data['bankName'] ?? 'Unknown Bank';
 				$bankId = $beneficiary->data['bankId'] ?? '';
-				$mobileNumber = $beneficiary->data['receivercontactnumber'] ?? '';
+				$mobileNumber = ltrim(($beneficiary->data['mobile_code'] ?? ''), '+').($beneficiary->data['receivercontactnumber'] ?? '');
 				$payoutCurrency = $beneficiary->data['payoutCurrency'] ?? '';
 				$payoutCurrencyAmount = $request->payoutCurrencyAmount;
 				$aggregatorCurrencyAmount = $request->aggregatorCurrencyAmount;
