@@ -120,8 +120,7 @@
 		//Add Mobile Money  
 		Route::get('/add-money', [ReceiveMoneyController::class, 'addMoney'])->name('add-money'); 
 		Route::post('/mobile-collection-store', [ReceiveMoneyController::class, 'storeMobileCollection'])->name('mobile-collection.store');Route::post('/mobile-collection-commission', [ReceiveMoneyController::class, 'storeMobileCollectionCommission'])->name('mobile-collection.commission'); 
-		
-		
+		 
 		//Transaction List 
 		Route::get('/transaction-list', [TransactionController::class, 'index'])->name('transaction-list');
 		Route::post('/transaction-ajax', [TransactionController::class, 'transactionAjax'])->name('transaction-ajax')->withoutMiddleware('webdecrypt.request');

@@ -20,7 +20,8 @@ use App\Notifications\WalletTransactionNotification;
 use App\Notifications\AirtimeRefundNotification;
 use Carbon\Carbon;
 use Helper;
- 
+use App\Enums\LightnetStatus;
+
 class TransferBankController extends Controller
 { 
 	use WebResponseTrait; 
@@ -640,7 +641,7 @@ class TransferBankController extends Controller
 					throw new \Exception($errorMsg);
 				}
 				$confirmationId = $response['response']['confirmationId'];
-				$txnStatus = 'pending';
+				$txnStatus = 'processing';
 			}
 			else
 			{
@@ -732,8 +733,7 @@ class TransferBankController extends Controller
 			{
 				$commitResponse = $this->liquidNetService->commitTransaction($confirmationId, $remitCurrency);
 
-				if (!$commitResponse['success'] || ($commitResponse['response']['code'] ?? 1) != 0) {
-					// Provide a clear and user-friendly error message
+				if (!$commitResponse['success'] || ($commitResponse['response']['code'] ?? 1) != 0) { 
 					$errorMsg = "Your transaction has been accepted but couldn't be committed due to a technical issue. Please visit the transaction list to manually commit the transaction.";
 					throw new \Exception($errorMsg);
 				}
@@ -741,7 +741,12 @@ class TransferBankController extends Controller
 				// Safely fetch the transaction and update it
 				if ($transaction) {
 					$commitTransaction = Transaction::find($transaction->id);
-					$commitTransaction->update(['api_response_second' => $commitResponse['response'], 'txn_status' => strtolower($commitResponse['response']['status'])]);
+					$statusLabel = LightnetStatus::from($commitResponse['response']['status'])->label(); 
+					if($statusLabel === "cancelled and refunded")
+					{
+						$commitTransaction->processAutoRefund($statusLabel);
+					}
+					$commitTransaction->update(['api_response_second' => $commitResponse['response'], 'txn_status' => $statusLabel]);
 				}
 				
 				$successMsg = $commitResponse['response']['message'];
@@ -788,9 +793,14 @@ class TransferBankController extends Controller
 			}
 
 			// Update the transaction status
+			$statusLabel = LightnetStatus::from($commitResponse['response']['status'])->label(); 
+			if($statusLabel === "cancelled and refunded")
+			{
+				$transaction->processAutoRefund($statusLabel);
+			}
 			$transaction->update([
 				'api_response_second' => $commitResponse['response'],
-				'txn_status' => strtolower($commitResponse['response']['status'] ?? 'pending'),
+				'txn_status' => $statusLabel,
 			]);
 
 			// Log the transaction update

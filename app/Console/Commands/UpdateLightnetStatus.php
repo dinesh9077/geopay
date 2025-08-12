@@ -8,6 +8,7 @@
 	use App\Services\LiquidNetService;
 	use App\Notifications\AirtimeRefundNotification;
 	use Notification;
+	use App\Enums\LightnetStatus;
 	use Log;
 	class UpdateLightnetStatus extends Command
 	{
@@ -48,11 +49,12 @@
 			$this->info('Starting to update transaction statuses...');
 			
 			// Fetch transactions that need status updates
-			$transactions = Transaction::select('id', 'user_id', 'txn_status', 'platform_provider', 'order_id')
+			$transactions = Transaction::query()
 			->where('platform_provider', 'lightnet')
-			->whereNotIn('txn_status', ['paid'])
-			->get();
-			
+			->where('is_refunded', 0)
+			->whereNotIn('txn_status', ['paid', 'cancelled and refunded'])
+			->first();
+			 
 			if ($transactions->isEmpty()) {
 				return;
 			}
@@ -62,17 +64,25 @@
 				try { 
 					 
 					$response = $this->liquidNetService->getTXNStatus($transaction->order_id);
+					
 					// Return 0 on failure or unexpected response
 					if (!$response['success'] || ($response['response']['code'] ?? -1) != 0) {
 						continue; // Skip to the next transaction
 					} 
-					
-					// Update transaction status
-					$txn_status = strtolower($response['response']['status'] ?? $transaction->txn_status);
 					 
-					$transaction->update(['txn_status' => $txn_status]);
-					$user = $transaction->user;
+					$txn_status = $transaction->txn_status;
+					if(!empty($response['response']['status']))
+					{
+						$txn_status = LightnetStatus::from($response['response']['status'])->label(); 
+						if($txn_status === "cancelled and refunded")
+						{
+							$transaction->processAutoRefund($txn_status);
+						}
+					}
 					
+					$transaction->update(['txn_status' => $txn_status]);
+					
+					//$user = $transaction->user; 
 					//Notification::send($user, new AirtimeRefundNotification($user, $transaction->txn_amount, $transaction->id, $transaction->comments, $transaction->notes, ucfirst($transaction->txn_status)));
 				} 
 				catch (\Throwable $e) 

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use DB, Helper;
 
 class Transaction extends Model
 {
@@ -91,5 +92,48 @@ class Transaction extends Model
 	{
 		return $this->api_response ?? [];
 	}
-   
+	
+	public function processAutoRefund(string $txnStatus = 'cancelled and refunded')
+    {
+        return DB::transaction(function () use ($txnStatus) {
+			
+            // Only allow refund if eligible
+            if ($this->is_refunded) {
+				return;
+			}
+ 
+			// Find user
+			$user = User::findOrFail($this->user_id);
+			
+			// Calculate refund amount
+			$refundAmount = $this->txn_amount;
+
+			// Increment user balance
+			$user->increment('balance', $refundAmount);
+
+            // Create refund transaction
+            $refundTransaction = $this->replicate()->toArray();
+            $refundTransaction['transaction_type'] = 'credit';
+            $refundTransaction['comments'] = "A refund of {$refundAmount} " . config('setting.default_currency') . " has been processed.";
+            $refundTransaction['created_at'] = now();
+            $refundTransaction['updated_at'] = now();
+            $refundTransaction['refund_reason'] = 'Auto refund by system';
+            $refundTransaction['is_refunded'] = 0;
+            $refundTransaction['txn_status'] = $txnStatus;
+
+            $refundedTransaction = self::create($refundTransaction);
+
+            Helper::updateLogName(
+                $refundedTransaction->id,
+                self::class,
+                'Refund Transaction',
+                auth()->guard('admin')->id()
+            );
+
+            // Mark original as refunded
+            $this->update(['is_refunded' => 1]);
+
+            return $refundedTransaction;
+        });
+    }
 }

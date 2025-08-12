@@ -12,6 +12,7 @@ use Helper, ImageManager;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Carbon\Carbon;
 use App\Models\Notification;
+use App\Enums\LightnetStatus;
 
 class HomeController extends Controller
 {
@@ -40,6 +41,10 @@ class HomeController extends Controller
 
         //dd(json_decode(auth()->user()->userKyc->meta_response));
 		// Generate QR Code with the mobile number
+		
+		/* $status = LightnetStatus::from('CANCEL')->label();
+		echo $status;
+		die; */
 		$mobileNumber = auth()->user()->formatted_number ?? '';
         
 		$banners = Banner::where('status', 1)->orderByDesc('id')->get();
