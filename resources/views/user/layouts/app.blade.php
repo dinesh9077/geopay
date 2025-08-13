@@ -90,7 +90,14 @@
         data-update-uri="{{ url('livewire/update') }}"
         data-navigate-once="true"></script>
 		<script>
-			 
+			window.addEventListener('load', function () {
+				// Wait until page fully loads (DOM + images, styles, etc.)
+				const blocker = document.getElementById('pageBlocker');
+				if (blocker) {
+					blocker.remove(); // Enable clicks
+				}
+			});
+			
 			// for sidebar collapse
 			var sidebarToggle = document.querySelector("#sidebar-toggle");
 			var sidebarClose = document.querySelector("#sidebar-close");
