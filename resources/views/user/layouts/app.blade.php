@@ -53,6 +53,14 @@
 		</head>
 	
 	<body>
+		<div id="pageBlocker" style="
+			position: fixed;
+			top: 0; left: 0;
+			width: 100vw; height: 100vh;
+			background: transparent;
+			z-index: 99999;
+			pointer-events: all;
+		"></div>
 		<div class="wrapper">
 			@include('user.layouts.partial.sidebar')
 			<div class="main">
