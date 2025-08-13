@@ -331,10 +331,10 @@
 				["fieldName" => "recipient_city", "fieldLabel" => "Recipient City", "required" => false, "inputType" => "text"],
 				["fieldName" => "recipient_state", "fieldLabel" => "Recipient State", "required" => false, "inputType" => "text"],
 				["fieldName" => "recipient_postalcode", "fieldLabel" => "Recipient Postal Code", "required" => false, "inputType" => "text"],
-				["fieldName" => "recipient_dateofbirth", "fieldLabel" => "Recipient Date Of Birth", "required" => false, "inputType" => "date"],
-				["fieldName" => "sender_placeofbirth", "fieldLabel" => "Sender Date Of Birth", "required" => true, "inputType" => "date"],
+				["fieldName" => "recipient_dateofbirth", "fieldLabel" => "Recipient Date Of Birth", "required" => false, "inputType" => "date"]
+				/* ["fieldName" => "sender_placeofbirth", "fieldLabel" => "Sender Date Of Birth", "required" => true, "inputType" => "date"],
 				["fieldName" => "purposeOfTransfer", "fieldLabel" => "Purpose Of Transfer", "required" => true, "inputType" => "text"],
-				["fieldName" => "sourceOfFunds", "fieldLabel" => "Source Of Funds", "required" => true, "inputType" => "text"]
+				["fieldName" => "sourceOfFunds", "fieldLabel" => "Source Of Funds", "required" => true, "inputType" => "text"] */
 			];
 
 			return $this->successResponse('fields fetched successfully.', $fields);
@@ -362,8 +362,7 @@
 				$beneficiaryData = $request->except('_token', 'recipient_mobile', 'mobile_code');
 			
 				$mobile_code = $request->mobile_code ?? '';
-				$mobile_num = $request->recipient_mobile ?? '';
-				//$mobile_number = ltrim($mobile_code . $mobile_num, '+');
+				$mobile_num = $request->recipient_mobile ?? ''; 
 					
 				$beneficiaryData['recipient_mobile'] = $mobile_num ?? '';
 				$beneficiaryData['mobile_code'] = $mobile_code ?? '';
@@ -371,8 +370,8 @@
 				$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 				$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
 				$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
-				$beneficiaryData['sender_name'] = $user->first_name ?? '';
-				$beneficiaryData['sender_surname'] = $user->last_name ?? '';
+				/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
+				$beneficiaryData['sender_surname'] = $user->last_name ?? ''; */
 				
 				$recipientCountry = Country::find($request->recipient_country ?? null);
 				$beneficiaryData['payoutCountry'] = $recipientCountry->iso3 ?? '';
@@ -430,8 +429,7 @@
 				$beneficiaryData = $request->except('_token', 'recipient_mobile', 'mobile_code');
 			
 				$mobile_code = $request->mobile_code ?? '';
-				$mobile_num = $request->recipient_mobile ?? '';
-				//$mobile_number = ltrim($mobile_code . $mobile_num, '+');
+				$mobile_num = $request->recipient_mobile ?? ''; 
 					
 				$beneficiaryData['recipient_mobile'] = $mobile_num ?? '';
 				$beneficiaryData['mobile_code'] = $mobile_code ?? '';
@@ -439,8 +437,8 @@
 				$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 				$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
 				$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
-				$beneficiaryData['sender_name'] = $user->first_name ?? '';
-				$beneficiaryData['sender_surname'] = $user->last_name ?? '';
+				/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
+				$beneficiaryData['sender_surname'] = $user->last_name ?? ''; */
 				
 				$recipientCountry = Country::find($request->recipient_country ?? null);
 				$beneficiaryData['payoutCountry'] = $recipientCountry->iso3 ?? '';

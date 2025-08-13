@@ -492,6 +492,8 @@ class OnafricService
 		$payoutCurrency = $beneficiary['payoutCurrency'] ?? '';
 		$mobileNumber = ltrim(($beneficiary['mobile_code'] ?? ''), '+').($beneficiary['recipient_mobile'] ?? '');
 		
+		$user = Auth::user();
+		
 		$requestBody = [
 			"corporateCode" => $this->onafricCorporate,
 			"password" => $this->onafricPassword, 
@@ -514,16 +516,16 @@ class OnafricService
 					"sender" => [
 						"msisdn" => $beneficiary['sender_mobile'] ?? '',
 						"fromCountry" => $beneficiary['sender_country_code'] ?? '',
-						"name" => $beneficiary['sender_name'] ?? '',
-						"surname" => $beneficiary['sender_surname'] ?? '',
-						"address" => $beneficiary['sender_address'] ?? '',
-						"city" => $beneficiary['sender_city'] ?? '',
-						"state" => $beneficiary['sender_state'] ?? '',
-						"postalCode" => $beneficiary['sender_postalcode'] ?? '',
-						"email" => null,
+						"name" => $user->first_name ?? '',
+						"surname" => $user->last_name ?? '',
+						"address" => $user->address ?? '',
+						"city" => $user->city ?? '',
+						"state" => $user->state ?? '',
+						"postalCode" => $user->zip_code ?? '',
+						"email" => $user->email ?? '',
 						"dateOfBirth" => null,
 						"document" => null,
-						"placeOfBirth" => $beneficiary['sender_placeofbirth'] ?? '',
+						"placeOfBirth" => $user->date_of_birth ?? '',
 					],
 					"recipient" => [
 						"msisdn" => $mobileNumber ?? '',
@@ -541,12 +543,12 @@ class OnafricService
 					],
 					"thirdPartyTransId" => $thirdPartyTransId,
 					"reference" => null,
-					"purposeOfTransfer" => $beneficiary['purposeOfTransfer'] ?? '',
-					"sourceOfFunds" => $beneficiary['sourceOfFunds'] ?? '',
+					"purposeOfTransfer" => $user->business_activity_occupation ?? '',
+					"sourceOfFunds" => $user->source_of_fund ?? '',
 				]
 			]
 		];
-	  
+		 
 		//Log::info('send mobile request', ['request' => $requestBody]);
 		// Generate the mfsSign
 		$mfsSign = $this->generateMfsSign($batchId);
@@ -719,6 +721,7 @@ class OnafricService
 		$payoutCurrency = $beneficiary['payoutCurrency'] ?? '';
 		
 		$mobileNumber = ltrim(($beneficiary['mobile_code'] ?? ''), '+').($beneficiary['receivercontactnumber'] ?? '');
+		$user = Auth::user();
 		
 		$requestBody = [
 			"corporateCode" => $this->onafricCorporate,
@@ -738,17 +741,17 @@ class OnafricService
 					"sender" => [
 						"msisdn" => $beneficiary['sender_mobile'] ?? '',
 						"fromCountry" => $beneficiary['sender_country_code'] ?? '',
-						"name" => $beneficiary['sender_name'] ?? '',
-						"surname" => $beneficiary['sender_surname'] ?? '',
-						"address" => $beneficiary['sender_address'] ?? '',
-						"city" => null,
-						"state" => null,
-						"postalCode" => null,
-						"email" => null,
+						"name" => $user->first_name ?? '',
+						"surname" => $user->last_name ?? '',
+						"address" => $user->address ?? '',
+						"city" => $user->city ?? '',
+						"state" => $user->state ?? '',
+						"postalCode" => $user->zip_code ?? '',
+						"email" => $user->email ?? '',
 						"dateOfBirth" => null,
 						"document" => null,
-						"placeOfBirth" => $beneficiary['sender_placeofbirth'] ?? '',
-					],
+						"placeOfBirth" => $user->date_of_birth ?? '',
+					], 
 					"recipient" => [
 						"msisdn" => $mobileNumber ?? '',
 						"toCountry" => $beneficiary['payoutIso'] ?? '',
@@ -772,11 +775,12 @@ class OnafricService
 					],
 					"thirdPartyTransId" => $thirdPartyTransId,
 					"reference" => null,
-					"purposeOfTransfer" => $beneficiary['purposeOfTransfer'] ?? '',
-					"sourceOfFunds" => $beneficiary['sourceOfFunds'] ?? '',
+					"purposeOfTransfer" => $user->business_activity_occupation ?? '',
+					"sourceOfFunds" => $user->source_of_fund ?? '',
 				]
 			]
 		];
+		
 		//Log::info('send bank request', ['request' => $requestBody]);
 		// Generate the mfsSign
 		$mfsSign = $this->generateMfsSign($batchId);

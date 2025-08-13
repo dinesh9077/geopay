@@ -24,22 +24,7 @@
 	<label class="content-3 mb-0">Recipient Address</label>
 	<input id="receiveraddress" name="receiveraddress" placeholder="Enter Recipient Address" type="text" class="form-control form-control-lg content-3" value="{{ $editData && isset($editData['receiveraddress']) ? $editData['receiveraddress'] : '' }}" />
 </div> 
-
-<div class="mb-4 col-md-6">
-	<label class="content-3 mb-0">Sender Date Of Birth <span class="text-danger">*</span></label>
-	<input id="sender_placeofbirth" name="sender_placeofbirth" placeholder="Sender Date Of Birth" type="text" class="form-control form-control-lg content-3" value="{{ $editData && isset($editData['sender_placeofbirth']) ? $editData['sender_placeofbirth'] : '' }}" required/>
-</div>
-
-<div class="mb-4 col-md-6">
-	<label class="content-3 mb-0">Purpose Of Transfer <span class="text-danger">*</span></label>
-	<input id="purposeOfTransfer" name="purposeOfTransfer" placeholder="Enter Purpose Of Transfer such as Health/Medical Expense or Education." type="text" class="form-control form-control-lg content-3" value="{{ $editData && isset($editData['purposeOfTransfer']) ? $editData['purposeOfTransfer'] : '' }}" required/>
-</div>
-
-<div class="mb-4 col-md-6">
-	<label class="content-3 mb-0">Source Of Funds <span class="text-danger">*</span></label>
-	<input id="sourceOfFunds" name="sourceOfFunds" placeholder="Enter Source Of Funds Common sources include Salary/Wages, Investment Income or Savings." type="text" class="form-control form-control-lg content-3" value="{{ $editData && isset($editData['sourceOfFunds']) ? $editData['sourceOfFunds'] : '' }}" required/>
-</div> 
-
+  
 <div class="mb-4 col-md-6">
 	<label class="content-3 mb-0">Document Id Number</label>
 	<input id="idNumber" name="idNumber" placeholder="Enter Document Id Number." type="text" class="form-control form-control-lg content-3"value="{{ $editData && isset($editData['idNumber']) ? $editData['idNumber'] : '' }}" />
@@ -50,7 +35,7 @@
 </div> 
 <div class="mb-4 col-md-6">
 	<label class="content-3 mb-0">Document Id Expiry</label>
-	<input id="idExpiry" name="idExpiry" placeholder="Enter Document Id Expiry." type="text" class="form-control form-control-lg content-3"value="{{ $editData && isset($editData['idExpiry']) ? $editData['idExpiry'] : '' }}" />
+	<input id="idExpiry" name="idExpiry" placeholder="Enter Document Id Expiry." type="date" class="form-control form-control-lg content-3" value="{{ $editData && isset($editData['idExpiry']) ? $editData['idExpiry'] : '' }}" onclick="this.showPicker()" style="cursor: pointer;"/>
 </div> 
 <script>
 	// Initialize Select2 for dropdowns
@@ -60,12 +45,18 @@
 	});
 	
 	// Initialize Flatpickr for date inputs 
-	flatpickr("#sender_placeofbirth", {
+	/* flatpickr("#sender_placeofbirth", {
 		dateFormat: "Y-m-d",
 		maxDate: "today"
 	});
 	
 	flatpickr("#idExpiry", {
 		dateFormat: "Y-m-d"
-	}); 
+	});  */ 
+	
+	document.querySelectorAll('input[type="date"]').forEach(input => {
+		input.addEventListener('focus', function () {
+			this.showPicker?.();
+		});
+	});
 </script>

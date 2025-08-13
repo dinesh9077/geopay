@@ -70,7 +70,7 @@ class RegisterController extends Controller
 		return view('user.auth.register', compact('countriesWithFlags'));
 	}
 	
-	public function individualRegister(Request $request)
+	public function individualTempRegister(Request $request)
 	{   
 		$validator = Validator::make($request->all(), [
 			'first_name' => 'required|string|max:255',
@@ -117,6 +117,9 @@ class RegisterController extends Controller
 			if ($request->input('mobile_number') && $request->input('is_mobile_verify') == 0) {
 				$validator->errors()->add('mobile_number', 'Mobile verification is required before proceeding.');
 			}
+			if (User::where('mobile_number', $request->mobile_number)->exists()) { 
+				$validator->errors()->add('mobile_number', 'The mobile number is already exists.');
+			}
 		});
 		
 		// Check if the main validator fails
@@ -125,8 +128,8 @@ class RegisterController extends Controller
 		}
 		
 		try {
-			
-			DB::beginTransaction();
+			 
+			 
 			// Retrieve the country based on country_id and check if it exists
 			$country = Country::find($request->country_id);
 		 
@@ -135,7 +138,7 @@ class RegisterController extends Controller
 			}
 			  
 			$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
-            $userData = $request->only('first_name', 'last_name', 'email', 'country_id', 'mobile_number', 'referalcode', 'is_email_verify', 'is_mobile_verify', 'terms', 'address');
+            $userData = $request->only('first_name', 'last_name', 'email', 'country_id', 'mobile_number', 'referalcode', 'is_email_verify', 'is_mobile_verify', 'terms');
 			$userData['password'] = Hash::make($request->password);
 			$userData['xps'] = base64_encode($request->password);
 			$userData['formatted_number'] = $formattedNumber;
@@ -143,7 +146,51 @@ class RegisterController extends Controller
 			$userData['is_company'] = 0; 
 			$userData['is_kyc_verify'] = 0; 
 			$userData['verification_token'] = Str::random(64);
+			$url = route('register.individual'); 
+			$type = 1;
+			 
+            $html = view('user.auth.basic-details', compact('userData', 'url', 'type'))->render();
+				  
+            return $this->successResponse('User registered successfully.', $html); 
+        } 
+		catch (\Throwable $e)
+		{ 
+            DB::rollBack();
+            return $this->errorResponse($e->getMessage());
+        }
+	}
+	
+	public function individualRegister(Request $request)
+	{    
+		$validator = Validator::make($request->all(), [
+			'id_type' => 'required|string|in:Passport,National ID Card,Driving License,Voter ID,Residence Permit',
+			'id_number' => 'required|string|max:50',
+			'expiry_id_date' => 'required|date',
+
+			'city' => 'required|string|max:100',
+			'state' => 'required|string|max:100',
+			'zip_code' => 'required|string|max:20',
+
+			'date_of_birth' => 'required|date',
+			'gender' => 'required|in:Male,Female,Other',
+			'address' => 'required|string',
+
+			'business_activity_occupation' => 'required|in:Agriculture forestry fisheries,Construction/manufacturing/marine,Government officials and Special Interest Organizations,Professional and related workers,Retired,Self-employed,Student,Unemployed',
+
+			'source_of_fund' => 'required|in:Business profit/dividend,Income from employment (normal and/or bonus),Investments,Savings,Inheritance,Loan,Gift,Real Estate,Lottery/betting/casino winnings',
+		]);
+ 
+		// Check if the main validator fails
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		}
 		
+		try {
+			
+			DB::beginTransaction();
+			 
+            $userData = $request->except('_token');  
+			 
             $user = User::create($userData);
 				 
 			// Log the user in
@@ -159,7 +206,7 @@ class RegisterController extends Controller
         }
 	}
 	
-	public function companyRegister(Request $request)
+	public function companyTempRegister(Request $request)
 	{  
 		$validator = Validator::make($request->all(), [
 			'first_name' => 'required|string|max:255',
@@ -207,6 +254,9 @@ class RegisterController extends Controller
 			if ($request->input('mobile_number') && $request->input('is_mobile_verify') == 0) {
 				$validator->errors()->add('mobile_number', 'Mobile verification is required before proceeding.');
 			}
+			if (User::where('mobile_number', $request->mobile_number)->exists()) { 
+				$validator->errors()->add('mobile_number', 'The mobile number is already exists.');
+			}
 		});
 		
 		// Check if the main validator fails
@@ -215,9 +265,7 @@ class RegisterController extends Controller
 		}
 		
 		try {
-			
-			DB::beginTransaction();
-			// Retrieve the country based on country_id and check if it exists
+			 
 			$country = Country::find($request->country_id);
 		 
 			if (!$country) {
@@ -234,9 +282,65 @@ class RegisterController extends Controller
 			$userData['is_kyc_verify'] = 0; 
 			$userData['verification_token'] = Str::random(64);
 		
+            $url = route('register.company'); 
+			$type = 2;
+			 
+            $html = view('user.auth.basic-details', compact('userData', 'url', 'type'))->render();
+				  
+            return $this->successResponse('User registered successfully.', $html);  
+        } 
+		catch (\Throwable $e)
+		{ 
+            DB::rollBack();
+            return $this->errorResponse($e->getMessage());
+        }
+	}
+	
+	public function companyRegister(Request $request)
+	{  
+		$validator = Validator::make($request->all(), [
+			'id_type' => 'required|string|in:Passport,National ID Card,Driving License,Voter ID,Residence Permit',
+			'id_number' => 'required|string|max:50',
+			'expiry_id_date' => 'required|date',
+
+			'city' => 'required|string|max:100',
+			'state' => 'required|string|max:100',
+			'zip_code' => 'required|string|max:20',
+
+			'date_of_birth' => 'required|date',
+			'gender' => 'required|in:Male,Female,Other',
+			'address' => 'required|string',
+
+			'business_activity_occupation' => 'required|in:Agriculture forestry fisheries,Construction/manufacturing/marine,Government officials and Special Interest Organizations,Professional and related workers,Retired,Self-employed,Student,Unemployed',
+
+			'source_of_fund' => 'required|in:Business profit/dividend,Income from employment (normal and/or bonus),Investments,Savings,Inheritance,Loan,Gift,Real Estate,Lottery/betting/casino winnings',
+		]);
+ 
+		
+		$validator->after(function ($validator) use ($request) {
+			if ($request->input('email') && $request->input('is_email_verify') == 0) {
+				$validator->errors()->add('email', 'Email verification is required before proceeding.');
+			}
+			if ($request->input('mobile_number') && $request->input('is_mobile_verify') == 0) {
+				$validator->errors()->add('mobile_number', 'Mobile verification is required before proceeding.');
+			}
+		});
+		
+		// Check if the main validator fails
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		}
+		
+		try {
+			
+			DB::beginTransaction();
+			
+			$userData = $request->except('_token');  
+			 
             $user = User::create($userData);
+			
 			Helper::updateLogName($user->id, User::class, 'corporate/company user');	 
-			// Log the user in
+			 
 			Auth::login($user);
  
             DB::commit();  

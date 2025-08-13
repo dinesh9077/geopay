@@ -91,8 +91,8 @@
 		var payoutCountry = $beneficiaryForm.find('#payoutCurrency :selected').data('payout-country');
 		var serviceName = $beneficiaryForm.find('#payoutCurrency :selected').data('service-name');
 		var isdcode = $beneficiaryForm.find('#payoutCurrency :selected').data('isdcode');
-		alert(isdcode)
-		if (!locationId || !payoutCurrency || !payoutCountry || !serviceName) { 
+		 
+		if (!locationId || !payoutCurrency || !payoutCountry || !serviceName || !isdcode) { 
 			toastrMsg('error', 'Missing required data for form submission.'); 
 			return;
 		}

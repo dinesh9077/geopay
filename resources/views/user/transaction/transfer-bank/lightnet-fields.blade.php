@@ -20,14 +20,7 @@
 				<option value="I" {{ $editData && isset($editData[$fieldName]) ? ("I" == $editData[$fieldName] ? 'selected' : '' ) : '' }}>Individual</option>
 				<option value="B" {{ $editData && isset($editData[$fieldName]) ? ("B" == $editData[$fieldName] ? 'selected' : '' ) : '' }}>Business</option> 
 			</select>
-			
-		@elseif (in_array($fieldName, ["sendergender"]))  
-			<select id="{{ $fieldName }}" name="{{ $fieldName }}" class="form-control form-control-lg content-3 select2" required>
-				<option value="" disabled selected>Select {{ $field['fieldLabel'] }}</option> 
-				<option value="Male" {{ $editData && isset($editData[$fieldName]) ? ("Male" == $editData[$fieldName] ? 'selected' : '' ) : '' }}>Male</option>
-				<option value="Female" {{ $editData && isset($editData[$fieldName]) ? ("Female" == $editData[$fieldName] ? 'selected' : '' ) : '' }}>Female</option> 
-			</select>
-			
+			 
 		@elseif ($fieldName == "paymentmode") 
 			<select id="{{ $fieldName }}" name="{{ $fieldName }}" class="form-control form-control-lg content-3 select2" @if ($field['required']) required @endif> 
 				<option value="B">Account Deposit</option>
@@ -115,6 +108,20 @@
 				/>
 			</div> 
 	 
+		@elseif (in_array($fieldName, ["receiverdateofbirth", "receiveridexpiredate", "receiveridissuedate", "senderidissuedate"])) 
+			<input
+				id="{{ $fieldName }}"
+				name="{{ $fieldName }}"
+				placeholder="Enter {{ $field['fieldLabel'] }}"
+				type="date"
+				class="form-control form-control-lg content-3"
+				value="{{ $editData && isset($editData[$fieldName]) ? $editData[$fieldName] : '' }}"
+				@if ($field['required']) required @endif
+				@if (isset($field['minLength'])) minlength="{{ $field['minLength'] }}" @endif
+				@if (isset($field['maxLength'])) maxlength="{{ $field['maxLength'] }}" @endif
+				onclick="this.showPicker()" style="cursor: pointer;"
+			/>
+	 
 		@else
 			<!-- Generate a text input -->
 			<input
@@ -137,19 +144,11 @@
 	$('#transferBankBeneficiaryForm .select2').select2({
 		dropdownParent: $('#addTransferBankBeneficiary'),
 		width: "100%"
-	});
+	}); 
 	
-	// Initialize Flatpickr for date inputs
-	flatpickr("#receiverdateofbirth, #senderdateofbirth", {
-		dateFormat: "Y-m-d",
-		maxDate: "today",
-		allowInput: true,  
-   		monthSelectorType: "dropdown"
+	document.querySelectorAll('input[type="date"]').forEach(input => {
+		input.addEventListener('focus', function () {
+			this.showPicker?.();
+		});
 	});
-	
-	flatpickr("#receiveridexpiredate, #receiveridissuedate,  #senderidissuedate, #senderidexpiredate", {
-		dateFormat: "Y-m-d",
-		allowInput: true
-	});
-	
 </script>

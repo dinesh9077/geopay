@@ -114,94 +114,7 @@ class LiquidNetService
 			'response' => json_decode($response->body(), true)
 		];
 	} 
-	
-	/* public function getEcho($data)
-	{
-		$apiUrl = $data['lightnet_url'] . '/GetEcho';
-		$method = 'post';
-
-		// 1) Correct timestamp (UTC, in seconds)
-		$requestTimestamp = gmdate('U');
-
-		// 2) Body
-		$requestBodyArray = [
-			"agentSessionId" => (string) $requestTimestamp
-		];
-		$jsonRequestBody = json_encode($requestBodyArray);
-
-		// 3) Request URI → Lightnet's sample uses FULL URL lowercased, URL-encoded
-		$requestUri = urlencode(strtolower($apiUrl));
-
-		// 4) HTTP Method uppercase
-		$requestHttpMethod = strtoupper($method);
-
-		// 5) Nonce
-		$nonce = Str::uuid()->toString();
-
-		// 6) MD5 + base64 of request body
-		$requestContentBase64String = '';
-		if (!empty($jsonRequestBody)) {
-			$requestContentHash = md5($jsonRequestBody, true); // true → raw binary output
-			$requestContentBase64String = base64_encode($requestContentHash);
-		}
-
-		// 7) Signature raw data string
-		$signatureRawData = sprintf(
-			'%s%s%s%s%s%s',
-			$data['lightnet_apikey'],
-			$requestHttpMethod,
-			$requestUri,
-			$requestTimestamp,
-			$nonce,
-			$requestContentBase64String
-		);
-
-		// 8) HMAC-SHA256
-		$secretKeyByteArray = base64_decode($data['lightnet_secretkey']);
-		$signatureBytes = hash_hmac('sha256', $signatureRawData, $secretKeyByteArray, true);
-		$requestSignatureBase64String = base64_encode($signatureBytes);
-
-		// 9) Final Authorization header value
-		$signatureString = sprintf(
-			'%s:%s:%s:%s',
-			$data['lightnet_apikey'],
-			$requestSignatureBase64String,
-			$nonce,
-			$requestTimestamp
-		);
-
-		// 10) Send request
-		$response = Http::withHeaders([
-					'Authorization' => "hmacauth {$signatureString}",
-					'Content-Type' => 'application/json',
-				])
-				->withOptions([
-					'verify' => false, // Ignore SSL verification (if needed)
-				])
-				->{$method}($apiUrl, $requestBodyArray);
-
-		// 11) Debug raw response
-		dd([
-			'api_url' => $apiUrl,
-			'signature_raw_data' => $signatureRawData,
-			'authorization_header' => $signatureString,
-			'request_body' => $requestBodyArray,
-			'response' => $response->json(),
-		]);
-
-		if ($response->successful()) {
-			return [
-				'success' => true,
-				'response' => $response->json()
-			];
-		}
-
-		return [
-			'success' => false,
-			'response' => json_decode($response->body(), true)
-		];
-	} */
- 
+	  
 	public function serviceApi(string $method, string $url, string $requestTimeStamp, array $requestBody = [])
 	{
 		$apiUrl = $this->baseUrl . $url;
@@ -252,11 +165,11 @@ class LiquidNetService
 			"senderFirstName" => $senderFirstname,
 			"senderMiddleName" => "",
 			"senderLastName" => $senderLastname,
-			"senderGender" => $beneficiary['sendergender'] ?? '',
-			"senderAddress" => $beneficiary['senderaddress'] ?? '',
-			"senderCity" => $beneficiary['sendercity'] ?? '',
-			"senderState" => $beneficiary['senderstate'] ?? '',
-			"senderZipCode" => $beneficiary['senderzipcode'] ?? '',
+			"senderGender" => $user->gender ?? '',
+			"senderAddress" => $user->address ?? '',
+			"senderCity" => $user->city ?? '',
+			"senderState" => $user->state ?? '',
+			"senderZipCode" => $user->zipcode ?? '',
 			"senderCountry" => $senderCountry,
 			"senderMobile" => $senderMobile,
 			"SenderNationality" => $senderCountry,
@@ -265,13 +178,13 @@ class LiquidNetService
 			"senderIdNumber" => $beneficiary['senderidnumber'] ?? '',
 			"senderIdIssueCountry" => $beneficiary['senderidissuecountry'] ?? '',
 			"senderIdIssueDate" => $beneficiary['senderidissuedate'] ?? '',
-			"senderIdExpireDate" => $beneficiary['senderidexpiredate'] ?? '',
-			"senderDateOfBirth" => $beneficiary['senderdateofbirth'] ?? '',
+			"senderIdExpireDate" => $user->expiry_id_date ?? '',
+			"senderDateOfBirth" => $user->date_of_birth ?? '',
 			"senderOccupation" => $beneficiary['senderoccupation'] ?? '',
 			"senderOccupationRemarks" => $beneficiary['senderoccupationremarks'] ?? '',
 			"senderSourceOfFund" => $beneficiary['sendersourceoffund'] ?? '',
 			"senderSourceOfFundRemarks" => $beneficiary['sendersourceoffundremarks'] ?? '',
-			"senderEmail" => $beneficiary['senderemail'] ?? '',
+			"senderEmail" => $user->email ?? '',
 			"senderNativeFirstname" => $beneficiary['senderNativeFirstname'] ?? '',
 			"senderBeneficiaryRelationship" => $beneficiary['senderbeneficiaryrelationship'] ?? '',
 			"senderBeneficiaryRelationshipRemarks" => $beneficiary['senderbeneficiaryrelationshipremarks'] ?? '',

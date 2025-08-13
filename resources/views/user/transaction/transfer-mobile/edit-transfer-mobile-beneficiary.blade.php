@@ -60,24 +60,9 @@
 						</div> 
 						<div class="col-sm-6">
 							<label class="content-3 mb-0">Recipient Date Of Birth </label>
-							<input id="recipient_dateofbirth" name="recipient_dateofbirth" placeholder="Recipient Date Of Birth" type="text" class="form-control form-control-lg" value="{{ $edit['recipient_dateofbirth'] ?? '' }}" />
+							<input id="recipient_dateofbirth" name="recipient_dateofbirth" placeholder="Recipient Date Of Birth" type="date" class="form-control form-control-lg" value="{{ $edit['recipient_dateofbirth'] ?? '' }}" onclick="this.showPicker()" style="cursor: pointer;" />
 						</div>  
-					</div>
-					<div class="row"> 
-						<div class="mb-4 col-md-6">
-							<label class="content-3 mb-0">Sender Date Of Birth <span class="text-danger">*</span></label>
-							<input id="sender_placeofbirth" name="sender_placeofbirth" placeholder="Sender Date Of Birth." type="text" class="form-control form-control-lg content-3"  value="{{ $edit['sender_placeofbirth'] ?? '' }}" required/>
-						</div>	
-						<div class="mb-4 col-md-6">
-							<label class="content-3 mb-0">Purpose Of Transfer <span class="text-danger">*</span></label>
-							<input id="purposeOfTransfer" name="purposeOfTransfer" placeholder="Enter Purpose Of Transfer such as Health/Medical Expense or Education." type="text" class="form-control form-control-lg content-3" value="{{ $edit['purposeOfTransfer'] ?? '' }}" required/>
-						</div>
-						
-						<div class="mb-4 col-md-6">
-							<label class="content-3 mb-0">Source Of Funds <span class="text-danger">*</span></label>
-							<input id="sourceOfFunds" name="sourceOfFunds" placeholder="Enter Source Of Funds Common sources include Salary/Wages, Investment Income or Savings." type="text" class="form-control form-control-lg content-3" value="{{ $edit['sourceOfFunds'] ?? '' }}" required/>
-						</div> 
-					</div>
+					</div> 
 				</form>
 			</div>
 			<div class="modal-footer">
@@ -180,22 +165,12 @@
 				$beneficiaryForm.find('#mobile_code').val(''); 
 			}
 		});
-		
-		// Initialize Flatpickr for date inputs
-		flatpickr("#sender_placeofbirth, #recipient_dateofbirth", {
-			dateFormat: "Y-m-d"
-		});
 		 
 		// Attach the submit event handler 
 		$beneficiaryForm.submit(function(event) 
 		{
 			event.preventDefault();   
-			
-			if(!$('#sender_placeofbirth').val())
-			{
- 				toastrMsg('warning', 'The sender date of birth is required');
-				return;
-			}
+			 
 			$('#beneficiaryUpdate')
 			.prop('disabled', true) 
 			.addClass('loading-span') 
@@ -262,6 +237,12 @@
 						toastrMsg(res.status, res.message);
 					}
 				} 
+			});
+		});
+		
+		document.querySelectorAll('input[type="date"]').forEach(input => {
+			input.addEventListener('focus', function () {
+				this.showPicker?.();
 			});
 		}); 
 	</script>

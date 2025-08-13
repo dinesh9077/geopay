@@ -174,8 +174,8 @@ class TransferBankController extends Controller
 				$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 				$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
 				$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
-				$beneficiaryData['sender_name'] = $user->first_name ?? '';
-				$beneficiaryData['sender_surname'] = $user->last_name ?? '';
+				/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
+				$beneficiaryData['sender_surname'] = $user->last_name ?? ''; */
 			}
 			$data = []; 
 			$data['category_name'] = $beneficiaryData['category_name'];
@@ -330,7 +330,7 @@ class TransferBankController extends Controller
 
 		if ($fieldList) {
 			$fieldList = collect($fieldList)->filter(fn($item) => 
-				!in_array(strtolower($item['fieldName']), ['sendercountry', 'senderfirstname', 'senderlastname', 'sendernationality', 'sendermobile', 'receivercountry', 'receivernationality'])
+				!in_array(strtolower($item['fieldName']), ['sendercountry', 'senderfirstname', 'senderlastname', 'sendernationality', 'sendermobile', 'sendergender', 'senderaddress', 'sendercity', 'senderstate', 'senderzipcode', 'senderemail', 'senderidexpiredate', 'senderdateofbirth', 'receivercountry', 'receivernationality'])
 			); 
 		}
 
@@ -450,8 +450,8 @@ class TransferBankController extends Controller
 				$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 				$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
 				$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
-				$beneficiaryData['sender_name'] = $user->first_name ?? '';
-				$beneficiaryData['sender_surname'] = $user->last_name ?? '';
+				/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
+				$beneficiaryData['sender_surname'] = $user->last_name ?? ''; */
 			}
 		
 			$data = []; 

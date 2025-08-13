@@ -18,31 +18,7 @@
 			*
 			* @var array<int, string>
 		*/
-		protected $fillable = [
-			'first_name',
-			'last_name',
-			'email',
-			'password',
-			'country_id',
-			'mobile_number',
-			'formatted_number',
-			'referalcode',
-			'company_name',
-			'fcm_token',
-			'is_email_verify',
-			'is_company',
-			'is_mobile_verify',
-			'is_kyc_verify',
-			'status',
-			'profile_image',
-			'role',
-			'xps',
-			'terms',
-			'user_limit_id',
-			'is_upload_document',
-			'address',
-			'password_changed_at'
-		];
+		protected $fillable = ['id','user_role_id','first_name','last_name','email','password','country_id','mobile_number','formatted_number','referalcode','fcm_token','is_company','verification_token','is_email_verify','is_mobile_verify','is_kyc_verify','status','role','balance','remember_token','profile_image','deleted_at','created_at','updated_at','terms','xps','company_name','user_limit_id','is_upload_document','password_changed_at','address','id_type','id_number','expiry_id_date','city','state','zip_code','date_of_birth','gender','business_activity_occupation','source_of_fund']; 
 		
 		/**
 			* The attributes that should be hidden for serialization.

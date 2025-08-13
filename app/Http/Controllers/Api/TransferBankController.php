@@ -457,9 +457,9 @@
 				["fieldName" => "receiverfirstname", "fieldLabel" => "Recipient Name", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
 				["fieldName" => "receiverlastname", "fieldLabel" => "Recipient Surname", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
 				["fieldName" => "receiveraddress", "fieldLabel" => "Recipient Address", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "sender_placeofbirth", "fieldLabel" => "Sender Date Of Birth", "required" => true, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				/* ["fieldName" => "sender_placeofbirth", "fieldLabel" => "Sender Date Of Birth", "required" => true, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
 				["fieldName" => "purposeOfTransfer", "fieldLabel" => "Purpose Of Transfer", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "sourceOfFunds", "fieldLabel" => "Source Of Funds", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "sourceOfFunds", "fieldLabel" => "Source Of Funds", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []], */
 				["fieldName" => "idNumber", "fieldLabel" => "Document Id Number", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
 				["fieldName" => "idType", "fieldLabel" => "Document Id Type", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
 				["fieldName" => "idExpiry", "fieldLabel" => "Document Id Expiry", "required" => false, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []]
@@ -495,7 +495,7 @@
 
 			if ($fieldList) {
 				$fieldList = collect($fieldList)->filter(fn($item) => 
-					!in_array(strtolower($item['fieldName']), ['sendercountry', 'senderfirstname', 'senderlastname', 'sendernationality', 'sendermobile', 'receivercountry', 'receivernationality'])
+					!in_array(strtolower($item['fieldName']), ['sendercountry', 'senderfirstname', 'senderlastname', 'sendernationality', 'sendermobile', 'sendergender', 'senderaddress', 'sendercity', 'senderstate', 'senderzipcode', 'senderemail', 'senderidexpiredate', 'senderdateofbirth', 'receivercountry', 'receivernationality'])
 				); 
 			}
 			
@@ -640,8 +640,8 @@
 					$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 					$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
 					$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
-					$beneficiaryData['sender_name'] = $user->first_name ?? '';
-					$beneficiaryData['sender_surname'] = $user->last_name ?? '';
+					/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
+					$beneficiaryData['sender_surname'] = $user->last_name ?? ''; */
 				}
 				$data = []; 
 				$data['category_name'] = $beneficiaryData['category_name'];
@@ -705,8 +705,8 @@
 					$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 					$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
 					$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
-					$beneficiaryData['sender_name'] = $user->first_name ?? '';
-					$beneficiaryData['sender_surname'] = $user->last_name ?? '';
+					/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
+					$beneficiaryData['sender_surname'] = $user->last_name ?? ''; */
 				}
 			
 				$data = []; 

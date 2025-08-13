@@ -13,6 +13,17 @@
 		<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 		<link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css" /> 
+		<script src="https://kit.fontawesome.com/ae360af17e.js" ></script>
+		<script src="{{ asset('assets/js/bootstrap/js/bootstrap.bundle.min.js') }}"></script>   
+		<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script>
+		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
+		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
+		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
+		<script src="{{ asset('vendor/livewire/livewire.js?id=38dc8241') }}"
+        data-csrf="{{ csrf_token() }}"
+        data-update-uri="livewire/update"
+        data-navigate-once="true"></script>
+		<x-scripts :cryptoKey="$cryptoKey" />	
 	</head> 
 	<body>
 		<div class="container-fluid">
@@ -84,7 +95,7 @@
 							<div class="tab-content" id="pills-tabContent">
 								<div class="tab-pane fade show active" id="register-individual" role="tabpanel"
                                 aria-labelledby="register-individual-tab"> 
-									<form id="individualRegisterForm" action="{{ route('register.individual') }}" method="post">
+									<form id="individualRegisterForm" action="{{ route('register.temp-individual') }}" method="post">
 										<div class="row">
 											<div class="col-md-6 mb-3">
 												<label for="first_name" class="required content-3 text-primary">First Name <span class="text-danger">*</span></label>
@@ -166,7 +177,7 @@
 									</form>
 								</div>
 								<div class="tab-pane fade" id="register-company" role="tabpanel" aria-labelledby="register-company-tab"> 
-									<form class="mt-4" id="companyRegisterForm" action="{{ route('register.company') }}" method="post">
+									<form class="mt-4" id="companyRegisterForm" action="{{ route('register.temp-company') }}" method="post">
 										<div class="row">
 											<div class="col-md-6 mb-3">
 												<label for="first_name" class="required content-3 text-primary">First Name <span class="text-danger">*</span></label>
@@ -247,8 +258,7 @@
 								</div>
 								<div class="d-flex align-items-center justify-content-center my-3">
 									<hr class="flex-grow-1 hr-line text-secondary">
-									<label class="d-flex text-center justify-content-end content-3 text-muted mx-2">Already have an account?</label>
-									
+									<label class="d-flex text-center justify-content-end content-3 text-muted mx-2">Already have an account?</label> 
 									<hr class="flex-grow-1 hr-line text-secondary">
 								</div>
 								<a href="{{ route('login') }}" class="btn btn-lg btn-secondary w-100 mb-4">Login</a>
@@ -317,19 +327,7 @@
 				</div>
 			</div>
 		</div>  
-		
-		<script src="https://kit.fontawesome.com/ae360af17e.js" ></script>
-		<script src="{{ asset('assets/js/bootstrap/js/bootstrap.bundle.min.js') }}"></script>   
-		<script src="{{ asset('assets/js/jquery-3.6.0.min.js')}}" ></script>
-		<script src="{{ asset('assets/js/toastr.min.js')}}" ></script>
-		<script src="{{ asset('assets/js/select2.min.js')}}" ></script>
-		<script src="{{ asset('assets/js/crypto-js.min.js')}}" ></script>
-		<script src="{{ asset('vendor/livewire/livewire.js?id=38dc8241') }}"
-        data-csrf="{{ csrf_token() }}"
-        data-update-uri="livewire/update"
-        data-navigate-once="true"></script>
-		<x-scripts :cryptoKey="$cryptoKey" />	
-		
+		 
 		<script>  
 			var timer;
 			var countdown = 60; // Set the countdown duration in seconds
@@ -385,8 +383,7 @@
 				$individualForm.find('#country_id').val('99').trigger('change'); 
 				$companyForm.find('#country_id1').val('99').trigger('change');
 			});
-
-			 
+ 
 			// Attach the submit event handler
 			$individualForm.submit(function(event) 
 			{
@@ -430,8 +427,10 @@
 						$('.error_msg').remove(); 
 						if(res.status === "success")
 						{ 
-							toastrMsg(res.status, res.message); 
-							window.location.href = "{{ route('metamap.kyc') }}"; 
+							//toastrMsg(res.status, res.message); 
+							//window.location.href = "{{ route('metamap.kyc') }}"; 
+							var result = decryptData(res.response);  
+							$('#register-individual').html(result);
 						}
 						else if(res.status == "validation")
 						{  
@@ -527,8 +526,10 @@
 						
 						if(res.status === "success")
 						{ 
-							toastrMsg(res.status, res.message); 
-							window.location.href = "{{ route('corporate.kyc') }}"; 
+							/* toastrMsg(res.status, res.message); 
+							window.location.href = "{{ route('corporate.kyc') }}";  */
+							var result = decryptData(res.response);  
+							$('#register-company').html(result); 
 						}
 						else if(res.status == "validation")
 						{  
@@ -857,7 +858,8 @@
 					// Stop the timer
 					clearInterval(timer);
 				}
-			}
+			} 
 		</script> 
+		@stack('js-reg')
 	</body> 
 </html>

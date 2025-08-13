@@ -144,5 +144,48 @@ class SettingController extends Controller
 			return $this->errorResponse('An error occurred while updating the profile. Please try again later.');
 		}
 	} 
+	
+	public function basicInfoUpdate(Request $request)
+	{
+		// Validate the input 
+		$validator = Validator::make($request->all(), [
+			'id_type' => 'required|string|in:Passport,National ID Card,Driving License,Voter ID,Residence Permit',
+			'id_number' => 'required|string|max:50',
+			'expiry_id_date' => 'required|date',
+
+			'city' => 'required|string|max:100',
+			'state' => 'required|string|max:100',
+			'zip_code' => 'required|string|max:20',
+
+			'date_of_birth' => 'required|date',
+			'gender' => 'required|in:Male,Female,Other',
+			'address' => 'required|string',
+
+			'business_activity_occupation' => 'required|in:Agriculture forestry fisheries,Construction/manufacturing/marine,Government officials and Special Interest Organizations,Professional and related workers,Retired,Self-employed,Student,Unemployed',
+
+			'source_of_fund' => 'required|in:Business profit/dividend,Income from employment (normal and/or bonus),Investments,Savings,Inheritance,Loan,Gift,Real Estate,Lottery/betting/casino winnings',
+		]);
+ 
+		// Check if the main validator fails
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		}
+ 
+		try {
+			DB::beginTransaction();
+
+			$user = auth()->user();
+			$user->fill($request->except('_token'));
+			$user->save();
+
+			DB::commit();
+
+			return $this->successResponse('basic details has been updated successfully.');
+		} catch (\Throwable $e) {
+			DB::rollBack();
+			return $this->errorResponse('An error occurred while updating the profile. Please try again later.');
+		}
+
+	} 
 
 }

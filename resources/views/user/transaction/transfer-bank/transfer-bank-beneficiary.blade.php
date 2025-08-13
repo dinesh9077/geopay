@@ -195,7 +195,7 @@
 		var serviceName = $beneficiaryForm.find('#payoutCurrency :selected').data('service-name');
 		var isdcode = $beneficiaryForm.find('#payoutCurrency :selected').data('isdcode');
 		 
-		if (!locationId || !payoutCurrency || !payoutCountry || !serviceName) { 
+		if (!locationId || !payoutCurrency || !payoutCountry || !serviceName || !isdcode) { 
 			toastrMsg('error', 'Missing required data for form submission.'); 
 			return;
 		}
@@ -225,7 +225,8 @@
 				if(res.status == "success")
 				{
 					var result = decryptData(res.response);  
-					$('#dynamicFields').html(result.view);
+					//console.log(result.view);
+					$beneficiaryForm.find('#dynamicFields').html(result.view);
 				}  
 			},
 			error: function(err) {

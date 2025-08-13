@@ -35,7 +35,9 @@
 	
 	Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 	Route::post('individual/register', [RegisterController::class, 'individualRegister'])->name('register.individual')->middleware('webdecrypt.request');
+	Route::post('temp-individual/register', [RegisterController::class, 'individualTempRegister'])->name('register.temp-individual')->middleware('webdecrypt.request');
 	Route::post('company/register', [RegisterController::class, 'companyRegister'])->name('register.company')->middleware('webdecrypt.request');
+	Route::post('temp-company/register', [RegisterController::class, 'companyTempRegister'])->name('register.temp-company')->middleware('webdecrypt.request');
 	
 	Route::post('email/send', [RegisterController::class, 'sendEmailOtp'])->name('email.send')->middleware('webdecrypt.request');
 	Route::post('/email/resend', [RegisterController::class, 'resendEmailOtp'])->name('email.resend')->middleware('webdecrypt.request');
@@ -131,5 +133,5 @@
 		Route::get('/setting', [SettingController::class, 'index'])->name('setting');  
 		Route::post('/password-change', [SettingController::class, 'changePassword'])->name('password-change');  
 		Route::post('/profile-update', [SettingController::class, 'profileUpdate'])->name('profile-update');  
-	});
-	
+		Route::post('/basic-info-update', [SettingController::class, 'basicInfoUpdate'])->name('basic-info-update');  
+	}); 

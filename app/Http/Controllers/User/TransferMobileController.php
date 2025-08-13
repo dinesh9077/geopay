@@ -77,8 +77,7 @@ class TransferMobileController extends Controller
 			$beneficiaryData = $request->except('_token', 'recipient_mobile', 'mobile_code');
 			
 			$mobile_code = $request->mobile_code ?? '';
-			$mobile_num = $request->recipient_mobile ?? '';
-			//$mobile_number = ltrim($mobile_code . $mobile_num, '+');
+			$mobile_num = $request->recipient_mobile ?? ''; 
 				
 			$beneficiaryData['recipient_mobile'] = $mobile_num ?? '';
 			$beneficiaryData['mobile_code'] = $mobile_code ?? '';
@@ -86,8 +85,16 @@ class TransferMobileController extends Controller
 			$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 			$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
 			$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
-			$beneficiaryData['sender_name'] = $user->first_name ?? '';
+			/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
 			$beneficiaryData['sender_surname'] = $user->last_name ?? '';
+			$beneficiaryData['sender_placeofbirth'] = $user->date_of_birth ?? '';
+			$beneficiaryData['sender_address'] = $user->address ?? '';
+			$beneficiaryData['sender_city'] = $user->city ?? '';
+			$beneficiaryData['sender_state'] = $user->state ?? '';
+			$beneficiaryData['sender_postalcode'] = $user->zip_code ?? '';
+			$beneficiaryData['sender_email'] = $user->email ?? '';
+			$beneficiaryData['purposeOfTransfer'] = $user->business_activity_occupation ?? '';
+			$beneficiaryData['sourceOfFunds'] = $user->source_of_fund ?? ''; */
 			
 			$recipientCountry = Country::find($request->recipient_country ?? null);
 			$beneficiaryData['payoutCountry'] = $recipientCountry->iso3 ?? '';
@@ -206,8 +213,7 @@ class TransferMobileController extends Controller
 			
 			$recipient_country_code = $request->recipient_country_code; 
     		$recipient_mobile = $request->recipient_mobile;
-    		
-    		// Ensure beneficiary->data is an array
+    		 
             $beneficiaryDataArray = is_array($beneficiary->data) ? $beneficiary->data : [];
     
             // if ($recipient_country_code !== ($beneficiaryDataArray['recipient_country_code'] ?? '') ||
@@ -227,18 +233,26 @@ class TransferMobileController extends Controller
 			$beneficiaryData = $request->except('_token', 'recipient_mobile', 'mobile_code');
 			
 			$mobile_code = $request->mobile_code ?? '';
-			$mobile_num = $request->recipient_mobile ?? '';
-			//$mobile_number = ltrim($mobile_code . $mobile_num, '+');
+			$mobile_num = $request->recipient_mobile ?? ''; 
 				
 			$beneficiaryData['recipient_mobile'] = $mobile_num ?? '';
 			$beneficiaryData['mobile_code'] = $mobile_code ?? '';
-			
+			 
 			$beneficiaryData['sender_country'] = $user->country->id ?? '';
 			$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 			$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
 			$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
-			$beneficiaryData['sender_name'] = $user->first_name ?? '';
+			 
+			/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
 			$beneficiaryData['sender_surname'] = $user->last_name ?? '';
+			$beneficiaryData['sender_placeofbirth'] = $user->date_of_birth ?? '';
+			$beneficiaryData['sender_address'] = $user->address ?? '';
+			$beneficiaryData['sender_city'] = $user->city ?? '';
+			$beneficiaryData['sender_state'] = $user->state ?? '';
+			$beneficiaryData['sender_postalcode'] = $user->zip_code ?? '';
+			$beneficiaryData['sender_email'] = $user->email ?? '';
+			$beneficiaryData['purposeOfTransfer'] = $user->business_activity_occupation ?? '';
+			$beneficiaryData['sourceOfFunds'] = $user->source_of_fund ?? '' */;
 			
 			$recipientCountry = Country::find($request->recipient_country ?? null);
 			$beneficiaryData['payoutCountry'] = $recipientCountry->iso3 ?? '';

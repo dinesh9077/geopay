@@ -15,6 +15,12 @@
 					</button>
 				</li>
 				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="basic-info-tab" data-bs-toggle="tab" data-bs-target="#basic-info" type="button" role="tab" aria-controls="basic-info" aria-selected="true">
+						<span class="d-none d-lg-block py-1 px-3 px-xxl-4">Basic Info</span>
+						<img class="in-svg d-lg-none mx-2" src="{{ asset('assets/image/icons/user-edit.svg') }}" alt="">
+					</button>
+				</li>
+				<li class="nav-item" role="presentation">
 					<button class="nav-link" id="change-password-tab" data-bs-toggle="tab" data-bs-target="#change-password" type="button" role="tab" aria-controls="change-password" aria-selected="false">
 						<span class="d-none d-lg-block py-1 px-3 px-xxl-4">Change Password</span>
 						<img class="in-svg d-lg-none mx-2" src="{{ asset('assets/image/icons/change-pass.svg') }}" alt="">	
@@ -52,6 +58,12 @@
 				<div class="tab-pane fade show active" id="edit-profile" role="tabpanel" aria-labelledby="edit-profile-tab">
 					<h2 class="text-center text-secondary d-lg-none heading-5">User Profile</h2>
 					@include('user.setting.edit-profile')
+				</div>
+				
+				<!-- Basic Info -->
+				<div class="tab-pane fade" id="basic-info" role="tabpanel" aria-labelledby="basic-info-tab">
+					<h2 class="text-center text-secondary d-lg-none heading-5">Basic Information</h2>
+					@include('user.setting.basic-info')
 				</div>
 				
 				<!-- Change Password -->
