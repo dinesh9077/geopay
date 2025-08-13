@@ -10,6 +10,9 @@ use App\Models\Faq;
 use App\Http\Traits\WebResponseTrait; 
 use Validator, DB, Auth, Hash;
 use Helper, ImageManager;
+use App\Enums\BusinessOccupation;
+use App\Enums\SourceOfFunds;
+use App\Enums\IdType;
 
 class SettingController extends Controller
 { 
@@ -147,11 +150,12 @@ class SettingController extends Controller
 	
 	public function basicInfoUpdate(Request $request)
 	{
-		// Validate the input 
+		// Validate the input  
 		$validator = Validator::make($request->all(), [
-			'id_type' => 'required|string|in:Passport,National ID Card,Driving License,Voter ID,Residence Permit',
+			'id_type' => 'required|in:' . implode(',', array_column(IdType::cases(), 'value')),
 			'id_number' => 'required|string|max:50',
 			'expiry_id_date' => 'required|date',
+			'issue_id_date' => 'required|date',
 
 			'city' => 'required|string|max:100',
 			'state' => 'required|string|max:100',
@@ -161,9 +165,9 @@ class SettingController extends Controller
 			'gender' => 'required|in:Male,Female,Other',
 			'address' => 'required|string',
 
-			'business_activity_occupation' => 'required|in:Agriculture forestry fisheries,Construction/manufacturing/marine,Government officials and Special Interest Organizations,Professional and related workers,Retired,Self-employed,Student,Unemployed',
+			'business_activity_occupation' => 'required|in:' . implode(',', array_column(BusinessOccupation::cases(), 'value')),
 
-			'source_of_fund' => 'required|in:Business profit/dividend,Income from employment (normal and/or bonus),Investments,Savings,Inheritance,Loan,Gift,Real Estate,Lottery/betting/casino winnings',
+			'source_of_fund' => 'required|in:' . implode(',', array_column(SourceOfFunds::cases(), 'value')),
 		]);
  
 		// Check if the main validator fails

@@ -8,11 +8,9 @@
 			<label for="first_name" class="required content-3 text-primary">Select Id Type <span class="text-danger">*</span></label>
 			<select id="id_type" name="id_type" class="form-control form-control-lg bg-light border-light select2" required>
 				<option value="">Select ID Type</option>
-				<option value="Passport">Passport</option>
-				<option value="National ID">National ID</option>
-				<option value="Driving License">Driving License</option>
-				<option value="Voter ID">Voter ID</option>
-				<option value="Residence Permit">Residence Permit</option>
+				@foreach(App\Enums\IdType::options() as $option)
+					<option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
+				@endforeach
 			</select>
 		</div>
 		<div class="col-md-6 mb-3">
@@ -22,38 +20,46 @@
 	</div>
 	
 	<div class="row"> 
+		<div class="col-md-6 mb-3">
+			<label for="email" class="required content-3 text-primary">ID Issue Date <span class="text-danger">*</span></label>
+			<input id="issue_id_date" name="issue_id_date" type="date" class="form-control form-control-lg bg-light border-light"  onclick="this.showPicker()" style="cursor: pointer;" required /> 
+		</div>
+		<div class="col-md-6 mb-3">
+			<label for="email" class="required content-3 text-primary">ID Expiry Date <span class="text-danger">*</span></label>
+			<input id="expiry_id_date" name="expiry_id_date" type="date" class="form-control form-control-lg bg-light border-light"  onclick="this.showPicker()" style="cursor: pointer;" required /> 
+		</div>
+	</div>	
+	
+	<div class="row"> 
 		<div class="col-md-12 mb-3">
 			<label for="password" class="required content-3 text-primary">Full Residential Address <span class="text-danger">*</span></label>
 			<input id="address" name="address" type="text" autocomplete="off" class="form-control form-control-lg bg-light border-light" required /> 
 		</div> 
 	</div>
 	
-	<div class="row">
-		<div class="col-md-6 mb-3">
-			<label for="email" class="required content-3 text-primary">ID Expiry Date <span class="text-danger">*</span></label>
-			<input id="expiry_id_date" name="expiry_id_date" type="date" class="form-control form-control-lg bg-light border-light"  onclick="this.showPicker()" style="cursor: pointer;" required /> 
-		</div>
-		
+	<div class="row"> 
 		<div class="col-md-6 mb-3">
 			<label for="password" class="required content-3 text-primary">City <span class="text-danger">*</span></label>
 			<input id="city" name="city" type="text" autocomplete="off" class="form-control form-control-lg bg-light border-light" required /> 
 		</div> 
-	</div> 
-	<div class="row"> 
 		<div class="col-md-6 mb-3">
 			<label for="password" class="required content-3 text-primary">State <span class="text-danger">*</span></label>
 			<input id="state" name="state" type="text" autocomplete="off" class="form-control form-control-lg bg-light border-light" required /> 
 		</div> 
+	</div> 
+	<div class="row"> 
+		
 		<div class="col-md-6 mb-3">
 			<label for="password" class="required content-3 text-primary">Zip Code/Postal Code <span class="text-danger">*</span></label>
 			<input id="zip_code" name="zip_code" type="text" autocomplete="off" class="form-control form-control-lg bg-light border-light" required /> 
 		</div> 
-	</div>
-	<div class="row"> 
 		<div class="col-md-6 mb-3">
 			<label for="password" class="required content-3 text-primary">Date Of Birth <span class="text-danger">*</span></label>
 			<input id="date_of_birth" name="date_of_birth" type="date" max="{{ date('Y-m-d') }}" autocomplete="off" class="form-control form-control-lg bg-light border-light" onclick="this.showPicker()" style="cursor: pointer;"  required /> 
 		</div> 
+	</div>
+	<div class="row"> 
+		
 		<div class="col-md-6 mb-3">
 			<label for="password" class="required content-3 text-primary">Zip Code/Postal Code <span class="text-danger">*</span></label>
 			<select name="gender" class="form-control form-control-lg bg-light border-light select2" id="gender" required>
@@ -63,35 +69,24 @@
 				<option value="Other">Other</option>
 			</select>
 		</div> 
-	</div>
-	<div class="row"> 
 		<div class="col-md-6 mb-3">
 			<label for="password" class="required content-3 text-primary">Business Activity or Occupation <span class="text-danger">*</span></label>
 			<select name="business_activity_occupation" class="form-control form-control-lg bg-light border-light select2" id="business_activity_occupation" required>
 				<option value="">Select Business Activity or Occupation</option>
-				<option value="Agriculture forestry fisheries">Agriculture forestry fisheries</option>
-				<option value="Construction/manufacturing/marine">Construction/manufacturing/marine</option>
-				<option value="Government officials and Special Interest Organizations">Government officials and Special Interest Organizations</option>
-				<option value="Professional and related workers">Professional and related workers</option>
-				<option value="Retired">Retired</option>
-				<option value="Self-employed">Self-employed</option>
-				<option value="Student">Student</option>
-				<option value="Unemployed">Unemployed</option>
+				@foreach(App\Enums\BusinessOccupation::options() as $option)
+					<option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
+				@endforeach
 			</select>
 		</div> 
+	</div>
+	<div class="row">  
 		<div class="col-md-6 mb-3">
 			<label for="password" class="required content-3 text-primary">Source of Fund <span class="text-danger">*</span></label>
 			<select name="source_of_fund" class="form-control form-control-lg bg-light border-light select2" id="source_of_fund" required>
 				<option value="">Select Source of Fund</option>
-				<option value="Business profit/dividend">Business profit/dividend</option>
-				<option value="Income from employment (normal and/or bonus)">Income from employment (normal and/or bonus)</option>
-				<option value="Investments">Investments</option>
-				<option value="Savings">Savings</option>
-				<option value="Inheritance">Inheritance</option>
-				<option value="Loan">Loan</option>
-				<option value="Gift">Gift</option>
-				<option value="Real Estate">Real Estate</option>
-				<option value="Lottery/betting/casino winnings">Lottery/betting/casino winnings</option>
+				@foreach(App\Enums\SourceOfFunds::options() as $option)
+					<option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
+				@endforeach
 			</select>
 		</div> 
 	</div> 

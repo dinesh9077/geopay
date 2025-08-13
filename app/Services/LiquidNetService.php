@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Crypt; // Remove Crypt facade if not used
 use Auth, Log;
+use App\Enums\BusinessOccupation;
+use App\Enums\SourceOfFunds;
+use App\Enums\IdType;
+
 class LiquidNetService
 {
 	protected $appId;
@@ -157,6 +161,10 @@ class LiquidNetService
 		$aggregatorCurrencyAmount = (int) round($request->aggregatorCurrencyAmount);
 		$mobileNumber = ltrim(($beneficiary['mobile_code'] ?? ''), '+').($beneficiary['receivercontactnumber'] ?? '');
 		
+		$purposeOfTransfer = BusinessOccupation::from($user->business_activity_occupation)->label();
+		$sourceOfFunds = SourceOfFunds::from($user->source_of_fund)->label();
+		$idType = IdType::from($user->id_type)->label();
+		
 		$requestBody = [
 			"agentSessionId" => (string) $requestTimestamp,
 			"agentTxnId" => $orderId,
@@ -173,17 +181,17 @@ class LiquidNetService
 			"senderCountry" => $senderCountry,
 			"senderMobile" => $senderMobile,
 			"SenderNationality" => $senderCountry,
-			"senderIdType" => $beneficiary['senderidtype'] ?? '',
-			"senderIdTypeRemarks" => $beneficiary['senderidtyperemarks'] ?? '',
-			"senderIdNumber" => $beneficiary['senderidnumber'] ?? '',
-			"senderIdIssueCountry" => $beneficiary['senderidissuecountry'] ?? '',
-			"senderIdIssueDate" => $beneficiary['senderidissuedate'] ?? '',
+			"senderIdType" => $user->id_type ?? '',
+			"senderIdTypeRemarks" => $idType ?? '',
+			"senderIdNumber" => $user->id_number ?? '',
+			"senderIdIssueCountry" => $senderCountry ?? '',
+			"senderIdIssueDate" => $user->issue_id_date ?? '',
 			"senderIdExpireDate" => $user->expiry_id_date ?? '',
 			"senderDateOfBirth" => $user->date_of_birth ?? '',
-			"senderOccupation" => $beneficiary['senderoccupation'] ?? '',
-			"senderOccupationRemarks" => $beneficiary['senderoccupationremarks'] ?? '',
-			"senderSourceOfFund" => $beneficiary['sendersourceoffund'] ?? '',
-			"senderSourceOfFundRemarks" => $beneficiary['sendersourceoffundremarks'] ?? '',
+			"senderOccupation" => $user->business_activity_occupation ?? '',
+			"senderOccupationRemarks" => $purposeOfTransfer ?? '',
+			"senderSourceOfFund" => $user->source_of_fund ?? '',
+			"senderSourceOfFundRemarks" => $sourceOfFunds ?? '',
 			"senderEmail" => $user->email ?? '',
 			"senderNativeFirstname" => $beneficiary['senderNativeFirstname'] ?? '',
 			"senderBeneficiaryRelationship" => $beneficiary['senderbeneficiaryrelationship'] ?? '',
@@ -211,8 +219,8 @@ class LiquidNetService
 			"receiverNativeMiddleName" => $beneficiary['receivernativemiddleName'] ?? '',
 			"receiverNativeLastname" => $beneficiary['receivernativelastname'] ?? '',
 			"ReceiverNativeAddress" => $beneficiary['receivernativeaddress'] ?? '',
-			"senderSecondaryIdType" => $beneficiary['sendersecondaryidType'] ?? '',
-			"senderSecondaryIdNumber" => $beneficiary['sendersecondaryidNumber'] ?? '',
+			"senderSecondaryIdType" => $user->id_type ?? '',
+			"senderSecondaryIdNumber" => $user->id_number ?? '',
 			"senderNativeLastname" => $beneficiary['sendernativelastname'] ?? '',
 			"calcBy" => "P",
 			"transferAmount" => (string) $aggregatorCurrencyAmount,

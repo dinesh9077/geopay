@@ -17,6 +17,10 @@ use App\Services\{
 	SmsService, EmailService
 };
 use Str, Helper;
+use App\Enums\BusinessOccupation;
+use App\Enums\SourceOfFunds;
+use App\Enums\IdType;
+
 class RegisterController extends Controller
 {
 	 
@@ -163,9 +167,10 @@ class RegisterController extends Controller
 	public function individualRegister(Request $request)
 	{    
 		$validator = Validator::make($request->all(), [
-			'id_type' => 'required|string|in:Passport,National ID Card,Driving License,Voter ID,Residence Permit',
+			'id_type' => 'required|in:' . implode(',', array_column(IdType::cases(), 'value')),
 			'id_number' => 'required|string|max:50',
 			'expiry_id_date' => 'required|date',
+			'issue_id_date' => 'required|date',
 
 			'city' => 'required|string|max:100',
 			'state' => 'required|string|max:100',
@@ -175,9 +180,9 @@ class RegisterController extends Controller
 			'gender' => 'required|in:Male,Female,Other',
 			'address' => 'required|string',
 
-			'business_activity_occupation' => 'required|in:Agriculture forestry fisheries,Construction/manufacturing/marine,Government officials and Special Interest Organizations,Professional and related workers,Retired,Self-employed,Student,Unemployed',
+			'business_activity_occupation' => 'required|in:' . implode(',', array_column(BusinessOccupation::cases(), 'value')),
 
-			'source_of_fund' => 'required|in:Business profit/dividend,Income from employment (normal and/or bonus),Investments,Savings,Inheritance,Loan,Gift,Real Estate,Lottery/betting/casino winnings',
+			'source_of_fund' => 'required|in:' . implode(',', array_column(SourceOfFunds::cases(), 'value')),
 		]);
  
 		// Check if the main validator fails
@@ -299,10 +304,10 @@ class RegisterController extends Controller
 	public function companyRegister(Request $request)
 	{  
 		$validator = Validator::make($request->all(), [
-			'id_type' => 'required|string|in:Passport,National ID Card,Driving License,Voter ID,Residence Permit',
+			'id_type' => 'required|in:' . implode(',', array_column(IdType::cases(), 'value')),
 			'id_number' => 'required|string|max:50',
 			'expiry_id_date' => 'required|date',
-
+			'issue_id_date' => 'required|date',
 			'city' => 'required|string|max:100',
 			'state' => 'required|string|max:100',
 			'zip_code' => 'required|string|max:20',
@@ -311,11 +316,10 @@ class RegisterController extends Controller
 			'gender' => 'required|in:Male,Female,Other',
 			'address' => 'required|string',
 
-			'business_activity_occupation' => 'required|in:Agriculture forestry fisheries,Construction/manufacturing/marine,Government officials and Special Interest Organizations,Professional and related workers,Retired,Self-employed,Student,Unemployed',
+			'business_activity_occupation' => 'required|in:' . implode(',', array_column(BusinessOccupation::cases(), 'value')),
 
-			'source_of_fund' => 'required|in:Business profit/dividend,Income from employment (normal and/or bonus),Investments,Savings,Inheritance,Loan,Gift,Real Estate,Lottery/betting/casino winnings',
+			'source_of_fund' => 'required|in:' . implode(',', array_column(SourceOfFunds::cases(), 'value')),
 		]);
- 
 		
 		$validator->after(function ($validator) use ($request) {
 			if ($request->input('email') && $request->input('is_email_verify') == 0) {

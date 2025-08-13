@@ -10,6 +10,10 @@ use Auth;
 use App\Models\Country;
 use App\Models\OnafriqCountry;
 use App\Models\OnafricBank;
+use App\Enums\BusinessOccupation;
+use App\Enums\SourceOfFunds;
+use App\Enums\IdType;
+
 class OnafricService
 {
     protected $onafricCorporate;
@@ -492,7 +496,9 @@ class OnafricService
 		$payoutCurrency = $beneficiary['payoutCurrency'] ?? '';
 		$mobileNumber = ltrim(($beneficiary['mobile_code'] ?? ''), '+').($beneficiary['recipient_mobile'] ?? '');
 		
-		$user = Auth::user();
+		$user = Auth::user(); 
+		$purposeOfTransfer = BusinessOccupation::from($user->business_activity_occupation)->label();
+		$sourceOfFunds = SourceOfFunds::from($user->source_of_fund)->label();
 		
 		$requestBody = [
 			"corporateCode" => $this->onafricCorporate,
@@ -543,8 +549,8 @@ class OnafricService
 					],
 					"thirdPartyTransId" => $thirdPartyTransId,
 					"reference" => null,
-					"purposeOfTransfer" => $user->business_activity_occupation ?? '',
-					"sourceOfFunds" => $user->source_of_fund ?? '',
+					"purposeOfTransfer" => $purposeOfTransfer ?? '',
+					"sourceOfFunds" => $sourceOfFunds ?? '',
 				]
 			]
 		];
@@ -721,7 +727,9 @@ class OnafricService
 		$payoutCurrency = $beneficiary['payoutCurrency'] ?? '';
 		
 		$mobileNumber = ltrim(($beneficiary['mobile_code'] ?? ''), '+').($beneficiary['receivercontactnumber'] ?? '');
-		$user = Auth::user();
+		$user = Auth::user(); 
+		$purposeOfTransfer = BusinessOccupation::from($user->business_activity_occupation)->label();
+		$sourceOfFunds = SourceOfFunds::from($user->source_of_fund)->label();
 		
 		$requestBody = [
 			"corporateCode" => $this->onafricCorporate,
@@ -775,8 +783,8 @@ class OnafricService
 					],
 					"thirdPartyTransId" => $thirdPartyTransId,
 					"reference" => null,
-					"purposeOfTransfer" => $user->business_activity_occupation ?? '',
-					"sourceOfFunds" => $user->source_of_fund ?? '',
+					"purposeOfTransfer" => $purposeOfTransfer ?? '',
+					"sourceOfFunds" => $sourceOfFunds ?? '',
 				]
 			]
 		];
