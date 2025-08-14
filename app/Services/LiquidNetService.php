@@ -177,7 +177,7 @@ class LiquidNetService
 			"senderAddress" => $user->address ?? '',
 			"senderCity" => $user->city ?? '',
 			"senderState" => $user->state ?? '',
-			"senderZipCode" => $user->zipcode ?? '',
+			"senderZipCode" => $user->zip_code ?? '',
 			"senderCountry" => $senderCountry,
 			"senderMobile" => $senderMobile,
 			"SenderNationality" => $senderCountry,
@@ -244,6 +244,7 @@ class LiquidNetService
 			"receiverGender" => $beneficiary['receivergender'] ?? '',
 			"receiverAccountType" => ""
 		];
+		  
 		$signatureString = $this->hmacAuthGenerate($method, $apiUrl, $requestTimestamp, $requestBody);
 		$response = Http::withHeaders([
 					'Authorization' => "hmacauth {$signatureString}",

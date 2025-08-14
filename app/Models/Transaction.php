@@ -49,6 +49,7 @@ class Transaction extends Model
         'is_refunded',
         'refund_reason',
         'additional_message',
+        'is_api_service',
     ]; 
 	
 	protected $casts = [

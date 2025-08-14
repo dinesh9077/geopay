@@ -105,7 +105,7 @@
 			}
 		}
 		
-		public function storeTransaction(Request $request)
+		public function createTransaction(Request $request)
 		{	
 			$user = Auth::user();
 
@@ -399,6 +399,11 @@
 			if (!$fieldList) {
 				return [];
 			}
+			
+		 
+			$fieldList = collect($fieldList)->filter(fn($item) => 
+				!in_array(strtolower($item['fieldName']), ['sendercountry', 'senderfirstname', 'senderlastname', 'sendernationality', 'sendermobile', 'sendergender', 'senderaddress', 'sendercity', 'senderstate', 'senderzipcode', 'senderemail', 'senderidexpiredate', 'senderdateofbirth', 'senderidissuecountry', 'senderidtype', 'senderidtyperemarks', 'senderidnumber', 'senderoccupation', 'senderoccupationremarks', 'sendersourceoffund', 'sendersourceoffundremarks', 'sendersecondaryidtype', 'sendersecondaryidnumber', 'senderidissuedate'])
+			);  
 			
 			$catalogue = LightnetCatalogue::where('category_name', 'transfer to bank')
 			->where('service_name', 'lightnet')

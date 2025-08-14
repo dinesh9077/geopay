@@ -54,9 +54,11 @@
                         <th>Channel</th>
                         <th>Country Name</th>
                         <th>Currency</th>
-                        <th>Exchange Rate Against 1 USD</th>
                         <th>Exchange Rate Aggregator</th> 
+                        <th>Exchange Rate Against 1 USD</th>
                         <th>Margin Percentage(Flat / %)</th> 
+                        <th>Api Rate Against 1 USD</th> 
+                        <th>Api Percentage(Flat / %)</th> 
                         <th>Date</th> 
                         <th>Action</th> 
                     </tr>
@@ -85,6 +87,18 @@
 						<div class="mb-3">
 							<label for="recipient-name" class="form-label">Markdown Charge <span class="text-danger">*</span></label>
 							<input type="text" class="form-control" id="markdown_charge" name="markdown_charge" autocomplete="off" placeholder="Markdown Charge Flat/%" value="0" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
+						</div>
+						<div class="mb-3">
+							<label for="recipient-name" class="form-label">Api Markdown Type <span class="text-danger">*</span></label>
+							<select class="form-control" id="api_markdown_type" name="api_markdown_type"> 
+								<option value="">Select Api Markdown Type</option>
+								<option value="flat" > Flat/Fixed </option>
+								<option value="percentage"> Percentage </option>
+							</select>
+						</div>  
+						<div class="mb-3">
+							<label for="recipient-name" class="form-label">Api Markdown Charge <span class="text-danger">*</span></label>
+							<input type="text" class="form-control" id="api_markdown_charge" name="api_markdown_charge" autocomplete="off" placeholder="Api Markdown Charge Flat/%" value="0" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
 						</div> 
 					</div>
 					<div class="modal-footer">
@@ -161,9 +175,11 @@
 				{ "data": "channel" },
 				{ "data": "country_name" },
 				{ "data": "currency" },
-				{ "data": "markdown_rate" },
 				{ "data": "aggregator_rate" },
+				{ "data": "markdown_rate" },
 				{ "data": "markdown_charge" },
+				{ "data": "api_markdown_rate" }, 
+				{ "data": "api_markdown_charge" },
 				{ "data": "updated_at" },
 				{ "data": "action" }
 			], 

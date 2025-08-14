@@ -17,10 +17,21 @@
 							<option value="flat" {{ $liverate->markdown_type == "flat" ? 'selected' : '' }}> Flat/Fixed </option>
 							<option value="percentage" {{ $liverate->markdown_type == "percentage" ? 'selected' : '' }}> Percentage </option>
 						</select>
-					</div>  
+					</div>   
 					<div class="mb-3">
 						<label for="recipient-name" class="form-label">Markdown Charge <span class="text-danger">*</span></label>
 						<input type="text" class="form-control" id="markdown_charge" name="markdown_charge" autocomplete="off" placeholder="Markdown Charge Flat/%" value="{{ $liverate->markdown_charge }}" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
+					</div> 
+					<div class="mb-3">
+						<label for="recipient-name" class="form-label">Api Markdown Type <span class="text-danger">*</span></label>
+						<select class="form-control" id="api_markdown_type" name="api_markdown_type"> 
+							<option value="flat" {{ $liverate->api_markdown_type == "flat" ? 'selected' : '' }}> Flat/Fixed </option>
+							<option value="percentage" {{ $liverate->api_markdown_type == "percentage" ? 'selected' : '' }}> Percentage </option>
+						</select>
+					</div>   
+					<div class="mb-3">
+						<label for="recipient-name" class="form-label">Api Markdown Charge <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" id="api_markdown_charge" name="api_markdown_charge" autocomplete="off" placeholder="Api Markdown Charge Flat/%" value="{{ $liverate->api_markdown_charge }}" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
 					</div> 
 				</div>
 				<div class="modal-footer">

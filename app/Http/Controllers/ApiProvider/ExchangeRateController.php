@@ -31,22 +31,23 @@
 				return $this->validateResponse($validator->errors()->toArray());
 			}
 			
-			$serviceName = $request->service == 1 ? ['lightnet'] : ['onafric mobile collection', 'onafric'];
-			$liveExchangeRate = LiveExchangeRate::query()
+			$serviceName = $request->service == 1 ? ['lightnet'] : ['onafric'];
+		
+			$liveExchangeRate = LiveExchangeRate::select('id', 'currency', 'api_markdown_rate as rate')
 			->whereIn('channel', $serviceName)
 			->where('currency', $request->payoutCurrency)
 			->first(); 
 			
 			if(!$liveExchangeRate)
 			{ 
-				$liveExchangeRate = ExchangeRate::select('exchange_rate as markdown_rate', 'aggregator_rate')
+				$liveExchangeRate = ExchangeRate::select('id', 'currency', 'api_markdown_rate as rate')
 				->where('type', 2)
 				->whereIn('service_name', $serviceName)
 				->where('currency', $request->payoutCurrency)
 				->first();
 				
 				if (!$liveExchangeRate) {
-					return $this->errorResponse('A technical issue has occurred. Please try again later.'); 
+					return $this->errorResponse('A technical issue has occurred. Please try again later.', 'ERR_RATE', 401); 
 				}
 			} 
 			

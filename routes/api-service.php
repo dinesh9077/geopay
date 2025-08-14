@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiProvider\{
-   TokenController, TransferBankController, ExchangeRateController
+   TokenController, TransferBankController, ExchangeRateController, TransferMobileController
 };
  
 Route::post('/api-service/auth/token', [TokenController::class, 'issue']);
@@ -20,6 +20,14 @@ Route::middleware(['client.bearer'])->prefix('api-service')->group(function ()
 		Route::get('country-list', [TransferBankController::class, 'countryList']);   
 		Route::post('bank-list', [TransferBankController::class, 'bankList']);  
 		Route::post('get-fields', [TransferBankController::class, 'getFields']);   
-		Route::post('store-transaction', [TransferBankController::class, 'storeTransaction']);  
+		Route::post('create-trasaction', [TransferBankController::class, 'createTransaction']);  
 	}); 
+	
+	//Transfer Money
+	Route::prefix('transfer-money')->group(function () 
+	{  
+		Route::get('country-list', [TransferMobileController::class, 'countryList']);   
+		Route::get('get-fields', [TransferMobileController::class, 'getFields']);  
+		Route::post('create-transaction', [TransferMobileController::class, 'createTransaction']);     
+	});  
 });

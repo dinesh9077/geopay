@@ -10,9 +10,12 @@ use App\Services\OpaqueToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Http\Traits\ApiServiceResponseTrait;
 
 class TokenController extends Controller
 {
+	use ApiServiceResponseTrait;  
+	
     public function issue(Request $request)
     {
         $data = $request->validate([
@@ -35,7 +38,7 @@ class TokenController extends Controller
 		->first();
 		
         if (!$apiCredential) {
-            return response()->json(['status' => false, 'error_code' => "ERR_INVALID_CREDENTIALS", 'message' => 'Invalid credentials'], 401);
+			return $this->errorResponse('Invalid credentials', 'ERR_INVALID_CREDENTIALS', 401);  
         }
 		 
 		AccessToken::where('user_id', $apiCredential->user_id)
@@ -51,12 +54,12 @@ class TokenController extends Controller
 		$expiredIn = isset($data['ttl']) 
 		? (is_bool($data['ttl']) ? 'never expired' : $data['ttl'] * 60)
 		: 'never expired';
-
-        return response()->json(['status' => true, 'message' => 'Token generate successfully.', 'data' => [
+ 
+		return $this->successResponse('Token generate successfully.', [
             'token_type'   => 'Bearer',
             'access_token' => $token,
             'expires_in'   => $expiredIn,
-        ]], 200);
+        ], 200);  
     }
 
     public function revoke(Request $request)
@@ -65,6 +68,7 @@ class TokenController extends Controller
         if ($token) {
             OpaqueToken::revoke($token);
         }
+		return $this->successResponse('Token revoked successfully.', null, 200);  
 		return response()->json(['status' => true, 'message' => 'Token revoked successfully.', 'revoked' => true], 200); 
     }
 }

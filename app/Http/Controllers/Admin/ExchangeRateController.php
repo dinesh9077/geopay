@@ -87,9 +87,11 @@
 						'service_name' => ucfirst(str_replace('_', ' ', $value->service_name)),
 						'country_name' => $value->country_name,
 						'currency' => $value->currency,
-						'exchange_rate' => $value->exchange_rate, 
 						'aggregator_rate' => $value->aggregator_rate, 
+						'exchange_rate' => $value->exchange_rate, 
 						'markdown_charge' => $value->markdown_charge,  
+						'api_markdown_rate' => $value->api_markdown_rate, 
+						'api_markdown_charge' => $value->api_markdown_charge,  
 						'updated_at' => $value->updated_at->format('M d, Y H:i:s'),
 						'action' => ''
 					];
@@ -130,9 +132,9 @@
 		public function manualExchangeRateStore(Request $request)
 		{ 
 			$validator = Validator::make($request->all(), [
-			'type' => 'required|in:1,2',
-			'service_name' => 'required',
-			'file_import' => 'required|mimes:xlsx,csv|max:10240', // max file size 10MB (10240 KB)
+				'type' => 'required|in:1,2',
+				'service_name' => 'required',
+				'file_import' => 'required|mimes:xlsx,csv|max:10240', // max file size 10MB (10240 KB)
 			]);
 			
 			if ($validator->fails()) {
@@ -169,6 +171,8 @@
 					$currency = $rowData['currency'] ?? '';
 					$markdown_type = $rowData['markdown_type'] ?? $rowData['markdown_type (flat/percentage)'];
 					$markdown_charge = $rowData['markdown_charge'];
+					$api_markdown_type = $rowData['api_markdown_type'] ?? $rowData['api_markdown_type (flat/percentage)'];
+					$api_markdown_charge = $rowData['api_markdown_charge'];
 					
 					$rate = $rowData['aggregator_rate'];
 					
@@ -177,6 +181,12 @@
 							: max(($rate * $markdown_charge / 100), 0); // Ensure percentage fee is non-negative
 					
 					$markdownRate = $rate - $markdownCharge; 
+					
+					$apiMarkdownCharge = $api_markdown_type === "flat"
+							? max($api_markdown_charge, 0) // Ensure flat fee is non-negative
+							: max(($rate * $api_markdown_charge / 100), 0); // Ensure percentage fee is non-negative
+					
+					$apiMarkdownRate = $rate - $apiMarkdownCharge; 
 					 
 					// Prepare data for upsert
 					$data[] = [
@@ -184,11 +194,14 @@
 						'service_name' => $serviceName,
 						'country_name' => $countryName,
 						'currency' => $currency,
-						'exchange_rate' => $markdownRate,
-						'admin_id' => $admin->id,
 						'aggregator_rate' => $rate,
+						'admin_id' => $admin->id,
+						'exchange_rate' => $markdownRate,
 						'markdown_type' => $markdown_type,
 						'markdown_charge' => $markdown_charge,
+						'api_markdown_rate' => $apiMarkdownRate,
+						'api_markdown_type' => $api_markdown_type,
+						'api_markdown_charge' => $api_markdown_charge,
 						'status' => 1, 
 						'created_at' => now(),
 						'updated_at' => now(),
@@ -243,6 +256,8 @@
 			$validator = Validator::make($request->all(), [
 				'markdown_type' => 'required|in:flat,percentage',
 				'markdown_charge' => 'required|numeric',
+				'api_markdown_type' => 'required|in:flat,percentage',
+				'api_markdown_charge' => 'required|numeric',
 				'aggregator_rate' => 'required|numeric',
 			]);
 
@@ -267,11 +282,21 @@
 						: max(($rate * $request->markdown_charge / 100), 0); // Ensure percentage fee is non-negative
 				
 				$markdownRate = $rate - $markdownCharge;
+				
+				$apiMarkdownCharge = $request->api_markdown_type === "flat"
+						? max($request->api_markdown_charge, 0) // Ensure flat fee is non-negative
+						: max(($rate * $request->api_markdown_charge / 100), 0); // Ensure percentage fee is non-negative
+				
+				$apiMarkdownRate = $rate - $apiMarkdownCharge;
 				$data = [
-					'exchange_rate' => $markdownRate,
 					'aggregator_rate' => $rate,
+					'exchange_rate' => $markdownRate,
 					'markdown_type' => $request->markdown_type,
 					'markdown_charge' => $request->markdown_charge,
+					'exchange_rate' => $markdownRate,
+					'api_markdown_rate' => $apiMarkdownRate,
+					'api_markdown_type' => $request->api_markdown_type,
+					'api_markdown_charge' => $request->api_markdown_charge,
 					'status' => 1,
 					'updated_at' => now(),
 				];
@@ -365,6 +390,8 @@
 						'markdown_rate' => $value->markdown_rate, 
 						'aggregator_rate' => $value->aggregator_rate, 
 						'markdown_charge' => $value->markdown_charge,  
+						'api_markdown_rate' => $value->api_markdown_rate,  
+						'api_markdown_charge' => $value->api_markdown_charge,  
 						'updated_at' => $value->updated_at->format('M d, Y'),
 						'action' => ''
 					];
@@ -475,7 +502,17 @@
 					: max(($rate * $markdownTypeCharge / 100), 0);
 
 				$markdownRate = $rate - $markdownCharge;
+				
+				
+				$apiMarkdownType = $liveExchangeRate->api_markdown_type ?? 'flat';
+				$apiMarkdownTypeCharge = $liveExchangeRate->api_markdown_charge ?? 0; 
+				
+				$apiMarkdownCharge = $apiMarkdownType === "flat"
+					? max($apiMarkdownTypeCharge, 0)
+					: max(($rate * $apiMarkdownTypeCharge / 100), 0);
 
+				$apiMarkdownRate = $rate - $apiMarkdownCharge;
+				
 				// Upsert the record
 				LiveExchangeRate::updateOrCreate(
 					[
@@ -484,10 +521,13 @@
 					],
 					[
 						'country_name' => $countryName,
-						'markdown_rate' => $markdownRate,
 						'aggregator_rate' => $rate,
+						'markdown_rate' => $markdownRate,
 						'markdown_type' => $markdownType,
 						'markdown_charge' => $markdownTypeCharge,
+						'api_markdown_rate' => $apiMarkdownRate, 
+						'api_markdown_type' => $apiMarkdownType,
+						'api_markdown_charge' => $apiMarkdownTypeCharge,
 						'status' => 1,
 						'updated_at' => $updatedDate,
 					]
@@ -540,7 +580,16 @@
 					: max(($rate * $markdownTypeCharge / 100), 0);
 
 				$markdownRate = $rate - $markdownCharge;
+				
+				$apiMarkdownType = $liveExchangeRate->api_markdown_type ?? 'flat';
+				$apiMarkdownTypeCharge = $liveExchangeRate->api_markdown_charge ?? 0; 
+				
+				$apiMarkdownCharge = $apiMarkdownType === "flat"
+					? max($apiMarkdownTypeCharge, 0)
+					: max(($rate * $apiMarkdownTypeCharge / 100), 0);
 
+				$apiMarkdownRate = $rate - $apiMarkdownCharge;
+				
 				// Upsert the record
 				LiveExchangeRate::updateOrCreate(
 					[
@@ -553,6 +602,9 @@
 						'aggregator_rate' => $rate,
 						'markdown_type' => $markdownType,
 						'markdown_charge' => $markdownTypeCharge,
+						'api_markdown_rate' => $apiMarkdownRate, 
+						'api_markdown_type' => $apiMarkdownType,
+						'api_markdown_charge' => $apiMarkdownTypeCharge,
 						'status' => 1,
 						'updated_at' => $updatedDate,
 					]
@@ -599,7 +651,16 @@
 					: max(($rate * $markdownTypeCharge / 100), 0);
 
 				$markdownRate = $rate - $markdownCharge;
+				
+				$apiMarkdownType = $existingRate->api_markdown_type ?? 'flat';
+				$apiMarkdownTypeCharge = $existingRate->api_markdown_charge ?? 0; 
+				
+				$apiMarkdownCharge = $apiMarkdownType === "flat"
+					? max($apiMarkdownTypeCharge, 0)
+					: max(($rate * $apiMarkdownTypeCharge / 100), 0);
 
+				$apiMarkdownRate = $rate - $apiMarkdownCharge;
+				
 				LiveExchangeRate::updateOrCreate(
 					[
 						'channel' => $channel,
@@ -611,6 +672,9 @@
 						'markdown_rate'    => $markdownRate,
 						'markdown_type'    => $markdownType,
 						'markdown_charge'  => $markdownTypeCharge,
+						'api_markdown_rate' => $apiMarkdownRate, 
+						'api_markdown_type' => $apiMarkdownType,
+						'api_markdown_charge' => $apiMarkdownTypeCharge,
 						'status'           => 1,
 						'updated_at'       => $currentDate,
 					]
@@ -635,6 +699,8 @@
 			$validator = Validator::make($request->all(), [
 				'markdown_type' => 'required|in:flat,percentage',
 				'markdown_charge' => 'required|numeric',
+				'api_markdown_type' => 'required|in:flat,percentage',
+				'api_markdown_charge' => 'required|numeric',
 				'aggregator_rate' => 'required|numeric',
 			]);
 
@@ -659,11 +725,20 @@
 						: max(($rate * $request->markdown_charge / 100), 0); // Ensure percentage fee is non-negative
 				
 				$markdownRate = $rate - $markdownCharge;
+				
+				$apiMarkdownCharge = $request->api_markdown_type === "flat"
+						? max($request->api_markdown_charge, 0) // Ensure flat fee is non-negative
+						: max(($rate * $request->api_markdown_charge / 100), 0); // Ensure percentage fee is non-negative
+				
+				$apiMarkdownRate = $rate - $apiMarkdownCharge;
 				$data = [
-					'markdown_rate' => $markdownRate,
 					'aggregator_rate' => $rate,
+					'markdown_rate' => $markdownRate,
 					'markdown_type' => $request->markdown_type,
 					'markdown_charge' => $request->markdown_charge,
+					'api_markdown_rate' => $apiMarkdownRate,
+					'api_markdown_type' => $request->api_markdown_type,
+					'api_markdown_charge' => $request->api_markdown_charge,
 					'status' => 1,
 					'updated_at' => now(),
 				];
@@ -681,7 +756,9 @@
 		{
 			$validator = Validator::make($request->all(), [
 				'markdown_type' => 'required|in:flat,percentage',
-				'markdown_charge' => 'required|numeric', 
+				'markdown_charge' => 'required|numeric',
+				'api_markdown_type' => 'required|in:flat,percentage',
+				'api_markdown_charge' => 'required|numeric', 
 				'ids' => 'required|array',
 			]);
 
@@ -713,16 +790,26 @@
 						: ($rate * $request->markdown_charge / 100);
 
 					$markdownRate = $rate - $markdownCharge;
+					
+					// Calculate markdown charge based on type
+					$apiMarkdownCharge = $request->api_markdown_type === "flat"
+						? $request->api_markdown_charge
+						: ($rate * $request->api_markdown_charge / 100);
+
+					$apiMarkdownRate = $rate - $apiMarkdownCharge;
  
 					$data = [
 						'id' => $id,
 						'channel' => $exchangeRates->get($id)->channel ?? null,
 						'currency' => $exchangeRates->get($id)->currency ?? null,
 						'country_name' => $exchangeRates->get($id)->country_name ?? null,
-						'markdown_rate' => $markdownRate,
 						'aggregator_rate' => $rate,
+						'markdown_rate' => $markdownRate,
 						'markdown_type' => $request->markdown_type,
 						'markdown_charge' => $request->markdown_charge,
+						'api_markdown_rate' => $apiMarkdownRate,
+						'api_markdown_type' => $request->api_markdown_type,
+						'api_markdown_charge' => $request->api_markdown_charge,
 						'status' => 1,
 						'updated_at' => now(),
 					];

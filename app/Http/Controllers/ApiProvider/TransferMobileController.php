@@ -1,5 +1,5 @@
 <?php
-	namespace App\Http\Controllers\Api;
+	namespace App\Http\Controllers\ApiProvider;
 	
 	use App\Http\Controllers\Controller;
 	use Illuminate\Http\Request;
@@ -16,7 +16,7 @@
 	use Illuminate\Support\Facades\Auth;
 	use Illuminate\Support\Facades\Log;
 	use Illuminate\Support\Facades\Validator;
-	use App\Http\Traits\ApiResponseTrait; 
+	use App\Http\Traits\ApiServiceResponseTrait; 
 	use App\Services\{ 
 		MasterService, LiquidNetService, OnafricService
 	}; 
@@ -29,10 +29,12 @@
  
 	class TransferMobileController extends Controller
 	{ 
-		use ApiResponseTrait;  
+		use ApiServiceResponseTrait;  
+		
 		protected $liquidNetService;
 		protected $masterService;
 		protected $onafricService;
+		
 		public function __construct()
 		{
 			$this->liquidNetService = new LiquidNetService(); 
@@ -42,156 +44,86 @@
 		
 		public function countryList()
 		{ 
-			return $this->successResponse('country fetched successfully.', $this->availableCountries());
-		}
-		
-		public function availableCountries()
-		{ 
-			$countries = $this->onafricService->country();
-			return $countries;
-		}
-		
-		public function beneficiaryList(Request $request)
-		{  
-			// Extract request data
-			$userId = Auth::id();
-			$recipientCountry = $request->recipient_country; 
-			$categoryName = $request->categoryName;
-			$serviceName = $request->serviceName;
-			 
-			// Fetch beneficiaries with filters
-			$beneficiaries = Beneficiary::where('user_id', $userId)
-			->where('category_name', $categoryName)
-			->where('service_name', $serviceName)
-			->where('data->recipient_country', $recipientCountry) 
+			$africanCountries = $this->onafricService->availableCountry();
+			
+			$countries = Country::with('channels:id,country_id,channel')
+			->select('id', 'nicename', 'iso', 'iso3', 'currency_code')
+			->whereHas('channels')
+			->whereIn('nicename', $africanCountries)
 			->get(); 
-
-			// Return response
-			return $this->successResponse('beneficiary list fetched', $beneficiaries);
-		}
+			  
+			return $this->successResponse('country fetched successfully.', $countries);
+		} 
 		
-		public function beneficiaryDelete($id)
-		{
-			try {
-				DB::beginTransaction();
-
-				// Fetch the beneficiary
-				$beneficiary = Beneficiary::find($id);
-				 
-				// Check if the beneficiary exists
-				if (!$beneficiary) {
-					throw new \Exception('Beneficiary not found.');
-				}
-
-				// Log ID before deletion
-				Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to mobile beneficiary');
-
-				// Delete the beneficiary
-				$beneficiary->delete();
-
-				DB::commit(); 
-				return $this->successResponse('The beneficiary was deleted successfully.'); 
-			} catch (\Throwable $e) {
-				DB::rollBack();  
-				return $this->errorResponse($e->getMessage()); 
-			}  
-		}
-		
-		public function commission(Request $request)
-		{
-			$beneficiaryId = $request->beneficiaryId;
-			$txnAmount = $request->txnAmount;
-			 
-			$beneficiary = Beneficiary::find($beneficiaryId);
-			if (!$beneficiary || empty($beneficiary->data ?? [])) {
-				return $this->errorResponse('Beneficiary not found.');
-			}
-			
-			$country = Country::find($beneficiary->data['recipient_country']);
-			$liveExchangeRate = LiveExchangeRate::select('markdown_rate', 'aggregator_rate')
-			->where('channel', $beneficiary->data['service_name'])
-			->where('currency', $country->currency_code)
-			->first(); 
-			
-			if(!$liveExchangeRate)
-			{
-				$liveExchangeRate = ExchangeRate::select('exchange_rate as markdown_rate', 'aggregator_rate')
-				->where('type', 2)
-				->where('service_name', $beneficiary->data['service_name'])
-				->where('currency', $country->currency_code)
-				->first();
-				if (!$liveExchangeRate) {
-					return $this->errorResponse('A technical issue has occurred. Please try again later.'); 
-				}
-			}
-			
-			$aggregatorRate = $liveExchangeRate->aggregator_rate ?? 0;
-			$aggregatorCurrencyAmount = ($txnAmount * $aggregatorRate);
-			
-			$exchangeRate = $liveExchangeRate->markdown_rate ?? 0;
-			$payoutCurrencyAmount = ($txnAmount * $exchangeRate);
-			$serviceCharge = 0;
-			
-			$onafricChannel = OnafricChannel::find($beneficiary->data['channel_id'] ?? null);
-			
-			$sendFee = $onafricChannel && $onafricChannel->fees ? $onafricChannel->fees : 0;
-			$commissionType = $onafricChannel && $onafricChannel->commission_type ? $onafricChannel->commission_type : 'flat';
-			$commissionCharge = $onafricChannel && $onafricChannel->commission_charge ? $onafricChannel->commission_charge : 0;
-			
-			$platformFees = $commissionType === "flat"
-			? max($commissionCharge, 0) // Ensure flat fee is not negative
-			: max(($txnAmount * $commissionCharge / 100), 0); // Ensure percentage fee is not negative
-			$totalCharges = $platformFees + $serviceCharge;				
-			$comissions = [
-				'payoutCurrency' => $country->currency_code,
-				'payoutCountry' => $country->iso3,
-				'txnAmount' => $txnAmount,
-				'aggregatorRate' => $aggregatorRate,
-				'aggregatorCurrencyAmount' => $aggregatorCurrencyAmount,
-				'exchangeRate' => $exchangeRate,
-				'payoutCurrencyAmount' => $payoutCurrencyAmount,
-				'remitCurrency' => config('setting.default_currency') ?? 'USD',
-				'platformCharge' => $platformFees,
-				'serviceCharge' => $serviceCharge,
-				'sendFee' => $sendFee,
-				'totalCharges' => $totalCharges,
-				'netAmount' => ($totalCharges + $txnAmount),
+		public function getFields()
+		{ 
+			$fields = [
+				["fieldName" => "recipient_mobile", "fieldLabel" => "Recipient Mobile Number", "required" => true, "inputType" => "text"],
+				["fieldName" => "recipient_name", "fieldLabel" => "Recipient Name", "required" => true, "inputType" => "text"],
+				["fieldName" => "recipient_surname", "fieldLabel" => "Recipient Surname", "required" => true, "inputType" => "text"],
+				["fieldName" => "recipient_address", "fieldLabel" => "Recipient Address", "required" => false, "inputType" => "text"],
+				["fieldName" => "recipient_city", "fieldLabel" => "Recipient City", "required" => false, "inputType" => "text"],
+				["fieldName" => "recipient_state", "fieldLabel" => "Recipient State", "required" => false, "inputType" => "text"],
+				["fieldName" => "recipient_postalcode", "fieldLabel" => "Recipient Postal Code", "required" => false, "inputType" => "text"],
+				["fieldName" => "recipient_dateofbirth", "fieldLabel" => "Recipient Date Of Birth", "required" => false, "inputType" => "date"],
+				["fieldName" => "sender_placeofbirth", "fieldLabel" => "Sender Date Of Birth", "required" => true, "inputType" => "date"],
+				["fieldName" => "purposeOfTransfer", "fieldLabel" => "Purpose Of Transfer", "required" => true, "inputType" => "text"],
+				["fieldName" => "sourceOfFunds", "fieldLabel" => "Source Of Funds", "required" => true, "inputType" => "text"]
 			];
-			 
-			return $this->successResponse('comission fetched successfully.', $comissions);
-		}
+
+			return $this->successResponse('fields fetched successfully.', $fields);
+		}  
 		
-		public function storeTransaction(Request $request)
+		public function createTransaction(Request $request)
 		{	
-			$user = Auth::user();
-	  
-			// Validation rules
+			$user = Auth::user(); 
 			$validator = Validator::make($request->all(), [
-				'country_code'   => 'required|string|max:10', // Restrict maximum length
-				'beneficiaryId'  => 'required|integer|exists:beneficiaries,id', // Explicit column for clarity
-				'txnAmount'      => 'required|numeric|gt:0', // Transaction amount must be positive 
-				'notes'          => 'nullable|string|max:255', // Restrict notes to 255 characters
-			]);
+				// Transaction details
+				'amount' => 'required|numeric|min:0.01',
+				'exchnage_rate_id' => 'required|integer',
+				'exchange_rate' => 'required|numeric',
+				'converted_amount' => 'required|numeric',
+				'payoutCurrency' => 'required|string|size:3',
 
-			// Custom validation logic
-			$validator->after(function ($validator) use ($request, $user) {
-				$netAmount = (float) $request->input('netAmount', 0);
-				$aggregatorCurrencyAmount = (float) $request->input('aggregatorCurrencyAmount', 0);
-				  
-				if ($netAmount > $user->balance) {
-					$validator->errors()->add('txnAmount', 'Insufficient balance to complete this transaction.');
-				}
+				// Sender
+				'sender_mobile' => 'required|string|max:20',
+				'sender_country_code' => 'required|string|size:2',
+				'sender_name' => 'required|string|max:100',
+				'sender_surname' => 'required|string|max:100',
+				'sender_address' => 'required|string|max:255',
+				'sender_city' => 'required|string|max:100',
+				'sender_state' => 'required|string|max:100',
+				'sender_postalCode' => 'required|string|max:20',
+				'sender_email' => 'nullable|email',
+				'sender_dateOfBirth' => 'nullable|date',
+				'sender_document' => 'nullable|string|max:255',
+				'sender_placeofbirth' => 'nullable|string|max:100',
 
-				if (!$request->filled('aggregatorCurrencyAmount')) {
-					$validator->errors()->add('txnAmount', 'The payout currency amount field is required.');
-				} elseif ($aggregatorCurrencyAmount <= 0) {
-					$validator->errors()->add('txnAmount', 'The payout currency amount must be greater than 0.');
-				}
-			});
+				// Recipient
+				'recipient_mobile' => 'required|string|max:20',
+				'recipient_country_code' => 'required|string|size:2',
+				'recipient_name' => 'required|string|max:100',
+				'recipient_surname' => 'required|string|max:100',
+				'recipient_address' => 'required|string|max:255',
+				'recipient_city' => 'required|string|max:100',
+				'recipient_state' => 'required|string|max:100',
+				'recipient_postalcode' => 'required|string|max:20',
+				'recipient_email' => 'nullable|email',
+				'recipient_dateofbirth' => 'nullable|date',
+				'recipient_document' => 'nullable|string|max:255',
+				'recipient_destinationAccount' => 'nullable|string|max:255',
 
-			// Return validation response if fails
+				// Transfer details
+				'purposeOfTransfer' => 'required|string|max:255',
+				'sourceOfFunds' => 'required|string|max:255',
+			]); 
+
 			if ($validator->fails()) {
-				return $this->validateResponse($validator->errors());
+				return $this->validateResponse($validator->errors()->toArray());
+			}
+
+			if ($request->amount > $user->balance) {
+				return $this->errorResponse('Insufficient balance to complete this transaction.', 'ERR_INSUFFICIENT_BALANCE'); 
 			}
 		 
 			try {
@@ -201,13 +133,22 @@
 				
 				$remitCurrency = config('setting.default_currency') ?? 'USD';
 				
-				$transactionLimit = $user->is_company == 1 
+				$liveExchangeRate = LiveExchangeRate::find($request->exchnage_rate_id); 
+				if(!$liveExchangeRate)
+				{ 
+					$liveExchangeRate = ExchangeRate::find($request->exchnage_rate_id);
+					if (!$liveExchangeRate) {
+						return $this->errorResponse('A technical issue has occurred. Please try again later.', 'ERR_RATE', 401); 
+					}
+				}
+				
+				/* $transactionLimit = $user->is_company == 1 
 					? config('setting.company_pay_monthly_limit') 
 					: ($user->userLimit->daily_pay_limit ?? 0);
 
 				$transactionAmountQuery = Transaction::whereIn('platform_name', ['international airtime', 'transfer to bank', 'transfer to mobile'])
 				->where('user_id', $user->id); 
-				// Adjust the date filter based on whether the user is a company or an individual
+				
 				if ($user->is_company == 1) {
 					$transactionAmountQuery->whereMonth('created_at', Carbon::now()->month);
 				} else {
@@ -229,9 +170,9 @@
 				$beneficiary = Beneficiary::find($request->beneficiaryId);
 				if (!$beneficiary || empty($beneficiary->data)) {
 					return $this->errorResponse('Something went wrong.');
-				}
+				} */
 				
-				$response = $this->onafricService->sendMobileTransaction($request, $beneficiary->data);
+				$response = $this->onafricService->apiSendMobileTransaction($request, $user);
 				  
 				if (!$response['success']) {
 					$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
@@ -249,21 +190,21 @@
 				 
 				$onafricStatus = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'Accepted';
 				$txnStatus = OnafricStatus::from($onafricStatus)->label();
-			
-				$txnAmount = $request->input('txnAmount');
-				$netAmount = $request->input('netAmount');
+				 
+				$txnAmount = $request->input('amount');
+				$netAmount = $request->input('amount');
 				
 				// Deduct balance
 				$user->decrement('balance', $netAmount); 
-				
+				 
 				// Check if necessary fields exist to prevent undefined index warnings
-				$beneficiaryFirstName = $beneficiary->data['recipient_name'] ?? '';
-				$beneficiaryLastName = $beneficiary->data['recipient_surname'] ?? '';  
-				$mobileNumber = ltrim(($beneficiary->data['mobile_code'] ?? ''), '+').($beneficiary->data['recipient_mobile'] ?? '');
-				$payoutCurrency = $beneficiary->data['payoutCurrency'] ?? '';
-				$payoutCurrencyAmount = $request->payoutCurrencyAmount;
-				$aggregatorCurrencyAmount = $request->aggregatorCurrencyAmount;
-				$exchangeRate = $request->exchangeRate; 
+				$beneficiaryFirstName = $request->recipient_name ?? '';
+				$beneficiaryLastName = $request->recipient_surname ?? '';
+				$mobileNumber = ltrim(($request->recipient_mobile ?? ''), '+');
+				$payoutCurrency = $request->payoutCurrency ?? '';
+				$payoutCurrencyAmount = $request->converted_amount;
+				$aggregatorCurrencyAmount = ($liveExchangeRate->aggregator_rate * $txnAmount);
+				$exchangeRate = $request->exchange_rate; 
 				$confirmationId = $request['order_id'];
 				// Concatenate beneficiary name safely
 				$beneficiaryName = trim("$beneficiaryFirstName $beneficiaryLastName"); // Using trim to remove any leading/trailing spaces
@@ -281,7 +222,7 @@
 					'user_id' => $user->id,
 					'receiver_id' => $user->id,
 					'platform_name' => 'transfer to mobile',
-					'platform_provider' => $beneficiary->data['service_name'],
+					'platform_provider' => 'onafric',
 					'transaction_type' => 'debit',
 					'country_id' => $user->country_id,
 					'txn_amount' => $netAmount,
@@ -298,169 +239,36 @@
 					'rates' => $exchangeRate,
 					'unit_convert_currency' => $payoutCurrency,
 					'unit_convert_amount' => $aggregatorCurrencyAmount,
-					'unit_convert_exchange' => $request->aggregatorRate ?? 0,
-					'beneficiary_request' => $beneficiary,
-					'api_request' => $response['request'],
-					'api_response' => $response['response'],
+					'unit_convert_exchange' => $liveExchangeRate->aggregator_rate ?? 0,
+					'beneficiary_request' => $request->all(),
+					'api_request' => $response['request'] ?? [],
+					'api_response' => $response['response'] ?? [],
 					'order_id' => $request->order_id,
-					'fees' => $request->platformCharge ?? 0,
-					'service_charge' => $request->serviceCharge ?? 0,
-					'total_charge' => $request->totalCharges ?? 0,
+					'fees' => 0,
+					'service_charge' => 0,
+					'total_charge' => 0,
+					'is_api_service' => 1,
 					'created_at' => now(),
 					'updated_at' => now(),
 				]);
 
 				// Log the transaction creation
-				Helper::updateLogName($transaction->id, Transaction::class, 'transfer to mobile transaction', $user->id); 
-				Notification::send($user, new AirtimeRefundNotification($user, $netAmount, $transaction->id, $comments, $transaction->notes, ucfirst($txnStatus)));
+				Helper::updateLogName($transaction->id, Transaction::class, 'transfer to mobile transaction', $user->id);  
 				DB::commit();  
-				return $this->successResponse('Mobile transfer has been successfully processed.', ['userBalance' => Helper::decimalsprint($user->balance, 2), 'currencyCode' => config('setting.default_currency')]);
-			} catch (\Throwable $e) {
-				DB::rollBack();  
-				return $this->errorResponse($e->getMessage()); 
-			}   
-		}
-		   
-		public function getOnafricFieldView()
-		{ 
-			$fields = [
-				["fieldName" => "recipient_mobile", "fieldLabel" => "Recipient Mobile Number", "required" => true, "inputType" => "text"],
-				["fieldName" => "recipient_name", "fieldLabel" => "Recipient Name", "required" => true, "inputType" => "text"],
-				["fieldName" => "recipient_surname", "fieldLabel" => "Recipient Surname", "required" => true, "inputType" => "text"],
-				["fieldName" => "recipient_address", "fieldLabel" => "Recipient Address", "required" => false, "inputType" => "text"],
-				["fieldName" => "recipient_city", "fieldLabel" => "Recipient City", "required" => false, "inputType" => "text"],
-				["fieldName" => "recipient_state", "fieldLabel" => "Recipient State", "required" => false, "inputType" => "text"],
-				["fieldName" => "recipient_postalcode", "fieldLabel" => "Recipient Postal Code", "required" => false, "inputType" => "text"],
-				["fieldName" => "recipient_dateofbirth", "fieldLabel" => "Recipient Date Of Birth", "required" => false, "inputType" => "date"]
-				/* ["fieldName" => "sender_placeofbirth", "fieldLabel" => "Sender Date Of Birth", "required" => true, "inputType" => "date"],
-				["fieldName" => "purposeOfTransfer", "fieldLabel" => "Purpose Of Transfer", "required" => true, "inputType" => "text"],
-				["fieldName" => "sourceOfFunds", "fieldLabel" => "Source Of Funds", "required" => true, "inputType" => "text"] */
-			];
+				
+				$data = [
+					"thirdPartyId" => $confirmationId,  
+					"status_message" => $txnStatus,
+					"timestamp" => now()
+				]; 
 
-			return $this->successResponse('fields fetched successfully.', $fields);
-		}
-		 
-		public function beneficiaryStore(Request $request)
-		{    
-			// $recipient_country_code = $request->recipient_country_code; 
-			// $recipient_mobile = $request->recipient_mobile;
-			// $response = $this->onafricService->getAccountRequest($recipient_country_code, $recipient_mobile);
-			
-			// if (
-			// 	!isset($response['success']) || 
-			// 	!$response['success'] || 
-			// 	(isset($response['response']['status_code']) && $response['response']['status_code'] != "Active")
-			// ) {
-				   
-			// 	return $this->errorResponse('Provided country and mobile number are not active');
-			// }
-			
-			try { 
-				$user = Auth::user();
-				 
-				DB::beginTransaction();
-				$beneficiaryData = $request->except('_token', 'recipient_mobile', 'mobile_code');
-			
-				$mobile_code = $request->mobile_code ?? '';
-				$mobile_num = $request->recipient_mobile ?? ''; 
-					
-				$beneficiaryData['recipient_mobile'] = $mobile_num ?? '';
-				$beneficiaryData['mobile_code'] = $mobile_code ?? '';
-				$beneficiaryData['sender_country'] = $user->country->id ?? '';
-				$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
-				$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
-				$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
-				/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
-				$beneficiaryData['sender_surname'] = $user->last_name ?? ''; */
-				
-				$recipientCountry = Country::find($request->recipient_country ?? null);
-				$beneficiaryData['payoutCountry'] = $recipientCountry->iso3 ?? '';
-				$beneficiaryData['payoutCurrency'] = $recipientCountry->currency_code ?? '';
-				
-				$data = []; 
-				$data['category_name'] = $beneficiaryData['category_name'];
-				$data['service_name'] = $beneficiaryData['service_name'];
-				$data['user_id'] = Auth::id(); 
-				$data['created_at'] = now();
-				$data['updated_at'] = now();
-				$data['data'] = $beneficiaryData;
-				 
-				$beneficiary = Beneficiary::create($data);
-				Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to mobile beneficiary');
-				
-				DB::commit(); 
-				return $this->successResponse('The beneficiary was completed successfully.');
+				return $this->successResponse('transaction successfully processed.', $data);
 			} 
 			catch (\Throwable $e)
-			{ 
-				DB::rollBack();
-				return $this->errorResponse($e->getMessage());
-			} 	  	
-		}
+			{
+				DB::rollBack();  
+				return $this->errorResponse($e->getMessage(), 'ERR_INTERNAL_SERVER'); 
+			}   
+		}   
 		
-		public function beneficiaryUpdate(Request $request, $id)
-		{   
-			DB::beginTransaction();
-			try {
-				
-				$user = Auth::user();
-				$beneficiary = Beneficiary::find($id);
-				
-				$recipient_country_code = $request->recipient_country_code; 
-				$recipient_mobile = $request->recipient_mobile;
-				
-				// Ensure beneficiary->data is an array
-				$beneficiaryDataArray = is_array($beneficiary->data) ? $beneficiary->data : [];
-		
-				// if ($recipient_country_code !== ($beneficiaryDataArray['recipient_country_code'] ?? '') ||
-				// 	$recipient_mobile !== ($beneficiaryDataArray['recipient_mobile'] ?? '')) 
-				// {
-				// 	$response = $this->onafricService->getAccountRequest($recipient_country_code, $recipient_mobile);
-					
-				// 	if (
-				// 		!isset($response['success']) || 
-				// 		!$response['success'] || 
-				// 		(isset($response['response']['status_code']) && $response['response']['status_code'] != "Active")
-				// 	) {
-						   
-				// 		return $this->errorResponse('Provided country and mobile number are not active');
-				// 	}	
-				// }
-				$beneficiaryData = $request->except('_token', 'recipient_mobile', 'mobile_code');
-			
-				$mobile_code = $request->mobile_code ?? '';
-				$mobile_num = $request->recipient_mobile ?? ''; 
-					
-				$beneficiaryData['recipient_mobile'] = $mobile_num ?? '';
-				$beneficiaryData['mobile_code'] = $mobile_code ?? '';
-				$beneficiaryData['sender_country'] = $user->country->id ?? '';
-				$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
-				$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
-				$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
-				/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
-				$beneficiaryData['sender_surname'] = $user->last_name ?? ''; */
-				
-				$recipientCountry = Country::find($request->recipient_country ?? null);
-				$beneficiaryData['payoutCountry'] = $recipientCountry->iso3 ?? '';
-				$beneficiaryData['payoutCurrency'] = $recipientCountry->currency_code ?? '';
-				
-				$data = []; 
-				$data['category_name'] = $beneficiaryData['category_name'];
-				$data['service_name'] = $beneficiaryData['service_name'];
-				$data['user_id'] = Auth::id(); 
-				$data['updated_at'] = now(); 
-				$data['data'] = $beneficiaryData;
-				  
-				$beneficiary->update($data);
-				Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to mobile beneficiary');
-				
-				DB::commit(); 
-				return $this->successResponse('The beneficiary was updated successfully.');
-			} 
-			catch (\Throwable $e)
-			{ 
-				DB::rollBack();
-				return $this->errorResponse($e->getMessage());
-			} 	
-		}
 	}

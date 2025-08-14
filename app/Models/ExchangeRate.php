@@ -17,10 +17,13 @@ class ExchangeRate extends Model
 		'service_name', 
 		'country_name', 
 		'currency', 
-		'exchange_rate', 
 		'aggregator_rate', 
+		'exchange_rate', 
 		'markdown_type', 
-		'markdown_charge', 
+		'markdown_charge',
+		'api_markdown_rate', 
+		'api_markdown_type', 
+		'api_markdown_charge', 
 		'status'
 	];
 	

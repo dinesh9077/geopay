@@ -52,9 +52,11 @@
 											<th>Service Name</th>
 											<th>Country Name</th>
 											<th>Currency</th>
-											<th>Exchange Rate Against 1 USD</th>
 											<th>Exchange Rate Aggregator</th> 
+											<th>Exchange Rate Against 1 USD</th>
 											<th>Margin Percentage(Flat / %)</th> 
+											<th>Api Rate Against 1 USD</th>
+											<th>Api Percentage(Flat / %)</th> 
 											<th>Date</th> 
 											<th>Action</th> 
 										</tr>
@@ -86,9 +88,11 @@
 											<th>Service Name</th>
 											<th>Country Name</th>
 											<th>Currency</th>
-											<th>Exchange Rate Against 1 USD</th>
 											<th>Exchange Rate Aggregator</th> 
+											<th>Exchange Rate Against 1 USD</th>
 											<th>Margin Percentage(Flat / %)</th> 
+											<th>Api Rate Against 1 USD</th>
+											<th>Api Percentage(Flat / %)</th> 
 											<th>Date</th> 
 											<th>Action</th> 
 										</tr>
@@ -163,9 +167,11 @@
 				{ data: "service_name" },
 				{ data: "country_name" },
 				{ data: "currency" },
-				{ data: "exchange_rate" },
 				{ data: "aggregator_rate" },
+				{ data: "exchange_rate" },
 				{ data: "markdown_charge" },
+				{ data: "api_markdown_rate" },
+				{ data: "api_markdown_charge" },
 				{ data: "updated_at" },
 				{ data: "action" }
 			]

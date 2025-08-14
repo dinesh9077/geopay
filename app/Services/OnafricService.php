@@ -484,7 +484,8 @@ class OnafricService
 	}
 
 	public function sendMobileTransaction($request, $beneficiary)
-	{    
+	{     
+		//dd($request->all());
 		$uuid = Str::uuid()->toString(); 
 		$timestamp = now()->format('YmdHis'); 
 		$batchId = "BATCH-" . $uuid . "-" . $timestamp;  
@@ -553,8 +554,111 @@ class OnafricService
 					"sourceOfFunds" => $sourceOfFunds ?? '',
 				]
 			]
-		];
+		]; 
+		
+		//Log::info('send mobile request', ['request' => $requestBody]);
+		// Generate the mfsSign
+		$mfsSign = $this->generateMfsSign($batchId);
+	  
+		// Add mfsSign to requestBody
+		$requestBody['mfsSign'] = $mfsSign;
+ 
+		// Generate the bearer token 
+		$bearerToken = $this->generateBearerToken($requestTimestamp); 
 		 
+		// Send the API request using Laravel's HTTP client
+		$response = Http::withHeaders([
+			'Authorization' => 'Bearer ' . $bearerToken, // Add Bearer Token to the header
+			'timestamp' => $requestTimestamp,
+			'Content-Type' => 'application/json',
+		])
+		->withOptions([
+			'verify' => false, // Disable SSL verification if needed
+		])
+		->post($this->onafricAsyncCallService.'/callService', $requestBody); // Send requestBody instead of $data
+	  
+		//Log::info('send mobile response', ['response' => $response->json()]);
+		// Handle the response
+		if ($response->successful()) {
+			
+			return [
+				'success' => true,
+				'request' => $requestBody, // Return the request sent
+				'response' => $response->json(), // Return the API response
+			];
+		}
+
+		// If the response was unsuccessful, return an error response
+		return [
+			'success' => false,
+			'request' => $requestBody, // Return the request sent
+			'response' => json_decode($response->body(), true), // Return the error response body
+		];
+	}
+	
+	public function apiSendMobileTransaction($request, $user)
+	{     
+		$uuid = Str::uuid()->toString(); 
+		$timestamp = now()->format('YmdHis'); 
+		$batchId = "BATCH-" . $uuid . "-" . $timestamp;  
+		$requestTimestamp = $request->timestamp;
+		$thirdPartyTransId = $request->order_id;   
+		  
+		$txnAmount = $request->converted_amount; 
+		$payoutCurrency = $request['payoutCurrency'] ?? '';
+		$mobileNumber = ltrim(($request['recipient_mobile'] ?? ''), '+');
+	   
+		$requestBody = [
+			"corporateCode" => $this->onafricCorporate,
+			"password" => $this->onafricPassword, 
+			"batchId" => $batchId,
+			"requestBody" => [
+				[
+					"instructionType" => [
+						"destAcctType" => 1,
+						"amountType" => 2
+					],
+					"amount" => [
+						"amount" => (string) $txnAmount,
+						"currencyCode" => $payoutCurrency
+					],
+					"sendFee" => null, 
+					"sender" => [
+						"msisdn" => $request['sender_mobile'] ?? '',
+						"fromCountry" => $request['sender_country_code'] ?? '',
+						"name" => $request['sender_name'] ?? '',
+						"surname" => $request['sender_surname'] ?? '',
+						"address" => $request['sender_address'] ?? '',
+						"city" => $request['sender_city'] ?? '',
+						"state" => $request['sender_state'] ?? '',
+						"postalCode" => $request['sender_postalCode'] ?? '',
+						"email" => $request['sender_email'] ?? '',
+						"dateOfBirth" => $request['sender_dateOfBirth'] ?? null,
+						"document" => $request['sender_document'] ?? null,
+						"placeOfBirth" => $request['sender_placeofbirth'] ?? null,
+					],
+					"recipient" => [
+						"msisdn" => $mobileNumber ?? '',
+						"toCountry" => $request['recipient_country_code'] ?? '',
+						"name" => $request['recipient_name'] ?? '',
+						"surname" => $request['recipient_surname'] ?? '',
+						"address" => $request['recipient_address'] ?? '',
+						"city" => $request['recipient_city'] ?? '',
+						"state" => $request['recipient_state'] ?? '',
+						"postalCode" => $request['recipient_postalcode'] ?? '',
+						"email" => $request['recipient_email'] ?? null,
+						"dateOfBirth" => $request['recipient_dateofbirth'] ?? null,
+						"document" => $request['recipient_document'] ?? null,
+						"destinationAccount" => $request['recipient_destinationAccount'] ?? null,
+					],
+					"thirdPartyTransId" => $thirdPartyTransId,
+					"reference" => null,
+					"purposeOfTransfer" => $request['purposeOfTransfer'] ?? null,
+					"sourceOfFunds" => $request['sourceOfFunds'] ?? null,
+				]
+			]
+		]; 
+		
 		//Log::info('send mobile request', ['request' => $requestBody]);
 		// Generate the mfsSign
 		$mfsSign = $this->generateMfsSign($batchId);
