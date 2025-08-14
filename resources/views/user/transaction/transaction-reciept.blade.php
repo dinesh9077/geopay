@@ -146,7 +146,7 @@
 		</tr> 
         <tr>
             <th class="content-4 d-flex justify-content-between text-nowrap">Mobile <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $transaction->beneficiary_request['data']['recipient_mobile'] ?? 'N/A' }}</td>
+            <td class="content-4">{{ $transaction->beneficiary_request['data']['recipient_mobile'] ?? $transaction->beneficiary_request['recipient_mobile'] ?? 'N/A' }}</td>
         </tr> 
         <tr>
 			<th class="content-4 d-flex justify-content-between text-nowrap">UNIT AMOUNT <span class="mx-1">:</span></th>
