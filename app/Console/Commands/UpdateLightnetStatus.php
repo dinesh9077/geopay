@@ -52,6 +52,7 @@
 			$transactions = Transaction::query()
 			->where('platform_provider', 'lightnet')
 			->where('is_refunded', 0)
+			->whereDate('created_at', '>=', '2025-08-14')
 			->whereNotIn('txn_status', ['paid', 'cancelled and refunded'])
 			->first();
 			 

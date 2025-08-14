@@ -54,7 +54,7 @@ class UpdateOnafricStatus extends Command
 		->whereDate('created_at', '>=', '2025-08-14')
 		->whereNotIn('txn_status', ['paid', 'cancelled and refunded'])
 		->get();
-		dd($transactions);
+		 
 		if (empty($transactions)) {
 			return;
 		}
