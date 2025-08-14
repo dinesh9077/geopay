@@ -140,8 +140,13 @@
         <tr>
 			<th class="content-4 d-flex justify-content-between text-nowrap">Counterparty Name <span class="mx-1">:</span></th>
 			<td class="content-4">
-				{{ isset($transaction->beneficiary_request['data']['recipient_name']) && isset($transaction->beneficiary_request['data']['recipient_surname']) ? 
+			@if(isset($transaction->beneficiary_request['data']['recipient_name']) && 		isset($transaction->beneficiary_request['data']['recipient_surname']))
+					{{ isset($transaction->beneficiary_request['data']['recipient_name']) && isset($transaction->beneficiary_request['data']['recipient_surname']) ? 
 					$transaction->beneficiary_request['data']['recipient_name'] . ' ' . $transaction->beneficiary_request['data']['recipient_surname'] : 'N/A' }}
+			@else
+					{{ isset($transaction->beneficiary_request['recipient_name']) && isset($transaction->beneficiary_request['recipient_surname']) ? 
+					$transaction->beneficiary_request['recipient_name'] . ' ' . $transaction->beneficiary_request['recipient_surname'] : 'N/A' }}	
+			@endif
 			</td>
 		</tr> 
         <tr>
