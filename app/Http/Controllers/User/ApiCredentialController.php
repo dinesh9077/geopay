@@ -39,7 +39,7 @@ class ApiCredentialController extends Controller
 
 		$urls = [
 			'sandbox'    => url('/api-test'),
-			'production' => url('/api')
+			'production' => url('/api-service')
 		];
 
 		DB::beginTransaction();
