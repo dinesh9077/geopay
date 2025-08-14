@@ -51,9 +51,10 @@ class UpdateOnafricStatus extends Command
 		$transactions = Transaction::select('id', 'user_id', 'txn_status', 'platform_provider', 'order_id')
 		->where('platform_provider', 'onafric')
 		->where('is_refunded', 0)
+		->whereDate('created_at' >= '2025-08-14')
 		->whereNotIn('txn_status', ['paid', 'cancelled and refunded'])
 		->get();
-		
+		dd($transactions);
 		if (empty($transactions)) {
 			return;
 		}
