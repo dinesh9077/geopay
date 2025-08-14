@@ -19,6 +19,8 @@ class ApiCredentialController extends Controller
 	
     public function index()
     {
+		if(auth()->user()->developer_option == 0) return abort(403);
+		  
         $credential = ApiCredential::where('user_id', Auth::id())
             ->latest()
             ->first();
