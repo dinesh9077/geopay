@@ -801,7 +801,7 @@ class OnafricService
 		])
 		->post($this->onafricAsyncCallService.'/status', $requestBody); // Send requestBody instead of $data
 		
-		//Log::info('query status response', ['response' => $response->json()]);
+		Log::info('query status response', ['response' => $response->json()]);
 		// Handle the response
 		if ($response->successful()) {
 			return [
