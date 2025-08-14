@@ -81,7 +81,10 @@
 						}
 					}
 					
-					$transaction->update(['txn_status' => $txn_status]);
+					if($txn_status != "cancelled and refunded")
+					{
+						$transaction->update(['txn_status' => $txn_status]);  
+					}
 					
 					//$user = $transaction->user; 
 					//Notification::send($user, new AirtimeRefundNotification($user, $transaction->txn_amount, $transaction->id, $transaction->comments, $transaction->notes, ucfirst($transaction->txn_status)));

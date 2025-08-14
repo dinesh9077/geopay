@@ -79,8 +79,10 @@ class UpdateOnafricStatus extends Command
 						$transaction->processAutoRefund($txn_status);
 					}
 				}
-				
-				$transaction->update(['txn_status' => $txn_status]);  
+				if($txn_status != "cancelled and refunded")
+				{
+					$transaction->update(['txn_status' => $txn_status]);  
+				}
 			} 
 			catch (\Throwable $e) 
 			{  

@@ -528,7 +528,7 @@ class TransferMobileController extends Controller
 		}  
 	}
 	
-	public function transferToMobileWebhook(Request $request)
+	public function transferToMobileWebhook(Request $request, $uniqueId)
 	{
 		// Log the incoming request for debugging
 		Log::info('Webhook received', ['data' => $request->all()]);
