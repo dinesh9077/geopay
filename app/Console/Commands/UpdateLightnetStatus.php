@@ -55,7 +55,7 @@
 			->whereNotIn('txn_status', ['paid', 'cancelled and refunded'])
 			->first();
 			 
-			if ($transactions->isEmpty()) {
+			if (empty($transactions)) {
 				return;
 			}
 			

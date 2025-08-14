@@ -54,7 +54,7 @@ class UpdateOnafricStatus extends Command
 		->whereNotIn('txn_status', ['paid', 'cancelled and refunded'])
 		->get();
 		
-		if ($transactions->isEmpty()) {
+		if (empty($transactions)) {
 			return;
 		}
 		
