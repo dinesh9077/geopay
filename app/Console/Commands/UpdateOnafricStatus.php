@@ -48,7 +48,7 @@ class UpdateOnafricStatus extends Command
 		$this->info('Starting to update transaction statuses...');
 		
 		// Fetch transactions that need status updates
-		$transactions = Transaction::select('id', 'user_id', 'txn_status', 'platform_provider', 'order_id')
+		$transactions = Transaction::query()
 		->where('platform_provider', 'onafric')
 		->where('is_refunded', 0)
 		->whereDate('created_at', '>=', '2025-08-14')
