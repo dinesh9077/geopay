@@ -23,6 +23,7 @@ return new class extends Migration
             $table->enum('gender', ['Male', 'Female', 'Other'])->nullable();
             $table->string('business_activity_occupation')->nullable();
             $table->string('source_of_fund')->nullable();
+            $table->integer('developer_option')->default(0);
         });
     }
 

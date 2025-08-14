@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\{
    ReceiveMoneyController, TransferBankController, TransferMobileController
 };
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -125,3 +126,5 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
 		}); 
 	});
 });
+
+

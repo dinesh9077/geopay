@@ -6,7 +6,7 @@
 	use App\Http\Controllers\Auth\ResetPasswordController;
 	use App\Http\Controllers\User\{
 		HomeController, SettingController, TransactionController, KycController, 
-		TransferBankController, AirtimeController, TransferMobileController, ReceiveMoneyController
+		TransferBankController, AirtimeController, TransferMobileController, ReceiveMoneyController, ApiCredentialController
 	};
 	use App\Http\Controllers\FrontController;
 	/*
@@ -133,5 +133,8 @@
 		Route::get('/setting', [SettingController::class, 'index'])->name('setting');  
 		Route::post('/password-change', [SettingController::class, 'changePassword'])->name('password-change');  
 		Route::post('/profile-update', [SettingController::class, 'profileUpdate'])->name('profile-update');  
-		Route::post('/basic-info-update', [SettingController::class, 'basicInfoUpdate'])->name('basic-info-update');  
+		Route::post('/basic-info-update', [SettingController::class, 'basicInfoUpdate'])->name('basic-info-update'); 
+		
+		Route::get('/api-credentials', [ApiCredentialController::class, 'index'])->name('api.credentials.index');
+		Route::post('/api-credentials', [ApiCredentialController::class, 'store'])->name('api.credentials.store')->withoutMiddleware('webdecrypt.request');
 	}); 

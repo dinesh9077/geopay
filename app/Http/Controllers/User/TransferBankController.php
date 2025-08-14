@@ -564,7 +564,7 @@ class TransferBankController extends Controller
 	public function transferToBankStore(Request $request)
 	{	
 		$user = Auth::user();
-
+		
 		// Validation rules
 		$validator = Validator::make($request->all(), [
 			'country_code'   => 'required|string|max:10', // Restrict maximum length

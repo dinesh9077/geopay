@@ -1,5 +1,5 @@
 <?php
-	namespace App\Http\Controllers\Api;
+	namespace App\Http\Controllers\ApiProvider;
 	
 	use App\Http\Controllers\Controller;
 	use Illuminate\Http\Request;
@@ -11,7 +11,7 @@
 		LightnetCatalogue, LiveExchangeRate, ExchangeRate, 
 		LightnetCountry, OnafricBank
 	};
-	use App\Http\Traits\ApiResponseTrait;
+	use App\Http\Traits\ApiServiceResponseTrait;
 	use App\Services\{
 		LiquidNetService, OnafricService
 	};
@@ -24,9 +24,10 @@
 	
 	class TransferBankController extends Controller
 	{ 
-		use ApiResponseTrait;  
+		use ApiServiceResponseTrait;  
+		
 		protected $liquidNetService;
-		protected $onafricService;
+		protected $onafricService; 
 		public function __construct()
 		{
 			$this->liquidNetService = new LiquidNetService(); 
@@ -34,161 +35,74 @@
 		} 
 		
 		public function countryList()
-		{ 
-			return $this->successResponse('country fetched successfully.', $this->availableCountries());
+		{  
+			return $this->successResponse('Country fetch successfully.',
+				$this->availableCountries()
+			);  
 		}
 		
 		public function availableCountries()
 		{
-			$lightnetCountry = LightnetCountry::with('country')
-			->select(
+			$lightnetCountry = LightnetCountry::select(
 				'id',
-				'data',
-				'value',
+				'data as payout_country',
+				'value as payout_currency',
 				'label',
-				'service_name',
-				'status',
-				'created_at',
-				'updated_at',
-				'markdown_type',
-				'markdown_charge',
+				DB::raw("1 as service"),
 				DB::raw("'' as iso")
 			)
 			->whereNotNull('label')
-			->get()
-			->map(function ($map) {
-				$map->country_flag = optional($map->country)->country_flag ?? '';
-				return $map;
-			});
-			
-			$onafricCountry = Country::select('id', 'country_flag', 'iso3 as data', 'currency_code as value', 'nicename as label', DB::raw("'onafric' as service_name"), DB::raw("1 as status"), 'created_at', 'updated_at', DB::raw("'flat' as markdown_type"), DB::raw("0 as markdown_charge"), 'iso')
+			->where('status', 1)
+			->get();
+			  
+			$onafricCountry = Country::select('id', 'iso3 as payout_country', 'currency_code as payout_currency', 'nicename as label', DB::raw("2 as service_"), 'iso')
 			->whereIn('nicename', $this->onafricService->bankAvailableCountry())
 			->get();
-			
-
-			// Merge both collections
-			$countries = $lightnetCountry->merge($onafricCountry)->sortBy('label')->values();
 			 
-			$countriesWithFlags = $countries->transform(function ($country)  {
-				// Add full flag URL
-				if ($country->country_flag) {
-					$country->country_flag = asset('country/' . $country->country_flag);
-				} 
-				return $country;
-			});
-		 
+			$countriesWithFlags = $lightnetCountry->merge($onafricCountry)->sortBy('label')->values(); 
 			return $countriesWithFlags; 
 		}
 		
-		public function beneficiaryList(Request $request)
-		{  
-			// Extract request data
-			$userId = Auth::id();
-			$payoutCurrency = $request->payoutCurrency;
-			$payoutCountry = $request->payoutCountry;
-			$categoryName = $request->categoryName;
-			$serviceName = $request->serviceName;
-
-			// Fetch beneficiaries with filters
-			$beneficiaries = Beneficiary::where('user_id', $userId)
-				->where('category_name', $categoryName)
-				->where('service_name', $serviceName)
-				->where('data->payoutCurrency', $payoutCurrency)
-				->where('data->payoutCountry', $payoutCountry)
-				->get(); 
-			 
-
-			// Return response
-			return $this->successResponse('beneficiary list fetched', $beneficiaries);
-		}
-		
-		public function beneficiaryDelete($id)
+		public function bankList(Request $request)
 		{
-			try {
-				DB::beginTransaction();
+			$validator = Validator::make($request->all(), [
+				'payoutCountry' => 'required|string|size:3',  
+				'service'       => 'required|integer|in:1,2',
+				'payoutIso'     => 'nullable|string|size:2|required_if:service,2',
+			], [
+				'payoutCountry.required' => 'Payout country is required.',
+				'payoutCountry.size'     => 'Payout country must be exactly 3 characters.',
+				'service.required'       => 'Service is required.',
+				'service.in'             => 'Service must be either 1 or 2.',
+				'payoutIso.size'         => 'Payout ISO must be exactly 2 characters.',
+				'payoutIso.required_if'  => 'Payout ISO is required when service is 1.',
+			]);
 
-				// Fetch the beneficiary
-				$beneficiary = Beneficiary::find($id); 
-				// Check if the beneficiary exists
-				if (!$beneficiary) {
-					throw new \Exception('Beneficiary not found.');
-				}
-
-				// Log ID before deletion
-				Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to bank beneficiary');
-
-				// Delete the beneficiary
-				$beneficiary->delete();
-
-				DB::commit(); 
-				return $this->successResponse('The beneficiary was deleted successfully.'); 
-			} catch (\Throwable $e) {
-				DB::rollBack();  
-				return $this->errorResponse($e->getMessage()); 
-				}  
-		}
-		
-		public function commission(Request $request)
-		{
-			$beneficiaryId = $request->beneficiaryId;
-			$txnAmount = $request->txnAmount;
-			
-			$beneficiary = Beneficiary::find($beneficiaryId);
-			if (!$beneficiary || empty($beneficiary->dataArr)) {
-				return $this->errorResponse('Beneficiary not found.');
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors()->toArray());
 			}
-			
-			$liveExchangeRate = LiveExchangeRate::select('markdown_rate', 'aggregator_rate')->where('channel', $beneficiary->dataArr['service_name'])->where('currency', $beneficiary->dataArr['payoutCurrency'])->first(); 
-			if(!$liveExchangeRate)
-			{ 
-				$liveExchangeRate = ExchangeRate::select('exchange_rate as markdown_rate', 'aggregator_rate')
-				->where('type', 2)
-				->where('service_name', $beneficiary->service_name)
-				->where('currency', $beneficiary->dataArr['payoutCurrency'])
-				->first();
-				if (!$liveExchangeRate) {
-					return $this->errorResponse('A technical issue has occurred. Please try again later.'); 
-				}
+			$service = $request->service; 
+			switch ($service) {
+				case 1:
+					return $this->successResponse('bank fetched successfully.',
+						$this->liquidNetService->getAgentLists($request)
+					); 
+					
+				case 2:
+					return $this->successResponse('bank fetched successfully.',
+						OnafricBank::select(
+							'mfs_bank_code as locationId',
+							'bank_name as locationName',
+							DB::raw("'' as optionalField")
+						)
+						->where('payout_iso', $request->payoutIso)
+						->where('status', 1)
+						->get() 
+					);
+				
+				default:
+					return $this->successResponse('bank fetched successfully.', []);
 			}
-			
-			$aggregatorRate = $liveExchangeRate->aggregator_rate ?? 0;
-			$aggregatorCurrencyAmount = ($txnAmount * $aggregatorRate);
-			
-			$exchangeRate = $liveExchangeRate->markdown_rate ?? 0;
-			$payoutCurrencyAmount = ($txnAmount * $exchangeRate);
-			$serviceCharge = 0;
-			
-			if($beneficiary->service_name == "lightnet")
-			{
-				$commissionType = config('setting.lightnet_commission_type') ?? 'flat';
-				$commissionCharge = config('setting.lightnet_commission_charge') ?? 0;
-			}
-			else
-			{
-				$commissionType = config('setting.onafric_bank_commission_type') ?? 'flat';
-				$commissionCharge = config('setting.onafric_bank_commission_charge') ?? 0;
-			}
-			
-			$platformFees = $commissionType === "flat"
-			? max($commissionCharge, 0) // Ensure flat fee is not negative
-			: max(($txnAmount * $commissionCharge / 100), 0); // Ensure percentage fee is not negative
-			
-			$totalCharges = $platformFees + $serviceCharge;
-			$comissions = [
-				'payoutCurrency' => $beneficiary->dataArr['payoutCurrency'],
-				'payoutCountry' => $beneficiary->dataArr['payoutCountry'],
-				'txnAmount' => $txnAmount,
-				'aggregatorRate' => $aggregatorRate,
-				'aggregatorCurrencyAmount' => $aggregatorCurrencyAmount,
-				'exchangeRate' => $exchangeRate,
-				'payoutCurrencyAmount' => $payoutCurrencyAmount,
-				'remitCurrency' => config('setting.default_currency'),
-				'platformCharge' => $platformFees,
-				'serviceCharge' => $serviceCharge,
-				'totalCharges' => $totalCharges,
-				'netAmount' => ($totalCharges + $txnAmount),
-			];
-			return $this->successResponse('comission fetched successfully.', $comissions);
 		}
 		
 		public function storeTransaction(Request $request)
@@ -399,41 +313,34 @@
 			}  
 		}
 		
-		public function bankList(Request $request)
+		 
+		public function getFields(Request $request)
 		{
-			$serviceName = $request->serviceName; 
-			switch ($serviceName) {
-				case 'lightnet':
-					return $this->successResponse('bank fetched successfully.',
-						$this->liquidNetService->getAgentLists($request)
-					);
-				
-				case 'onafric':
-					return $this->successResponse('bank fetched successfully.',
-						OnafricBank::select(
-							'mfs_bank_code as locationId',
-							'bank_name as locationName',
-							DB::raw("'' as optionalField")
-						)
-						->where('payout_iso', $request->payoutIso)
-						->where('status', 1)
-						->get() 
-					);
-				
-				default:
-					return $this->successResponse('bank fetched successfully.', []);
+			$validator = Validator::make($request->all(), [
+				'payoutCountry'  => 'required|string|size:3', 
+				'payoutCurrency' => 'required|string|size:3',
+				'service'       => 'required|integer|in:1,2',
+				'locationId'     => 'required|string',
+			], [
+				'payoutCountry.required'  => 'Payout country is required.',
+				'payoutCountry.size'      => 'Payout country must be exactly 3 characters.',
+				'payoutCurrency.required' => 'Payout currency is required.',
+				'payoutCurrency.size'     => 'Payout currency must be exactly 3 characters.',
+				'service.required'        => 'Service is required.',
+				'service.in'              => 'Service must be either 1 or 2.',
+				'locationId.required'     => 'Location ID is required.'
+			]);
+
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors()->toArray()); // Using your trait
 			}
-		}
-		
-		public function getFieldByBank(Request $request)
-		{
+	
 			$payoutCountry = $request->payoutCountry;
-			$payoutCurrency = $request->payoutCurrency;
-			$payoutIso = $request->payoutIso;
-			$serviceName = $request->serviceName;
+			$payoutCurrency = $request->payoutCurrency; 
+			$service = $request->service;
 			$locationId = $request->locationId;
 			
-			if($serviceName == "lightnet")
+			if($service == 1)
 			{  
 				return $this->successResponse('fields fetched Successfully.', 
 					$this->getLightnetFieldView($payoutCountry, $payoutCurrency, $locationId)
@@ -457,9 +364,9 @@
 				["fieldName" => "receiverfirstname", "fieldLabel" => "Recipient Name", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
 				["fieldName" => "receiverlastname", "fieldLabel" => "Recipient Surname", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
 				["fieldName" => "receiveraddress", "fieldLabel" => "Recipient Address", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				/* ["fieldName" => "sender_placeofbirth", "fieldLabel" => "Sender Date Of Birth", "required" => true, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "sender_placeofbirth", "fieldLabel" => "Sender Date Of Birth", "required" => true, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
 				["fieldName" => "purposeOfTransfer", "fieldLabel" => "Purpose Of Transfer", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "sourceOfFunds", "fieldLabel" => "Source Of Funds", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []], */
+				["fieldName" => "sourceOfFunds", "fieldLabel" => "Source Of Funds", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
 				["fieldName" => "idNumber", "fieldLabel" => "Document Id Number", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
 				["fieldName" => "idType", "fieldLabel" => "Document Id Type", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
 				["fieldName" => "idExpiry", "fieldLabel" => "Document Id Expiry", "required" => false, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []]
@@ -476,27 +383,21 @@
 				'payoutCurrency' => (string) $payoutCurrency,
 				'paymentMode' => 'B',
 			];
-
-			// Call the service API
+ 
 			$response = $this->liquidNetService->serviceApi('post', '/GetFieldInfo', $timestamp, $body);
-			
-			// Handle unsuccessful commit response
+			  
 			if (!$response['success']) {
-				return $this->successResponse('Error loading fields. Please try again.');
+				return [];
 			}
-			
-			// Handle unsuccessful commit response
+			 
 			if (($response['response']['code'] ?? 1) != 0) {
-				return $this->successResponse('Error loading fields. Please try again.');
+				return [];
 			}
-				
-			// Process bank list  
+				 
 			$fieldList = $response['response']['fieldList'] ?? collect(); 
 
-			if ($fieldList) {
-				$fieldList = collect($fieldList)->filter(fn($item) => 
-					!in_array(strtolower($item['fieldName']), ['sendercountry', 'senderfirstname', 'senderlastname', 'sendernationality', 'sendermobile', 'sendergender', 'senderaddress', 'sendercity', 'senderstate', 'senderzipcode', 'senderemail', 'senderidexpiredate', 'senderdateofbirth', 'senderidissuecountry', 'senderidtype', 'senderidtyperemarks', 'senderidnumber', 'senderoccupation', 'senderoccupationremarks', 'sendersourceoffund', 'sendersourceoffundremarks', 'sendersecondaryidtype', 'sendersecondaryidnumber', 'senderidissuedate'])
-				); 
+			if (!$fieldList) {
+				return [];
 			}
 			
 			$catalogue = LightnetCatalogue::where('category_name', 'transfer to bank')
@@ -504,8 +405,7 @@
 			->whereNotNull('data')
 			->get()
 			->keyBy('catalogue_type');
-			 
-			$states = $this->lightnetStates($payoutCountry); 
+			  
 			$fieldLists = [];
 			foreach($fieldList as $eky => $field)
 			{
@@ -532,11 +432,6 @@
 					$field['inputType'] = "select";
 					$field['options'] = $this->availableCountries()->where('service_name', 'lightnet')->pluck('label', 'data')->toArray() ?? [];
 				}
-				/* elseif (in_array($fieldName, ["receiverstate", "senderstate"]))
-				{
-					$field['inputType'] = "select";
-					$field['options'] = collect($states)->pluck('value', 'data')->toArray() ?? [];
-				} */
 				elseif ($fieldName == "senderbeneficiaryrelationship") 
 				{
 					$field['inputType'] = "select";
@@ -570,162 +465,5 @@
 				$fieldLists[] = $field;
 			} 
 			return $fieldLists;
-		}
-		
-		public function lightnetStates($payoutCountry)
-		{
-			$timestamp = time();
-			$body =  [
-				'agentSessionId' => (string) $timestamp,
-				'catalogueType' => 'STA',
-				'additionalField1' => (string) $payoutCountry,
-			];
-			
-			$response = $this->liquidNetService->serviceApi('post', '/GetCatalogue', $timestamp, $body);
-			if (!$response['success']) {
-				return LightnetCatalogue::where('category_name', 'transfer to bank')
-				->where('service_name', 'lightnet')
-				->where('service_name', $payoutCountry)
-				->whereNotNull('data')
-				->first()->data ?? [];
-			}
-			
-			if(($response['response']['code'] ?? -1) != 0)
-			{
-				return LightnetCatalogue::where('category_name', 'transfer to bank')
-				->where('service_name', 'lightnet')
-				->where('service_name', $payoutCountry)
-				->whereNotNull('data')
-				->first()->data ?? [];
-			} 
-			
-			$result = $response['response']['result'] ?? [];
-			return $result;
-		}
-		
-		public function beneficiaryStore(Request $request)
-		{      
-			if ($request->service_name == "onafric") {
-				$bankaccountnumber = $request->bankaccountnumber;
-				$payoutIso = $request->payoutIso;
-				$bankId = $request->bankId;
-
-				$response = $this->onafricService->getValidateBankRequest($payoutIso, $bankId, $bankaccountnumber);
-
-				if (
-					!isset($response['success']) ||
-					!$response['success'] ||
-					(isset($response['response']['status_code']) && !in_array($response['response']['status_code'], ["Active"]))
-				) {
-					return $this->errorResponse('Provided bank or account number are not active');
-				}
-			} else { 
-				$payoutCountry = $request->payoutCountry;
-				$senderCountry = $user->country->iso3 ?? '';
-				if ($payoutCountry == $senderCountry) {
-					return $this->errorResponse('Domestic remittance is not allowed. Please select a receiver country different from the sender country.');
-				}
-			}
-
-			try {
-				
-				$user = Auth::user();
-				
-				DB::beginTransaction();
-				$beneficiaryData = $request->except('_token');
-				
-				if($beneficiaryData['service_name'] == "onafric")
-				{
-					$beneficiaryData['sender_country'] = $user->country->id ?? '';
-					$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
-					$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
-					$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
-					/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
-					$beneficiaryData['sender_surname'] = $user->last_name ?? ''; */
-				}
-				$data = []; 
-				$data['category_name'] = $beneficiaryData['category_name'];
-				$data['service_name'] = $beneficiaryData['service_name'];
-				$data['user_id'] = Auth::id(); 
-				$data['created_at'] = now();
-				$data['updated_at'] = now();
-				$data['data'] = $beneficiaryData;
-				 
-				$beneficiary = Beneficiary::create($data);
-				Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to bank beneficiary');
-				
-				DB::commit(); 
-				return $this->successResponse('The beneficiary was completed successfully.');
-			} 
-			catch (\Throwable $e)
-			{ 
-				DB::rollBack();
-				return $this->errorResponse($e->getMessage());
-			} 	
-		}
-		
-		public function beneficiaryUpdate(Request $request, $id)
-		{   	 
-			try {
-				
-				$beneficiary = Beneficiary::find($id);
-				if($request->service_name == "onafric")
-				{
-					$bankaccountnumber = $request->bankaccountnumber; 
-					$payoutIso = $request->payoutIso;
-					$bankId = $request->bankId;
-					// Ensure beneficiary->data is an array
-					$beneficiaryDataArray = is_array($beneficiary->data) ? $beneficiary->data : [];
-		
-					if ($bankaccountnumber !== ($beneficiaryDataArray['bankaccountnumber'] ?? '') ||
-						$bankId !== ($beneficiaryDataArray['bankId'] ?? '') ||
-						$payoutIso !== ($beneficiaryDataArray['payoutIso'] ?? '')) 
-					{
-						$response = $this->onafricService->getValidateBankRequest($payoutIso, $bankId, $bankaccountnumber);
-						
-						if (
-							!isset($response['success']) || 
-							!$response['success'] || 
-							(isset($response['response']['status_code']) && !in_array($response['response']['status_code'], ["Active"]))
-						) {
-							   
-							return $this->errorResponse('Provided bank or account number are not active');
-						}  
-					}
-				}
-			
-				$user = Auth::user();
-				
-				DB::beginTransaction();
-				$beneficiaryData = $request->except('_token');
-				
-				if($beneficiaryData['service_name'] == "onafric")
-				{
-					$beneficiaryData['sender_country'] = $user->country->id ?? '';
-					$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
-					$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
-					$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
-					/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
-					$beneficiaryData['sender_surname'] = $user->last_name ?? ''; */
-				}
-			
-				$data = []; 
-				$data['category_name'] = $beneficiaryData['category_name'];
-				$data['service_name'] = $beneficiaryData['service_name'];
-				$data['user_id'] = Auth::id(); 
-				$data['updated_at'] = now(); 
-				$data['data'] = $beneficiaryData;
-				  
-				$beneficiary->update($data);
-				Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to bank beneficiary');
-				
-				DB::commit(); 
-				return $this->successResponse('The beneficiary was updated successfully.');
-			} 
-			catch (\Throwable $e)
-			{ 
-				DB::rollBack();
-				return $this->errorResponse($e->getMessage());
-			} 	
-		}
+		}   
 	}

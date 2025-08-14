@@ -44,7 +44,16 @@
 					Settings
 				</a>
 			</li>
-
+			
+			@if(auth()->user()->developer_option && auth()->user()->developer_option == 1)
+				<li class="sidebar-item">
+					<a href="{{ route('api.credentials.index') }}"  class="sidebar-link {{ Request::routeIs('api.credentials.index') ? 'active' : '' }}">
+						<img class="in-svg" src="{{ asset('assets/image/icons/native.png') }}" alt="">
+						Api Setup
+					</a>
+				</li>
+			@endif
+			
 			<li class="sidebar-item">
 				<a class="sidebar-link text-danger" href="{{ route('logout') }}"  onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> 
 					<img class="in-svg" src="{{ asset('assets/image/icons/logout.svg') }}" alt="">

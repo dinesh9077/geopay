@@ -79,5 +79,6 @@ class Kernel extends HttpKernel
         'checkAdmin' => \App\Http\Middleware\CheckAdminRole::class,
         'kycStatus' => \App\Http\Middleware\CheckKycStatus::class, 
         'permission' => \App\Http\Middleware\Permission::class,
+		'client.bearer' => \App\Http\Middleware\BearerTokenAuth::class,
     ];
 }
