@@ -240,7 +240,7 @@
 					'unit_convert_currency' => $payoutCurrency,
 					'unit_convert_amount' => $aggregatorCurrencyAmount,
 					'unit_convert_exchange' => $liveExchangeRate->aggregator_rate ?? 0,
-					'beneficiary_request' => $request->all(),
+					'beneficiary_request' => ['data' => $request->all()],
 					'api_request' => $response['request'] ?? [],
 					'api_response' => $response['response'] ?? [],
 					'order_id' => $request->order_id,

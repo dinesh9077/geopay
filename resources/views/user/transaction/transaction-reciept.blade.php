@@ -135,23 +135,18 @@
         </tr> 
         <tr>
             <th class="content-4 d-flex justify-content-between text-nowrap">Sender Mobile <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $transaction->beneficiary_request['data']['sender_mobile'] ?? $transaction->beneficiary_request['sender_mobile'] ?? 'N/A' }}</td>
+            <td class="content-4">{{ $transaction->beneficiary_request['data']['sender_mobile'] ?? 'N/A' }}</td>
         </tr>
         <tr>
 			<th class="content-4 d-flex justify-content-between text-nowrap">Counterparty Name <span class="mx-1">:</span></th>
 			<td class="content-4">
-			@if(isset($transaction->beneficiary_request['data']['recipient_name']) && 		isset($transaction->beneficiary_request['data']['recipient_surname']))
-					{{ isset($transaction->beneficiary_request['data']['recipient_name']) && isset($transaction->beneficiary_request['data']['recipient_surname']) ? 
+				{{ isset($transaction->beneficiary_request['data']['recipient_name']) && isset($transaction->beneficiary_request['data']['recipient_surname']) ? 
 					$transaction->beneficiary_request['data']['recipient_name'] . ' ' . $transaction->beneficiary_request['data']['recipient_surname'] : 'N/A' }}
-			@else
-					{{ isset($transaction->beneficiary_request['recipient_name']) && isset($transaction->beneficiary_request['recipient_surname']) ? 
-					$transaction->beneficiary_request['recipient_name'] . ' ' . $transaction->beneficiary_request['recipient_surname'] : 'N/A' }}	
-			@endif
 			</td>
 		</tr> 
         <tr>
             <th class="content-4 d-flex justify-content-between text-nowrap">Mobile <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $transaction->beneficiary_request['data']['recipient_mobile'] ?? $transaction->beneficiary_request['recipient_mobile'] ?? 'N/A' }}</td>
+            <td class="content-4">{{ $transaction->beneficiary_request['data']['recipient_mobile'] ?? 'N/A' }}</td>
         </tr> 
         <tr>
 			<th class="content-4 d-flex justify-content-between text-nowrap">UNIT AMOUNT <span class="mx-1">:</span></th>
