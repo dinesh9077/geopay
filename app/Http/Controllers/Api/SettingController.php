@@ -11,6 +11,9 @@
 	use Validator;
 	use ImageManager;
 	use Carbon\Carbon;
+	use App\Enums\BusinessOccupation;
+	use App\Enums\SourceOfFunds;
+	use App\Enums\IdType;
 
 	class SettingController extends Controller
 	{ 
@@ -156,6 +159,9 @@
 				'social_instagram' => config('setting.social_instagram') ?? '',
 				'social_facebook' => config('setting.social_facebook') ?? '',
 				'social_linkedin' => config('setting.social_linkedin') ?? '',
+				'id_type' => IdType::options(),
+				'source_of_funds' => SourceOfFunds::options(),
+				'business_occupation' => BusinessOccupation::options(),
 			]; 
 			return $this->successResponse('data fetched.', $data);
 		}
