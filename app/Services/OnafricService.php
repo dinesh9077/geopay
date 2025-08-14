@@ -721,7 +721,7 @@ class OnafricService
 			'verify' => false, // Disable SSL verification if needed
 		])
 		->post($this->onafricAsyncCallService.'/api/webhook/subscribe', $requestBody); // Send requestBody instead of $data
-		Log::info('webhook register response', ['response' => $response->json()]);
+		//Log::info('webhook register response', ['response' => $response->json()]);
 		// Handle the response
 		if ($response->successful()) {
 			return [
