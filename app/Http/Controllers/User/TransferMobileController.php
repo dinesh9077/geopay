@@ -554,7 +554,10 @@ class TransferMobileController extends Controller
 		{
 			$transaction->processAutoRefund($txnStatus);
 		}
-		$transaction->txn_status = $txnStatus;
+		if($txnStatus != "cancelled and refunded")	
+		{
+			$transaction->txn_status = $txnStatus;
+		}
 		$transaction->touch(); // Updates the `updated_at` timestamp
 		$transaction->save();
 		
