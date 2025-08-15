@@ -7,7 +7,7 @@
 		DB, Auth, Log, Validator
 	};
 	use App\Models\{
-		Country, User, LiveExchangeRate, ExchangeRate
+		Country, User, LiveExchangeRate, ExchangeRate, Transaction
 	}; 
 	use App\Http\Traits\ApiServiceResponseTrait;
 	
@@ -55,4 +55,40 @@
 				$liveExchangeRate
 			);
 		}    
+		
+		public function getTransactionStatus(Request $request) 
+		{
+			$validator = Validator::make($request->all(), [ 
+				'thirdPartyId' => 'required|string' 
+			]);
+
+			if ($validator->fails()) {
+				return $this->validateResponse($validator->errors()->toArray());
+			}
+			
+			$trasaction = Transaction::where('order_id', $request->thirdPartyId)->orderByDesc('id')->first();
+			
+			if(!$trasaction)
+			{
+				return $this->errorResponse('transaction not found.', 'ERR_NOT_FOUND');
+			}
+			
+			$data = [
+				'thirdPartyId' => $trasaction->order_id,
+				 "status" =>  [
+					"status" =>  $trasaction->txn_status,
+					"message" =>  $trasaction->api_status
+				],
+				'exchangeRate' => $trasaction->rates,
+				'receiveAmount' => [
+					'amount' => $trasaction->unit_amount,
+					'currencyCode' => $trasaction->unit_convert_currency 
+				],
+				"txExecutedDate" =>  $trasaction->complete_transaction_at
+			];
+			
+			return $this->successResponse('transaction details fetched Successfully.', 
+				$data
+			);
+		}
 	}

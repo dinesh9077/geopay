@@ -13,6 +13,7 @@ Route::middleware(['client.bearer'])->prefix('api-service')->group(function ()
 	Route::get('/profile', fn() => auth()->user());
 	
 	Route::post('exchange-rate', [ExchangeRateController::class, 'exchangeRateList']);
+	Route::post('get-transaction-status', [ExchangeRateController::class, 'getTransactionStatus']);
 	
 	// Transfer Bank
 	Route::prefix('transfer-bank')->group(function () 

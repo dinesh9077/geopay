@@ -17,6 +17,9 @@ use App\Services\{
 	SmsService, EmailService
 };
 use Laravel\Passport\HasApiTokens;
+use App\Enums\BusinessOccupation;
+use App\Enums\SourceOfFunds;
+use App\Enums\IdType;
 
 class RegisterController extends Controller
 {
@@ -59,6 +62,22 @@ class RegisterController extends Controller
 			'country_id' => 'required|integer',
 			'terms' => 'required|integer|in:1',
 			'mobile_number' => 'required|integer',  
+			'id_type' => 'required|in:' . implode(',', array_column(IdType::cases(), 'value')),
+			'id_number' => 'required|string|max:50',
+			'expiry_id_date' => 'required|date',
+			'issue_id_date' => 'required|date',
+
+			'city' => 'required|string|max:100',
+			'state' => 'required|string|max:100',
+			'zip_code' => 'required|string|max:20',
+
+			'date_of_birth' => 'required|date',
+			'gender' => 'required|in:Male,Female,Other',
+			'address' => 'required|string',
+
+			'business_activity_occupation' => 'required|in:' . implode(',', array_column(BusinessOccupation::cases(), 'value')),
+
+			'source_of_fund' => 'required|in:' . implode(',', array_column(SourceOfFunds::cases(), 'value')),
 		],[
 			'terms.integer' => 'You must agree to the terms and conditions to proceed.'
 		]);
@@ -69,6 +88,9 @@ class RegisterController extends Controller
 			}
 			if ($request->input('mobile_number') && $request->input('is_mobile_verify') == 0) {
 				$validator->errors()->add('mobile_number', 'Mobile verification is required before proceeding.');
+			}
+			if (User::where('mobile_number', $request->mobile_number)->exists()) { 
+				$validator->errors()->add('mobile_number', 'The mobile number is already exists.');
 			}
 		});
 		
@@ -88,7 +110,7 @@ class RegisterController extends Controller
 			}
 			  
 			$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
-            $userData = $request->only('first_name', 'last_name', 'email', 'country_id', 'mobile_number', 'referalcode', 'is_email_verify', 'is_mobile_verify', 'terms', 'address');
+            $userData = $request->only('first_name', 'last_name', 'email', 'country_id', 'mobile_number', 'referalcode', 'is_email_verify', 'is_mobile_verify', 'terms', 'address', 'id_type', 'id_number', 'expiry_id_date', 'issue_id_date', 'city', 'state', 'zip_code', 'date_of_birth', 'business_activity_occupation', 'source_of_fund', 'gender');
 			$userData['password'] = Hash::make($request->password);
 			$userData['xps'] = base64_encode($request->password);
 			$userData['formatted_number'] = $formattedNumber;
@@ -141,7 +163,23 @@ class RegisterController extends Controller
 			'country_id' => 'required|integer',
 			'terms' => 'required|integer|in:1',
 			'mobile_number' => 'required|integer',  
-			'company_name' => 'required|string',  
+			'company_name' => 'required|string', 
+			'id_type' => 'required|in:' . implode(',', array_column(IdType::cases(), 'value')),
+			'id_number' => 'required|string|max:50',
+			'expiry_id_date' => 'required|date',
+			'issue_id_date' => 'required|date',
+
+			'city' => 'required|string|max:100',
+			'state' => 'required|string|max:100',
+			'zip_code' => 'required|string|max:20',
+
+			'date_of_birth' => 'required|date',
+			'gender' => 'required|in:Male,Female,Other',
+			'address' => 'required|string',
+
+			'business_activity_occupation' => 'required|in:' . implode(',', array_column(BusinessOccupation::cases(), 'value')),
+
+			'source_of_fund' => 'required|in:' . implode(',', array_column(SourceOfFunds::cases(), 'value')),
 		],[
 			'terms.integer' => 'You must agree to the terms and conditions to proceed.'
 		]);
@@ -152,6 +190,9 @@ class RegisterController extends Controller
 			}
 			if ($request->input('mobile_number') && $request->input('is_mobile_verify') == 0) {
 				$validator->errors()->add('mobile_number', 'Mobile verification is required before proceeding.');
+			}
+			if (User::where('mobile_number', $request->mobile_number)->exists()) { 
+				$validator->errors()->add('mobile_number', 'The mobile number is already exists.');
 			}
 		});
 		
@@ -171,7 +212,7 @@ class RegisterController extends Controller
 			}
 			  
 			$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
-            $userData = $request->only('first_name', 'last_name', 'email', 'country_id', 'mobile_number', 'company_name', 'is_email_verify', 'is_mobile_verify', 'terms');
+            $userData = $request->only('first_name', 'last_name', 'email', 'country_id', 'mobile_number', 'company_name', 'is_email_verify', 'is_mobile_verify', 'terms', 'address', 'id_type', 'id_number', 'expiry_id_date', 'issue_id_date', 'city', 'state', 'zip_code', 'date_of_birth', 'business_activity_occupation', 'source_of_fund', 'gender');
 			$userData['password'] = Hash::make($request->password);
 			$userData['xps'] = base64_encode($request->password);
 			$userData['formatted_number'] = $formattedNumber;

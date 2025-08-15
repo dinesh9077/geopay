@@ -142,35 +142,8 @@
 					}
 				}
 				
-				/* $transactionLimit = $user->is_company == 1 
-					? config('setting.company_pay_monthly_limit') 
-					: ($user->userLimit->daily_pay_limit ?? 0);
-
-				$transactionAmountQuery = Transaction::whereIn('platform_name', ['international airtime', 'transfer to bank', 'transfer to mobile'])
-				->where('user_id', $user->id); 
-				
-				if ($user->is_company == 1) {
-					$transactionAmountQuery->whereMonth('created_at', Carbon::now()->month);
-				} else {
-					$transactionAmountQuery->whereDate('created_at', Carbon::today());
-				}
-
-				// Calculate the total transaction amount
-				$transactionAmount = $transactionAmountQuery->sum('txn_amount');
-
-				// Check if the transaction amount exceeds the limit
-				if ($transactionAmount >= $transactionLimit) {
-					$limitType = $user->is_company == 1 ? 'monthly' : 'daily';
-					return $this->errorResponse(
-						"You have reached your {$limitType} transaction limit of {$remitCurrency} {$transactionLimit}. " .
-						"Current total transactions: {$remitCurrency} {$transactionAmount}."
-					);
-				}
-				
-				$beneficiary = Beneficiary::find($request->beneficiaryId);
-				if (!$beneficiary || empty($beneficiary->data)) {
-					return $this->errorResponse('Something went wrong.');
-				} */
+				$request->exchange_rate = $liveExchangeRate->api_markdown_rate;
+				$request->converted_amount = $liveExchangeRate->api_markdown_rate * $request->amount;
 				
 				$response = $this->onafricService->apiSendMobileTransaction($request, $user);
 				  
@@ -189,6 +162,7 @@
 				}
 				 
 				$onafricStatus = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'Accepted';
+				$apiStatus = $onafricStatus;
 				$txnStatus = OnafricStatus::from($onafricStatus)->label();
 				 
 				$txnAmount = $request->input('amount');
@@ -248,6 +222,7 @@
 					'service_charge' => 0,
 					'total_charge' => 0,
 					'is_api_service' => 1,
+					'api_status' => $apiStatus,
 					'created_at' => now(),
 					'updated_at' => now(),
 				]);
