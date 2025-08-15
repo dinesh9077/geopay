@@ -44,9 +44,7 @@
 
 					// Skip if failed or unexpected response code
 					if (
-						!$response['success'] ||
-						($response['response']['code'] ?? -1) !== 0 ||
-						empty($response['response']['status'])
+						!$response['success'] || empty($response['response']['status'] || !isset($response['response']['status'])
 					) {
 						continue;
 					}

@@ -319,7 +319,7 @@
 				
 				DB::commit();  
 				$data = [
-					"thirdPartyId" => $confirmationId,  
+					"thirdPartyId" => $request['order_id'],  
 					"status_message" => $txnStatus,
 					"timestamp" => now()
 				]; 
