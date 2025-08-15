@@ -748,22 +748,21 @@ class TransferBankController extends Controller
 				}
 
 				// Safely fetch the transaction and update it
-				if ($transaction) {
+				if ($transaction) { 
 					$commitTransaction = Transaction::find($transaction->id);
-					$statusMessage = $commitResponse['response']['status']; 
-					
-					$statusLabel = LightnetStatus::from($statusMessage)->label(); 
-					if($statusLabel === "cancelled and refunded")
-					{
+					$statusMessage = $commitResponse['response']['status'];
+
+					$statusLabel = LightnetStatus::from($statusMessage)->label();
+
+					if ($statusLabel === "cancelled and refunded") {
 						$commitTransaction->processAutoRefund($statusLabel, $statusMessage);
 					}
-					
-					$updateData = [
-						'api_response_second' => $commitResponse['response'],
-						'txn_status' => $statusLabel,
-						'api_status' => $statusMessage
-					];
-					$commitTransaction->update($updateData);
+
+					$commitTransaction->api_response_second = $commitResponse['response'];
+					$commitTransaction->txn_status = $statusLabel === "cancelled and refunded" ? $commitTransaction->txn_status : $statusLabel;
+					$commitTransaction->api_status = $statusMessage;
+
+					$commitTransaction->save();
 				}
 				
 				$successMsg = $commitResponse['response']['message'];
@@ -808,23 +807,23 @@ class TransferBankController extends Controller
 				$errorMsg = $commitResponse['response']['message'];
 				throw new \Exception($errorMsg);
 			}
-
-			// Update the transaction status
+ 
 			$statusMessage = $commitResponse['response']['status'];
-			
-			$statusLabel = LightnetStatus::from($statusMessage)->label(); 
-			if($statusLabel === "cancelled and refunded")
-			{
+
+			$statusLabel = LightnetStatus::from($statusMessage)->label();
+
+			if ($statusLabel === "cancelled and refunded") {
 				$transaction->processAutoRefund($statusLabel, $statusMessage);
 			}
-			$transaction->update([
-				'api_response_second' => $commitResponse['response'],
-				'txn_status' => $statusLabel,
-				'api_status' => $statusMessage,
-			]);
 
+			$transaction->api_response_second = $commitResponse['response'];
+			$transaction->txn_status = $statusLabel === "cancelled and refunded" ? $transaction->txn_status : $statusLabel;
+			$transaction->api_status = $statusMessage;
+
+			$transaction->save();
+					
 			// Log the transaction update
-			Helper::updateLogName($transaction->id, Transaction::class, 'Transfer to bank commit transaction');
+			Helper::updateLogName($transaction->id, Transaction::class, 'api transfer to bank commit transaction');
 
 			DB::commit();
 

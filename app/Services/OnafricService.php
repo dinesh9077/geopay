@@ -555,7 +555,7 @@ class OnafricService
 				]
 			]
 		]; 
-		
+
 		//Log::info('send mobile request', ['request' => $requestBody]);
 		// Generate the mfsSign
 		$mfsSign = $this->generateMfsSign($batchId);
@@ -889,6 +889,116 @@ class OnafricService
 					"reference" => null,
 					"purposeOfTransfer" => $purposeOfTransfer ?? '',
 					"sourceOfFunds" => $sourceOfFunds ?? '',
+				]
+			]
+		];
+		
+		//Log::info('send bank request', ['request' => $requestBody]);
+		// Generate the mfsSign
+		$mfsSign = $this->generateMfsSign($batchId);
+	  
+		// Add mfsSign to requestBody
+		$requestBody['mfsSign'] = $mfsSign;
+ 
+		// Generate the bearer token 
+		$bearerToken = $this->generateBearerToken($requestTimestamp); 
+		 
+		// Send the API request using Laravel's HTTP client
+		$response = Http::withHeaders([
+			'Authorization' => 'Bearer ' . $bearerToken, // Add Bearer Token to the header
+			'timestamp' => $requestTimestamp,
+			'Content-Type' => 'application/json',
+		])
+		->withOptions([
+			'verify' => false, // Disable SSL verification if needed
+		])
+		->post($this->onafricAsyncCallService.'/callService', $requestBody); // Send requestBody instead of $data
+	  
+		//Log::info('send bank response', ['response' => $response->json()]);
+		// Handle the response
+		if ($response->successful()) {
+			return [
+				'success' => true,
+				'request' => $requestBody, // Return the request sent
+				'response' => $response->json(), // Return the API response
+			];
+		}
+
+		// If the response was unsuccessful, return an error response
+		return [
+			'success' => false,
+			'request' => $requestBody, // Return the request sent
+			'response' => json_decode($response->body(), true), // Return the error response body
+		];
+	}
+	
+	public function apiSendBankTransaction($request)
+	{    
+		$uuid = Str::uuid()->toString(); 
+		$timestamp = now()->format('YmdHis'); 
+		$batchId = "BATCH-" . $uuid . "-" . $timestamp;  
+		$requestTimestamp = $request->timestamp;
+		$thirdPartyTransId = $request->order_id;  
+		$txnAmount = $request['transferamount'];
+		$sendFee = $this->sendFees; 
+		$payoutCurrency = $request['payoutCurrency'] ?? ''; 
+		$mobileNumber = ltrim(($request['receivercontactnumber'] ?? ''), '+');
+		$user = Auth::user();  
+		
+		$requestBody = [
+			"corporateCode" => $this->onafricCorporate,
+			"password" => $this->onafricPassword, 
+			"batchId" => $batchId,
+			"requestBody" => [
+				[
+					"instructionType" => [
+						"destAcctType" => 2,
+						"amountType" => 2
+					],
+					"amount" => [
+						"amount" => (string) $txnAmount,
+						"currencyCode" => $payoutCurrency
+					],
+					"sendFee" => null,
+					"sender" => [
+						"msisdn" => $request['sender_mobile'] ?? '',
+						"fromCountry" => $request['fromCountry'] ?? '',
+						"name" => $request['senderfirstname'] ?? '',
+						"surname" => $request['senderlastname'] ?? '',
+						"address" => $request['senderaddress'] ?? '',
+						"city" => $request['sendercity'] ?? '',
+						"state" => $request['senderstate'] ?? '',
+						"postalCode" => $request['senderzipcode'] ?? '',
+						"email" => $request['senderemail'] ?? '',
+						"dateOfBirth" => null,
+						"document" => null,
+						"placeOfBirth" => $request['senderdateofbirth'] ?? '',
+					], 
+					"recipient" => [
+						"msisdn" => $mobileNumber ?? '',
+						"toCountry" => $request['payoutIso'] ?? '',
+						"name" => $request['receiverfirstname'] ?? '',
+						"surname" => $request['receiverlastname'] ?? '',
+						"address" => $request['receiveraddress'] ?? '',
+						"city" => null,
+						"state" => null,
+						"postalCode" => null,
+						"email" => null,
+						"dateOfBirth" => null,
+						"document" => [
+							'idNumber' => $request['receiveridnumber'] ?? '',
+							'idType' => $request['receiveridtype'] ?? '',
+							'idExpiry' => $request['receiveridexpiredate'] ?? '',
+						],
+						"destinationAccount" => [
+							'accountNumber' => $beneficiary['bankaccountnumber'] ?? '',
+							'mfsBankCode' => $beneficiary['bankId'] ?? '',
+						]
+					],
+					"thirdPartyTransId" => $thirdPartyTransId,
+					"reference" => null,
+					"purposeOfTransfer" => $request['senderoccupationremarks'] ?? '',
+					"sourceOfFunds" => $request['sendersourceoffundremarks'] ?? '',
 				]
 			]
 		];

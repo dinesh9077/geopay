@@ -13,6 +13,11 @@ class TransactionObserver
      */
     public function created(Transaction $transaction)
     { 
+		if($transaction->is_api_service == 0)
+		{
+			return;
+		}
+		
         if (!in_array($transaction->platform_name, ['transfer to mobile', 'transfer to bank']) || $transaction->txn_status != "cancelled and refunded") {
             return;
         }
@@ -44,6 +49,11 @@ class TransactionObserver
 	
 	public function updated(Transaction $transaction)
     { 
+		if($transaction->is_api_service == 0)
+		{
+			return;
+		}
+		
         if (!in_array($transaction->platform_name, ['transfer to mobile', 'transfer to bank'])) {
             return;
         }

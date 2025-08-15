@@ -108,76 +108,77 @@
 		public function createTransaction(Request $request)
 		{	
 			$user = Auth::user();
-
+			
+			$rules = [
+				'service' => 'required|integer|in:1,2',
+				'amount' => 'required|numeric|min:0.01',
+				'exchange_rate_id' => 'required|integer',
+				'exchange_rate' => 'required|numeric|min:0',
+				'transferamount' => 'required|numeric|min:0',
+				'remitcurrency' => 'required|string|size:3|alpha',
+				'payoutCurrency' => 'required|string|size:3|alpha',
+				'payoutIso'     => 'nullable|string|size:2|required_if:service,2',
+				'fromCountry'     => 'nullable|string|size:2|required_if:service,2',
+				'bankId' => 'required|string|max:20',
+				'remittertype' => 'required|string|in:I,C',
+				'senderfirstname' => 'required|string|max:50',
+				'sendermiddlename' => 'nullable|string|max:50',
+				'senderlastname' => 'required|string|max:50',
+				'sendergender' => 'required|string|in:Male,Female,Other',
+				'senderaddress' => 'required|string|max:255',
+				'sendercity' => 'required|string|max:100',
+				'senderstate' => 'required|string|max:100',
+				'senderzipcode' => 'required|string|max:20',
+				'sendercountry' => 'required|string|size:3|alpha',
+				'sendermobile' => 'required|string|regex:/^[0-9]{10,15}$/',
+				'sendernationality' => 'required|string|size:3|alpha',
+				'senderidtype' => 'required|string|max:5',
+				'senderidtyperemarks' => 'required|string|max:100',
+				'senderidnumber' => 'required|string|max:50',
+				'senderidissuecountry' => 'required|string|size:3|alpha',
+				'senderidissuedate' => 'required|date',
+				'senderidexpiredate' => 'required|date',
+				'senderdateofbirth' => 'required|date',
+				'senderoccupation' => 'required|string|max:5',
+				'senderoccupationremarks' => 'required|string|max:255',
+				'sendersourceoffund' => 'required|string|max:5',
+				'sendersourceoffundremarks' => 'required|string|max:255',
+				'senderemail' => 'required|email|max:100'
+			];
+ 
 			// Validation rules
-			$validator = Validator::make($request->all(), [
-				'country_code'   => 'required|string|max:10', // Restrict maximum length
-				'beneficiaryId'  => 'required|integer|exists:beneficiaries,id', // Explicit column for clarity
-				'txnAmount'      => 'required|numeric|gt:0', // Transaction amount must be positive 
-				'notes'          => 'nullable|string|max:255', // Restrict notes to 255 characters
-			]);
-
-			// Custom validation logic
-			$validator->after(function ($validator) use ($request, $user) {
-				$netAmount = (float) $request->input('netAmount', 0);
-				$aggregatorCurrencyAmount = (float) $request->input('aggregatorCurrencyAmount', 0);
-				  
-				if ($netAmount > $user->balance) {
-					$validator->errors()->add('txnAmount', 'Insufficient balance to complete this transaction.');
-				}
-
-				if (!$request->filled('aggregatorCurrencyAmount')) {
-					$validator->errors()->add('txnAmount', 'The payout currency amount field is required.');
-				} elseif ($aggregatorCurrencyAmount <= 0) {
-					$validator->errors()->add('txnAmount', 'The payout currency amount must be greater than 0.');
-				}
-			});
-
+			$validator = Validator::make($request->all(), $rules);
+ 
 			// Return validation response if fails
 			if ($validator->fails()) {
-				return $this->validateResponse($validator->errors());
+				return $this->validateResponse($validator->errors()->toArray());
+			}
+			
+			if ($request->amount > $user->balance) {
+				return $this->errorResponse('Insufficient balance to complete this transaction.', 'ERR_INSUFFICIENT_BALANCE'); 
 			}
 		 
 			try {
 				DB::beginTransaction(); 
 				$request['order_id'] = "GPTB-".$user->id."-".time();
+				$request['payoutCountry'] = $request->receivercountry ?? '';
 				$request['timestamp'] = time();
 				
 				$remitCurrency = config('setting.default_currency');
 				
-				$transactionLimit = $user->is_company == 1 
-					? config('setting.company_pay_monthly_limit') 
-					: ($user->userLimit->daily_pay_limit ?? 0);
-
-				$transactionAmountQuery = Transaction::whereIn('platform_name', ['international airtime', 'transfer to bank', 'transfer to mobile'])
-				->where('user_id', $user->id); 
-				// Adjust the date filter based on whether the user is a company or an individual
-				if ($user->is_company == 1) {
-					$transactionAmountQuery->whereMonth('created_at', Carbon::now()->month);
-				} else {
-					$transactionAmountQuery->whereDate('created_at', Carbon::today());
-				}
-
-				// Calculate the total transaction amount
-				$transactionAmount = $transactionAmountQuery->sum('txn_amount');
-
-				// Check if the transaction amount exceeds the limit
-				if ($transactionAmount >= $transactionLimit) {
-					$limitType = $user->is_company == 1 ? 'monthly' : 'daily';
-					return $this->errorResponse(
-						"You have reached your {$limitType} transaction limit of {$remitCurrency} {$transactionLimit}. " .
-						"Current total transactions: {$remitCurrency} {$transactionAmount}."
-					);
+				$liveExchangeRate = LiveExchangeRate::find($request->exchange_rate_id); 
+				if(!$liveExchangeRate)
+				{ 
+					$liveExchangeRate = ExchangeRate::find($request->exchange_rate_id);
+					if (!$liveExchangeRate) {
+						return $this->errorResponse('A technical issue has occurred. Please try again later.', 'ERR_RATE', 401); 
+					}
 				}
 				
-				$beneficiary = Beneficiary::find($request->beneficiaryId);
-				if (!$beneficiary || empty($beneficiary->data)) {
-					return $this->errorResponse('Something went wrong.');
-				}
-				
-				if($beneficiary->service_name === "lightnet")
+				$request['service_name'] = $request->service == 1 ? 'lightnet' : 'onafric';
+				if($request['service_name'] === "lightnet")
 				{
-					$response = $this->liquidNetService->sendTransaction($request, $beneficiary->data);
+					$response = $this->liquidNetService->apiSendTransaction($request);
 					
 					if (!$response['success']) {
 						$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
@@ -191,10 +192,11 @@
 					}
 					$confirmationId = $response['response']['confirmationId'];
 					$txnStatus = 'processing';
+					$apiStatus = 'processing';
 				}
 				else
 				{
-					$response = $this->onafricService->sendBankTransaction($request, $beneficiary->data);
+					$response = $this->onafricService->apiSendBankTransaction($request);
 				  
 					if (!$response['success']) {
 						$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
@@ -212,25 +214,26 @@
 					$confirmationId = $request['order_id'];
 					 
 					$onafricStatus  = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'Accepted';
+					$apiStatus = $onafricStatus; 
 					$txnStatus = OnafricStatus::from($onafricStatus)->label();
 				}
 				
-				$txnAmount = $request->input('txnAmount');
-				$netAmount = $request->input('netAmount');
+				$txnAmount = $request->input('amount');
+				$netAmount = $request->input('amount');
 				
 				// Deduct balance
 				$user->decrement('balance', $netAmount); 
 				
 				// Check if necessary fields exist to prevent undefined index warnings 
-				$beneficiaryFirstName = $beneficiary->data['receiverfirstname'] ?? ($beneficiary->data['beneficiaryFirstName'] ?? '');
-				$beneficiaryLastName = $beneficiary->data['receiverlastname'] ?? ($beneficiary->data['beneficiaryLastName'] ?? '');
-				$bankName = $beneficiary->data['bankName'] ?? 'Unknown Bank';
-				$bankId = $beneficiary->data['bankId'] ?? '';
-				$mobileNumber = ltrim(($beneficiary->data['mobile_code'] ?? ''), '+').($beneficiary->data['receivercontactnumber'] ?? '');
-				$payoutCurrency = $beneficiary->data['payoutCurrency'] ?? '';
-				$payoutCurrencyAmount = $request->payoutCurrencyAmount;
-				$aggregatorCurrencyAmount = $request->aggregatorCurrencyAmount;
-				$exchangeRate = $request->exchangeRate; 
+				$beneficiaryFirstName = $request['receiverfirstname'] ?? ($request['beneficiaryFirstName'] ?? '');
+				$beneficiaryLastName = $request['receiverlastname'] ?? ($request['beneficiaryLastName'] ?? '');
+				$bankName = $request['bankName'] ?? 'Unknown Bank';
+				$bankId = $request['bankId'] ?? '';
+				$mobileNumber = ltrim(($request['receivercontactnumber'] ?? ''), '+');
+				$payoutCurrency = $request['payoutCurrency'] ?? '';
+				$payoutCurrencyAmount = $request->transferamount;
+				$aggregatorCurrencyAmount = ($liveExchangeRate->aggregator_rate * $txnAmount);
+				$exchangeRate = $request->exchange_rate; 
 				
 				// Concatenate beneficiary name safely
 				$beneficiaryName = trim("$beneficiaryFirstName $beneficiaryLastName"); // Using trim to remove any leading/trailing spaces
@@ -247,13 +250,13 @@
 					'user_id' => $user->id,
 					'receiver_id' => $user->id,
 					'platform_name' => 'transfer to bank',
-					'platform_provider' => $beneficiary->service_name,
+					'platform_provider' => $request['service_name'],
 					'transaction_type' => 'debit',
 					'country_id' => $user->country_id,
 					'txn_amount' => $netAmount,
 					'txn_status' => $txnStatus,
 					'comments' => $comments,
-					'notes' => $request->input('notes'),
+					'notes' => $request->input('notes', ''),
 					'unique_identifier' => $confirmationId,
 					'product_name' => $bankName, 
 					'product_id' => $bankId,
@@ -264,22 +267,24 @@
 					'rates' => $exchangeRate,
 					'unit_convert_currency' => $payoutCurrency,
 					'unit_convert_amount' => $aggregatorCurrencyAmount,
-					'unit_convert_exchange' => $request->aggregatorRate ?? 0,
-					'beneficiary_request' => $beneficiary,
-					'api_request' => $response['request'],
-					'api_response' => $response['response'],
+					'unit_convert_exchange' => $liveExchangeRate->aggregator_rate ?? 0,
+					'beneficiary_request' => ['data' => $request->all()],
+					'api_request' => $response['request'] ?? [],
+					'api_response' => $response['response'] ?? [],
 					'order_id' => $request->order_id,
-					'fees' => $request->platformCharge ?? 0,
-					'service_charge' => $request->serviceCharge ?? 0,
-					'total_charge' => $request->totalCharges ?? 0,
+					'fees' => 0,
+					'service_charge' => 0,
+					'total_charge' => 0,
+					'is_api_service' => 1,
+					'api_status' => $apiStatus,
 					'created_at' => now(),
 					'updated_at' => now(),
 				]);
 
 				// Log the transaction creation
-				Helper::updateLogName($transaction->id, Transaction::class, 'transfer to bank transaction', $user->id);
+				Helper::updateLogName($transaction->id, Transaction::class, 'api transfer to bank transaction', $user->id);
 				 
-				if($beneficiary->service_name === "lightnet")
+				if($request['service_name'] === "lightnet")
 				{
 					$commitResponse = $this->liquidNetService->commitTransaction($confirmationId, $remitCurrency);
 
@@ -292,12 +297,19 @@
 					// Safely fetch the transaction and update it
 					if ($transaction) {
 						$commitTransaction = Transaction::find($transaction->id);
-						$statusLabel = LightnetStatus::from($commitResponse['response']['status'])->label(); 
-						if($statusLabel === "cancelled and refunded")
-						{
-							$commitTransaction->processAutoRefund($statusLabel);
+						$statusMessage = $commitResponse['response']['status'];
+
+						$statusLabel = LightnetStatus::from($statusMessage)->label();
+
+						if ($statusLabel === "cancelled and refunded") {
+							$commitTransaction->processAutoRefund($statusLabel, $statusMessage);
 						}
-						$commitTransaction->update(['api_response_second' => $commitResponse['response'], 'txn_status' => $statusLabel]);
+
+						$commitTransaction->api_response_second = $commitResponse['response'];
+						$commitTransaction->txn_status = $statusLabel === "cancelled and refunded" ? $commitTransaction->txn_status : $statusLabel;
+						$commitTransaction->api_status = $statusMessage;
+
+						$commitTransaction->save();
 					}
 					
 					$successMsg = $commitResponse['response']['message'];
@@ -306,10 +318,16 @@
 				Notification::send($user, new AirtimeRefundNotification($user, $netAmount, $transaction->id, $comments, $transaction->notes, ucfirst($txnStatus)));
 				
 				DB::commit();  
-				return $this->successResponse($successMsg ?? 'TXN Successfully Accepted.');
+				$data = [
+					"thirdPartyId" => $confirmationId,  
+					"status_message" => $txnStatus,
+					"timestamp" => now()
+				]; 
+
+				return $this->successResponse($successMsg ?? 'TXN Successfully Accepted.', $data); 
 			} catch (\Throwable $e) {
 				DB::rollBack();  
-				return $this->errorResponse($e->getMessage()); 
+				return $this->errorResponse($e->getMessage(), 'ERR_INTERNAL_SERVER'); 
 			}  
 		}
 		
@@ -364,12 +382,12 @@
 				["fieldName" => "receiverfirstname", "fieldLabel" => "Recipient Name", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
 				["fieldName" => "receiverlastname", "fieldLabel" => "Recipient Surname", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
 				["fieldName" => "receiveraddress", "fieldLabel" => "Recipient Address", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "sender_placeofbirth", "fieldLabel" => "Sender Date Of Birth", "required" => true, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "purposeOfTransfer", "fieldLabel" => "Purpose Of Transfer", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "sourceOfFunds", "fieldLabel" => "Source Of Funds", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "idNumber", "fieldLabel" => "Document Id Number", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "idType", "fieldLabel" => "Document Id Type", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "idExpiry", "fieldLabel" => "Document Id Expiry", "required" => false, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []]
+				["fieldName" => "senderdateofbirth", "fieldLabel" => "Sender Date Of Birth", "required" => true, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "senderoccupationremarks", "fieldLabel" => "Purpose Of Transfer", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "sendersourceoffundremarks", "fieldLabel" => "Source Of Funds", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "receiveridnumber", "fieldLabel" => "Document Id Number", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "receiveridtype", "fieldLabel" => "Document Id Type", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+				["fieldName" => "receiveridexpiredate", "fieldLabel" => "Document Id Expiry", "required" => false, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []]
 			]; 
 		}
 		
@@ -399,10 +417,9 @@
 			if (!$fieldList) {
 				return [];
 			}
-			
-		 
+			 
 			$fieldList = collect($fieldList)->filter(fn($item) => 
-				!in_array(strtolower($item['fieldName']), ['sendercountry', 'senderfirstname', 'senderlastname', 'sendernationality', 'sendermobile', 'sendergender', 'senderaddress', 'sendercity', 'senderstate', 'senderzipcode', 'senderemail', 'senderidexpiredate', 'senderdateofbirth', 'senderidissuecountry', 'senderidtype', 'senderidtyperemarks', 'senderidnumber', 'senderoccupation', 'senderoccupationremarks', 'sendersourceoffund', 'sendersourceoffundremarks', 'sendersecondaryidtype', 'sendersecondaryidnumber', 'senderidissuedate'])
+				!in_array(strtolower($item['fieldName']), ['sendercountry', 'senderfirstname', 'senderlastname', 'sendernationality', 'sendermobile', 'sendergender', 'senderaddress', 'sendercity', 'senderstate', 'senderzipcode', 'senderemail', 'senderidexpiredate', 'senderdateofbirth', 'senderidissuecountry', 'senderidissuedate'])
 			);  
 			
 			$catalogue = LightnetCatalogue::where('category_name', 'transfer to bank')

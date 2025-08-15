@@ -193,7 +193,7 @@ class LiquidNetService
 			"senderSourceOfFund" => $user->source_of_fund ?? '',
 			"senderSourceOfFundRemarks" => $sourceOfFunds ?? '',
 			"senderEmail" => $user->email ?? '',
-			"senderNativeFirstname" => $beneficiary['senderNativeFirstname'] ?? '',
+			"senderNativeFirstname" => $beneficiary['sendernativefirstname'] ?? '',
 			"senderBeneficiaryRelationship" => $beneficiary['senderbeneficiaryrelationship'] ?? '',
 			"senderBeneficiaryRelationshipRemarks" => $beneficiary['senderbeneficiaryrelationshipremarks'] ?? '',
 			"purposeOfRemittance" => $beneficiary['purposeofremittance'] ?? '',
@@ -242,6 +242,123 @@ class LiquidNetService
 			"remarks" => $request->notes,
 			"receiverDateOfBirth" => $beneficiary['receiverdateofbirth'] ?? '',
 			"receiverGender" => $beneficiary['receivergender'] ?? '',
+			"receiverAccountType" => ""
+		];
+		  
+		$signatureString = $this->hmacAuthGenerate($method, $apiUrl, $requestTimestamp, $requestBody);
+		$response = Http::withHeaders([
+					'Authorization' => "hmacauth {$signatureString}",
+					'Content-Type' => 'application/json',
+				])
+					->withOptions([
+							'verify' => false,
+						])
+			->{$method}($apiUrl, $requestBody);
+
+		// Handle Successful Response
+		if ($response->successful()) {
+			return [
+				'success' => true,
+				'request' => $requestBody,
+				'response' => $response->json()
+			];
+		}
+		return [
+			'success' => false,
+			'request' => $requestBody,
+			'response' => json_decode($response->body(), true)
+		];
+	}
+	
+	public function apiSendTransaction($request)
+	{ 
+		$apiUrl = $this->baseUrl . '/SendTransaction';
+		$method = 'post';
+		$requestTimestamp = $request->timestamp;
+		$orderId = $request->order_id;
+		
+		$user = Auth::user();
+  
+		$aggregatorCurrencyAmount = (int) round($request['transferamount']);
+		$mobileNumber = ltrim(($request['receivercontactnumber'] ?? ''), '+');
+		  
+		$requestBody = [
+			"agentSessionId" => (string) $requestTimestamp,
+			"agentTxnId" => $orderId,
+			"locationId" => $request['bankId'],
+			"remitterType" => $request['remittertype'] ?? '',
+			"senderFirstName" => $request['senderfirstname'] ?? '',
+			"senderMiddleName" => $request['sendermiddlename'] ?? '',
+			"senderLastName" => $request['senderlastname'] ?? '',
+			"senderGender" => $request['sendergender'] ?? '',
+			"senderAddress" => $request['senderaddress'] ?? '',
+			"senderCity" => $request['sendercity'] ?? '',
+			"senderState" => $request['senderstate'] ?? '',
+			"senderZipCode" => $request['senderzipcode'] ?? '',
+			"senderCountry" => $request['sendercountry'] ?? '',
+			"senderMobile" => $request['sendermobile'] ?? '',
+			"SenderNationality" => $request['sendernationality'] ?? '',
+			"senderIdType" => $request['senderidtype'] ?? '',
+			"senderIdTypeRemarks" => $request['senderidtyperemarks'] ?? '',
+			"senderIdNumber" => $request['senderidnumber'] ?? '',
+			"senderIdIssueCountry" => $request['senderidissuecountry'] ?? '',
+			"senderIdIssueDate" => $request['senderidissuedate'] ?? '',
+			"senderIdExpireDate" => $request['senderidexpiredate'] ?? '',
+			"senderDateOfBirth" => $request['senderdateofbirth'] ?? '',
+			"senderOccupation" => $request['senderoccupation'] ?? '',
+			"senderOccupationRemarks" => $request['senderoccupationremarks'] ?? '',
+			"senderSourceOfFund" => $request['sendersourceoffund'] ?? '',
+			"senderSourceOfFundRemarks" => $request['sendersourceoffundremarks'] ?? '',
+			"senderEmail" => $request['senderemail'] ?? '',
+			"senderNativeFirstname" => $request['sendernativefirstname'] ?? '',
+			"senderBeneficiaryRelationship" => $request['senderbeneficiaryrelationship'] ?? '',
+			"senderBeneficiaryRelationshipRemarks" => $request['senderbeneficiaryrelationshipremarks'] ?? '',
+			"purposeOfRemittance" => $request['purposeofremittance'] ?? '',
+			"purposeOfRemittanceRemark" => $request['purposeofremittanceremark'] ?? '',
+			"beneficiaryType" => $request['beneficiarytype'] ?? '',
+			"receiverFirstName" => $request['receiverfirstname'] ?? '',
+			"receiverMiddleName" => "",
+			"receiverLastName" => $request['receiverlastname'] ?? '',
+			"receiverAddress" => $request['receiveraddress'] ?? '',
+			"receiverContactNumber" => $mobileNumber ?? '',
+			"receiverState" => $request['receiverstate'] ?? '',
+			"receiverAreaTown" => $request['receiverareatown'] ?? '',
+			"receiverCity" => $request['receivercity'] ?? '',
+			"receiverZipCode" => $request['receiverzipcode'] ?? '',
+			"receiverCountry" => $request['receivercountry'] ?? '',
+			"receiverIdType" => $request['receiveridtype'] ?? '',
+			"receiverIdTypeRemarks" => $request['receiveridtyperemarks'] ?? '',
+			"receiverOccupation" => $request['receiveroccupation'] ?? '',
+			"receiverOccupationRemark" => $request['receiveroccupationremark'] ?? '',
+			"receiverIdNumber" => $request['receiveridnumber'] ?? '',
+			"receiverEmail" => $request['receiveremail'] ?? '',
+			"receiverNativeFirstname" => $request['receivernativefirstname'] ?? '',
+			"receiverNativeMiddleName" => $request['receivernativemiddleName'] ?? '',
+			"receiverNativeLastname" => $request['receivernativelastname'] ?? '',
+			"ReceiverNativeAddress" => $request['receivernativeaddress'] ?? '',
+			"senderSecondaryIdType" => $request['senderidtype'] ?? '',
+			"senderSecondaryIdNumber" => $request['senderidnumber'] ?? '',
+			"senderNativeLastname" => $request['sendernativelastname'] ?? '',
+			"calcBy" => "P",
+			"transferAmount" => (string) $aggregatorCurrencyAmount,
+			"remitCurrency" => $this->defaultCurrency,
+			"payoutCurrency" => $request['payoutCurrency'] ?? '',
+			"paymentMode" => "B",
+			"bankName" => $request['bankName'] ?? '',
+			"bankBranchName" => $request['bankbranchname'] ?? '',
+			"bankBranchCode" => $request['bankbranchcode'] ?? '',
+			"bankAccountNumber" => $request['bankaccountnumber'] ?? '',
+			"swiftCode" => $request['swiftcode'] ?? '',
+			"promotionCode" => "",
+			"SenderNativeAddress" => "",
+			"ReceiverNationality" => $request['receivernationality'] ?? '',
+			"receiverIdIssueDate" => $request['receiveridissuedate'] ?? '',
+			"receiverIdExpireDate" => $request['receiveridexpiredate'] ?? '',
+			"receiverDistrict" => $request['receiverdistrict'] ?? '',
+			"receiptCpf" => $request['receiptcpf'] ?? '',
+			"remarks" => $request['notes'] ?? '',
+			"receiverDateOfBirth" => $request['receiverdateofbirth'] ?? '',
+			"receiverGender" => $request['receivergender'] ?? '',
 			"receiverAccountType" => ""
 		];
 		  

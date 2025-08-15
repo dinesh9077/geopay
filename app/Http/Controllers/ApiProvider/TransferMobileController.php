@@ -80,10 +80,11 @@
 			$validator = Validator::make($request->all(), [
 				// Transaction details
 				'amount' => 'required|numeric|min:0.01',
-				'exchnage_rate_id' => 'required|integer',
+				'exchange_rate_id' => 'required|integer',
 				'exchange_rate' => 'required|numeric',
 				'converted_amount' => 'required|numeric',
 				'payoutCurrency' => 'required|string|size:3',
+				'channel_name' => 'required|string',
 
 				// Sender
 				'sender_mobile' => 'required|string|max:20',
@@ -133,10 +134,10 @@
 				
 				$remitCurrency = config('setting.default_currency') ?? 'USD';
 				
-				$liveExchangeRate = LiveExchangeRate::find($request->exchnage_rate_id); 
+				$liveExchangeRate = LiveExchangeRate::find($request->exchange_rate_id); 
 				if(!$liveExchangeRate)
 				{ 
-					$liveExchangeRate = ExchangeRate::find($request->exchnage_rate_id);
+					$liveExchangeRate = ExchangeRate::find($request->exchange_rate_id);
 					if (!$liveExchangeRate) {
 						return $this->errorResponse('A technical issue has occurred. Please try again later.', 'ERR_RATE', 401); 
 					}
@@ -228,7 +229,7 @@
 				]);
 
 				// Log the transaction creation
-				Helper::updateLogName($transaction->id, Transaction::class, 'transfer to mobile transaction', $user->id);  
+				Helper::updateLogName($transaction->id, Transaction::class, 'api transfer to mobile transaction', $user->id);  
 				DB::commit();  
 				
 				$data = [
