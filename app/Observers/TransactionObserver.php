@@ -13,7 +13,7 @@ class TransactionObserver
      */
     public function created(Transaction $transaction)
     { 
-        if (!in_array($transaction->platform_name, ['transfer to mobile', 'transfer to bank']) && $transaction->txn_status != "cancelled and refunded") {
+        if (!in_array($transaction->platform_name, ['transfer to mobile', 'transfer to bank']) || $transaction->txn_status != "cancelled and refunded") {
             return;
         }
    
