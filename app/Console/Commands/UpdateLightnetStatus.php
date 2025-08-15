@@ -43,9 +43,7 @@
 					$response = $this->liquidNetService->getTXNStatus($transaction->order_id);
 
 					// Skip if failed or unexpected response code
-					if (
-						!$response['success'] || empty($response['response']['status'] || !isset($response['response']['status'])
-					) {
+					if (!$response['success'] || empty($response['response']['status']) || !isset($response['response']['status'])) {
 						continue;
 					}
 
