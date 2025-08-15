@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Geopay Service – Merchant API Docs</title>
+<link rel="icon" type="image/svg+xml" href="{{ url('storage/setting', config('setting.fevicon_icon')) }}">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   :root { --bg:#ffffff; --text:#222; --muted:#555; --head:#102030; --accent:#81a8c7; --border:#e5e8ec; --code:#0b1220; }
