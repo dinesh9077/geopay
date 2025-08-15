@@ -241,14 +241,14 @@
 	{
 		event.preventDefault();   
 		 
-		if(($beneficiaryForm.find('#payoutCurrency').find(':selected').data('service-name') ?? '') == 'onafric')
+		/* if(($beneficiaryForm.find('#payoutCurrency').find(':selected').data('service-name') ?? '') == 'onafric')
 		{ 
 			if(!$('#sender_placeofbirth').val())
 			{
 				toastrMsg('warning', 'The sender date of birth is required');
 				return;
 			}
-		}
+		} */
 
 		$('#beneficiaryStore')
 		.prop('disabled', true) 
