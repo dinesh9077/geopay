@@ -142,8 +142,8 @@
 					}
 				}
 				
-				$request->exchange_rate = $liveExchangeRate->api_markdown_rate;
-				$request->converted_amount = $liveExchangeRate->api_markdown_rate * $request->amount;
+				/* $request->exchange_rate = $liveExchangeRate->api_markdown_rate;
+				$request->converted_amount = ($liveExchangeRate->api_markdown_rate * $request->amount); */
 				
 				$response = $this->onafricService->apiSendMobileTransaction($request, $user);
 				  
