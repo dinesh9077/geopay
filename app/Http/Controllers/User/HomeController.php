@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\ApiCredential;
 use App\Models\Banner;
 use App\Http\Traits\WebResponseTrait; 
 use Validator, DB, Auth;
@@ -69,5 +70,16 @@ class HomeController extends Controller
         ->get();
 		
 		return view('user.notification.index', compact('recentNotifications'));
+	}
+	
+	public function apiDocumantation()
+	{
+		if(auth()->user()->developer_option == 0) return abort(403);
+		  
+        $credential = ApiCredential::with(['user.webhook'])
+		->where('user_id', Auth::id()) 
+		->latest()
+		->first(); 
+		return view('user.api-documantation', compact('credential'));
 	}
 }

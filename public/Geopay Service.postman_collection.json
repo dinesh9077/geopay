@@ -1,0 +1,426 @@
+{
+	"info": {
+		"_postman_id": "0397bad3-1c32-4673-a328-1d07090a5e9c",
+		"name": "Geopay Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "18329627",
+		"_collection_link": "https://lunar-rocket-162115.postman.co/workspace/FINTECH-TEAM~14a80ec0-1e8c-40eb-9f48-19fcf6770784/collection/18329627-0397bad3-1c32-4673-a328-1d07090a5e9c?action=share&source=collection_link&creator=18329627"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Access Token Generate",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \r\n    \"client_id\":\"JZV8BUV16ZCZO7PQIXPF5QYBTAA2OFW0\",\r\n    \"secret_id\":\"aZy4lvn5CttgS5rPRZYQiPDLwW52ns0F2rAspiebmSy2DCMuCAqkDaFxEZAp8o59\", \r\n    \"ttl\": true // 30, 60, true = parmanent\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/auth/token"
+					},
+					"response": []
+				},
+				{
+					"name": "Revoke Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": "{{base_url}}/auth/token/revoke",
+						"description": "Generated from cURL: curl -X POST http://localhost:8000/api/auth/token/revoke \\\r\n  -H \"Authorization: Bearer 1001.nL2k19F3sM3Tn6z...\"\r\n"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transfer Bank",
+			"item": [
+				{
+					"name": "Country List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": "{{base_url}}/transfer-bank/country-list"
+					},
+					"response": []
+				},
+				{
+					"name": "Bank List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"payoutCountry\": \"BGD\",\r\n    \"service\": 1,\r\n    \"payoutIso\": \"\" //optional for service 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/transfer-bank/bank-list"
+					},
+					"response": []
+				},
+				{
+					"name": "fields by bank",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"payoutCountry\": \"BGD\",\r\n    \"payoutCurrency\": \"BDT\",\r\n    \"service\": 1,\r\n    \"locationId\": \"BGDAB 3237\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/transfer-bank/get-fields"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Transaction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"service\": 1, // allow only values 1 or 2, we get the country list based on this\r\n    \"amount\": \"2.00\", // amount in USD\r\n    \"exchange_rate_id\": 1, // exchange rate ID\r\n    \"exchange_rate\": \"121.756\", // current exchange rate\r\n    \"transferamount\": \"243.512\", // transfer amount (amount × exchange rate)\r\n    \"remitcurrency\": \"USD\", // remittance currency\r\n    \"payoutCurrency\": \"BDT\", // payout currency \r\n    \"payoutIso\": \"BG\", // payout Iso 2  char aplha \r\n    \"bankId\": \"BGDBRA3233\", // payout location ID\r\n    \"remittertype\": \"I\", // remitter type (I = Individual, C = Company)\r\n    \"senderfirstname\": \"Dinesh\", // sender's first name\r\n    \"sendermiddlename\": \"\", // sender's middle name\r\n    \"senderlastname\": \"Patil\", // sender's last name\r\n    \"sendergender\": \"Male\", // sender's gender\r\n    \"senderaddress\": \"Softieons Abhinandan royal Surat Gujarat 395007, India\", // sender's address\r\n    \"sendercity\": \"India\", // sender's city\r\n    \"senderstate\": \"Gujarat\", // sender's state\r\n    \"senderzipcode\": \"395854\", // sender's postal/ZIP code\r\n    \"fromCountry\": \"IN\", // sender's country code\r\n    \"sendercountry\": \"IND\", // sender's country code\r\n    \"sendermobile\": \"917507642090\", // sender's mobile number\r\n    \"sendernationality\": \"IND\", // sender's nationality\r\n    \"senderidtype\": \"01\", // sender's ID type code\r\n    \"senderidtyperemarks\": \"Passport\", // sender's ID type description\r\n    \"senderidnumber\": \"754678\", // sender's ID number\r\n    \"senderidissuecountry\": \"IND\", // sender's ID issuing country\r\n    \"senderidissuedate\": \"2025-08-12\", // sender's ID issue date (YYYY-MM-DD)\r\n    \"senderidexpiredate\": \"2025-08-30\", // sender's ID expiry date (YYYY-MM-DD)\r\n    \"senderdateofbirth\": \"1995-08-04\", // sender's date of birth (YYYY-MM-DD)\r\n    \"senderoccupation\": \"07\", // sender's occupation code\r\n    \"senderoccupationremarks\": \"Agriculture forestry fisheries\", // sender's occupation description\r\n    \"sendersourceoffund\": \"01\", // source of funds code\r\n    \"sendersourceoffundremarks\": \"Salary to include any work related compensation and pensions\", // source of funds description\r\n    \"senderemail\": \"dinesh.softieons@gmail.com\", // sender's email address\r\n    \"sendernativefirstname\": \"\", // sender's native language first name\r\n    \"senderbeneficiaryrelationship\": \"\", // relationship to beneficiary code\r\n    \"senderbeneficiaryrelationshipremarks\": \"\", // relationship to beneficiary description\r\n    \"purposeofremittance\": \"16\", // purpose of remittance code\r\n    \"purposeofremittanceremark\": \"\", // purpose of remittance description\r\n    \"beneficiarytype\": \"I\", // beneficiary type (I = Individual, C = Company)\r\n    \"receiverfirstname\": \"Yusuf Hussain\", // receiver's first name\r\n    \"receivermiddlename\": \"\", // receiver's middle name\r\n    \"receiverlastname\": \"Nazia\", // receiver's last name\r\n    \"receiveraddress\": \"\", // receiver's address\r\n    \"receivercontactnumber\": \"\", // receiver's contact number\r\n    \"receiverstate\": \"\", // receiver's state\r\n    \"receiverareatown\": \"\", // receiver's area or town\r\n    \"receivercity\": \"\", // receiver's city\r\n    \"receiverzipcode\": \"\", // receiver's postal/ZIP code\r\n    \"receivercountry\": \"BGD\", // receiver's country code\r\n    \"receiveridtype\": \"\", // receiver's ID type code\r\n    \"receiveridtyperemarks\": \"\", // receiver's ID type description\r\n    \"receiveroccupation\": \"\", // receiver's occupation code\r\n    \"receiveroccupationremark\": \"\", // receiver's occupation description\r\n    \"receiveridnumber\": \"\", // receiver's ID number\r\n    \"receiveremail\": \"\", // receiver's email address\r\n    \"receivernativefirstname\": \"\", // receiver's native language first name\r\n    \"receivernativemiddlename\": \"\", // receiver's native language middle name\r\n    \"receivernativelastname\": \"\", // receiver's native language last name\r\n    \"receivernativeaddress\": \"\", // receiver's native language address\r\n    \"sendersecondaryidtype\": \"01\", // sender's secondary ID type code\r\n    \"sendersecondaryidnumber\": \"786445\", // sender's secondary ID number\r\n    \"sendernativelastname\": \"\", // sender's native language last name\r\n    \"calcby\": \"P\", // calculation method (P = principal, R = remittance)\r\n    \"paymentmode\": \"B\", // payment mode (B = bank, C = cash)\r\n    \"bankName\": \"BRAC BANK LTD.\", // bank name\r\n    \"bankbranchname\": \"\", // bank branch name\r\n    \"bankbranchcode\": \"BRAKBDDHOBU\", // bank branch code\r\n    \"bankaccountnumber\": \"00881610036466\", // bank account number\r\n    \"swiftcode\": \"\", // SWIFT/BIC code\r\n    \"promotioncode\": \"\", // promotion code\r\n    \"sendernativeaddress\": \"\", // sender's native language address\r\n    \"receivernationality\": \"BGD\", // receiver's nationality\r\n    \"receiveridissuedate\": \"\", // receiver's ID issue date\r\n    \"receiveridexpiredate\": \"\", // receiver's ID expiry date\r\n    \"receiverdistrict\": \"\", // receiver's district\r\n    \"receiptcpf\": \"\", // CPF number for Brazil (if applicable)\r\n    \"notes\": \"test\", // notes\r\n    \"receiverdateofbirth\": \"\", // receiver's date of birth\r\n    \"receivergender\": \"\", // receiver's gender\r\n    \"receiveraccounttype\": \"\" // receiver's account type\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/transfer-bank/create-trasaction"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transfer Mobile Money",
+			"item": [
+				{
+					"name": "Country List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": "{{base_url}}/transfer-money/country-list"
+					},
+					"response": []
+				},
+				{
+					"name": "fields",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/transfer-money/get-fields"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Transaction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\": \"2.00\",\r\n    \"exchange_rate_id\": 75,\r\n    \"exchange_rate\": \"634.651875\",\r\n    \"converted_amount\": \"1269.30375\",\r\n    \"payoutCurrency\": \"XOF\",\r\n    \"channel_name\": \"Orange\",\r\n    \"sender_mobile\": \"917507642051\",\r\n    \"sender_country_code\": \"IN\",\r\n    \"sender_name\": \"Dinesh\",\r\n    \"sender_surname\": \"Patil\",\r\n    \"sender_address\": \"Softieons Abhinandan royal Surat Gujarat 395007, India\",\r\n    \"sender_city\": \"India\",\r\n    \"sender_state\": \"Gujarat\",\r\n    \"sender_postalCode\": \"395007\",\r\n    \"sender_email\": \"dinesh.softieons@gmail.com\",\r\n    \"sender_dateOfBirth\": null,\r\n    \"sender_document\": null,\r\n    \"sender_placeofbirth\": \"2021-08-04\",\r\n    \"recipient_mobile\": \"221776161358\",\r\n    \"recipient_country_code\": \"SN\",\r\n    \"recipient_name\": \"Sunny\",\r\n    \"recipient_surname\": \"Nilhani\",\r\n    \"recipient_address\": \"\",\r\n    \"recipient_city\": \"\",\r\n    \"recipient_state\": \"\",\r\n    \"recipient_postalcode\": \"\",\r\n    \"recipient_email\": null,\r\n    \"recipient_dateofbirth\": \"\",\r\n    \"recipient_document\": null,\r\n    \"recipient_destinationAccount\": null,\r\n    \"purposeOfTransfer\": \"Agriculture forestry fisheries\",\r\n    \"sourceOfFunds\": \"Salary to include any work related compensation and pensions\",\r\n    \"notes\": \"Salary to include any work related compensation and pensions\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/transfer-money/create-transaction"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Webhooks",
+			"item": [
+				{
+					"name": "Register Webhook",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"callback_url\": \"https://geo.travelieons.com/api-credentials\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/webhook/register"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Webhook",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"secret\": \"tLqhK20NiR0n406vtydBN4mWy2mNbrlvbENbyS35\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{base_url}}/webhook/delete"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Exchnage Rate List",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"payoutCurrency\": \"BDT\",\r\n    \"service\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/exchange-rate"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Transaction Status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"thirdPartyId\": \"GPTM-1-1755236774\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/get-transaction-status"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost/geopay/api",
+			"type": "default"
+		},
+		{
+			"key": "token",
+			"value": "1026.DgR1E_zfwadT8Qswl_azTs8t6dflI579_UqNbGaVeMk1AVBIppCdI_CScnuWrfMy9tbw82ShmUPRl8-uhYOAUlQG7qu9vFoZIcwHD_3eM5BtKMvT5ZyEheK6sW_LDvnh7mDtUMfEzrnmMP5u8Ph9yOzzcLR2Rc4ZHCc4C2Vr6nA",
+			"type": "string"
+		}
+	]
+}

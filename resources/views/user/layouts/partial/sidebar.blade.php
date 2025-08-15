@@ -47,8 +47,8 @@
 			
 			@if(auth()->user()->developer_option && auth()->user()->developer_option == 1)
 				<li class="sidebar-item">
-					<a href="{{ route('api.credentials.index') }}"  class="sidebar-link {{ Request::routeIs('api.credentials.index') ? 'active' : '' }}">
-						<img class="in-svg" src="{{ asset('assets/image/icons/native.png') }}" alt="">
+					<a href="{{ route('api.credentials.index') }}" class="sidebar-link {{ Request::routeIs('api.credentials.index') ? 'active' : '' }}">
+						<img class="in-svg" src="{{ asset('assets/image/icons/api-integration.svg') }}" alt="">
 						Api Setup
 					</a>
 				</li>

@@ -17,4 +17,10 @@ class ApiCredential extends Model
         'client_secret',
         'api_url'
     ];
+	 
+	public function user()
+	{
+		return $this->belongsTo(User::class, 'user_id');
+	}
+
 }

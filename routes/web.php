@@ -25,7 +25,7 @@
 	Route::get('/', function () {
 		return redirect()->route('login');
 	});
-
+ 
 	Route::get('/terms-and-condition', [FrontController::class, 'termAndCondition'])->name('terms-and-condition');
 	
 	//Auth::routes(); 
@@ -74,6 +74,7 @@
 		 
 		// Dashboard
 		Route::get('/home', [HomeController::class, 'index'])->name('home');   
+		Route::get('/api-documantation', [HomeController::class, 'apiDocumantation'])->name('api-documantation');
 		
 		// Notification
 		Route::get('/notifications', [HomeController::class, 'notifications'])->name('notifications');   

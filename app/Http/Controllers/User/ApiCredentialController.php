@@ -21,15 +21,16 @@ class ApiCredentialController extends Controller
     {
 		if(auth()->user()->developer_option == 0) return abort(403);
 		  
-        $credential = ApiCredential::where('user_id', Auth::id())
-            ->latest()
-            ->first();
-
+        $credential = ApiCredential::with(['user.webhook'])
+		->where('user_id', Auth::id()) 
+		->latest()
+		->first();
+		 
         return view('user.api-credentials', compact('credential'));
     }
 
 	public function store(Request $request)
-	{
+	{  
 		$request->validate([
 			'environment' => 'required|in:sandbox,production',
 		]);
