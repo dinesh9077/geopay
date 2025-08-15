@@ -26,6 +26,7 @@ enum OnafricStatus: string
     case INVALID_BANK_ACCOUNT_NUMBER              = 'Invalid bank account number';
     case INVALID_MFS_BANK_CODE                    = 'Invalid MFS Africa bank code';
     case INTERNAL_SERVER_ERROR                    = 'Internal server error';
+    case REQUESTED_TRASACTION_CANNOT_EXECUTE      = 'The requested transaction cannot be executed';
 
     public function label(): string
     {
