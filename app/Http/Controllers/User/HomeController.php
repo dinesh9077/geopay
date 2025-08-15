@@ -72,7 +72,7 @@ class HomeController extends Controller
 		return view('user.notification.index', compact('recentNotifications'));
 	}
 	
-	public function apiDocumantation()
+	public function apiDocumentation()
 	{
 		if(auth()->user()->developer_option == 0) return abort(403);
 		  

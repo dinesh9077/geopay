@@ -722,7 +722,7 @@
         </div>
         
     </section>
-    <footer>© Geopay – Merchant API. Generated from your Postman collection.</footer>
+    <footer>Copyright © {{ now()->format('Y') }} –  <a class="text-secondary" href="https://www.softieons.com" target="_blank">Softieons Technologies</a>. All rights reserved.</footer>
   </main>
 </div>
 <script>

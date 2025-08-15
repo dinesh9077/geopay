@@ -46,18 +46,28 @@
 					<div class="row g-3">
 						<div class="col-md-6">
 							<label class="form-label">Client ID</label>
-							<input type="text" value="{{ $credential->client_id ?? '' }}" readonly class="form-control bg-light">
+							<div class="input-group">
+								<input type="text" id="clientId" value="{{ $credential->client_id ?? '' }}" readonly class="form-control bg-light">
+								<span class="input-group-text bg-light" style="cursor: pointer;" onclick="copyToClipboard('{{ $credential->client_id ?? '' }}', this.querySelector('i'))">
+									<i class="bi bi-clipboard" title="Copy"></i>
+								</span>
+							</div>
 						</div>
+
 						<div class="col-md-6">
 							<label class="form-label">Secret</label>
 							<div class="input-group">
 								<input type="password" id="clientSecret" value="{{ $credential->client_secret ?? '' }}" readonly class="form-control bg-light">
 								<span class="input-group-text bg-light" style="cursor: pointer;" onclick="toggleSecret()">
-									<i class="bi bi-eye" id="toggleIcon"></i>
+									<i class="bi bi-eye" id="toggleIcon" title="Show/Hide"></i>
+								</span>
+								<span class="input-group-text bg-light" style="cursor: pointer;" onclick="copyToClipboard('{{ $credential->client_secret ?? '' }}', this.querySelector('i'))">
+									<i class="bi bi-clipboard" title="Copy"></i>
 								</span>
 							</div>
 						</div>
 					</div>
+
 					<button type="submit" class="btn btn-custom mt-3">Generate New Credentials</button>
 				</div>
 			</form>
@@ -69,7 +79,8 @@
 						<h2 class="h6 fw-semibold mb-2">API Base URL</h2>
 						<div class="d-flex justify-content-between align-items-center bg-light border rounded p-2">
 							<span class="text-truncate">{{ $credential->api_url }}</span>
-							<span class="copy-btn" onclick="copyToClipboard('{{ $credential->api_url }}')">Copy</span>
+							<i class="bi bi-clipboard copy-btn" style="cursor: pointer;" title="Copy"
+							   onclick="copyToClipboard('{{ $credential->api_url }}', this)"></i>
 						</div>
 					</div>
 				</div>
@@ -78,18 +89,18 @@
 						<h2 class="h6 fw-semibold mb-2">Webhook URL</h2>
 						<div class="d-flex justify-content-between align-items-center bg-light border rounded p-2">
 							<span class="text-truncate">{{ $credential->user->webhook->url ?? 'N/A' }}</span>
-							<span class="copy-btn" onclick="copyToClipboard('{{ $credential->user->webhook->url ?? '' }}')">Copy</span>
+							<i class="bi bi-clipboard copy-btn" style="cursor: pointer;" title="Copy"
+							   onclick="copyToClipboard('{{ $credential->user->webhook->url ?? '' }}', this)"></i>
 						</div>
 					</div>
 				</div>
 			</div>
-
 			<!-- API Documentation -->
 			<div class="card p-4">
 				<h2 class="h5 fw-semibold mb-3">API Documentation</h2>
 				<ul class="list-unstyled">
 					<li class="mb-2">
-						<a href="{{ url('api-documantation') }}" target="_blank" class="btn btn-custom">View HTML Documentation</a>
+						<a href="{{ url('api-documentation') }}" target="_blank" class="btn btn-custom">View Documentation</a>
 					</li>
 					<li>
 						<a href="{{ asset('Geopay Service.postman_collection.json') }}" target="_blank" download class="btn btn-custom">Download Postman Collection</a>
@@ -102,12 +113,20 @@
 @endsection
 @push('js') 
 <script>
-	function copyToClipboard(text) {
+	function copyToClipboard(text, iconElement) {
 		navigator.clipboard.writeText(text).then(() => {
-			alert("Copied to clipboard!");
+			// Change icon to check-circle
+			iconElement.classList.remove('bi-clipboard');
+			iconElement.classList.add('bi-check-circle', 'text-success');
+
+			// Revert after 1.5 seconds
+			setTimeout(() => {
+				iconElement.classList.remove('bi-check-circle', 'text-success');
+				iconElement.classList.add('bi-clipboard');
+			}, 1500);
 		});
 	}
-	
+		
 	function toggleSecret() {
 		let secretInput = document.getElementById("clientSecret");
 		let icon = document.getElementById("toggleIcon");

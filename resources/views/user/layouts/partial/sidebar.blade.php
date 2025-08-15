@@ -49,7 +49,7 @@
 				<li class="sidebar-item">
 					<a href="{{ route('api.credentials.index') }}" class="sidebar-link {{ Request::routeIs('api.credentials.index') ? 'active' : '' }}">
 						<img class="in-svg" src="{{ asset('assets/image/icons') }}/{{ Request::routeIs('api.credentials.index') ? 'integration_instructions.svg' : 'api-integration.svg' }}" alt=""> 
-						Api Setup
+						Developer Option
 					</a>
 				</li>
 			@endif

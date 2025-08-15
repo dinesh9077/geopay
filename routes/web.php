@@ -74,7 +74,7 @@
 		 
 		// Dashboard
 		Route::get('/home', [HomeController::class, 'index'])->name('home');   
-		Route::get('/api-documantation', [HomeController::class, 'apiDocumantation'])->name('api-documantation');
+		Route::get('/api-documentation', [HomeController::class, 'apiDocumentation'])->name('api-documentation');
 		
 		// Notification
 		Route::get('/notifications', [HomeController::class, 'notifications'])->name('notifications');   
