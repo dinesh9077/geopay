@@ -261,54 +261,62 @@ class ReceiveMoneyController extends Controller
 	
 	public function storeMobileCollectionCallback(Request $request)
 	{
-		// Log the incoming request for debugging
 		Log::info('Mobile Collection Webhook received', ['data' => $request->all()]);
- 
-		if (!$request->all()) {
+
+		if (empty($request->all())) {
 			return response()->json(['error' => 'Empty request'], 400);
 		}
- 
+
 		$thirdPartyTransId = $request->input('data.id');
-		$txnStatus = strtolower($request->input('data.status'));
-		$errorMsg = $request->input('data.error_message');
-		$instructions = $request->input('data.instructions');
-		
-		/* Log::info('collection_request_id', ['id' => $thirdPartyTransId]);
-		Log::info('collection_request_status', ['status' => $txnStatus]); */
+		$txnStatus         = strtolower($request->input('data.status', ''));
+		$comments          = $request->input('data.error_message') 
+							 ?? $request->input('data.instructions');
 
 		if (!$thirdPartyTransId || !$txnStatus) {
 			return response()->json(['error' => 'Invalid or missing transaction data'], 422);
 		}
- 
-		// Find the transaction based on thirdPartyTransId
-		$transaction = Transaction::where('unique_identifier', $thirdPartyTransId)->where('platform_provider', 'onafric mobile collection')->first();
+
+		$transaction = Transaction::where([
+			'unique_identifier' => $thirdPartyTransId,
+			'platform_provider' => 'onafric mobile collection',
+		])->first();
 
 		if (!$transaction) {
-			//Log::warning("Transaction not found for order_id: $thirdPartyTransId");
 			return response()->json(['error' => 'Transaction not found'], 404);
 		}
-		
-		 // Prevent duplicate updates (optional)
+
 		if ($transaction->txn_status === $txnStatus) {
 			return response()->json(['message' => 'No changes needed'], 200);
 		}
 
-		// Update transaction status
-		$transaction->txn_status = strtolower($txnStatus);
-		$transaction->comments = !empty($errorMsg) ? $errorMsg : (!empty($instructions) ? $instructions : $transaction->comments);
-		$transaction->touch();
-		$transaction->save();
-		
-		$user = $transaction->user;
-		if(strtolower($txnStatus) == 'successful')
-		{
-			$transaction->user->increment('balance', $transaction->txn_amount); 
-			$transaction->comments = "Payment received successfully. Wallet updated."; 
-			$transaction->api_response = $request->all(); 
-			$transaction->save();
-		} 
-		
-		Notification::send($user, new AirtimeRefundNotification($user, $transaction->txn_amount, $transaction->id, $transaction->comments, $transaction->notes, ucfirst($transaction->txn_status)));
+		$updateData = [
+			'txn_status' => $txnStatus,
+			'api_status' => $txnStatus,
+			'comments'   => $comments ?? $transaction->comments,
+		];
+
+		if ($txnStatus === 'successful') {
+			$transaction->user->increment('balance', $transaction->txn_amount);
+			$updateData['comments'] = "Payment received successfully. Wallet updated.";
+			$updateData['complete_transaction_at'] = now();
+			$updateData['api_response'] = $request->all();
+		}
+
+		$transaction->update($updateData);
+
+		Notification::send(
+			$transaction->user,
+			new AirtimeRefundNotification(
+				$transaction->user,
+				$transaction->txn_amount,
+				$transaction->id,
+				$transaction->comments,
+				$transaction->notes,
+				ucfirst($transaction->txn_status)
+			)
+		);
+
 		return response()->json(['message' => 'Transaction updated successfully'], 200);
 	}
+
 }

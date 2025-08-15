@@ -530,40 +530,83 @@ class TransferMobileController extends Controller
 	
 	public function transferToMobileWebhook(Request $request, $uniqueId)
 	{
-		// Log the incoming request for debugging
 		Log::info('Webhook received', ['data' => $request->all()]);
- 
+
 		if (!$request->all()) {
-			return response()->json(['error' => 'Empty request'], 400);
+			return response()->json([
+				'status' => false,
+				'error_code' => 'EMPTY_REQUEST',
+				'message' => 'Empty request payload.'
+			], 400);
 		}
  
 		$thirdPartyTransId = $request->input('thirdPartyTransId');
-		$onafricStatus = $request->input('status.message'); // Message as status update
- 
+		$statusMessage = $request->input('status.message');
+		
+		if (!$thirdPartyTransId || !$statusMessage) {
+			return response()->json([
+				'status' => false,
+				'error_code' => 'MISSING_FIELDS',
+				'message' => 'Required fields are missing.'
+			], 422);
+		} 
+		
 		// Find the transaction based on thirdPartyTransId
 		$transaction = Transaction::where('order_id', $thirdPartyTransId)->first();
 
-		if (!$transaction) {
-			Log::warning("Transaction not found for order_id: $thirdPartyTransId");
-			return response()->json(['error' => 'Transaction not found'], 404);
+		if (!$transaction) { 
+			return response()->json([
+				'status' => false,
+				'error_code' => 'TRANSACTION_NOT_FOUND',
+				'message' => 'Transaction not found.'
+			], 404);
 		}
 
-		// Update transaction status 
-		$txnStatus = OnafricStatus::from($onafricStatus)->label();
-		if($txnStatus === "cancelled and refunded")	
+		try
 		{
-			$transaction->processAutoRefund($txnStatus);
+			$txnStatus = OnafricStatus::from($statusMessage)->label();
+
+			if ($txnStatus === "cancelled and refunded") {
+				$transaction->processAutoRefund($txnStatus);
+			}
+
+			$updateData = [
+				'txn_status' => $txnStatus === "cancelled and refunded" ? $transaction->txn_status : $txnStatus,
+				'api_status' => $statusMessage
+			];
+
+			if ($txnStatus === "paid") {
+				$updateData['complete_transaction_at'] = now();
+			}
+
+			$transaction->update($updateData);
+
+			$user = $transaction->user;
+			Notification::send(
+				$user,
+				new AirtimeRefundNotification(
+					$user,
+					$transaction->txn_amount,
+					$transaction->id,
+					$transaction->comments,
+					$transaction->notes,
+					ucfirst($transaction->txn_status)
+				)
+			);
+
+			return response()->json([
+				'status' => true,
+				'message' => 'Transaction updated successfully'
+			], 200);
+
+		} catch (\Throwable $e) {
+			Log::error("Error processing webhook: {$e->getMessage()}");
+
+			return response()->json([
+				'status' => false,
+				'error_code' => 'SERVER_ERROR',
+				'message' => 'Internal server error'
+			], 500);
 		}
-		if($txnStatus != "cancelled and refunded")	
-		{
-			$transaction->txn_status = $txnStatus;
-		}
-		$transaction->touch(); // Updates the `updated_at` timestamp
-		$transaction->save();
-		
-		$user = $transaction->user;
-		Notification::send($user, new AirtimeRefundNotification($user, $transaction->txn_amount, $transaction->id, $transaction->comments, $transaction->notes, ucfirst($transaction->txn_status)));
-		
-		return response()->json(['message' => 'Transaction updated successfully'], 200);
 	}
 }

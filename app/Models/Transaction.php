@@ -50,6 +50,8 @@ class Transaction extends Model
         'refund_reason',
         'additional_message',
         'is_api_service',
+        'api_status',
+        'complete_transaction_at',
     ]; 
 	
 	protected $casts = [
@@ -121,6 +123,8 @@ class Transaction extends Model
             $refundTransaction['refund_reason'] = 'Auto refund by system';
             $refundTransaction['is_refunded'] = 0;
             $refundTransaction['txn_status'] = $txnStatus;
+            $refundTransaction['api_status'] = $txnStatus;
+            $refundTransaction['complete_transaction_at'] = now();
 
             $refundedTransaction = self::create($refundTransaction);
 

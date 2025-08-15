@@ -301,6 +301,8 @@
 					$newTransactionData['user_id'] = $user->id;
 					$newTransactionData['receiver_id'] = $user->id;
 					$newTransactionData['txn_status'] = $txnStatus;
+					$newTransactionData['api_status'] = $txnStatus;
+					$newTransactionData['complete_transaction_at'] = now();
 					$newTransactionData['comments'] = $comments;
 					$newTransactionData['transaction_type'] = 'credit';
 					$newTransactionData['total_charge'] = $txnAmount;

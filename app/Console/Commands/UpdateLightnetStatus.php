@@ -10,89 +10,69 @@
 	use Notification;
 	use App\Enums\LightnetStatus;
 	use Log;
+	
 	class UpdateLightnetStatus extends Command
-	{
-		/**
-			* The name and signature of the console command.
-			*
-			* @var string
-		*/
-		protected $signature = 'transaction:update-lightnet-status';
-		
-		/**
-			* The console command description.
-			*
-			* @var string
-		*/
+	{  
+		protected $signature = 'transaction:update-lightnet-status'; 
 		protected $description = 'Update transaction statuses via an API call';
-		
-		/**
-		 * TransactionService instance.
-		 */
+		 
 		protected $liquidNetService;
-
-		/**
-		 * Create a new command instance.
-		 */
+ 
 		public function __construct(LiquidNetService $liquidNetService)
 		{
 			parent::__construct();
 			$this->liquidNetService = $liquidNetService;
 		}
-	
-		/**
-			* Execute the console command.
-		*/
+	 
 		public function handle()
 		{
-			//Log::info('Update transaction statuses via an API call => '.now());
-			$this->info('Starting to update transaction statuses...');
-			
 			// Fetch transactions that need status updates
 			$transactions = Transaction::query()
-			->where('platform_provider', 'lightnet')
-			->where('is_refunded', 0)
-			->whereDate('created_at', '>=', '2025-08-14')
-			->whereNotIn('txn_status', ['paid', 'cancelled and refunded'])
-			->first();
-			 
-			if (empty($transactions)) {
+				->where('platform_provider', 'lightnet')
+				->where('is_refunded', 0)
+				->whereDate('created_at', '>=', '2025-08-14')
+				->whereNotIn('txn_status', ['paid', 'cancelled and refunded'])
+				->get();
+
+			if ($transactions->isEmpty()) {
 				return;
 			}
 			
 			foreach ($transactions as $transaction)
 			{
-				try { 
-					 
+				try
+				{    
 					$response = $this->liquidNetService->getTXNStatus($transaction->order_id);
-					
-					// Return 0 on failure or unexpected response
-					if (!$response['success'] || ($response['response']['code'] ?? -1) != 0) {
-						continue; // Skip to the next transaction
-					} 
-					 
-					$txn_status = $transaction->txn_status;
-					if(!empty($response['response']['status']))
+
+					// Skip if failed or unexpected response code
+					if (!$response['success'] || ($response['response']['code'] ?? -1) !== 0 || empty($response['response']['status'])) 
 					{
-						$txn_status = LightnetStatus::from($response['response']['status'])->label(); 
-						if($txn_status === "cancelled and refunded")
-						{
-							$transaction->processAutoRefund($txn_status);
-						}
+						continue;
 					}
-					
-					if($txn_status != "cancelled and refunded")
-					{
-						$transaction->update(['txn_status' => $txn_status]);  
+		 
+					$statusMessage = $response['response']['status'];
+					$txnStatus = LightnetStatus::from($statusMessage)->label();
+
+					// Handle refund case
+					if ($txnStatus === "cancelled and refunded") {
+						$transaction->processAutoRefund($txnStatus); 
 					}
-					
-					//$user = $transaction->user; 
-					//Notification::send($user, new AirtimeRefundNotification($user, $transaction->txn_amount, $transaction->id, $transaction->comments, $transaction->notes, ucfirst($transaction->txn_status)));
+			
+					// Prepare update payload
+					$updateData = [
+						'txn_status' => $txnStatus === "cancelled and refunded" ? $transaction->txn_status : $txnStatus,
+						'api_status' => $statusMessage
+					];
+
+					if ($txnStatus === "paid") {
+						$updateData['complete_transaction_at'] = now();
+					}
+
+					$transaction->update($updateData);
 				} 
 				catch (\Throwable $e) 
 				{ 
-					//$this->info("{$e->getMessage()}");  
-					//\Log::error("Error updating transaction ID {$transaction->id}: {$e->getMessage()}"); 
+					Log::error("Error updating transaction ID {$transaction->id}: {$e->getMessage()}"); 
 				}
 			}
 			
