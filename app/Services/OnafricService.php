@@ -991,8 +991,8 @@ class OnafricService
 							'idExpiry' => $request['receiveridexpiredate'] ?? '',
 						],
 						"destinationAccount" => [
-							'accountNumber' => $beneficiary['bankaccountnumber'] ?? '',
-							'mfsBankCode' => $beneficiary['bankId'] ?? '',
+							'accountNumber' => $request['bankaccountnumber'] ?? '',
+							'mfsBankCode' => $request['bankId'] ?? '',
 						]
 					],
 					"thirdPartyTransId" => $thirdPartyTransId,
