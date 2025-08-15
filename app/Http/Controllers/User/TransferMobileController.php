@@ -568,20 +568,27 @@ class TransferMobileController extends Controller
 		{
 			$txnStatus = OnafricStatus::from($statusMessage)->label();
 
+			// Handle refund
 			if ($txnStatus === "cancelled and refunded") {
 				$transaction->processAutoRefund($txnStatus, $statusMessage);
 			}
 
-			$updateData = [
-				'txn_status' => $txnStatus === "cancelled and refunded" ? $transaction->txn_status : $txnStatus,
-				'api_status' => $statusMessage
-			];
+			// Track old value before change
+			$oldStatus = $transaction->txn_status;
+
+			// Assign new values
+			$transaction->txn_status = ($txnStatus === "cancelled and refunded")
+				? $transaction->txn_status
+				: $txnStatus;
+
+			$transaction->api_status = $statusMessage;
 
 			if ($txnStatus === "paid") {
-				$updateData['complete_transaction_at'] = now();
+				$transaction->complete_transaction_at = now();
 			}
-
-			$transaction->update($updateData);
+ 
+			// Save changes
+			$transaction->save();
 
 			$user = $transaction->user;
 			Notification::send(

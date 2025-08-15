@@ -38,7 +38,47 @@
 				return;
 			}
 			
-			foreach ($transactions as $transaction)
+			foreach ($transactions as $transaction) {
+				try {
+					$response = $this->liquidNetService->getTXNStatus($transaction->order_id);
+
+					// Skip if failed or unexpected response code
+					if (
+						!$response['success'] ||
+						($response['response']['code'] ?? -1) !== 0 ||
+						empty($response['response']['status'])
+					) {
+						continue;
+					}
+
+					$statusMessage = $response['response']['status'];
+					$txnStatus = LightnetStatus::from($statusMessage)->label();
+
+					// Handle refund case
+					if ($txnStatus === "cancelled and refunded") {
+						$transaction->processAutoRefund($txnStatus, $statusMessage);
+					}
+
+					// Set attributes directly
+					if ($txnStatus !== "cancelled and refunded") {
+						$transaction->txn_status = $txnStatus;
+					}
+					$transaction->api_status = $statusMessage;
+
+					if ($txnStatus === "paid") {
+						$transaction->complete_transaction_at = now();
+					}
+
+					// Save using Eloquent
+					$transaction->save();
+
+				} catch (\Throwable $e) {
+					Log::error("Error updating transaction ID {$transaction->id}: {$e->getMessage()}");
+				}
+			}
+
+
+			/* foreach ($transactions as $transaction)
 			{
 				try
 				{    
@@ -74,7 +114,7 @@
 				{ 
 					Log::error("Error updating transaction ID {$transaction->id}: {$e->getMessage()}"); 
 				}
-			}
+			} */
 			
 			$this->info('Transaction status updates complete.');
 		}

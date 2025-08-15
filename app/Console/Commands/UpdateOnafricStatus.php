@@ -55,18 +55,19 @@ class UpdateOnafricStatus extends Command
 				if ($txnStatus === "cancelled and refunded") {
 					$transaction->processAutoRefund($txnStatus, $statusMessage); 
 				}
-		
-				// Prepare update payload
-				$updateData = [
-					'txn_status' => $txnStatus === "cancelled and refunded" ? $transaction->txn_status : $txnStatus,
-					'api_status' => $statusMessage
-				];
+
+				// Assign values
+				if ($txnStatus !== "cancelled and refunded") {
+					$transaction->txn_status = $txnStatus;
+				}
+				$transaction->api_status = $statusMessage;
 
 				if ($txnStatus === "paid") {
-					$updateData['complete_transaction_at'] = now();
+					$transaction->complete_transaction_at = now();
 				}
 
-				$transaction->update($updateData);
+				// Save using Eloquent (fires events and allows change detection)
+				$transaction->save();
 			} 
 			catch (\Throwable $e) 
 			{  

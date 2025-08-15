@@ -118,5 +118,10 @@
 		public function totalTransaction()
 		{
 			return Transaction::where('receiver_id', $this->id)->count();
+		} 
+		
+		public function webhook()
+		{
+			return $this->hasOne(WebhookRegister::class, 'user_id');
 		}   
 	}

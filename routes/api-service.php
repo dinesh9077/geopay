@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiProvider\{
-   TokenController, TransferBankController, ExchangeRateController, TransferMobileController
+   TokenController, TransferBankController, ExchangeRateController, TransferMobileController, WebhookController
 };
  
 Route::post('/api-service/auth/token', [TokenController::class, 'issue']);
@@ -30,5 +30,12 @@ Route::middleware(['client.bearer'])->prefix('api-service')->group(function ()
 		Route::get('country-list', [TransferMobileController::class, 'countryList']);   
 		Route::get('get-fields', [TransferMobileController::class, 'getFields']);  
 		Route::post('create-transaction', [TransferMobileController::class, 'createTransaction']);     
+	});  
+	
+	//Webhook Register
+	Route::prefix('webhook')->group(function () 
+	{   
+		Route::post('register', [WebhookController::class, 'webhookRegister']);     
+		Route::post('delete', [WebhookController::class, 'webhookDelete']);     
 	});  
 });
