@@ -235,6 +235,7 @@
 					'order_id' => $request->order_id,
 					'fees' => $request->input('platform_fees'),
 					'total_charge' => $txnAmount,
+					'api_status' => $txnStatus,
 					'created_at' => now(),
 					'updated_at' => now(),
 				]);

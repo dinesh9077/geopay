@@ -453,6 +453,7 @@ class TransferMobileController extends Controller
 			}
 			
 			$onafricStatus = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'Accepted';
+			$apiStatus = $onafricStatus;
 			$txnStatus = OnafricStatus::from($onafricStatus)->label();
 			
 			$txnAmount = $request->input('txnAmount');
@@ -511,6 +512,7 @@ class TransferMobileController extends Controller
 				'fees' => $request->platformCharge ?? 0,
 				'service_charge' => $request->serviceCharge ?? 0,
 				'total_charge' => $request->totalCharges ?? 0,
+				'api_status' => $apiStatus,
 				'created_at' => now(),
 				'updated_at' => now(),
 			]);
@@ -567,7 +569,7 @@ class TransferMobileController extends Controller
 			$txnStatus = OnafricStatus::from($statusMessage)->label();
 
 			if ($txnStatus === "cancelled and refunded") {
-				$transaction->processAutoRefund($txnStatus);
+				$transaction->processAutoRefund($txnStatus, $statusMessage);
 			}
 
 			$updateData = [

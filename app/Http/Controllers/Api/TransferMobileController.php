@@ -248,6 +248,7 @@
 				}
 				 
 				$onafricStatus = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'Accepted';
+				$apiStatus = $onafricStatus;
 				$txnStatus = OnafricStatus::from($onafricStatus)->label();
 			
 				$txnAmount = $request->input('txnAmount');
@@ -306,6 +307,7 @@
 					'fees' => $request->platformCharge ?? 0,
 					'service_charge' => $request->serviceCharge ?? 0,
 					'total_charge' => $request->totalCharges ?? 0,
+					'api_status' => $apiStatus,
 					'created_at' => now(),
 					'updated_at' => now(),
 				]);

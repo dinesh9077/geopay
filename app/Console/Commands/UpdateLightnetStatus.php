@@ -55,7 +55,7 @@
 
 					// Handle refund case
 					if ($txnStatus === "cancelled and refunded") {
-						$transaction->processAutoRefund($txnStatus); 
+						$transaction->processAutoRefund($txnStatus, $statusMessage); 
 					}
 			
 					// Prepare update payload

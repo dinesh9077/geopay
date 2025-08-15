@@ -96,9 +96,9 @@ class Transaction extends Model
 		return $this->api_response ?? [];
 	}
 	
-	public function processAutoRefund(string $txnStatus = 'cancelled and refunded')
+	public function processAutoRefund(string $txnStatus = 'cancelled and refunded', $statusMessage)
     {
-        return DB::transaction(function () use ($txnStatus) {
+        return DB::transaction(function () use ($txnStatus, $statusMessage) {
 			
             // Only allow refund if eligible
             if ($this->is_refunded) {
@@ -123,7 +123,7 @@ class Transaction extends Model
             $refundTransaction['refund_reason'] = 'Auto refund by system';
             $refundTransaction['is_refunded'] = 0;
             $refundTransaction['txn_status'] = $txnStatus;
-            $refundTransaction['api_status'] = $txnStatus;
+            $refundTransaction['api_status'] = $statusMessage;
             $refundTransaction['complete_transaction_at'] = now();
 
             $refundedTransaction = self::create($refundTransaction);

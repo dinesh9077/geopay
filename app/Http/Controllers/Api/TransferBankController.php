@@ -277,6 +277,7 @@
 					}
 					$confirmationId = $response['response']['confirmationId'];
 					$txnStatus = 'processing';
+					$apiStatus = 'processing';
 				}
 				else
 				{
@@ -298,6 +299,7 @@
 					$confirmationId = $request['order_id'];
 					 
 					$onafricStatus  = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'Accepted';
+					$apiStatus = $onafricStatus;
 					$txnStatus = OnafricStatus::from($onafricStatus)->label();
 				}
 				
@@ -358,6 +360,7 @@
 					'fees' => $request->platformCharge ?? 0,
 					'service_charge' => $request->serviceCharge ?? 0,
 					'total_charge' => $request->totalCharges ?? 0,
+					'api_status' => $apiStatus,
 					'created_at' => now(),
 					'updated_at' => now(),
 				]);
@@ -378,12 +381,20 @@
 					// Safely fetch the transaction and update it
 					if ($transaction) {
 						$commitTransaction = Transaction::find($transaction->id);
-						$statusLabel = LightnetStatus::from($commitResponse['response']['status'])->label(); 
+						$statusMessage = $commitResponse['response']['status']; 
+						
+						$statusLabel = LightnetStatus::from($statusMessage)->label(); 
 						if($statusLabel === "cancelled and refunded")
 						{
-							$commitTransaction->processAutoRefund($statusLabel);
+							$commitTransaction->processAutoRefund($statusLabel, $statusMessage);
 						}
-						$commitTransaction->update(['api_response_second' => $commitResponse['response'], 'txn_status' => $statusLabel]);
+						
+						$updateData = [
+							'api_response_second' => $commitResponse['response'],
+							'txn_status' => $statusLabel,
+							'api_status' => $statusMessage
+						];
+						$commitTransaction->update($updateData);
 					}
 					
 					$successMsg = $commitResponse['response']['message'];

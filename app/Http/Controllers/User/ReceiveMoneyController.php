@@ -242,6 +242,7 @@ class ReceiveMoneyController extends Controller
 				'fees' => $request->platformCharge ?? 0,
 				'service_charge' => $request->serviceCharge ?? 0,
 				'total_charge' => $request->totalCharges ?? 0,
+				'api_status' => $txnStatus ?? 'pending',
 				'created_at' => now(),
 				'updated_at' => now(),
 			]);
