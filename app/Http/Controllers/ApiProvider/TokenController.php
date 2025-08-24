@@ -31,11 +31,28 @@ class TokenController extends Controller
 				},
 			], 
         ]);
-
-        $apiCredential = ApiCredential::where('client_id', $data['client_id'])
+		
+        $apiCredential = ApiCredential::with(['user.ipWhitelists'])
+		->where('client_id', $data['client_id'])
 		->where('client_secret', $data['secret_id'])
 		->where('status', 'active')
 		->first();
+		
+		$user = $apiCredential->user;
+		$ip   = $request->ip();
+
+		// Check whitelist only if exists
+		if ($user->ipWhitelists->isNotEmpty()) {
+			$isAllowed = $user->ipWhitelists->contains('ip_address', $ip);
+
+			if (!$isAllowed) {
+				return $this->errorResponse(
+					'Access denied. Your IP address is not whitelisted.',
+					'ERR_IP_NOT_ALLOWED',
+					403
+				);
+			}
+		}
 		
         if (!$apiCredential) {
 			return $this->errorResponse('Invalid credentials', 'ERR_INVALID_CREDENTIALS', 401);  
