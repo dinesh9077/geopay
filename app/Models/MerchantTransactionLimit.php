@@ -7,29 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
-class ApiCredential extends Model
+class MerchantTransactionLimit extends Model
 {
     use HasFactory, LogsActivity;
 	
-	protected $fillable = [
-        'user_id',
-        'environment',
-        'status',
-        'client_id',
-        'client_secret',
-        'services',
-        'api_url'
-    ];
-	
-	protected $casts = [
-		'services' => 'array',
-	];
+	protected $fillable = ['user_id', 'service', 'daily_limit'];
 	
 	protected static $recordEvents = ['created', 'deleted', 'updated'];
 		
-	public function getActivitylogOptions(string $logName = 'Api Activation/Deactivation'): LogOptions
+	public function getActivitylogOptions(string $logName = 'Merchant Daily Transaction Limit'): LogOptions
 	{  
-		$user_name = auth()->check() ? auth()->user()->name : 'Unknown User'; // Fixed ternary operator
+		$user_name = auth()->check() ? auth()->user()->name : 'Unknown User'; 
 		return LogOptions::defaults()
 		->logOnly(['*', 'user.first_name', 'user.last_name'])
 		->logOnlyDirty()
@@ -39,10 +27,10 @@ class ApiCredential extends Model
 			return "The {$logName} has been {$eventName} by {$user_name}";
 		});
 	}
-	
-	public function user()
-	{
-		return $this->belongsTo(User::class, 'user_id');
-	}
-
+		  
+    // Relation with User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

@@ -7,27 +7,23 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
-class ApiCredential extends Model
+class MerchantFund extends Model
 {
     use HasFactory, LogsActivity;
 	
 	protected $fillable = [
         'user_id',
-        'environment',
-        'status',
-        'client_id',
-        'client_secret',
-        'services',
-        'api_url'
+        'amount',
+        'payment_mode',
+        'transaction_id',
+        'receipt',
+        'date',
+        'remarks',
     ];
-	
-	protected $casts = [
-		'services' => 'array',
-	];
 	
 	protected static $recordEvents = ['created', 'deleted', 'updated'];
 		
-	public function getActivitylogOptions(string $logName = 'Api Activation/Deactivation'): LogOptions
+	public function getActivitylogOptions(string $logName = 'Merchant Fund'): LogOptions
 	{  
 		$user_name = auth()->check() ? auth()->user()->name : 'Unknown User'; // Fixed ternary operator
 		return LogOptions::defaults()
@@ -39,10 +35,15 @@ class ApiCredential extends Model
 			return "The {$logName} has been {$eventName} by {$user_name}";
 		});
 	}
-	
-	public function user()
-	{
-		return $this->belongsTo(User::class, 'user_id');
-	}
+		
+    // If you want to automatically cast date
+    protected $casts = [
+        'date' => 'date',
+    ];
 
+    // Relation with User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

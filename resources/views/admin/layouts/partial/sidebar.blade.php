@@ -16,7 +16,7 @@
             <li class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <a href="{{ route('admin.dashboard') }}"
                     class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="link-icon" data-feather="box"></i>
+                    <i class="link-icon" data-feather="home"></i>
                     <span class="link-title">Dashboard</span>
                 </a>
             </li>
@@ -83,7 +83,7 @@
                     <a class="nav-link" data-bs-toggle="collapse" href="#manageCompanies" role="button"
                         aria-expanded="{{ collect($allRoutes)->contains(fn($route) => request()->routeIs($route)) ? 'true' : 'false' }}"
                         aria-controls="manageCompanies">
-                        <i class="link-icon" data-feather="users"></i>
+                        <i class="link-icon" data-feather="briefcase"></i>
                         <span class="link-title">Manage Companies</span>
                         <i class="link-arrow" data-feather="chevron-down"></i>
                     </a>
@@ -115,7 +115,7 @@
                 <li class="nav-item {{ request()->routeIs('admin.manual.exchange-rate') ? 'active' : '' }}">
                     <a href="{{ route('admin.manual.exchange-rate') }}"
                         class="nav-link {{ request()->routeIs('admin.manual.exchange-rate') ? 'active' : '' }}">
-                        <i class="link-icon" data-feather="box"></i>
+                        <i class="link-icon" data-feather="repeat"></i>
                         <span class="link-title">Manual Exchange Rate</span>
                     </a>
                 </li>
@@ -131,7 +131,7 @@
                 <li class="nav-item {{ request()->routeIs('admin.live.exchange-rate') ? 'active' : '' }}">
                     <a href="{{ route('admin.live.exchange-rate') }}"
                         class="nav-link {{ request()->routeIs('admin.live.exchange-rate') ? 'active' : '' }}">
-                        <i class="link-icon" data-feather="box"></i>
+                        <i class="link-icon" data-feather="activity"></i>
                         <span class="link-title">Live Exchange Rate</span>
                     </a>
                 </li>
@@ -149,7 +149,7 @@
                     <a class="nav-link" data-bs-toggle="collapse" href="#manageStaff" role="button"
                         aria-expanded="{{ collect($manageStaffs)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}"
                         aria-controls="manageStaff">
-                        <i class="link-icon" data-feather="users"></i>
+                        <i class="link-icon" data-feather="user-check"></i>
                         <span class="link-title">Manage Staff</span>
                         <i class="link-arrow" data-feather="chevron-down"></i>
                     </a>
@@ -171,7 +171,21 @@
                 </li>
             @endif
 			
-           
+			@php
+                $merchant = [
+                    'merchant' => ['route' => 'admin.merchant.index', 'label' => 'Merchant/Partner'],
+                ];
+            @endphp
+
+            @if (collect($merchant)->keys()->some(fn($key) => config("permission.$key.view")))
+               <li class="nav-item {{ request()->is('admin/merchant*') ? 'active' : '' }}">
+					<a href="{{ route($merchant['merchant']['route']) }}"
+					   class="nav-link {{ request()->is('admin/merchant*') ? 'active' : '' }}">
+						<i class="link-icon" data-feather="layers"></i>
+						<span class="link-title">{{ $merchant['merchant']['label'] }}</span>
+					</a>
+				</li> 
+            @endif 
 			
 			@php
                 $allTransactions = [
@@ -188,7 +202,7 @@
                     <a class="nav-link" data-bs-toggle="collapse" href="#transactions" role="button"
                         aria-expanded="{{ collect($allTransactions)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}"
                         aria-controls="reports">
-                        <i class="link-icon" data-feather="file"></i>
+                        <i class="link-icon" data-feather="credit-card"></i>
                         <span class="link-title">All Transaction</span>
                         <i class="link-arrow" data-feather="chevron-down"></i>
                     </a>
@@ -226,7 +240,7 @@
                     <a class="nav-link" data-bs-toggle="collapse" href="#reports" role="button"
                         aria-expanded="{{ collect($reports)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}"
                         aria-controls="reports">
-                        <i class="link-icon" data-feather="file"></i>
+                        <i class="link-icon" data-feather="bar-chart-2"></i>
                         <span class="link-title">Reports</span>
                         <i class="link-arrow" data-feather="chevron-down"></i>
                     </a>
@@ -272,8 +286,9 @@
 				<li class="nav-item {{ $isActive ? 'active' : '' }}">
 					<a class="nav-link" data-bs-toggle="collapse" href="#settings" role="button"
 						aria-expanded="{{ $isActive ? 'true' : 'false' }}" aria-controls="settings">
-						<i class="link-icon" data-feather="anchor"></i>
+						<i class="link-icon" data-feather="settings"></i>
 						<span class="link-title">Settings</span>
+
 						<i class="link-arrow" data-feather="chevron-down"></i>
 					</a>
 					<div class="collapse {{ $isActive ? 'show' : '' }}" id="settings">

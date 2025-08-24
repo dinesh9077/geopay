@@ -23,21 +23,23 @@
 					Transaction
 				</a>
 			</li>
-
-			<li class="sidebar-item">
-				<a href="{{ route('notifications') }}"  class="sidebar-link {{ Request::routeIs('notifications') ? 'active' : '' }}">
-					<img class="in-svg" src="{{ asset('assets/image/icons/bell.svg') }}" alt="">
-					Notification
-				</a>
-			</li>
-
+			
+			@if(auth()->user()->is_merchant == 0)
+				<li class="sidebar-item">
+					<a href="{{ route('notifications') }}"  class="sidebar-link {{ Request::routeIs('notifications') ? 'active' : '' }}">
+						<img class="in-svg" src="{{ asset('assets/image/icons/bell.svg') }}" alt="">
+						Notification
+					</a>
+				</li>
+			@endif
+			
 			<!-- <li class="sidebar-item">
 				<a href="#" class="sidebar-link">
 					<img class="in-svg" src="{{ asset('assets/image/icons/chart.svg') }}" alt="">
 					Statistics
 				</a>
 			</li> -->
-
+			
 			<li class="sidebar-item">
 				<a href="{{ route('setting') }}"  class="sidebar-link {{ Request::routeIs('setting') ? 'active' : '' }}">
 					<img class="in-svg" src="{{ asset('assets/image/icons/setting.svg') }}" alt="">

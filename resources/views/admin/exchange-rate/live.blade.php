@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
-@section('title', config('setting.site_name') . ' - Transaction Report')
-@section('header_title', 'Transaction Report')
+@section('title', config('setting.site_name') . ' - Live Exchange rate')
+@section('header_title', 'Live Exchange rate')
 @section('content') 
     <div class="container-fluid p-0">
         <!-- Filter Row -->
@@ -13,11 +13,11 @@
 					<option value="onafric mobile collection">onafric mobile collection</option> 
                 </select>
             </div> 
-			@if (config('permission.live_exchange_rate.edit')) 
-				<div class="filter-buttons col-md-4 col-lg-2">
-					<button onclick="getLiveRates(this, event)" class="btn btn-primary">Get Live Rate</button> 
-				</div>
-			@endif
+			 
+			<div class="filter-buttons col-md-4 col-lg-2">
+				<button onclick="getLiveRates(this, event)" class="btn btn-primary">Get Live Rate</button> 
+			</div>
+			 
         </div> 
         <hr>
 		@endif
@@ -57,8 +57,8 @@
                         <th>Exchange Rate Aggregator</th> 
                         <th>Exchange Rate Against 1 USD</th>
                         <th>Margin Percentage(Flat / %)</th> 
-                        <th>Api Rate Against 1 USD</th> 
-                        <th>Api Percentage(Flat / %)</th> 
+                        <!--<th>Api Rate Against 1 USD</th> 
+                        <th>Api Percentage(Flat / %)</th> -->
                         <th>Date</th> 
                         <th>Action</th> 
                     </tr>
@@ -87,18 +87,6 @@
 						<div class="mb-3">
 							<label for="recipient-name" class="form-label">Markdown Charge <span class="text-danger">*</span></label>
 							<input type="text" class="form-control" id="markdown_charge" name="markdown_charge" autocomplete="off" placeholder="Markdown Charge Flat/%" value="0" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
-						</div>
-						<div class="mb-3">
-							<label for="recipient-name" class="form-label">Api Markdown Type <span class="text-danger">*</span></label>
-							<select class="form-control" id="api_markdown_type" name="api_markdown_type"> 
-								<option value="">Select Api Markdown Type</option>
-								<option value="flat" > Flat/Fixed </option>
-								<option value="percentage"> Percentage </option>
-							</select>
-						</div>  
-						<div class="mb-3">
-							<label for="recipient-name" class="form-label">Api Markdown Charge <span class="text-danger">*</span></label>
-							<input type="text" class="form-control" id="api_markdown_charge" name="api_markdown_charge" autocomplete="off" placeholder="Api Markdown Charge Flat/%" value="0" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
 						</div> 
 					</div>
 					<div class="modal-footer">
@@ -178,8 +166,8 @@
 				{ "data": "aggregator_rate" },
 				{ "data": "markdown_rate" },
 				{ "data": "markdown_charge" },
-				{ "data": "api_markdown_rate" }, 
-				{ "data": "api_markdown_charge" },
+				// { "data": "api_markdown_rate" }, 
+				// { "data": "api_markdown_charge" },
 				{ "data": "updated_at" },
 				{ "data": "action" }
 			], 

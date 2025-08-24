@@ -46,4 +46,9 @@ class LiveExchangeRate extends Model
 			return "The {$logName} has been {$eventName} by {$user_name}";
 		});
 	}
+	
+	public function merchantRates()
+	{
+		return $this->hasMany(MerchantExchangeRate::class, 'referance_id')->where('type', 'live');
+	} 
 }

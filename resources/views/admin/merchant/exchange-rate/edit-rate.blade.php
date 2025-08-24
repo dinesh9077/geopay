@@ -5,7 +5,8 @@
 				<h5 class="modal-title" id="varyingModalLabel">Edit Exchange Rate</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
 			</div>
-			<form id="editLiveRateForm" action="{{ route('admin.live.exchange-rate.update', ['id' => $liverate->id]) }}" method="post" enctype="multipart/form-data">
+			<form id="editLiveRateForm" action="{{ route('admin.merchant.exchange-rate.update', ['id' => $liverate->id]) }}" method="post" enctype="multipart/form-data">
+				<input type="hidden" name="user_id" id="user_id" value="{{ $userId }}">
 				<div class="modal-body">
 					<div class="mb-3">
 						<label for="recipient-name" class="form-label">Aggregator Charge <span class="text-danger">*</span></label>
@@ -14,25 +15,15 @@
 					<div class="mb-3">
 						<label for="recipient-name" class="form-label">Markdown Type <span class="text-danger">*</span></label>
 						<select class="form-control" id="markdown_type" name="markdown_type"> 
-							<option value="flat" {{ $liverate->markdown_type == "flat" ? 'selected' : '' }}> Flat/Fixed </option>
-							<option value="percentage" {{ $liverate->markdown_type == "percentage" ? 'selected' : '' }}> Percentage </option>
+							<option value=""> Select Markdown Type </option>
+							<option value="flat" {{ $merchantRate && $merchantRate->markdown_type == "flat" ? 'selected' : '' }}> Flat/Fixed </option>
+							<option value="percentage" {{ $merchantRate && $merchantRate->markdown_type == "percentage" ? 'selected' : '' }}> Percentage </option>
 						</select>
 					</div>   
 					<div class="mb-3">
 						<label for="recipient-name" class="form-label">Markdown Charge <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" id="markdown_charge" name="markdown_charge" autocomplete="off" placeholder="Markdown Charge Flat/%" value="{{ $liverate->markdown_charge }}" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
+						<input type="text" class="form-control" id="markdown_charge" name="markdown_charge" autocomplete="off" placeholder="Markdown Charge Flat/%" value="{{ $merchantRate && $merchantRate->markdown_charge ? $merchantRate->markdown_charge : 0 }}" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
 					</div> 
-					<!--<div class="mb-3">
-						<label for="recipient-name" class="form-label">Api Markdown Type <span class="text-danger">*</span></label>
-						<select class="form-control" id="api_markdown_type" name="api_markdown_type"> 
-							<option value="flat" {{ $liverate->api_markdown_type == "flat" ? 'selected' : '' }}> Flat/Fixed </option>
-							<option value="percentage" {{ $liverate->api_markdown_type == "percentage" ? 'selected' : '' }}> Percentage </option>
-						</select>
-					</div>   
-					<div class="mb-3">
-						<label for="recipient-name" class="form-label">Api Markdown Charge <span class="text-danger">*</span></label>
-						<input type="text" class="form-control" id="api_markdown_charge" name="api_markdown_charge" autocomplete="off" placeholder="Api Markdown Charge Flat/%" value="{{ $liverate->api_markdown_charge }}" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));">
-					</div> -->
 				</div>
 				<div class="modal-footer">
 					<button type="submit" class="btn btn-primary">Submit</button>
@@ -87,7 +78,7 @@
 				if(res.status === "success")
 				{   
 					toastrMsg(res.status,res.message);  
-					dataTable.draw();
+					window.dataTable.draw();
 					$('#editLiveRateModal').modal('hide');
 				}
 				else if(res.status == "validation")

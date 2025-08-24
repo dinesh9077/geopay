@@ -37,7 +37,8 @@ class FetchLightNetExchangeRates extends Command
             $lightnetCountries = LightnetCountry::where('service_name', $channel)->get();
             $currentDate = now()->toDateString();
 
-            foreach ($lightnetCountries as $lightnetCountry) {
+            foreach ($lightnetCountries as $lightnetCountry)
+			{
                 $response = $this->liquidNetService->getRateHistory(
                     $lightnetCountry->data,
                     $lightnetCountry->value,
@@ -65,7 +66,7 @@ class FetchLightNetExchangeRates extends Command
                 $currency = $lightnetCountry->value;
 
                 // Fetch existing record or default values
-                $liveExchangeRate = LiveExchangeRate::where([
+                $liveExchangeRate = LiveExchangeRate::with('merchantRates')->where([
                     'channel' => $channel,
                     'currency' => $currency,
                 ])->first();
@@ -96,6 +97,25 @@ class FetchLightNetExchangeRates extends Command
                         'updated_at' => $updatedDate,
                     ]
                 );
+				
+				if($liveExchangeRate->merchantRates)
+				{
+					foreach($liveExchangeRate->merchantRates as $merchantRate)
+					{
+						$markdownType = $merchantRate->markdown_type ?? 'flat';
+						$markdownTypeCharge = $merchantRate->markdown_charge ?? 0;
+
+						// Calculate markdown charge and rate
+						$markdownCharge = $markdownType === "flat"
+							? max($markdownTypeCharge, 0)
+							: max(($rate * $markdownTypeCharge / 100), 0);
+
+						$markdownRate = $rate - $markdownCharge;
+						
+						$merchantRate->markdown_rate = $markdownRate;
+						$merchantRate->save();
+					}
+				} 
             } 
             DB::commit();
             $this->info('Live exchange rates fetched successfully.');

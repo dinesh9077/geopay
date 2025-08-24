@@ -57,8 +57,10 @@
 			<!-- Wallet Balance -->
 			<livewire:wallet-balance /> 
 			
-			<!-- Bell Icon Container -->
-			<livewire:notification-dropdown />
+			@if(auth()->user()->is_merchant == 0)
+				<!-- Bell Icon Container -->
+				<livewire:notification-dropdown />
+			@endif
 			
 			<!-- Profile Container -->
 			<li class="nav-item dropdown d-flex align-items-center gap-2">

@@ -40,7 +40,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,  
 			\App\Http\Middleware\Permission::class,
 			\App\Http\Middleware\CheckPasswordChange::class,
-			\App\Http\Middleware\CheckUserStatus::class, // Add this line
+			\App\Http\Middleware\CheckUserStatus::class,   
         ],
 
         'api' => [
@@ -80,5 +80,6 @@ class Kernel extends HttpKernel
         'kycStatus' => \App\Http\Middleware\CheckKycStatus::class, 
         'permission' => \App\Http\Middleware\Permission::class,
 		'client.bearer' => \App\Http\Middleware\BearerTokenAuth::class,
+		'merchant.access' => \App\Http\Middleware\MerchantAccess::class,
     ];
 }

@@ -51,4 +51,10 @@ class ExchangeRate extends Model
 	{
 		return $this->belongsTo(Admin::class, 'admin_id');
 	}
+	
+	public function merchantRates()
+	{
+		return $this->hasMany(MerchantExchangeRate::class, 'referance_id')->where('type', 'manual');
+	} 
+	 
 }

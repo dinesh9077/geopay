@@ -55,8 +55,8 @@
 											<th>Exchange Rate Aggregator</th> 
 											<th>Exchange Rate Against 1 USD</th>
 											<th>Margin Percentage(Flat / %)</th> 
-											<th>Api Rate Against 1 USD</th>
-											<th>Api Percentage(Flat / %)</th> 
+											<!--<th>Api Rate Against 1 USD</th>
+											<th>Api Percentage(Flat / %)</th> -->
 											<th>Date</th> 
 											<th>Action</th> 
 										</tr>
@@ -91,8 +91,8 @@
 											<th>Exchange Rate Aggregator</th> 
 											<th>Exchange Rate Against 1 USD</th>
 											<th>Margin Percentage(Flat / %)</th> 
-											<th>Api Rate Against 1 USD</th>
-											<th>Api Percentage(Flat / %)</th> 
+											<!--<th>Api Rate Against 1 USD</th>
+											<th>Api Percentage(Flat / %)</th> -->
 											<th>Date</th> 
 											<th>Action</th> 
 										</tr>
@@ -170,8 +170,8 @@
 				{ data: "aggregator_rate" },
 				{ data: "exchange_rate" },
 				{ data: "markdown_charge" },
-				{ data: "api_markdown_rate" },
-				{ data: "api_markdown_charge" },
+				// { data: "api_markdown_rate" },
+				// { data: "api_markdown_charge" },
 				{ data: "updated_at" },
 				{ data: "action" }
 			]
