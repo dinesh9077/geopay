@@ -43,13 +43,14 @@
 		}	
 		
 		public function countryList()
-		{ 
-			$africanCountries = $this->onafricService->availableCountry();
-			
+		{  
+			$user = auth()->user(); 
+			$payoutCountry = $user->merchantCorridors->where('service', 'mobile_money')->pluck('payout_country')->toArray(); 
+		 
 			$countries = Country::with('channels:id,country_id,channel')
 			->select('id', 'nicename', 'iso', 'iso3', 'currency_code')
 			->whereHas('channels')
-			->whereIn('nicename', $africanCountries)
+			->whereIn('iso3', $payoutCountry)
 			->get(); 
 			  
 			return $this->successResponse('country fetched successfully.', $countries);
@@ -122,13 +123,34 @@
 			if ($validator->fails()) {
 				return $this->validateResponse($validator->errors()->toArray());
 			}
-
-			if ($request->amount > $user->balance) {
-				return $this->errorResponse('Insufficient balance to complete this transaction.', 'ERR_INSUFFICIENT_BALANCE'); 
-			}
-		 
+  
 			try {
 				DB::beginTransaction(); 
+				
+				$txnAmount = $request->input('amount');
+				$netAmount = $request->input('amount');
+				
+				$totalCharge = 0; 
+				$mobileMoneyCharge = $user->mobileMoneyCharge ?? null; 
+				if ($mobileMoneyCharge) {
+					$chargeType = $mobileMoneyCharge->charge_type ?? 'flat';
+					$chargeValue = $mobileMoneyCharge->charge_value ?? 0;
+					
+					if($chargeType === "percentage")
+					{
+						$totalCharge = $netAmount * $chargeValue / 100; 
+					}
+					else
+					{
+						$totalCharge = $chargeValue; 
+					} 
+				}
+				
+				$netAmount += $totalCharge;  
+				if ($netAmount > $user->balance) {
+					return $this->errorResponse('Insufficient balance to complete this transaction.', 'ERR_INSUFFICIENT_BALANCE'); 
+				}
+				
 				$request['order_id'] = "GPTM-".$user->id."-".time();
 				$request['timestamp'] = now()->format('Y-m-d H:i:s');
 				
@@ -143,9 +165,21 @@
 					}
 				}
 				
-				/* $request->exchange_rate = $liveExchangeRate->api_markdown_rate;
-				$request->converted_amount = ($liveExchangeRate->api_markdown_rate * $request->amount); */
-				
+				$transactionLimit = Transaction::whereIn('platform_name', ['transfer to mobile'])
+					->where('user_id', $user->id)
+					->whereDate('created_at', Carbon::today())
+					->sum('txn_amount');
+
+				$dailyLimit = $user->mobileMoneyLimit->daily_limit ?? 0;
+
+				if (!$dailyLimit || $transactionLimit >= $dailyLimit) {
+					return $this->errorResponse(
+						"You have reached your daily transaction limit.",
+						'ERR_DAILY_LIMIT_EXCEEDED',
+						403
+					);
+				}
+			 
 				$response = $this->onafricService->apiSendMobileTransaction($request, $user);
 				  
 				if (!$response['success']) {
@@ -165,10 +199,7 @@
 				$onafricStatus = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'Accepted';
 				$apiStatus = $onafricStatus;
 				$txnStatus = OnafricStatus::from($onafricStatus)->label();
-				 
-				$txnAmount = $request->input('amount');
-				$netAmount = $request->input('amount');
-				
+				  
 				// Deduct balance
 				$user->decrement('balance', $netAmount); 
 				 
@@ -221,7 +252,7 @@
 					'order_id' => $request->order_id,
 					'fees' => 0,
 					'service_charge' => 0,
-					'total_charge' => 0,
+					'total_charge' => $totalCharge,
 					'is_api_service' => 1,
 					'api_status' => $apiStatus,
 					'created_at' => now(),

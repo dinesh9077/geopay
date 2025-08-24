@@ -128,5 +128,44 @@
 		public function webhook()
 		{
 			return $this->hasOne(WebhookRegister::class, 'user_id');
+		}  
+		
+		public function apicredential()
+		{
+			return $this->hasOne(ApiCredential::class, 'user_id');
+		} 
+		
+		public function ipWhitelists()
+		{
+			return $this->hasMany(MerchantIpWhitelist::class, 'user_id');
+		}   
+		
+		public function merchantCorridors()
+		{
+			return $this->hasMany(MerchantCorridor::class, 'user_id');
+		}   
+		
+		public function bankTransferLimit()
+		{
+			return $this->hasOne(MerchantTransactionLimit::class, 'user_id')
+			->where('service', 'bank_transfer');
+		} 
+		
+		public function mobileMoneyLimit()
+		{
+			return $this->hasOne(MerchantTransactionLimit::class, 'user_id')
+			->where('service', 'mobile_money');
+		}
+		
+		public function bankTransferCharge()
+		{
+			return $this->hasOne(MerchantCommission::class, 'user_id')
+			->where('service', 'bank_transfer');
+		} 
+		
+		public function mobileMoneyCharge()
+		{
+			return $this->hasOne(MerchantCommission::class, 'user_id')
+			->where('service', 'mobile_money');
 		}   
 	}

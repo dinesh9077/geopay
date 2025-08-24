@@ -13,15 +13,15 @@
 					
 					<h6 class="fw-bold">Services</h6>
 					<div class="form-check mt-2">
-						<input class="form-check-input" type="checkbox" name="services[]" id="service_mobile" value="mobile" 
-							{{ $apiCredential && in_array('mobile', $apiCredential->services ?? []) ? 'checked' : '' }}>
+						<input class="form-check-input" type="checkbox" name="services[]" id="service_mobile" value="mobile_money" 
+							{{ $apiCredential && in_array('mobile_money', $apiCredential->services ?? []) ? 'checked' : '' }}>
 						<label class="form-check-label" for="service_mobile">
 							Transfer Mobile Money
 						</label>
 					</div>
 					<div class="form-check mt-2">
-						<input class="form-check-input" type="checkbox" name="services[]" id="service_bank" value="bank"
-							{{ $apiCredential && in_array('bank', $apiCredential->services ?? []) ? 'checked' : '' }}>
+						<input class="form-check-input" type="checkbox" name="services[]" id="service_bank" value="bank_transfer"
+							{{ $apiCredential && in_array('bank_transfer', $apiCredential->services ?? []) ? 'checked' : '' }}>
 						<label class="form-check-label" for="service_bank">
 							Transfer Bank
 						</label>

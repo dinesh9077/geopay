@@ -81,5 +81,7 @@ class Kernel extends HttpKernel
         'permission' => \App\Http\Middleware\Permission::class,
 		'client.bearer' => \App\Http\Middleware\BearerTokenAuth::class,
 		'merchant.access' => \App\Http\Middleware\MerchantAccess::class,
+		'check.service' => \App\Http\Middleware\checkApiService::class,
+		'ip.whitelist' => \App\Http\Middleware\IpWhitelist::class,
     ];
 }

@@ -7,7 +7,7 @@ use App\Http\Controllers\ApiProvider\{
 };
  
 Route::post('/api-service/auth/token', [TokenController::class, 'issue']);
-Route::middleware(['client.bearer'])->prefix('api-service')->group(function () 
+Route::middleware(['client.bearer', 'ip.whitelist'])->prefix('api-service')->group(function () 
 { 
 	Route::post('/auth/token/revoke', [TokenController::class, 'revoke']); 
 	Route::get('/profile', fn() => auth()->user());
@@ -16,7 +16,7 @@ Route::middleware(['client.bearer'])->prefix('api-service')->group(function ()
 	Route::post('get-transaction-status', [ExchangeRateController::class, 'getTransactionStatus']);
 	
 	// Transfer Bank
-	Route::prefix('transfer-bank')->group(function () 
+	Route::middleware(['check.service'])->prefix('transfer-bank')->group(function () 
 	{  
 		Route::get('country-list', [TransferBankController::class, 'countryList']);   
 		Route::post('bank-list', [TransferBankController::class, 'bankList']);  
@@ -25,7 +25,7 @@ Route::middleware(['client.bearer'])->prefix('api-service')->group(function ()
 	}); 
 	
 	//Transfer Money
-	Route::prefix('transfer-money')->group(function () 
+	Route::middleware(['check.service'])->prefix('transfer-money')->group(function () 
 	{  
 		Route::get('country-list', [TransferMobileController::class, 'countryList']);   
 		Route::get('get-fields', [TransferMobileController::class, 'getFields']);  

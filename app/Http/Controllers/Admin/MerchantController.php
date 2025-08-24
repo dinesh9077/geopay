@@ -729,7 +729,7 @@
 		{   
 			$validator = Validator::make($request->all(), [
 				'services'   => 'required|array',
-				'services.*' => 'in:mobile,bank',
+				'services.*' => 'in:mobile_money,bank_transfer',
 				'environment' => 'required|in:sandbox,production',
 				'user_id' => 'required|exists:users,id',
 				'status' => 'required|in:active,inactive',

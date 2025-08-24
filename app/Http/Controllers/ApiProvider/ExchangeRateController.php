@@ -32,24 +32,50 @@
 			}
 			
 			$serviceName = $request->service == 1 ? ['lightnet'] : ['onafric'];
-		
-			$liveExchangeRate = LiveExchangeRate::select('id', 'currency', 'api_markdown_rate as rate')
+			
+			$user = auth()->user();
+			$allowedCurrencies = $user->merchantCorridors->pluck('payout_currency')->toArray(); 
+			if (!in_array($request->payoutCurrency, $allowedCurrencies)) {
+				return $this->errorResponse(
+					'Payout currency ' . $request->payoutCurrency . ' is not available for this client.',
+					'ERR_PAYOUT_CURRENCY_NOT_ALLOWED',
+					403
+				);
+			}
+			
+			$liveExchangeRate = LiveExchangeRate::with(['merchantRates' => function($q) use ($user){
+				$q->where('user_id', $user->id)->limit(1);
+			}])
+			->select('id', 'currency', 'aggregator_rate as rate')
 			->whereIn('channel', $serviceName)
 			->where('currency', $request->payoutCurrency)
 			->first(); 
 			
 			if(!$liveExchangeRate)
 			{ 
-				$liveExchangeRate = ExchangeRate::select('id', 'currency', 'api_markdown_rate as rate')
+				$liveExchangeRate = ExchangeRate::with(['merchantRates' => function($q) use ($user){
+					$q->where('user_id', $user->id)->limit(1);
+				}])
+				->select('id', 'currency', 'aggregator_rate as rate')
 				->where('type', 2)
 				->whereIn('service_name', $serviceName)
 				->where('currency', $request->payoutCurrency)
-				->first();
-				
-				if (!$liveExchangeRate) {
-					return $this->errorResponse('A technical issue has occurred. Please try again later.', 'ERR_RATE', 401); 
-				}
+				->first();  
 			} 
+			
+			if (!$liveExchangeRate) {
+				return $this->errorResponse(
+					'A technical issue has occurred. Please try again later.',
+					'ERR_RATE',
+					401
+				);
+			}
+						
+			// Apply merchant-specific rate if available
+			if ($liveExchangeRate->merchantRates->isNotEmpty()) {
+				$liveExchangeRate->rate = $liveExchangeRate->merchantRates->first()->markdown_rate ?? $liveExchangeRate->rate;
+			}
+			unset($liveExchangeRate->merchantRates);
 			
 			return $this->successResponse('Rate fetched Successfully.', 
 				$liveExchangeRate

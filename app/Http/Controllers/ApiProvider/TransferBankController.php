@@ -9,7 +9,7 @@
 	use App\Models\{
 		Country, Transaction, Beneficiary, User, 
 		LightnetCatalogue, LiveExchangeRate, ExchangeRate, 
-		LightnetCountry, OnafricBank
+		LightnetCountry, OnafricBank, MerchantCorridor
 	};
 	use App\Http\Traits\ApiServiceResponseTrait;
 	use App\Services\{
@@ -36,8 +36,12 @@
 		
 		public function countryList()
 		{  
+			$user = auth()->user(); 
+			$payoutCountry = $user->merchantCorridors->where('service', 'transafer_bank')->pluck('payout_country')->toArray(); 
+			$availableCountries = $this->availableCountries()->whereIn('payout_country', $payoutCountry);
+			
 			return $this->successResponse('Country fetch successfully.',
-				$this->availableCountries()
+				$availableCountries
 			);  
 		}
 		
@@ -153,19 +157,41 @@
 			if ($validator->fails()) {
 				return $this->validateResponse($validator->errors()->toArray());
 			}
-			
-			if ($request->amount > $user->balance) {
-				return $this->errorResponse('Insufficient balance to complete this transaction.', 'ERR_INSUFFICIENT_BALANCE'); 
-			}
-		 
+			 
 			try {
+			
 				DB::beginTransaction(); 
+				
+				$txnAmount = $request->input('amount');
+				$netAmount = $request->input('amount');
+				
+				$totalCharge = 0; 
+				$bankTransferCharge = $user->bankTransferCharge ?? null; 
+				if ($bankTransferCharge) {
+					$chargeType = $bankTransferCharge->charge_type ?? 'flat';
+					$chargeValue = $bankTransferCharge->charge_value ?? 0;
+					
+					if($chargeType === "percentage")
+					{
+						$totalCharge = $netAmount * $chargeValue / 100; 
+					}
+					else
+					{
+						$totalCharge = $chargeValue; 
+					} 
+				}
+				
+				$netAmount += $totalCharge;  
+				if ($netAmount > $user->balance) {
+					return $this->errorResponse('Insufficient balance to complete this transaction.', 'ERR_INSUFFICIENT_BALANCE'); 
+				}
+				 
 				$request['order_id'] = "GPTB-".$user->id."-".time();
 				$request['payoutCountry'] = $request->receivercountry ?? '';
 				$request['timestamp'] = time();
 				
-				$remitCurrency = config('setting.default_currency');
-				
+				$remitCurrency = config('setting.default_currency', 'USD');
+				 
 				$liveExchangeRate = LiveExchangeRate::find($request->exchange_rate_id); 
 				if(!$liveExchangeRate)
 				{ 
@@ -174,6 +200,21 @@
 						return $this->errorResponse('A technical issue has occurred. Please try again later.', 'ERR_RATE', 401); 
 					}
 				}
+				
+				$transactionLimit = Transaction::whereIn('platform_name', ['transfer to bank'])
+					->where('user_id', $user->id)
+					->whereDate('created_at', Carbon::today())
+					->sum('txn_amount');
+
+				$dailyLimit = $user->bankTransferLimit->daily_limit ?? 0;
+
+				if (!$dailyLimit || $transactionLimit >= $dailyLimit) {
+					return $this->errorResponse(
+						"You have reached your daily transaction limit.",
+						'ERR_DAILY_LIMIT_EXCEEDED',
+						403
+					);
+				} 
 				
 				$request['service_name'] = $request->service == 1 ? 'lightnet' : 'onafric';
 				if($request['service_name'] === "lightnet")
@@ -217,11 +258,7 @@
 					$apiStatus = $onafricStatus; 
 					$txnStatus = OnafricStatus::from($onafricStatus)->label();
 				}
-				
-				$txnAmount = $request->input('amount');
-				$netAmount = $request->input('amount');
-				
-				// Deduct balance
+				 
 				$user->decrement('balance', $netAmount); 
 				
 				// Check if necessary fields exist to prevent undefined index warnings 
@@ -274,7 +311,7 @@
 					'order_id' => $request->order_id,
 					'fees' => 0,
 					'service_charge' => 0,
-					'total_charge' => 0,
+					'total_charge' => $totalCharge,
 					'is_api_service' => 1,
 					'api_status' => $apiStatus,
 					'created_at' => now(),
