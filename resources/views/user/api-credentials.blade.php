@@ -38,8 +38,8 @@
 			</div>
 
 			<!-- Credentials Card -->
-			<form method="POST" action="{{ route('api.credentials.store') }}">
-				@csrf
+			<!--<form method="POST" action="{{ route('api.credentials.store') }}">
+				@csrf-->
 				<div class="card mb-4 p-4">
 					<h2 class="h5 fw-semibold mb-3">API Credentials</h2>
 					<input type="hidden" name="environment" value="production" readonly class="form-control bg-light">
@@ -68,9 +68,9 @@
 						</div>
 					</div>
 
-					<button type="submit" class="btn btn-custom mt-3">Generate New Credentials</button>
+					<!--<button type="submit" class="btn btn-custom mt-3">Generate New Credentials</button>-->
 				</div>
-			</form>
+			<!--</form>-->
 
 			<!-- API & Webhook URLs -->
 			<div class="row g-4 mb-4">

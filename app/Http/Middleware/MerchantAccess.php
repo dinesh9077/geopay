@@ -28,6 +28,8 @@ class MerchantAccess
 				'transaction-receipt/*',
 				'transaction-receipt-pdf/*',
 				'setting',
+				'api-credentials',
+				'api-documentation',
 			];
 
 			foreach ($allowedRoutes as $route) {

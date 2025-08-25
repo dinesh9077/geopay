@@ -84,18 +84,19 @@
 						</div>
 					@endif
 				</div>
-				
-				<!-- Second Column (4 columns wide) -->
-				<div class="col-lg-4 order-1 order-lg-2">
-					<div class="border text-center d-flex flex-column qr-container p-4 h-100 ms-lg-3">
-						<span class="content-3">To Pay {{ auth()->user()->first_name. ' ' .auth()->user()->last_name}}</span>
-						<span class="content-3 opacity-75">Share your GEOPAY QR Code to receive payments</span> 
-						<div class="img-fluid p-2 qr-code">
-						<!-- {!! QrCode::size(300)->generate($mobileNumber) !!} -->
-							{!! QrCode::generate($mobileNumber) !!}
+				@if(auth()->user()->is_merchant == 0)
+					<!-- Second Column (4 columns wide) -->
+					<div class="col-lg-4 order-1 order-lg-2">
+						<div class="border text-center d-flex flex-column qr-container p-4 h-100 ms-lg-3">
+							<span class="content-3">To Pay {{ auth()->user()->first_name. ' ' .auth()->user()->last_name}}</span>
+							<span class="content-3 opacity-75">Share your GEOPAY QR Code to receive payments</span> 
+							<div class="img-fluid p-2 qr-code">
+							<!-- {!! QrCode::size(300)->generate($mobileNumber) !!} -->
+								{!! QrCode::generate($mobileNumber) !!}
+							</div>
 						</div>
 					</div>
-				</div>
+				@endif
 			</div>
 		</div>
 		

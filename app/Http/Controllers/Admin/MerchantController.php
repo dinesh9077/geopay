@@ -784,7 +784,8 @@
 						'services' => $request->services ?? [],
 					]
 				);
-
+				
+				$apiCredential->user->update(['developer_option' => 1]);
 				DB::commit();
 				
 				return $this->successResponse('API credentials generated successfully.', ['client' => $apiCredential]);  
