@@ -98,6 +98,7 @@
 						{ 
 							toastrMsg(res.status,res.message); 
 							const decryptRes = decryptData(res.response);
+						 
 							window.location.href = decryptRes.url;
 						}
 						else if(res.status == "validation")

@@ -15,8 +15,7 @@ class CheckAdminRole
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = $request->user(); // Get the authenticated user
-
+        $user = $request->user(); // Get the authenticated user 
         // Check if the user is not an admin
         if ($user && $user->role !== 'admin') {
             return response()->json([
