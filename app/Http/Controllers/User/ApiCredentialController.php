@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ApiCredential; 
+use App\Models\LiveExchangeRate; 
 use App\Models\AccessToken; 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -19,7 +20,7 @@ class ApiCredentialController extends Controller
 	
     public function index()
     {
-		if(auth()->user()->developer_option == 0) return abort(403);
+		if(auth()->user()->developer_option == 0 || auth()->user()->is_merchant == 0) return abort(403);
 		  
         $credential = ApiCredential::with(['user.webhook'])
 		->where('user_id', Auth::id()) 
@@ -28,7 +29,7 @@ class ApiCredentialController extends Controller
 		 
         return view('user.api-credentials', compact('credential'));
     }
-
+	 
 	public function store(Request $request)
 	{  
 		$request->validate([
@@ -84,8 +85,31 @@ class ApiCredentialController extends Controller
 			DB::rollBack();
 			return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage());
 		}
-	}
-
-
-
+	} 
+	
+	public function exchangeRate()
+    {
+		$user = auth()->user(); 
+		if($user->is_merchant == 0) return abort(403);
+		
+		$allowedCurrencies = $user->merchantCorridors->pluck('payout_currency')->unique()->toArray();
+		
+		$exchangeRates = LiveExchangeRate::with(['merchantRates' => function($q) use ($user){
+			$q->where('user_id', $user->id)->limit(1);
+		}])
+		->whereIn('channel', ['lightnet', 'onafric'])
+		->whereIn('currency', $allowedCurrencies)
+		->get();
+		 
+        return view('user.exchange-rate', compact('exchangeRates'));
+    }
+	
+	public function corridorAccess()
+    {
+		$user = auth()->user(); 
+		if($user->is_merchant == 0) return abort(403);
+		
+		$corridors = $user->merchantCorridors;  
+        return view('user.corridor', compact('corridors'));
+    }
 }

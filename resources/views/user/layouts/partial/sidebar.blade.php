@@ -40,6 +40,24 @@
 				</a>
 			</li> -->
 			
+			@if(auth()->user()->is_merchant == 1)
+				<li class="sidebar-item">
+					<a href="{{ route('exchange-rate') }}"  class="sidebar-link {{ Request::routeIs('exchange-rate') ? 'active' : '' }}">
+						<img class="in-svg" src="{{ asset('assets/image/icons/currency_exchange.svg') }}" alt="">
+						Exchange Rate
+					</a>
+				</li>
+			@endif
+			
+			@if(auth()->user()->is_merchant == 1)
+				<li class="sidebar-item">
+					<a href="{{ route('corridor-access') }}"  class="sidebar-link {{ Request::routeIs('corridor-access') ? 'active' : '' }}">
+						<img class="in-svg" src="{{ asset('assets/image/icons/captive_portal.svg') }}" alt="">
+						Corridor Access
+					</a>
+				</li>
+			@endif
+			
 			<li class="sidebar-item">
 				<a href="{{ route('setting') }}"  class="sidebar-link {{ Request::routeIs('setting') ? 'active' : '' }}">
 					<img class="in-svg" src="{{ asset('assets/image/icons/setting.svg') }}" alt="">
@@ -47,7 +65,7 @@
 				</a>
 			</li>
 			
-			@if(auth()->user()->developer_option && auth()->user()->developer_option == 1)
+			@if(auth()->user()->developer_option && auth()->user()->developer_option == 1 && auth()->user()->is_merchant == 1)
 				<li class="sidebar-item">
 					<a href="{{ route('api.credentials.index') }}" class="sidebar-link {{ Request::routeIs('api.credentials.index') ? 'active' : '' }}">
 						<img class="in-svg" src="{{ asset('assets/image/icons') }}/{{ Request::routeIs('api.credentials.index') ? 'integration_instructions.svg' : 'api-integration.svg' }}" alt=""> 

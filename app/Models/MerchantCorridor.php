@@ -40,4 +40,9 @@ class MerchantCorridor extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+	
+	public function country()
+    {
+        return $this->belongsTo(Country::class, 'payout_country', 'iso3');
+    }
 }

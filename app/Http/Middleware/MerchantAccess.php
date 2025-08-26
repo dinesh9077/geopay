@@ -30,6 +30,8 @@ class MerchantAccess
 				'setting',
 				'api-credentials',
 				'api-documentation',
+				'exchange-rate',
+				'corridor-access',
 			];
 
 			foreach ($allowedRoutes as $route) {

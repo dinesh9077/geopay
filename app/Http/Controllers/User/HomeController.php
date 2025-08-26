@@ -74,7 +74,7 @@ class HomeController extends Controller
 	
 	public function apiDocumentation()
 	{
-		if(auth()->user()->developer_option == 0) return abort(403);
+		if(auth()->user()->developer_option == 0 || auth()->user()->is_merchant == 0) return abort(403);
 		  
         $credential = ApiCredential::with(['user.webhook'])
 		->where('user_id', Auth::id()) 

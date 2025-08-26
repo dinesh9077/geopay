@@ -138,4 +138,8 @@
 		
 		Route::get('/api-credentials', [ApiCredentialController::class, 'index'])->name('api.credentials.index');
 		Route::post('/api-credentials', [ApiCredentialController::class, 'store'])->name('api.credentials.store')->withoutMiddleware('webdecrypt.request');
+		
+		Route::get('/exchange-rate', [ApiCredentialController::class, 'exchangeRate'])->name('exchange-rate');
+		Route::get('/corridor-access', [ApiCredentialController::class, 'corridorAccess'])->name('corridor-access');
+	 
 	}); 
