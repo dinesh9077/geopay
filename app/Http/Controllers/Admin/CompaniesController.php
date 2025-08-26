@@ -65,6 +65,7 @@ class CompaniesController extends Controller
 			// Base query with relationship for country
 			$query = User::with('country:id,name')
 				->where('is_company', 1)
+				->where('is_merchant', 0)
 				->where('is_kyc_verify', $is_kyc_verify);
 
 			if ($page_status === 'pending') {

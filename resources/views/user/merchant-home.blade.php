@@ -65,9 +65,9 @@
                     <h6 class="fw-bold mb-3">
                         <i class="bi bi-calendar3 text-primary"></i> This Month Overview
                     </h6>
-                    <p class="mb-2">📌 Total Transactions: <strong>{{ $month['count'] ?? 0 }}</strong></p>
-                    <p class="mb-2">💰 Total Volume: <strong>{{ number_format($month['amount'] ?? 0, 2) }}</strong></p>
-                    <p class="mb-2">🏦 Total Fees: <strong>{{ number_format($month['fee'] ?? 0, 2) }}</strong></p>
+                    <p class="mb-2">Total Transactions: <strong>{{ $month['count'] ?? 0 }}</strong></p>
+                    <p class="mb-2">Total Volume: <strong>{{ number_format($month['amount'] ?? 0, 2) }}</strong></p>
+                    <p class="mb-2">Total Fees: <strong>{{ number_format($month['fee'] ?? 0, 2) }}</strong></p>
                 </div>
             </div>
         </div>
@@ -143,16 +143,6 @@
             </div>
         </div>
 
-    </div><!-- row -->
-</div>
-
-{{-- Extra styling for theme look --}}
-<style>
-    .hover-card:hover {
-        transform: translateY(-4px);
-        transition: 0.3s;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.15) !important;
-    }
-</style>
-
+    </div> 
+</div> 
 @endsection
