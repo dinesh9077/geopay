@@ -84,6 +84,7 @@
 				'exchange_rate_id' => 'required|integer',
 				'exchange_rate' => 'required|numeric',
 				'converted_amount' => 'required|numeric',
+				'payoutCountry' => 'required|string|size:3',
 				'payoutCurrency' => 'required|string|size:3',
 				'channel_name' => 'required|string',
 
@@ -130,11 +131,14 @@
 				$txnAmount = $request->input('amount');
 				$netAmount = $request->input('amount');
 				
-				$totalCharge = 0; 
-				$mobileMoneyCharge = $user->mobileMoneyCharge ?? null; 
+				$totalCharge = 0;   
+				$mobileMoneyCharge = $user->mobileMoneyCharge
+				? $user->mobileMoneyCharge->where('payout_country', $request->payoutCountry)->first()
+				: null;
+				
 				if ($mobileMoneyCharge) {
-					$chargeType = $mobileMoneyCharge->charge_type ?? 'flat';
-					$chargeValue = $mobileMoneyCharge->charge_value ?? 0;
+					$chargeType = $mobileMoneyCharge->fee_type ?? 'flat';
+					$chargeValue = $mobileMoneyCharge->fee_value ?? 0;
 					
 					if($chargeType === "percentage")
 					{
@@ -145,7 +149,7 @@
 						$totalCharge = $chargeValue; 
 					} 
 				}
-				
+				 
 				$netAmount += $totalCharge;  
 				if ($netAmount > $user->balance) {
 					return $this->errorResponse('Insufficient balance to complete this transaction.', 'ERR_INSUFFICIENT_BALANCE'); 

@@ -120,6 +120,7 @@
 				'exchange_rate' => 'required|numeric|min:0',
 				'transferamount' => 'required|numeric|min:0',
 				'remitcurrency' => 'required|string|size:3|alpha',
+				'payoutCountry' => 'required|string|size:3|alpha',
 				'payoutCurrency' => 'required|string|size:3|alpha',
 				'payoutIso'     => 'nullable|string|size:2|required_if:service,2',
 				'fromCountry'     => 'nullable|string|size:2|required_if:service,2',
@@ -166,10 +167,13 @@
 				$netAmount = $request->input('amount');
 				
 				$totalCharge = 0; 
-				$bankTransferCharge = $user->bankTransferCharge ?? null; 
+				$bankTransferCharge = $user->bankTransferCharge
+				? $user->bankTransferCharge->where('payout_country', $request->payoutCountry)->first()
+				: null;
+				 
 				if ($bankTransferCharge) {
-					$chargeType = $bankTransferCharge->charge_type ?? 'flat';
-					$chargeValue = $bankTransferCharge->charge_value ?? 0;
+					$chargeType = $bankTransferCharge->fee_type ?? 'flat';
+					$chargeValue = $bankTransferCharge->fee_value ?? 0;
 					
 					if($chargeType === "percentage")
 					{
@@ -180,14 +184,14 @@
 						$totalCharge = $chargeValue; 
 					} 
 				}
-				
+				 
 				$netAmount += $totalCharge;  
 				if ($netAmount > $user->balance) {
 					return $this->errorResponse('Insufficient balance to complete this transaction.', 'ERR_INSUFFICIENT_BALANCE'); 
 				}
 				 
 				$request['order_id'] = "GPTB-".$user->id."-".time();
-				$request['payoutCountry'] = $request->receivercountry ?? '';
+				$request['payoutCountry'] = $request->payoutCountry ?? '';
 				$request['timestamp'] = time();
 				
 				$remitCurrency = config('setting.default_currency', 'USD');
