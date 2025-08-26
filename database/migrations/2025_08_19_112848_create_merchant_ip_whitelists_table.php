@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('merchant_ip_whitelists', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable();
+            $table->foreignId('user_id')->nullable()->index();
             $table->string('ip_address', 45); // IPv4/6 
-            $table->integer('status')->default(1);
+            $table->integer('status')->default(1)->index();
             $table->timestamps();
         });
     }

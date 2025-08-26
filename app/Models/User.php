@@ -137,7 +137,7 @@
 		
 		public function ipWhitelists()
 		{
-			return $this->hasMany(MerchantIpWhitelist::class, 'user_id');
+			return $this->hasMany(MerchantIpWhitelist::class, 'user_id')->where('status', 1);
 		}   
 		
 		public function merchantCorridors()
@@ -159,13 +159,13 @@
 		
 		public function bankTransferCharge()
 		{
-			return $this->hasOne(MerchantCommission::class, 'user_id')
+			return $this->hasMany(MerchantCorridor::class, 'user_id')
 			->where('service', 'bank_transfer');
 		} 
 		
 		public function mobileMoneyCharge()
 		{
-			return $this->hasOne(MerchantCommission::class, 'user_id')
+			return $this->hasMany(MerchantCorridor::class, 'user_id')
 			->where('service', 'mobile_money');
 		}   
 	}

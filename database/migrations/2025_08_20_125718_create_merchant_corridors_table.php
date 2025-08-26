@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('merchant_corridors', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->index();
             $table->string('service');
-            $table->string('payout_country', 5);
-            $table->string('payout_currency', 5)->nullable();
+            $table->string('payout_country', 5)->index();
+            $table->string('payout_currency', 5)->nullable()->index();
             $table->timestamps();
         });
     }

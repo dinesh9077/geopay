@@ -128,9 +128,9 @@
 							} 
 
 							// Merchnat Commision
-							if (config('permission.merchant_commission.view')) {
+							/* if (config('permission.merchant_commission.view')) {
 								$dropdown .= '<a class="dropdown-item" href="' . route('admin.merchant.commission', ['id' => $value->id]) . '" onclick="merchantCommission(this, event)">Commission Flat/%</a>';
-							} 
+							}  */
 							
 							//Transaction Limit
 							if (config('permission.merchant_daily_transaction_limit.view')) {
@@ -917,26 +917,38 @@
 		public function merchantCorridor($merchantId)
 		{
 			$merchant = User::find($merchantId);
-			if(!$merchant)
-			{
+			if (!$merchant) {
 				return $this->errorResponse('Merchant not found.');
 			}  
-			
+
 			$services = []; 
-			$services['mobile_money'] = $this->mobileMoneyCountry();
-			$services['transafer_bank'] = $this->transferBankCountry();
-			
+			$services['mobile_money']   = $this->mobileMoneyCountry();
+			$services['bank_transfer']  = $this->transferBankCountry();
+
+			// fetch all corridors for this merchant, grouped by service
 			$merchantCorridor = MerchantCorridor::where('user_id', $merchant->id)
-			->get()
-			->groupBy('service')
-			->map(function ($items) {
-				return $items->pluck('payout_country', 'payout_country')->toArray();
-			})
-			->toArray();
-			 
+				->get()
+				->groupBy('service')
+				->map(function ($items) {
+					return $items->mapWithKeys(function ($item) {
+						return [
+							$item->payout_country => [
+								'enabled'       => true,
+								'payout_country'=> $item->payout_country,
+								'payout_currency'=> $item->payout_currency,
+								'fee_type'      => $item->fee_type,
+								'fee_value'     => $item->fee_value,
+								'flat_charge'   => $item->flat_charge,
+								'percentage'    => $item->percentage,
+							]
+						];
+					});
+				})
+				->toArray();
+
 			return view('admin.merchant.corridor-access', compact('services', 'merchant', 'merchantCorridor')); 
-		} 
-		
+		}
+ 
 		private function transferBankCountry()
 		{ 
 			$lightnetCountry = LightnetCountry::select(
@@ -973,7 +985,7 @@
 		} 
 		
 		public function merchantCorridorStore(Request $request)
-		{
+		{ 
 			DB::beginTransaction();
 
 			try {
@@ -992,6 +1004,8 @@
 								'service'         => $service,
 								'payout_country'  => $data['payout_country'],
 								'payout_currency' => $data['payout_currency'] ?? null,
+								'fee_type'		  => $data['fee_type'] ?? 'flat',
+								'fee_value'		  => $data['fee_value'] ?? 0,
 								'created_at'      => now(),
 								'updated_at'      => now(),
 							];

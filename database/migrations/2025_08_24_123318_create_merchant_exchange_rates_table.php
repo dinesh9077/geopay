@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->index();
             $table->enum('type', ['live', 'manual'])
                 ->nullable()->index();
-            $table->unsignedBigInteger('php')->index(); 
+            $table->unsignedBigInteger('referance_id')->index(); 
             $table->string('markdown_type')->default('flat');
             $table->decimal('markdown_charge', 15, 6)->default(0);
             $table->decimal('markdown_rate', 15, 6)->default(0);

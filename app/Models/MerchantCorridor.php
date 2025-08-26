@@ -16,6 +16,8 @@ class MerchantCorridor extends Model
         'service',
         'payout_country',
         'payout_currency',
+        'fee_type',
+        'fee_value'
     ];
 	
 	protected static $recordEvents = ['created', 'deleted', 'updated'];
