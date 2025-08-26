@@ -16,15 +16,28 @@
             <div class="col-md-6 mb-4">
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0">
-                            <i class="mdi mdi-lan-connect me-1"></i> 
-                            {{ ucfirst(str_replace('_', ' ', $service)) }}
-                        </h6>
-                        <div class="form-check">
-                            <input type="checkbox" data-service="{{ $service }}" class="form-check-input check-all" id="checkAll_{{ $service }}">
-                            <label class="form-check-label small" for="checkAll_{{ $service }}">All</label>
-                        </div>
-                    </div>
+						<!-- Left side (service title) -->
+						<h6 class="mb-0">
+							<i class="mdi mdi-lan-connect me-1"></i> 
+							{{ ucfirst(str_replace('_', ' ', $service)) }}
+						</h6>
+
+						<!-- Right side (checkboxes) --> 
+						<div class="d-flex align-items-center gap-3">
+							<!-- Bulk Commission button -->
+							<button type="button" class="btn btn-success btn-sm" id="{{ $service }}" data-service="{{ $service }}" onclick="updateBulkCommission(this, event)">
+								Update Bulk Commission
+							</button>
+
+							<!-- All checkbox -->
+							<div class="form-check mb-0">
+								<input type="checkbox" data-service="{{ $service }}" class="form-check-input check-all" id="all_{{ $service }}">
+								<label class="form-check-label small" for="all_{{ $service }}">All</label>
+							</div>
+						</div>
+
+					</div>
+
                     <div class="card-body">
                         <div class="row">
                             @foreach($countries as $country)
@@ -84,32 +97,82 @@
         </button>
     </div>
 </form>
+
+<div class="modal fade" id="bulkUpdateCommissionModal" tabindex="-1" aria-labelledby="varyingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="varyingModalLabel">Bulk Commission Update</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+			</div>
+			<form id="bulkUpdateCommissionForm" action="{{ route('admin.merchant.corridor.bulk-commission-update') }}" method="post" enctype="multipart/form-data">
+			@csrf
+				<input type="hidden" name="user_id" id="user_id" value="{{ $merchant->id }}" required>
+				<input type="hidden" name="service" id="service" value="" required>
+				<div class="modal-body"> 
+					<div class="mb-3">
+						<label for="recipient-name" class="form-label">Fee Type <span class="text-danger">*</span></label>
+						<select class="form-control" id="fee_type" name="fee_type" required>  
+							<option value="flat"> Flat/Fixed </option>
+							<option value="percentage"> Percentage </option>
+						</select>
+					</div>   
+					<div class="mb-3">
+						<label for="recipient-name" class="form-label">Fee Value <span class="text-danger">*</span></label>
+						<input type="text" class="form-control" id="fee_value" name="fee_value" autocomplete="off" placeholder="Fee Value Flat/%" value="0" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));" required>
+					</div> 
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div> 
 @endsection
 
 @push('js')
 <script>
-$(document).ready(function () {
-    // Master "check all"
-    $(".check-all").on("change", function () {
-        let service = $(this).data("service");
-        $(".country-" + service).prop("checked", $(this).prop("checked")).trigger("change");
-    });
-
-    // Enable/disable inputs based on checkbox
-    $(".country-checkbox").on("change", function () {
-        let row = $(this).closest(".form-check");
-        row.find("input[type=number]").prop("disabled", !$(this).prop("checked"));
-
-        let service = $(this).data("service");
-        let allChecked = $(".country-" + service).length === $(".country-" + service + ":checked").length;
-        $("#checkAll_" + service).prop("checked", allChecked);
-    });
 	
-	$(".country-checkbox").on("change", function () {
-		let row = $(this).closest(".country-box");
-		let enabled = $(this).prop("checked");
-		row.find("select, input[type=number]").prop("disabled", !enabled);
-	})
-});
+	function updateBulkCommission(obj, event) {
+		event.preventDefault(); // prevent default if button/link clicked
+
+		const service = $(obj).data('service');
+		const $form   = $('#bulkUpdateCommissionForm');
+
+		// Reset the form first (clear inputs, errors, etc.)
+		$form[0].reset();
+
+		// Set hidden input service
+		$form.find('#service').val(service);
+
+		// Show modal
+		$('#bulkUpdateCommissionModal').modal('show');
+	}
+
+	
+	$(document).ready(function () {
+		// Master "check all"
+		$(".check-all").on("change", function () {
+			let service = $(this).data("service");
+			$(".country-" + service).prop("checked", $(this).prop("checked")).trigger("change");
+		});
+
+		// Enable/disable inputs based on checkbox
+		$(".country-checkbox").on("change", function () {
+			let row = $(this).closest(".form-check");
+			row.find("input[type=number]").prop("disabled", !$(this).prop("checked"));
+
+			let service = $(this).data("service");
+			let allChecked = $(".country-" + service).length === $(".country-" + service + ":checked").length;
+			$("#checkAll_" + service).prop("checked", allChecked);
+		});
+		
+		$(".country-checkbox").on("change", function () {
+			let row = $(this).closest(".country-box");
+			let enabled = $(this).prop("checked");
+			row.find("select, input[type=number]").prop("disabled", !enabled);
+		})
+	});
 </script>
 @endpush

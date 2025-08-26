@@ -1026,6 +1026,36 @@
 			}  
 		}
 		
+		public function merchantCorridorCommissionUpdate(Request $request)
+		{ 
+			try {
+				DB::beginTransaction();
+
+				$userId  = $request->user_id;
+				$service = $request->service;
+				$feeType = $request->fee_type;
+				$feeValue = $request->fee_value;
+
+				$updated = MerchantCorridor::where('service', $service)
+					->where('user_id', $userId)
+					->update([
+						'fee_type'  => $feeType,
+						'fee_value' => $feeValue
+					]);
+
+				if (!$updated) {
+					throw new \Exception("No records found to update for service: {$service}, user: {$userId}");
+				}
+
+				DB::commit(); 
+				return redirect()->back()->with('success', 'Commission updated successfully.');
+
+			} catch (\Throwable $e) {
+				DB::rollBack(); 
+				return redirect()->back()->with('error', 'Failed to update commission.'. $e->getMessage()); 
+			}
+		}
+		
 		//Merchant Exchange Rate
 		public function merchantExchangeRate()
 		{ 

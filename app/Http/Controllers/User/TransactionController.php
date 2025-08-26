@@ -32,13 +32,14 @@ class TransactionController extends Controller
 		$txnStatuses = Transaction::select('txn_status')
 		->groupBy('txn_status')
 		->pluck('txn_status');
- 
+		 
         return view('user.transaction.transaction-list', compact('txnStatuses'));
     }
 	
 	public function transactionAjax(Request $request)
 	{
-		if ($request->ajax()) {
+		if ($request->ajax())
+		{
 			// Define the columns for ordering and searching
 			$columns = ['id', 'platform_name', 'order_id', 'fees', 'txn_amount', 'unit_convert_exchange', 'comments', 'notes', 'refund_reason', 'status', 'created_at', 'created_at', 'action'];
 

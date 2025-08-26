@@ -15,12 +15,17 @@
 		<div class=" col-md-4 col-lg-2">
 			<select class="form-control default-input content-3 select2" name="platform_name" id="platform_name">
 				<option value="">ALL</option>
-				<option value="geopay to geopay wallet">Geopay To Geopay Wallet</option>
-				<option value="add money">Add Money</option>
-				<option value="international airtime">International Airtime</option>
-				<option value="transfer to bank">transfer to bank</option>
-				<option value="transfer to mobile">transfer to mobile</option>
-				<option value="admin transfer">Admin Transfer</option>
+				@if(auth()->user()->is_merchant == 1)
+					<option value="transfer to bank">transfer to bank</option>
+					<option value="transfer to mobile">transfer to mobile</option>	
+				@else
+					<option value="geopay to geopay wallet">Geopay To Geopay Wallet</option>
+					<option value="add money">Add Money</option>
+					<option value="international airtime">International Airtime</option>
+					<option value="transfer to bank">transfer to bank</option>
+					<option value="transfer to mobile">transfer to mobile</option>
+					<option value="admin transfer">Admin Transfer</option>
+				@endif
 			</select>
 		</div>
 		<div class=" col-md-4 col-lg-2" >

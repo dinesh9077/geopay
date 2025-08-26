@@ -149,7 +149,8 @@
 		
 		//Corridor Access
 		Route::get('/merchant/corridor/{id}', [MerchantController::class, 'merchantCorridor'])->name('merchant.corridor')->middleware('permission:merchant_corridor_access.view'); 
-		Route::post('/merchant/corridor/store', [MerchantController::class, 'merchantCorridorStore'])->withoutMiddleware('webdecrypt.request')->name('merchant.corridor.store'); 
+		Route::post('/merchant/corridor/store', [MerchantController::class, 'merchantCorridorStore'])->withoutMiddleware('webdecrypt.request')->name('merchant.corridor.store');  
+		Route::post('/merchant/corridor/bulk-commission-update', [MerchantController::class, 'merchantCorridorCommissionUpdate'])->withoutMiddleware('webdecrypt.request')->name('merchant.corridor.bulk-commission-update'); 
 		
 		
 		//Manage Companies

@@ -150,11 +150,25 @@
 				{  
 					$.each(res.errors, function(key, value) {
 						var inputField = $('#' + key);
-						var errorSpan = $('<span>')
-						.addClass('error_msg text-danger') 
-						.attr('id', key + 'Error')
-						.text(value[0]);  
-						inputField.parent().append(errorSpan);
+						var existingList = $('#' + key + 'ErrorList');
+
+						// Remove previous error list
+						if (existingList.length) {
+							existingList.remove();
+						}
+
+						// Create a new <ul> list to hold error <li>s
+						var errorList = $('<ul style="padding-left: 1rem;">')
+							.addClass('error_msg text-danger')
+							.attr('id', key + 'ErrorList');
+
+						// Add each error as <li>
+						$.each(value, function(i, msg) {
+							errorList.append($('<li style="list-style: disc;">').text(msg));
+						});
+
+						// Append the list after the input field
+						inputField.parent().append(errorList);
 					});
 				}
 				else
