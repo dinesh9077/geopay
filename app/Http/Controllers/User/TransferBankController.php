@@ -180,7 +180,7 @@ class TransferBankController extends Controller
 			$data = []; 
 			$data['category_name'] = $beneficiaryData['category_name'];
 			$data['service_name'] = $beneficiaryData['service_name'];
-			$data['receivercountry'] = $user->country->iso3; 
+			$data['receivercountry'] = $beneficiaryData['payoutCountry'];
 			$data['user_id'] = Auth::id(); 
 			$data['created_at'] = now();
 			$data['updated_at'] = now();
@@ -457,7 +457,7 @@ class TransferBankController extends Controller
 			$data = []; 
 			$data['category_name'] = $beneficiaryData['category_name'];
 			$data['service_name'] = $beneficiaryData['service_name'];
-			$data['receivercountry'] = $user->country->iso3; 
+			$data['receivercountry'] = $beneficiaryData['payoutCountry'];
 			$data['user_id'] = Auth::id(); 
 			$data['updated_at'] = now(); 
 			$data['data'] = $beneficiaryData;
