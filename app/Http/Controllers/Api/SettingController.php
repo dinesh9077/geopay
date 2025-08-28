@@ -43,8 +43,11 @@
 			try 
 			{
 				DB::beginTransaction(); 
-				$user->first_name = $request->input('first_name');
-				$user->last_name = $request->input('last_name');
+				$data = $request->except('_token', 'profile_image');
+  
+				foreach ($data as $key => $value) {
+					$user->{$key} = $value;
+				}
  
 				if($request->hasFile('profile_image'))
 				{
