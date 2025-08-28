@@ -41,6 +41,10 @@
 					return $this->errorResponse('No account found. Please register first.');
 				}
 				
+				if ($user->is_merchant == 1) {
+					return $this->errorResponse('Invalid credentials.');
+				}
+				
 				// Check user status and verification
 				$messages = [
 					'status' => 'This user account is inactive. Please reach out to the administrator for further details.',
