@@ -46,6 +46,7 @@
 				'data',
 				'value',
 				'label',
+				'isdcode',
 				'service_name',
 				'status',
 				'created_at',
@@ -61,7 +62,7 @@
 				return $map;
 			});
 			
-			$onafricCountry = Country::select('id', 'country_flag', 'iso3 as data', 'currency_code as value', 'nicename as label', DB::raw("'onafric' as service_name"), DB::raw("1 as status"), 'created_at', 'updated_at', DB::raw("'flat' as markdown_type"), DB::raw("0 as markdown_charge"), 'iso')
+			$onafricCountry = Country::select('id', 'country_flag', 'iso3 as data', 'currency_code as value', 'nicename as label', 'isdcode', DB::raw("'onafric' as service_name"), DB::raw("1 as status"), 'created_at', 'updated_at', DB::raw("'flat' as markdown_type"), DB::raw("0 as markdown_charge"), 'iso')
 			->whereIn('nicename', $this->onafricService->bankAvailableCountry())
 			->get();
 			
