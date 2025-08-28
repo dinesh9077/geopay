@@ -506,7 +506,7 @@
 
 			if ($fieldList) {
 				$fieldList = collect($fieldList)->filter(fn($item) => 
-					!in_array(strtolower($item['fieldName']), ['sendercountry', 'senderfirstname', 'senderlastname', 'sendernationality', 'sendermobile', 'sendergender', 'senderaddress', 'sendercity', 'senderstate', 'senderzipcode', 'senderemail', 'senderidexpiredate', 'senderdateofbirth', 'senderidissuecountry', 'senderidtype', 'senderidtyperemarks', 'senderidnumber', 'senderoccupation', 'senderoccupationremarks', 'sendersourceoffund', 'sendersourceoffundremarks', 'sendersecondaryidtype', 'sendersecondaryidnumber', 'senderidissuedate'])
+					!in_array(strtolower($item['fieldName']), ['sendercountry', 'senderfirstname', 'senderlastname', 'sendernationality', 'sendermobile', 'sendergender', 'senderaddress', 'sendercity', 'senderstate', 'senderzipcode', 'senderemail', 'senderidexpiredate', 'senderdateofbirth', 'senderidissuecountry', 'senderidtype', 'senderidtyperemarks', 'senderidnumber', 'senderoccupation', 'senderoccupationremarks', 'sendersourceoffund', 'sendersourceoffundremarks', 'sendersecondaryidtype', 'sendersecondaryidnumber', 'senderidissuedate', 'receivercountry'])
 				); 
 			}
 			
@@ -657,6 +657,7 @@
 				$data = []; 
 				$data['category_name'] = $beneficiaryData['category_name'];
 				$data['service_name'] = $beneficiaryData['service_name'];
+				$data['receivercountry'] = $user->country->iso3; 
 				$data['user_id'] = Auth::id(); 
 				$data['created_at'] = now();
 				$data['updated_at'] = now();
@@ -723,6 +724,7 @@
 				$data = []; 
 				$data['category_name'] = $beneficiaryData['category_name'];
 				$data['service_name'] = $beneficiaryData['service_name'];
+				$data['receivercountry'] = $user->country->iso3; 
 				$data['user_id'] = Auth::id(); 
 				$data['updated_at'] = now(); 
 				$data['data'] = $beneficiaryData;
