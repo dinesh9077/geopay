@@ -110,6 +110,7 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
 			Route::post('store-transaction', [TransferBankController::class, 'storeTransaction']);  
 			Route::post('bank-list', [TransferBankController::class, 'bankList']);  
 			Route::post('get-fields-by-bank', [TransferBankController::class, 'getFieldByBank']);  
+			Route::get('recent-beneficiary', [TransferBankController::class, 'recentBeneficiary']);  
 		});
 		
 		//Transfer Money
@@ -122,7 +123,8 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
 			Route::post('beneficiary-store', [TransferMobileController::class, 'beneficiaryStore']);  
 			Route::post('beneficiary-update/{id}', [TransferMobileController::class, 'beneficiaryUpdate']);  
 			Route::post('commission', [TransferMobileController::class, 'commission']);  
-			Route::post('store-transaction', [TransferMobileController::class, 'storeTransaction']);     
+			Route::post('store-transaction', [TransferMobileController::class, 'storeTransaction']);   
+			Route::get('recent-beneficiary', [TransferMobileController::class, 'recentBeneficiary']);
 		}); 
 	});
 });

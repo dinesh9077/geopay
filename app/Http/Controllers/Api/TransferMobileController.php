@@ -465,4 +465,13 @@
 				return $this->errorResponse($e->getMessage());
 			} 	
 		}
+		public function recentBeneficiary()
+		{
+			$beneficiaries = Beneficiary::where('category_name', 'transfer to mobile')
+			->latest()
+			->limit(5)
+			->get();
+			
+			return $this->successResponse('The recent beneficiary fetched successfully.', $beneficiaries);
+		}
 	}
