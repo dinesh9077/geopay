@@ -35,7 +35,15 @@
 		
 		public function countryList()
 		{ 
-			return $this->successResponse('country fetched successfully.', $this->availableCountries());
+			$beneficiaries = Beneficiary::where('category_name', 'transfer to bank')
+				->selectRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.payoutCountry')) as payoutCountry")
+				->pluck('payoutCountry')
+				->unique()
+				->values()
+				->toArray();
+ 
+			$availableCountries = $this->availableCountries()->whereIn('data', $beneficiaries)->values(); 
+			return $this->successResponse('country fetched successfully.', $availableCountries);
 		}
 		
 		public function availableCountries()

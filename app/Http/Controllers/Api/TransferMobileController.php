@@ -42,7 +42,15 @@
 		
 		public function countryList()
 		{ 
-			return $this->successResponse('country fetched successfully.', $this->availableCountries());
+			$beneficiaries = Beneficiary::where('category_name', 'transfer to mobile')
+			->selectRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.recipient_country')) as recipient_country")
+			->pluck('recipient_country')
+			->unique()
+			->values()
+			->toArray();
+
+			$availableCountries = $this->availableCountries()->whereIn('id', $beneficiaries)->values(); 
+			return $this->successResponse('country fetched successfully.', $availableCountries);
 		}
 		
 		public function availableCountries()
