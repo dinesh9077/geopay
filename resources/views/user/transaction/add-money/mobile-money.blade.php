@@ -1,9 +1,9 @@
 <form id="mobileCollectionForm" action="{{ route('mobile-collection.store') }}" method="post" class="animate__animated animate__fadeIn g-2">
     <div class="mb-1 row">
 		<div class="col-12 mb-3"> 
-			<label for="country_code" class="form-label">Country <span class="text-danger">*</span></label>
+			<label for="country_code" class="form-label">Payer Country <span class="text-danger">*</span></label>
 			<select id="country_code" name="country_code" class="form-control form-control-lg content-3 default-input" >
-				<option value="">Select Country</option> 
+				<option value="">Select Payer Country</option> 
 			</select>
 		</div>
 		<div class="col-12 mb-3"> 
@@ -12,6 +12,15 @@
 				<option value="">Select Channel</option> 
 			</select>
 		</div>
+		<div class="col-12 mb-3"> 
+			<label for="txnAmount" class="form-label">Payer Name </label>
+			<input id="beneficiary_name" name="beneficiary_name" class="form-control form-control-lg content-3 default-input" placeholder="Payer Name"> 
+		</div> 
+		<div class="col-12 mb-3"> 
+			<label for="txnAmount" class="form-label">Amount <span class="text-danger">*</span></label>
+			<input id="txnAmount" name="txnAmount" class="form-control form-control-lg content-3 default-input"  placeholder="Enter Amount in {{config('setting.default_currency')}} (eg : 100 or eg : 0.0)" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));"> 
+		</div>
+		<div class="col-12" id="commissionHtml"></div>
 		<div class="col-12 mb-3"> 
 			<label for="country_code" class="form-label">Enter Mobile No (eg.2444765454) <span class="text-danger">*</span></label> 
 			<div class="d-flex align-items-center gap-2">
@@ -27,16 +36,6 @@
 				<option value="CDF">CDF</option> 
 			</select>
 		</div>
-		
-		<div class="col-12 mb-3"> 
-			<label for="txnAmount" class="form-label">Amount <span class="text-danger">*</span></label>
-			<input id="txnAmount" name="txnAmount" class="form-control form-control-lg content-3 default-input"  placeholder="Enter Amount in {{config('setting.default_currency')}} (eg : 100 or eg : 0.0)" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));"> 
-		</div>
-		<div class="col-12" id="commissionHtml"></div>
-		<div class="col-12 mb-3"> 
-			<label for="txnAmount" class="form-label">Beneficiary Name </label>
-			<input id="beneficiary_name" name="beneficiary_name" class="form-control form-control-lg content-3 default-input" placeholder="Beneficiary Name"> 
-		</div> 
 		 
 		<div class="col-12 mb-3 beneficiary_email" style="display:none;"> 
 			<label for="txnAmount" class="form-label">Beneficiary Last Name </label>

@@ -33,13 +33,13 @@
 				<!-- First Column (6 columns wide) -->
 				<div class="col-lg-8 order-2 order-lg-1 border-linear-right">
 					@if(auth()->user()->is_merchant == 0)
-						<p class="heading-4 mb-3 text-center">Services</p>
+						<p class="heading-4 mb-3 text-center">Add Funds</p>
 						<div class="row g-3 gx-xxl-5 mb-3 justify-content-center service-section mw-100 mx-auto">
 							<div class="col-6 col-md-4">
 								<a class="text-primary" href="{{ route('add-money') }}"  >
 									<div class="text-center h-100 align-content-center service-box m-auto">
 										<img class="in-svg mb-3" src="{{ asset('assets/image/icons/plus-circle.svg') }}" alt="Add Money Icon">
-										<p class="content-2">Add Money</p>
+										<p class="content-2">Mobile Money </p>
 									</div>
 								</a>
 							</div>
@@ -48,7 +48,7 @@
 								<a class="text-primary" href="{{ route('wallet-to-wallet') }}" >
 									<div class="text-center h-100 align-content-center service-box m-auto">
 										<img class="in-svg mb-3" src="{{ asset('assets/image/icons/wallet.svg') }}" alt="Wallet to Wallet Icon">
-										<p class="content-2">Wallet to Wallet</p>
+										<p class="content-2">Geopay to Geopay</p>
 									</div>
 								</a>
 							</div>

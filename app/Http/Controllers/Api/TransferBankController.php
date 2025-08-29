@@ -33,16 +33,21 @@
 			$this->onafricService = new OnafricService();  
 		} 
 		
-		public function countryList()
-		{ 
-			$beneficiaries = Beneficiary::where('category_name', 'transfer to bank')
+		public function countryList(Request $request)
+		{  
+			$availableCountries = $this->availableCountries();
+			if (request()->boolean('is_all')) {  
+				$beneficiaries = Beneficiary::where('category_name', 'transfer to bank')
 				->selectRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.payoutCountry')) as payoutCountry")
+				->where('user_id', auth()->user()->id)
 				->pluck('payoutCountry')
 				->unique()
 				->values()
 				->toArray();
  
-			$availableCountries = $this->availableCountries()->whereIn('data', $beneficiaries)->values(); 
+				$availableCountries = $availableCountries->whereIn('data', $beneficiaries)->values(); 
+			} 
+			
 			return $this->successResponse('country fetched successfully.', $availableCountries);
 		}
 		
