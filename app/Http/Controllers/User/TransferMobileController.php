@@ -45,6 +45,16 @@ class TransferMobileController extends Controller
 	public function transferToMobileMoney()
 	{   
 		$countries = $this->onafricService->country();  
+		
+		$beneficiaries = Beneficiary::where('category_name', 'transfer to mobile') 
+		->selectRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.recipient_country')) as recipient_country")
+		->where('user_id', auth()->user()->id)
+		->pluck('recipient_country')
+		->unique()
+		->values()
+		->toArray();
+		
+		$countries = $countries->whereIn('id', $beneficiaries)->values();
 		return view('user.transaction.transfer-mobile.index', compact('countries'));
 	}
 	 
@@ -112,7 +122,7 @@ class TransferMobileController extends Controller
 			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to mobile beneficiary');
 			
 			DB::commit(); 
-			return $this->successResponse('The beneficiary was completed successfully.');
+			return $this->successResponse('The recipient was completed successfully.');
         } 
 		catch (\Throwable $e)
 		{ 
@@ -136,7 +146,7 @@ class TransferMobileController extends Controller
 			->where('data->recipient_country', $recipientCountry) 
 			->get(); 
 		// Initialize output
-		$output = '<option value="">Select Beneficiary</option>';
+		$output = '<option value="">Select Recipient</option>';
 
 		// Loop through beneficiaries and prepare output
 		foreach ($beneficiaries as $beneficiary) {
@@ -175,7 +185,7 @@ class TransferMobileController extends Controller
 
 			// Check if the beneficiary exists
 			if (!$beneficiary) {
-				return $this->errorResponse('No Beneficiary found.');
+				return $this->errorResponse('No Recipient found.');
 			}
 
 			// Render the view with the beneficiary data
@@ -269,7 +279,7 @@ class TransferMobileController extends Controller
 			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to mobile beneficiary');
 			
 			DB::commit(); 
-			return $this->successResponse('The beneficiary was updated successfully.');
+			return $this->successResponse('The recipient was updated successfully.');
         } 
 		catch (\Throwable $e)
 		{ 
@@ -288,7 +298,7 @@ class TransferMobileController extends Controller
 			 
 			// Check if the beneficiary exists
 			if (!$beneficiary) {
-				throw new \Exception('Beneficiary not found.');
+				throw new \Exception('Recipient not found.');
 			}
 
 			// Log ID before deletion
@@ -298,7 +308,7 @@ class TransferMobileController extends Controller
 			$beneficiary->delete();
 
 			DB::commit(); 
-			return redirect()->back()->withSuccess('The beneficiary was deleted successfully.');
+			return redirect()->back()->withSuccess('The recipient was deleted successfully.');
 		} catch (\Throwable $e) {
 			DB::rollBack();  
 			return redirect()->back()->withError($e->getMessage());
@@ -312,7 +322,7 @@ class TransferMobileController extends Controller
 		 
 		$beneficiary = Beneficiary::find($beneficiaryId);
 		if (!$beneficiary || empty($beneficiary->data ?? [])) {
-			return $this->errorResponse('Beneficiary not found.');
+			return $this->errorResponse('recipient not found.');
 		}
 		
 		$country = Country::find($beneficiary->data['recipient_country']);
@@ -475,11 +485,10 @@ class TransferMobileController extends Controller
 			$beneficiaryName = trim("$beneficiaryFirstName $beneficiaryLastName"); // Using trim to remove any leading/trailing spaces
 
 			// Build the comment using sprintf for better readability
-			$comments = sprintf(
-				"You have successfully transferred $%s to %s (%s) via Mobile Money.Thank you for trusting GEOPAY for instant mobile money transactions.",
-				number_format($netAmount, 2), // Ensure txnAmount is formatted to 2 decimal places
+			$comments = sprintf( 
+				"You initiated a payout to %s for $%s via Mobile Money. Thank you for trusting GEOPAY for instant mobile money transactions. ",
 				$beneficiaryName,
-				$mobileNumber
+				number_format($netAmount, 2) 
 			); 
 			
 			// Create transaction record

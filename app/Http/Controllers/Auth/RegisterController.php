@@ -142,7 +142,7 @@ class RegisterController extends Controller
 			}
 			  
 			$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
-            $userData = $request->only('first_name', 'last_name', 'email', 'country_id', 'mobile_number', 'referalcode', 'is_email_verify', 'is_mobile_verify', 'terms');
+            $userData = $request->only('first_name', 'middle_name', 'last_name', 'email', 'country_id', 'mobile_number', 'referalcode', 'is_email_verify', 'is_mobile_verify', 'terms');
 			$userData['password'] = Hash::make($request->password);
 			$userData['xps'] = base64_encode($request->password);
 			$userData['formatted_number'] = $formattedNumber;
@@ -278,7 +278,7 @@ class RegisterController extends Controller
 			}
 			  
 			$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
-            $userData = $request->only('first_name', 'last_name', 'email', 'country_id', 'mobile_number', 'company_name', 'is_email_verify', 'is_mobile_verify', 'terms');
+            $userData = $request->only('first_name', 'middle_name', 'last_name', 'email', 'country_id', 'mobile_number', 'company_name', 'is_email_verify', 'is_mobile_verify', 'terms');
 			$userData['password'] = Hash::make($request->password);
 			$userData['xps'] = base64_encode($request->password);
 			$userData['formatted_number'] = $formattedNumber;

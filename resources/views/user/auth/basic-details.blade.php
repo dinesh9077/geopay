@@ -1,4 +1,4 @@
-<p style="text-align: center;color: red;">Note: Please Upload All Document</p>
+<p style="text-align: center;color: red;">Note: Please fill out all fields.</p>
 <form id="individualRegisterFinalForm" action="{{ $url }}" method="post">
 	@foreach($userData as $key => $userDetail)
 		<input name="{{ $key }}" type="hidden" value="{{ $userDetail }}" class="form-control form-control-lg bg-light border-light"/> 

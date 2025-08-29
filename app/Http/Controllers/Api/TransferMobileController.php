@@ -282,12 +282,11 @@
 				// Concatenate beneficiary name safely
 				$beneficiaryName = trim("$beneficiaryFirstName $beneficiaryLastName"); // Using trim to remove any leading/trailing spaces
 
-				// Build the comment using sprintf for better readability
-				$comments = sprintf(
-					"You have successfully transferred $%s to %s (%s) via Mobile Money.Thank you for trusting GEOPAY for instant mobile money transactions.",
-					number_format($netAmount, 2), // Ensure txnAmount is formatted to 2 decimal places
+				// Build the comment using sprintf for better readability 
+				$comments = sprintf( 
+					"You initiated a payout to %s for $%s via Mobile Money. Thank you for trusting GEOPAY for instant mobile money transactions. ",
 					$beneficiaryName,
-					$mobileNumber
+					number_format($netAmount, 2) 
 				); 
 				
 				// Create transaction record

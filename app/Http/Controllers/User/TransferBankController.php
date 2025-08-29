@@ -36,8 +36,16 @@ class TransferBankController extends Controller
     }	
 	
 	public function transferToBank()
-	{
-		$countries = $this->countries()->toArray(); 
+	{ 
+		$beneficiaries = Beneficiary::where('category_name', 'transfer to bank')
+		->selectRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.payoutCountry')) as payoutCountry")
+		->where('user_id', auth()->user()->id)
+		->pluck('payoutCountry')
+		->unique()
+		->values()
+		->toArray();
+ 
+		$countries = $this->countries()->whereIn('data', $beneficiaries)->values()->toArray();  
 		return view('user.transaction.transfer-bank.index', compact('countries'));
 	}
 	
@@ -216,7 +224,7 @@ class TransferBankController extends Controller
 			->where('data->payoutCountry', $payoutCountry)
 			->get(); 
 		// Initialize output
-		$output = '<option value="">Select Beneficiary</option>';
+		$output = '<option value="">Select Recipient</option>';
 		 
 		// Loop through beneficiaries and prepare output
 		foreach ($beneficiaries as $beneficiary) {
@@ -255,7 +263,7 @@ class TransferBankController extends Controller
 
 			// Check if the beneficiary exists
 			if (!$beneficiary) {
-				return $this->errorResponse('No Beneficiary found.');
+				return $this->errorResponse('No recipient found.');
 			}
 
 			// Render the view with the beneficiary data
@@ -495,7 +503,7 @@ class TransferBankController extends Controller
 			$beneficiary->delete();
 
 			DB::commit(); 
-			return redirect()->back()->withSuccess('The beneficiary was deleted successfully.');
+			return redirect()->back()->withSuccess('The recipient was deleted successfully.');
 		} catch (\Throwable $e) {
 			DB::rollBack();  
 			return redirect()->back()->withError($e->getMessage());
@@ -509,7 +517,7 @@ class TransferBankController extends Controller
 		
 		$beneficiary = Beneficiary::find($beneficiaryId);
 		if (!$beneficiary || empty($beneficiary->dataArr)) {
-			return $this->errorResponse('Beneficiary not found.');
+			return $this->errorResponse('Recipient not found.');
 		}
 		
 		$liveExchangeRate = LiveExchangeRate::select('markdown_rate', 'aggregator_rate')->where('channel', $beneficiary->dataArr['service_name'])->where('currency', $beneficiary->dataArr['payoutCurrency'])->first(); 

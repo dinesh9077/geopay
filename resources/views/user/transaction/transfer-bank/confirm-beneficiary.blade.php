@@ -3,7 +3,7 @@
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h1 class="modal-title heading-5 fw-normal" id="confirmBeneficiaryLabel">Confirm Beneficiary Detail</h1>
+				<h1 class="modal-title heading-5 fw-normal" id="confirmBeneficiaryLabel">Confirm Recipient Detail</h1>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">

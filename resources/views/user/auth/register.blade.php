@@ -97,11 +97,15 @@
                                 aria-labelledby="register-individual-tab"> 
 									<form id="individualRegisterForm" action="{{ route('register.temp-individual') }}" method="post">
 										<div class="row">
-											<div class="col-md-6 mb-3">
+											<div class="col-md-4 mb-3">
 												<label for="first_name" class="required content-3 text-primary">First Name <span class="text-danger">*</span></label>
 												<input id="first_name" name="first_name" type="text" class="form-control form-control-lg bg-light border-light"/>
 											</div>
-											<div class="col-md-6 mb-3">
+											<div class="col-md-4 mb-3">
+												<label for="first_name" class="required content-3 text-primary">Middle Name <span class="text-danger">*</span></label>
+												<input id="middle_name" name="middle_name" type="text" class="form-control form-control-lg bg-light border-light"/>
+											</div>
+											<div class="col-md-4 mb-3">
 												<label for="last_name" class="required content-3 text-primary">Last Name <span class="text-danger">*</span></label>
 												<input id="last_name" name="last_name" type="text" class="form-control form-control-lg bg-light border-light"/> 
 											</div>
@@ -179,11 +183,15 @@
 								<div class="tab-pane fade" id="register-company" role="tabpanel" aria-labelledby="register-company-tab"> 
 									<form class="mt-4" id="companyRegisterForm" action="{{ route('register.temp-company') }}" method="post">
 										<div class="row">
-											<div class="col-md-6 mb-3">
+											<div class="col-md-4 mb-3">
 												<label for="first_name" class="required content-3 text-primary">First Name <span class="text-danger">*</span></label>
 												<input id="first_name" name="first_name" type="text" class="form-control form-control-lg bg-light border-light"/>
 											</div>
-											<div class="col-md-6 mb-3">
+											<div class="col-md-4 mb-3">
+												<label for="first_name" class="required content-3 text-primary">Middle Name <span class="text-danger">*</span></label>
+												<input id="middle_name" name="middle_name" type="text" class="form-control form-control-lg bg-light border-light"/>
+											</div>
+											<div class="col-md-4 mb-3">
 												<label for="last_name" class="required content-3 text-primary">Last Name <span class="text-danger">*</span></label>
 												<input id="last_name" name="last_name" type="text" class="form-control form-control-lg bg-light border-light"/> 
 											</div>

@@ -7,7 +7,7 @@
 		<!-- Left Column -->
 		<div class="col-lg-9 mb-3 add-money-section">
 			<div class="d-flex justify-content-end">
-				<button type="button" class="btn btn-primary mb-4" onclick="addTransferBankBeneficiary(this, event)">Add Beneficiary Details</button>
+				<button type="button" class="btn btn-primary mb-4" onclick="addTransferBankBeneficiary(this, event)">Add Recipient Details</button>
 			</div>
 
 			<form id="transferToBankForm" action="{{ route('transfer-to-bank.store') }}" method="post" class="animate__animated animate__fadeIn g-2">
@@ -31,9 +31,9 @@
 					</div>
 					
 					<div class="col-12 mb-3"> 
-						<label for="beneficiaryId" class="form-label">Beneficiary <span class="text-danger">*</span></label>
+						<label for="beneficiaryId" class="form-label">Recipient <span class="text-danger">*</span></label>
 						<select id="beneficiaryId" name="beneficiaryId" class="form-control form-control-lg default-input content-3 select3" >
-							<option value="">Select Beneficiary</option> 
+							<option value="">Select Recipient</option> 
 						</select>
 					</div>
 					  

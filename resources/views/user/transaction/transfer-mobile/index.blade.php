@@ -51,7 +51,7 @@
 				</div> 
 				<!-- Right Side: Add Beneficiary Button -->
 				<button type="button" class="btn btn-primary" onclick="addTransferMobileBeneficiary(this, event)">
-					Add Beneficiary Details
+					Add Recipient Details
 				</button>
 			</div>
  
@@ -68,9 +68,9 @@
 					</div>
 					
 					<div class="col-12 mb-3"> 
-						<label for="beneficiaryId" class="form-label">Beneficiary <span class="text-danger">*</span></label>
+						<label for="beneficiaryId" class="form-label">Recipient <span class="text-danger">*</span></label>
 						<select id="beneficiaryId" name="beneficiaryId" class="form-control form-control-lg default-input content-3 select3" >
-							<option value="">Select Beneficiary</option> 
+							<option value="">Select Recipient</option> 
 						</select>
 					</div>
 					  

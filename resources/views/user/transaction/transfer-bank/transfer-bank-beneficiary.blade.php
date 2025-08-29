@@ -2,7 +2,7 @@
 	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-lg-down modal-xl">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h1 class="modal-title fs-5" id="staticBackdropLabel">Add Bank Transfer Beneficiary</h1>
+				<h1 class="modal-title fs-5" id="staticBackdropLabel">Add Recipient Details</h1>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" onclick="return $('#addTransferBankBeneficiary').remove();" aria-label="Close"></button>
 			</div>
 			<div class="modal-body p-4">
