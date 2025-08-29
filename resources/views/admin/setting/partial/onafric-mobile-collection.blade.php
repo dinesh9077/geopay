@@ -69,7 +69,7 @@
 											<input type="hidden" name="ids[]" id="id" value="{{ $collectionCountry->id }}">
 											<div class="col-md-5">
 												<label class="form-label">Channel Name</label>
-												<input type="text" class="form-control" name="channels[]" value="{{ collect($collectionCountry->channels)->implode(',')}}">
+												<input type="text" class="form-control" name="channels[]" value="{{ collect($collectionCountry->channels)->implode(',')}}" required>
 											</div>
 											<div class="col-md-4 d-flex align-items-end gap-3"> 
 												@if($key == 0)
@@ -94,7 +94,7 @@
 										<input type="hidden" name="ids[]" id="id" value="">
 										<div class="col-md-5">
 											<label class="form-label">Channel Name</label>
-											<input type="text" class="form-control" name="channels[]" value="">
+											<input type="text" class="form-control" name="channels[]" value="" required>
 										</div>
 										
 										<div class="col-md-4 d-flex align-items-end gap-3"> 

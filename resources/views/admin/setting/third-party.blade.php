@@ -272,7 +272,7 @@
 				<input type="hidden" name="ids[]" id="id" value="">
 				<div class="col-md-5">
 					<label class="form-label">Channel Name</label>
-					<input type="text" class="form-control" name="channels[]" value="">
+					<input type="text" class="form-control" name="channels[]" value="" required>
 				</div>
 				
 				<div class="col-md-4 d-flex align-items-end gap-3"> 

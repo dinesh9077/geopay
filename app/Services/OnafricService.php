@@ -45,7 +45,7 @@ class OnafricService
 	public function availableCountry()
 	{
 		return [
-			"Ivory Coast", "Senegal", "South Sudan", "Burkina Faso", "Niger", "Benin", "Guinea-Bissau", "Gambia", "Guinea", "Congo",
+			"Ivory Coast", "Senegal", "South Sudan", "Burkina Faso", "Niger", "Benin", "Guinea-Bissau", "Gambia", "Guinea Conakry", "Congo",
 			"Gabon", "Rwanda", "Sierra Leone", "Tanzania", "Ghana", "Botswana", "Burundi", "Ethiopia", "Liberia", "Madagascar", "Malawi", "Morocco", "Mozambique", "Zimbabwe", "Cameroon", "Uganda", "Zambia", "Kenya", "Chad", "Central African Republic", "Nigeria","Togo", "Democratic Republic of the Congo" , "South Africa"  
 		];   
 	}
