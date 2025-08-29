@@ -110,7 +110,7 @@ class RegisterController extends Controller
 			}
 			  
 			$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
-            $userData = $request->only('first_name', 'last_name', 'email', 'country_id', 'mobile_number', 'referalcode', 'is_email_verify', 'is_mobile_verify', 'terms', 'address', 'id_type', 'id_number', 'expiry_id_date', 'issue_id_date', 'city', 'state', 'zip_code', 'date_of_birth', 'business_activity_occupation', 'source_of_fund', 'gender');
+            $userData = $request->only('first_name', 'middle_name', 'last_name', 'email', 'country_id', 'mobile_number', 'referalcode', 'is_email_verify', 'is_mobile_verify', 'terms', 'address', 'id_type', 'id_number', 'expiry_id_date', 'issue_id_date', 'city', 'state', 'zip_code', 'date_of_birth', 'business_activity_occupation', 'source_of_fund', 'gender');
 			$userData['password'] = Hash::make($request->password);
 			$userData['xps'] = base64_encode($request->password);
 			$userData['formatted_number'] = $formattedNumber;
@@ -212,7 +212,7 @@ class RegisterController extends Controller
 			}
 			  
 			$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
-            $userData = $request->only('first_name', 'last_name', 'email', 'country_id', 'mobile_number', 'company_name', 'is_email_verify', 'is_mobile_verify', 'terms', 'address', 'id_type', 'id_number', 'expiry_id_date', 'issue_id_date', 'city', 'state', 'zip_code', 'date_of_birth', 'business_activity_occupation', 'source_of_fund', 'gender');
+            $userData = $request->only('first_name', 'middle_name', 'last_name', 'email', 'country_id', 'mobile_number', 'company_name', 'is_email_verify', 'is_mobile_verify', 'terms', 'address', 'id_type', 'id_number', 'expiry_id_date', 'issue_id_date', 'city', 'state', 'zip_code', 'date_of_birth', 'business_activity_occupation', 'source_of_fund', 'gender');
 			$userData['password'] = Hash::make($request->password);
 			$userData['xps'] = base64_encode($request->password);
 			$userData['formatted_number'] = $formattedNumber;
