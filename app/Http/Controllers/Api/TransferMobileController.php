@@ -480,6 +480,7 @@
 		public function recentBeneficiary()
 		{
 			$beneficiaries = Beneficiary::where('category_name', 'transfer to mobile')
+			->where('user_id', auth()->user()->id)
 			->latest()
 			->limit(5)
 			->get();
