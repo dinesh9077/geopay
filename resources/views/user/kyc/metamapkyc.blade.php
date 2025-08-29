@@ -68,11 +68,14 @@
 										</div> --}}
 									@else
 										<h6 class="fw-semibold text-warning text-center mb-4">Thank you for Meta KYC</h6>
-										<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption">
-											Your documents are under review to ensure they meet our verification requirements. We will notify you once the process is complete.
+										<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption"> 
+											You’re documents are still under review, If you think the process is taking longer than expected, please reach out to us on the following:  
 										</p>
-										<h6 class="heading-4  text-black mb-1 text-center">Thank You</h6>
-										<p class="caption text-muted content-3 text-center">{{ config('setting.site_name') }} Team</p>
+										<p style="color: gray; font-size: 0.8rem; text-align: center;" class="caption"> 
+											Email : support@geopayments.co   
+										</p>
+										<!--<h6 class="heading-4  text-black mb-1 text-center">Thank You</h6>
+										<p class="caption text-muted content-3 text-center">{{ config('setting.site_name') }} Team</p>-->
 									@endif
 								@endif
 							</div>

@@ -408,6 +408,13 @@ class TransferMobileController extends Controller
 		if ($validator->fails()) {
 			return $this->validateResponse($validator->errors());
 		}
+		
+		if($request->is_password == 0)
+		{
+			return response()->json([
+				'status' => 'password_confirmation'
+			]); 
+		} 
 	 
 		try {
 			DB::beginTransaction(); 

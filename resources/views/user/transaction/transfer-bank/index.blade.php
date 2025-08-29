@@ -11,6 +11,7 @@
 			</div>
 
 			<form id="transferToBankForm" action="{{ route('transfer-to-bank.store') }}" method="post" class="animate__animated animate__fadeIn g-2">
+				<input id="is_password" name="is_password" type="hidden" value="0"> 
 				<div class="mb-1 row">
 					<div class="col-12 mb-3"> 
 						<label for="country_code" class="form-label">Country <span class="text-danger">*</span></label>
@@ -59,6 +60,36 @@
 		@include('user.layouts.partial.quick-transfer')
 	</div>
 </div>
+<!-- Password Confirmation Modal -->
+<div class="modal fade" id="passwordConfirmModal" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Confirm Password</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+			</div>
+			<div class="modal-body">
+				<label for="confirmPassword" class="form-label">Enter your password</label>
+				<input 
+				type="password" 
+				id="confirmPassword" 
+				class="form-control" 
+				placeholder="Password" 
+				autocomplete="new-password" 
+				autocapitalize="off" 
+				spellcheck="false">
+
+				<span class="text-danger small d-none" id="passwordError">Invalid password</span>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" id="confirmPasswordBtn">Confirm</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
 @endsection
 @push('js')
 <script>
@@ -312,70 +343,97 @@
 	}
 	 
 	var $transferToBankForm = $('#transferToBankForm'); 
-	$transferToBankForm.submit(function(event) 
-	{
-		event.preventDefault();   
+
+	$('#confirmPasswordBtn').on('click', function() {
+		var password = $('#confirmPassword').val(); 
+		if (!password) {
+			$('#passwordError').removeClass('d-none').text("Password required");
+			return;
+		}
+
+		$.ajax({
+			url: "{{ route('password.verify') }}",
+			type: "POST",
+			data: {
+				_token: "{{ csrf_token() }}",
+				password: password
+			},
+			success: function(res) {
+				if (res.valid) {
+					$('#passwordError').addClass('d-none');
+					$('#is_password').val(1); // hidden input in form
+					$('#passwordConfirmModal').modal('hide'); 
+					submitEncryptedForm(); // call a separate function instead of .submit()
+				} else {
+					$('#passwordError').removeClass('d-none').text("Invalid password");
+				}
+			}
+		});
+	});
+
+	$transferToBankForm.submit(function(event) {
+		event.preventDefault();    
+		submitEncryptedForm();
+	});
+
+	function submitEncryptedForm() {
 		$transferToBankForm.find('[type="submit"]')
-		.prop('disabled', true) 
-		.addClass('loading-span') 
-		.html('<span class="spinner-border"></span>');
+			.prop('disabled', true) 
+			.addClass('loading-span') 
+			.html('<span class="spinner-border"></span>');
 
 		var formData = {};
-		$(this).find('input, select, textarea').each(function() {
+		$transferToBankForm.find('input, select, textarea').each(function() {
 			var inputName = $(this).attr('name'); 
 			formData[inputName] = $(this).val();
 		});
-		
+
 		formData['category_name'] = 'transfer to bank'; 
-		formData['service_name'] = $transferToBankForm.find('#country_code').find(':selected').data('service-name') ?? '';
-		formData['payoutCountry'] = $transferToBankForm.find('#country_code').find(':selected').data('payout-country') ?? '';
-		formData['payoutCountryName'] = $transferToBankForm.find('#country_code').find(':selected').data('country-name') ?? '';
-	  
-		// Encrypt data before sending
+		formData['service_name'] = $transferToBankForm.find('#country_code option:selected').data('service-name') ?? '';
+		formData['payoutCountry'] = $transferToBankForm.find('#country_code option:selected').data('payout-country') ?? '';
+		formData['payoutCountryName'] = $transferToBankForm.find('#country_code option:selected').data('country-name') ?? '';
+
 		const encrypted_data = encryptData(JSON.stringify(formData));
-		
+
 		$.ajax({
 			async: true,
-			type: $(this).attr('method'),
-			url: $(this).attr('action'),
+			type: $transferToBankForm.attr('method'),
+			url: $transferToBankForm.attr('action'),
 			data: { encrypted_data: encrypted_data, '_token': "{{ csrf_token() }}" },
 			cache: false, 
-			dataType: 'Json', 
-			success: function (res) 
-			{ 
+			dataType: 'json', 
+			success: function (res) {
 				$transferToBankForm.find('[type="submit"]')
-				.prop('disabled', false)  
-				.removeClass('loading-span') 
-				.html('Submit'); 
+					.prop('disabled', false)  
+					.removeClass('loading-span') 
+					.html('Submit'); 
 				
 				$('.error_msg').remove(); 
-				if(res.status === "success")
-				{ 
+				if (res.status === "success") { 
 					toastrMsg(res.status, res.message);  
 					resetForm($transferToBankForm);  
+					$('#is_password').val(0); // reset for next time
 					Livewire.dispatch('refreshRecentTransactions'); 
 					Livewire.dispatch('refreshNotificationDropdown');
 					Livewire.dispatch('updateBalance');
-				}
-				else if(res.status == "validation")
-				{  
+				} else if (res.status == "validation") {  
 					$.each(res.errors, function(key, value) {
 						var inputField = $transferToBankForm.find('#' + key);
 						var errorSpan = $('<span>')
-						.addClass('error_msg text-danger content-4') 
-						.attr('id', key + 'Error')
-						.text(value[0]); 
-						
+							.addClass('error_msg text-danger content-4') 
+							.attr('id', key + 'Error')
+							.text(value[0]); 
 						inputField.parent().append(errorSpan);
 					});
-				}
-				else
-				{ 
+				} else if (res.status == "password_confirmation") {  
+					$('#passwordConfirmModal').modal('show'); 
+				} else { 
 					toastrMsg(res.status, res.message);
 				}
-			} 
+			}
 		});
-	}); 
+	}
+ 
 	
 	function resetForm($form) {
 		// Reset the form's values to their default state

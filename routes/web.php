@@ -32,7 +32,7 @@
 	Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 	Route::post('/login', [LoginController::class, 'login'])->name('login.submit')->middleware('webdecrypt.request'); 
 	Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-	
+	  
 	Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 	Route::post('individual/register', [RegisterController::class, 'individualRegister'])->name('register.individual')->middleware('webdecrypt.request');
 	Route::post('temp-individual/register', [RegisterController::class, 'individualTempRegister'])->name('register.temp-individual')->middleware('webdecrypt.request');
@@ -108,6 +108,8 @@
 		Route::post('/transfer-to-bank/commission', [TransferBankController::class, 'transferToBankCommission'])->name('transfer-to-bank.commission');  
 		Route::get('/transfer-to-bank/commit-transaction/{id}', [TransferBankController::class, 'transferToBankCommitTransaction'])->name('transfer-to-bank.commit-transaction');
 		
+		Route::post('/verify-password', [TransferBankController::class, 'verifyPassword'])->name('password.verify')->withoutMiddleware('webdecrypt.request');
+			
 		// Transfer To Mobile Money
 		Route::get('/transfer-to-mobile-money', [TransferMobileController::class, 'transferToMobileMoney'])->name('transfer-to-mobile-money'); 
 		Route::post('/transfer-to-mobile/store', [TransferMobileController::class, 'transferToMobileStore'])->name('transfer-to-mobile.store');  

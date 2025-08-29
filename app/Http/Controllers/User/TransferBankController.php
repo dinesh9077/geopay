@@ -21,7 +21,8 @@ use App\Notifications\AirtimeRefundNotification;
 use Carbon\Carbon;
 use Helper;
 use App\Enums\LightnetStatus;
-use App\Enums\OnafricStatus;
+use App\Enums\OnafricStatus; 
+use Illuminate\Support\Facades\Hash;
 
 class TransferBankController extends Controller
 { 
@@ -44,7 +45,7 @@ class TransferBankController extends Controller
 		->unique()
 		->values()
 		->toArray();
- 
+		 
 		$countries = $this->countries()->whereIn('data', $beneficiaries)->values()->toArray();  
 		return view('user.transaction.transfer-bank.index', compact('countries'));
 	}
@@ -572,8 +573,7 @@ class TransferBankController extends Controller
 	  
 	public function transferToBankStore(Request $request)
 	{	
-		$user = Auth::user();
-		
+		$user = Auth::user(); 
 		// Validation rules
 		$validator = Validator::make($request->all(), [
 			'country_code'   => 'required|string|max:10', // Restrict maximum length
@@ -602,7 +602,13 @@ class TransferBankController extends Controller
 		if ($validator->fails()) {
 			return $this->validateResponse($validator->errors());
 		}
-	 
+		
+		if($request->is_password == 0)
+		{
+			return response()->json([
+				'status' => 'password_confirmation'
+			]); 
+		} 
 		try {
 			DB::beginTransaction(); 
 			$request['order_id'] = "GPTB-".$user->id."-".time();
@@ -842,6 +848,13 @@ class TransferBankController extends Controller
 
 			return $this->errorResponse($e->getMessage());
 		}
-	}
-	 
+	} 
+	
+	public function verifyPassword(Request $request)
+	{
+		if (Hash::check($request->password, auth()->user()->password)) {
+			return response()->json(['valid' => true]);
+		}
+		return response()->json(['valid' => false]);
+	} 
 }
