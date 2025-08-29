@@ -62,6 +62,7 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
 {
     Route::post('logout', [LoginController::class, 'logout']); 
 	Route::post('user-details', [LoginController::class, 'userDetails']);
+	Route::post('verify-password', [SettingController::class, 'verifyPassword']);
 	Route::get('notification-list', [SettingController::class, 'notificationList']);
 	 
 	Route::middleware(['decrypt.request'])->group(function () 

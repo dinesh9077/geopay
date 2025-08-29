@@ -200,4 +200,12 @@
 
 			return $this->successResponse('notification fetched.', $recentNotifications);
 		}
+		
+		public function verifyPassword(Request $request)
+		{ 
+			if (Hash::check($request->password, auth()->user()->password)) {
+				return $this->successResponse('verified');
+			}
+			return $this->successResponse('invalid password');
+		}
 	}
