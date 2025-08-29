@@ -42,22 +42,13 @@
 										<p class="content-2">Mobile Money </p>
 									</div>
 								</a>
-							</div>
-						
-							<div class="col-6 col-md-4">
-								<a class="text-primary" href="{{ route('wallet-to-wallet') }}" >
-									<div class="text-center h-100 align-content-center service-box m-auto">
-										<img class="in-svg mb-3" src="{{ asset('assets/image/icons/wallet.svg') }}" alt="Wallet to Wallet Icon">
-										<p class="content-2">Geopay to Geopay</p>
-									</div>
-								</a>
-							</div>
+							</div> 
 						</div>
 							  
 						<!-- Second Row inside First Column -->
 						<p class="heading-4 mb-3 text-center">Pay Services</p>
 						<div class="row g-3 gx-xxl-5 justify-content-between pay-service-section mw-100 mx-auto">
-							<div class="col-6 col-md-4">
+							<div class="col-6 col-md-3">
 								<a class="text-primary" href="{{ route('transfer-to-mobile-money') }}"  >
 									<div class="text-center h-100 align-content-center service-box m-auto">
 										<img class="in-svg mb-3" src="{{ asset('assets/image/icons/expense.svg') }}" alt="Transfer to Mobile Money Icon">
@@ -65,7 +56,15 @@
 									</div>
 								</a>
 							</div>
-							<div class="col-6 col-md-4">
+							<div class="col-6 col-md-3">
+								<a class="text-primary" href="{{ route('wallet-to-wallet') }}" >
+									<div class="text-center h-100 align-content-center service-box m-auto">
+										<img class="in-svg mb-3" src="{{ asset('assets/image/icons/wallet.svg') }}" alt="Wallet to Wallet Icon">
+										<p class="content-2">Geopay to Geopay</p>
+									</div>
+								</a>
+							</div>
+							<div class="col-6 col-md-3">
 								<a class="text-primary" href="{{ route('international-airtime') }}"  >
 									<div class="text-center h-100 align-content-center service-box m-auto">
 										<img class="in-svg mb-3" src="{{ asset('assets/image/icons/globe.svg') }}" alt="International Airtime Icon">
@@ -73,7 +72,7 @@
 									</div>
 								</a>
 							</div>
-							<div class="col-6 col-md-4">
+							<div class="col-6 col-md-3">
 								<a class="text-primary" href="{{ route('transfer-to-bank') }}"  >
 									<div class="text-center h-100 align-content-center service-box m-auto" >
 										<img class="in-svg mb-3" src="{{ asset('assets/image/icons/bank.svg') }}" alt="Transfer to Mobile Money Icon">
