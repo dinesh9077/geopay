@@ -87,7 +87,8 @@ class TransferMobileController extends Controller
 			if (
 				Beneficiary::where('user_id', $user->id) 
 					->where('category_name', 'transfer to mobile')
-					->where('data->recipient_mobile', $request->recipient_mobile) 
+					->where('data->recipient_mobile', $request->recipient_mobile)
+					->where('data->recipient_country', $request->recipient_country)
 					->exists()
 			) {
 				return $this->errorResponse('The provided recipient mobile number already exists.');
@@ -234,7 +235,8 @@ class TransferMobileController extends Controller
 				Beneficiary::where('user_id', $user->id) 
 					->where('id', '!=', $id)
 					->where('category_name', 'transfer to mobile')
-					->where('data->recipient_mobile', $request->recipient_mobile) 
+					->where('data->recipient_mobile', $request->recipient_mobile)
+					->where('data->recipient_country', $request->recipient_country)
 					->exists()
 			) {
 				return $this->errorResponse('The provided recipient mobile number already exists.');
