@@ -459,7 +459,7 @@ class OnafricService
 					htmlspecialchars($onafricBank->bank_name ?? '', ENT_QUOTES, 'UTF-8'),
 					$selected,
 					htmlspecialchars(
-						($onafricBank->bank_name ?? '') . ' (' . ($onafricBank->mfs_bank_code ?? '') . ')',
+						$onafricBank->bank_name ?? '',
 						ENT_QUOTES,
 						'UTF-8'
 					)
