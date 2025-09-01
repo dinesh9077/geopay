@@ -147,6 +147,16 @@ class TransferBankController extends Controller
 	public function transferToBankBeneficiaryStore(Request $request)
 	{
 		$user = Auth::user();
+		if (
+			Beneficiary::where('user_id', $user->id)
+				->where('category_name', 'transfer to bank')
+				->where('data->bankaccountnumber', $request->bankaccountnumber)
+				->where('data->payoutCountry', $request->payoutCountry)
+				->exists()
+		) {
+			return $this->errorResponse('The provided bank account number already exists.');
+		}
+
 	    if($request->service_name == "onafric")
 		{
 		    $bankaccountnumber = $request->bankaccountnumber; 
