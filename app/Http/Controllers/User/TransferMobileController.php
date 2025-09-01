@@ -79,11 +79,20 @@ class TransferMobileController extends Controller
                
         //     return $this->errorResponse('Provided country and mobile number are not active');
         // }
-        
+		DB::beginTransaction();
+
 		try { 
 			$user = Auth::user();
-			 
-			DB::beginTransaction();
+			   
+			if (
+				Beneficiary::where('user_id', $user->id) 
+					->where('category_name', 'transfer to mobile')
+					->where('data->recipient_mobile', $request->recipient_mobile) 
+					->exists()
+			) {
+				return $this->errorResponse('The provided recipient mobile number already exists.');
+			}
+
 			$beneficiaryData = $request->except('_token', 'recipient_mobile', 'mobile_code');
 			
 			$mobile_code = $request->mobile_code ?? '';
@@ -221,6 +230,16 @@ class TransferMobileController extends Controller
 			$user = Auth::user();
 			$beneficiary = Beneficiary::find($id);
 			
+			if (
+				Beneficiary::where('user_id', $user->id) 
+					->where('id', '!=', $id)
+					->where('category_name', 'transfer to mobile')
+					->where('data->recipient_mobile', $request->recipient_mobile) 
+					->exists()
+			) {
+				return $this->errorResponse('The provided recipient mobile number already exists.');
+			}
+
 			$recipient_country_code = $request->recipient_country_code; 
     		$recipient_mobile = $request->recipient_mobile;
     		 
