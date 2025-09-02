@@ -498,8 +498,8 @@ class OnafricService
 		$mobileNumber = ltrim(($beneficiary['mobile_code'] ?? ''), '+').($beneficiary['recipient_mobile'] ?? '');
 		
 		$user = Auth::user(); 
-		$purposeOfTransfer = BusinessOccupation::from($user->business_activity_occupation)->label();
-		$sourceOfFunds = SourceOfFunds::from($user->source_of_fund)->label();
+		$purposeOfTransfer = $user->business_activity_occupation ? BusinessOccupation::from($user->business_activity_occupation)->label() : '';
+		$sourceOfFunds = $user->source_of_fund ? SourceOfFunds::from($user->source_of_fund)->label() : '';
 		
 		$requestBody = [
 			"corporateCode" => $this->onafricCorporate,
@@ -832,8 +832,8 @@ class OnafricService
 		
 		$mobileNumber = ltrim(($beneficiary['mobile_code'] ?? ''), '+').($beneficiary['receivercontactnumber'] ?? '');
 		$user = Auth::user(); 
-		$purposeOfTransfer = BusinessOccupation::from($user->business_activity_occupation)->label();
-		$sourceOfFunds = SourceOfFunds::from($user->source_of_fund)->label();
+		$purposeOfTransfer = $user->business_activity_occupation ? BusinessOccupation::from($user->business_activity_occupation)->label() : '';
+		$sourceOfFunds = $user->source_of_fund ? SourceOfFunds::from($user->source_of_fund)->label()  : '';
 		
 		$requestBody = [
 			"corporateCode" => $this->onafricCorporate,

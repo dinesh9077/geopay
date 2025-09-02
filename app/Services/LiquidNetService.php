@@ -161,8 +161,8 @@ class LiquidNetService
 		$aggregatorCurrencyAmount = (int) round($request->aggregatorCurrencyAmount);
 		$mobileNumber = ltrim(($beneficiary['mobile_code'] ?? ''), '+').($beneficiary['receivercontactnumber'] ?? '');
 		
-		$purposeOfTransfer = BusinessOccupation::from($user->business_activity_occupation)->label();
-		$sourceOfFunds = SourceOfFunds::from($user->source_of_fund)->label();
+		$purposeOfTransfer = $user->business_activity_occupation ? BusinessOccupation::from($user->business_activity_occupation)->label() : '';
+		$sourceOfFunds = $user->source_of_fund ? SourceOfFunds::from($user->source_of_fund)->label() : '';
 		$idType = IdType::from($user->id_type)->label();
 		
 		$requestBody = [
