@@ -9,7 +9,7 @@ use Auth, Log;
 use App\Enums\BusinessOccupation;
 use App\Enums\SourceOfFunds;
 use App\Enums\IdType;
-
+use Helper;
 class LiquidNetService
 {
 	protected $appId;
@@ -158,7 +158,7 @@ class LiquidNetService
 		$senderMobile = $user->formatted_number ? ltrim(trim($user->formatted_number), '+') : '';
 		$senderCountry = $user->country->iso3 ?? '';
 		  
-		$aggregatorCurrencyAmount = (int) round($request->aggregatorCurrencyAmount);
+		$aggregatorCurrencyAmount = Helper::decimalsprint($request->aggregatorCurrencyAmount, 2); 
 		$mobileNumber = ltrim(($beneficiary['mobile_code'] ?? ''), '+').($beneficiary['receivercontactnumber'] ?? '');
 		
 		$purposeOfTransfer = $user->business_activity_occupation ? BusinessOccupation::from($user->business_activity_occupation)->label() : '';
