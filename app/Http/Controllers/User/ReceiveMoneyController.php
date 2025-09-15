@@ -331,11 +331,12 @@ class ReceiveMoneyController extends Controller
 	
 	public function depositPaymentLink(Request $request, DepositPaymentService $depositService)
 	{
+		 
 		$validator = Validator::make($request->all(), [
 			'cardtype'   => 'required|in:visa,mastercard,amex,discover,diners',
 			'cardname'   => 'required|string|max:100',
 			'cardnumber' => 'required',
-			'month'      => 'required|digits:2|integer|min:1|max:12',
+			'month'      => 'required|digits:2|min:1|max:12',
 			'year'       => 'required|digits:4|integer|min:' . date('Y'),
 			'cvv'        => 'required|digits_between:3,4',
 			'amount'     => 'required|numeric|min:1',
