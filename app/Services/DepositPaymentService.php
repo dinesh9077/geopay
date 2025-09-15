@@ -14,7 +14,7 @@ class DepositPaymentService
     public function __construct()
     {
         $this->endPoint          = config('services.deposit.endpoint', 'https://ggapi.ibanera.com/v1/payment/deposit');
-        $this->merchantSiteKey   = config('services.deposit.merchant_key', 'geo-payments-inc-accepted-id2i4gh1r8');
+        $this->merchantSiteKey   = config('services.deposit.merchant_key', 'geo-payments-3d-test-29-sa6x1yyb');
         $this->merchantSiteSecret= config('services.deposit.merchant_secret', 'a2327435d3763214d30c97edb189866c8283b8486717c667595b569b99aae6b8');
         $this->currency          = config('setting.default_currency', 'USD');
     }
@@ -63,7 +63,7 @@ class DepositPaymentService
             "ipaddress"         => request()->ip(),
             "browseragent"      => request()->header('User-Agent'),
         ];
-		dd($payload);
+	 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post($this->endPoint, $payload);
