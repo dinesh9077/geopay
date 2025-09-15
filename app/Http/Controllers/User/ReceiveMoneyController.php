@@ -369,7 +369,7 @@ class ReceiveMoneyController extends Controller
 			$request->amount,
 			uniqid('order_') // dynamic order ID
 		);
-		dd($response);
-		return response()->json($response);
+		
+		return $this->successResponse("transaction authorized", ['payment_link' => $response['response']['payment_url']]); 
 	} 
 }

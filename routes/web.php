@@ -30,6 +30,7 @@
 	
 	//Deposit payment  
 	Route::post('deposit/payment-callback', [FrontController::class, 'handleDepositCallback'])->name('deposit.payment-callback');  
+	Route::get('/deposit/payment-return', [FrontController::class, 'depositPaymentReturn'])->name('deposit.payment-return');  
 	
 	//Auth::routes(); 
 	Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -131,8 +132,7 @@
 		  
 		//Deposit payment
 		Route::get('/deposit/payment', [ReceiveMoneyController::class, 'depositPayment'])->name('deposit.payment');  
-		Route::post('/deposit/payment-link', [ReceiveMoneyController::class, 'depositPaymentLink'])->name('deposit.payment-link');   
-		Route::get('/deposit/payment-return', [PaymentController::class, 'depositPaymentReturn'])->name('deposit.payment-return');  
+		Route::post('/deposit/payment-link', [ReceiveMoneyController::class, 'depositPaymentLink'])->name('deposit.payment-link');  
 		 
 		//Transaction List 
 		Route::get('/transaction-list', [TransactionController::class, 'index'])->name('transaction-list');

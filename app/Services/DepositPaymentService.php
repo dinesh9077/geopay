@@ -57,17 +57,30 @@ class DepositPaymentService
             "cvv"               => $card['cvv'],
             "currency"          => $this->currency,
             "amount"            => $amount,
-            "merchant_orderid"  => $orderId,
-            "redirecturl"       => route('deposit.payment-return'),
+            "merchant_orderid"  => $orderId, 
+            "redirecturl"       => route('deposit.payment'),
             "callbackurl"       => route('deposit.payment-callback'),
             "ipaddress"         => request()->ip(),
             "browseragent"      => request()->header('User-Agent'),
-        ];
+        ]; 
 	 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post($this->endPoint, $payload);
 
-        return $response->json();
+        // Handle Successful Response
+		if ($response->successful()) {
+			return [
+				'success' => true,
+				'request' => $payload,
+				'response' => $response->json()
+			];
+		}
+		
+		return [
+			'success' => false,
+			'request' => $payload,
+			'response' => json_decode($response->body(), true)
+		];	
     }
 }

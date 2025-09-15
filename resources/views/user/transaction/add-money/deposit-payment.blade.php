@@ -242,17 +242,8 @@
 					$('.error_msg').remove(); 
 					if(res.status === "success")
 					{ 
-						toastrMsg(res.status, res.message);  
-						resetForm($form);  
-						Livewire.dispatch('refreshRecentTransactions'); 
-						Livewire.dispatch('refreshNotificationDropdown');
-						Livewire.dispatch('updateBalance'); 
-						
-						const decodeRes = decryptData(res.response);
-						
-						// Update balance dynamically
-						const balanceHtml = `${decodeRes.userBalance} <span class="currency">${decodeRes.currencyCode}</span>`;
-						$("#updateBalance").html(balanceHtml);
+						var result = decryptData(res.response);
+						window.location.href = result.payment_link;
 					}
 					else if(res.status == "validation")
 					{  
@@ -276,5 +267,34 @@
 		});
 	});
    
+     document.addEventListener("DOMContentLoaded", function () {
+        // Get query params from URL
+        const params = new URLSearchParams(window.location.search);
+        const status = params.get('status'); // e.g. Authorized, Failed
+
+        if (status) {
+            if (status.toLowerCase() === 'authorised') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Payment Successful!',
+                    text: 'Your payment has been authorized.',
+                    confirmButtonColor: '#3085d6',
+                });
+            } else if (status.toLowerCase() === 'failed') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Failed!',
+                    text: 'Your payment could not be processed. Please try again.',
+                    confirmButtonColor: '#d33',
+                });
+            } else {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Payment Status',
+                    text: 'Payment status: ' + status,
+                });
+            }
+        }
+    });
 </script>
 @endpush
