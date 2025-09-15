@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; 
+use App\Models\Transaction;
 
 class FrontController extends Controller
 {
@@ -18,21 +19,13 @@ class FrontController extends Controller
 	
     public function handleDepositCallback(Request $request)
     {
-        // Verify signature / securehash if required
-        \Log::info('Payment Callback Received', $request->all());
-  
-        return response()->json(['status' => 'ok']);
-    }
-	
-	public function depositPaymentReturn(Request $request)
-	{
-		$merchantOrderId = $request->merchant_orderid;
+        $merchantOrderId = $request->merchant_orderid;
 		$status          = strtolower($request->status);
 		$reason          = $request->reason ?? null;
 
 		// Find transaction by merchant_orderid
 		$transaction = Transaction::where('order_id', $merchantOrderId)->first();
-		dd($transaction);
+	 
 		if (!$transaction) {
 			\Log::warning("Webhook: Transaction not found for order_id {$merchantOrderId}", $request->all());
 			return response()->json(['status' => 'transaction_not_found'], 404);
@@ -56,5 +49,6 @@ class FrontController extends Controller
 		$transaction->update($updateData);
 
 		return response()->json(['status' => 'ok']);
-	} 
+    } 
+	 
 }

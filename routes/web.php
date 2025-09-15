@@ -29,8 +29,7 @@
 	Route::get('/terms-and-condition', [FrontController::class, 'termAndCondition'])->name('terms-and-condition');
 	
 	//Deposit payment  
-	Route::post('deposit/payment-callback', [FrontController::class, 'handleDepositCallback'])->name('deposit.payment-callback');  
-	Route::get('/deposit/payment-return', [FrontController::class, 'depositPaymentReturn'])->name('deposit.payment-return');  
+	Route::post('deposit/payment-callback', [FrontController::class, 'handleDepositCallback'])->name('deposit.payment-callback');   
 	
 	//Auth::routes(); 
 	Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
