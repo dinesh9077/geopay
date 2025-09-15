@@ -15,5 +15,6 @@ class VerifyCsrfToken extends Middleware
         '/international-airtime/callback/*', // Exclude this route
         '/onafric/webhook/*', // Exclude this route
         '/mobile-collection-callback', // Exclude this route
+        '/deposit/payment-callback', // Exclude this route
     ];
 }

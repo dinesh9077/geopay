@@ -26,6 +26,9 @@ use Illuminate\Support\Facades\Notification;
 use App\Notifications\AirtimeRefundNotification;
 use Helper;
 use Carbon\Carbon;  
+use Http;
+use App\Services\DepositPaymentService;
+ 
 
 class ReceiveMoneyController extends Controller
 { 
@@ -319,5 +322,53 @@ class ReceiveMoneyController extends Controller
 
 		return response()->json(['message' => 'Transaction updated successfully'], 200);
 	}
+	
+	// Deposit Payment
+	public function depositPayment()
+	{
+		return view('user.transaction.add-money.deposit-payment');
+	}
+	
+	public function depositPaymentLink(Request $request, DepositPaymentService $depositService)
+	{
+		$validator = Validator::make($request->all(), [
+			'cardtype'   => 'required|in:visa,mastercard,amex,discover,diners',
+			'cardname'   => 'required|string|max:100',
+			'cardnumber' => 'required',
+			'month'      => 'required|digits:2|integer|min:1|max:12',
+			'year'       => 'required|digits:4|integer|min:' . date('Y'),
+			'cvv'        => 'required|digits_between:3,4',
+			'amount'     => 'required|numeric|min:1',
+		]);
 
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		}
+
+		$user = Auth::user();
+
+		// Prepare user & card data
+		$userData = [
+			'first_name' => $user->first_name,
+			'last_name'  => $user->last_name,
+			'email'      => $user->email,
+			'phone'      => $user->mobile_number,
+			'address'    => $user->address,
+			'city'       => $user->city,
+			'state'      => $user->state,
+			'postalcode' => $user->zip_code,
+			'country'    => $user->country->iso ?? '',
+		];
+
+		$cardData = $request->only(['cardtype', 'cardname', 'cardnumber', 'month', 'year', 'cvv']);
+
+		$response = $depositService->deposit(
+			$userData,
+			$cardData,
+			$request->amount,
+			uniqid('order_') // dynamic order ID
+		);
+		dd($response);
+		return response()->json($response);
+	} 
 }

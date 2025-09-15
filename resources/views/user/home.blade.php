@@ -43,6 +43,15 @@
 									</div>
 								</a>
 							</div> 
+						 
+							<div class="col-6 col-md-4">
+								<a class="text-primary" href="{{ route('deposit.payment') }}"  >
+									<div class="text-center h-100 align-content-center service-box m-auto">
+										<img class="in-svg mb-3" src="{{ asset('assets/image/icons/plus-circle.svg') }}" alt="Add Money Icon">
+										<p class="content-2">Deposit payment </p>
+									</div>
+								</a>
+							</div> 
 						</div>
 							  
 						<!-- Second Row inside First Column -->

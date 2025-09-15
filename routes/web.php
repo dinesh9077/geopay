@@ -28,6 +28,9 @@
  
 	Route::get('/terms-and-condition', [FrontController::class, 'termAndCondition'])->name('terms-and-condition');
 	
+	//Deposit payment  
+	Route::post('deposit/payment-callback', [FrontController::class, 'handleDepositCallback'])->name('deposit.payment-callback');  
+	
 	//Auth::routes(); 
 	Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 	Route::post('/login', [LoginController::class, 'login'])->name('login.submit')->middleware('webdecrypt.request'); 
@@ -125,6 +128,11 @@
 		//Add Mobile Money  
 		Route::get('/add-money', [ReceiveMoneyController::class, 'addMoney'])->name('add-money'); 
 		Route::post('/mobile-collection-store', [ReceiveMoneyController::class, 'storeMobileCollection'])->name('mobile-collection.store');Route::post('/mobile-collection-commission', [ReceiveMoneyController::class, 'storeMobileCollectionCommission'])->name('mobile-collection.commission'); 
+		  
+		//Deposit payment
+		Route::get('/deposit/payment', [ReceiveMoneyController::class, 'depositPayment'])->name('deposit.payment');  
+		Route::post('/deposit/payment-link', [ReceiveMoneyController::class, 'depositPaymentLink'])->name('deposit.payment-link');   
+		Route::get('/deposit/payment-return', [PaymentController::class, 'depositPaymentReturn'])->name('deposit.payment-return');  
 		 
 		//Transaction List 
 		Route::get('/transaction-list', [TransactionController::class, 'index'])->name('transaction-list');

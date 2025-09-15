@@ -14,5 +14,16 @@ class FrontController extends Controller
     public function termAndCondition()
     {
         return view('terms_condition');
-    }       
+    } 
+	
+    public function handleDepositCallback(Request $request)
+    {
+        // Verify signature / securehash if required
+        \Log::info('Payment Callback Received', $request->all());
+
+        // Update order status in DB
+        // Order::where('order_id', $request->merchant_orderid)->update([...]);
+
+        return response()->json(['status' => 'ok']);
+    }
 }
