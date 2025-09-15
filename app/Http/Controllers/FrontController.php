@@ -32,7 +32,7 @@ class FrontController extends Controller
 
 		// Find transaction by merchant_orderid
 		$transaction = Transaction::where('order_id', $merchantOrderId)->first();
-
+		dd($transaction);
 		if (!$transaction) {
 			\Log::warning("Webhook: Transaction not found for order_id {$merchantOrderId}", $request->all());
 			return response()->json(['status' => 'transaction_not_found'], 404);
@@ -46,7 +46,8 @@ class FrontController extends Controller
 		];
 
 		// If payment captured, update wallet too
-		if ($status === 'captured') {
+		if ($transaction->txn_status != "captured" && $status === 'captured') 
+		{
 			$transaction->user->increment('balance', $transaction->txn_amount);
 
 			$updateData['comments'] = 'Payment successful. Wallet updated.';
