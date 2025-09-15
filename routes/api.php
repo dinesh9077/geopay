@@ -90,6 +90,9 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
 			Route::post('store', [ReceiveMoneyController::class, 'storeTransaction']);
 		});
 		
+		//Add Money
+		Route::post('/deposit/payment-link', [ReceiveMoneyController::class, 'depositPaymentLink']);  
+		
 		//Internation Airtime 
 		Route::prefix('international-airtime')->group(function () 
 		{  
