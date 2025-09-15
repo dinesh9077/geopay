@@ -320,7 +320,7 @@
 				'user_id' => $user->id,
 				'receiver_id' => $user->id,
 				'platform_name' => 'add money',
-				'platform_provider' => 'deposit payment',
+				'platform_provider' => 'deposit card payment',
 				'transaction_type' => 'credit',
 				'country_id' => $user->country_id,
 				'country_code' => $request->country_code,

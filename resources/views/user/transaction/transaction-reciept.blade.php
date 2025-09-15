@@ -212,7 +212,7 @@
 			<th class="content-4 d-flex justify-content-between text-nowrap">DESTINATION AMOUNT <span class="mx-1">:</span></th>
 			<td class="content-4">{{ Helper::decimalsprint($transaction->unit_amount, 2) }} {{ $transaction->unit_currency }}</td>
 		</tr>
-	@elseif($transaction->platform_name === 'add money')	
+	@elseif($transaction->platform_name === 'add money' && $transaction->platform_provider === 'onafric mobile collection')	
 		<tr>
 			<th class="content-4 d-flex justify-content-between text-nowrap">NET AMOUNT <span class="mx-1">:</span></th>
 			<td class="content-4">{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</td>
@@ -237,6 +237,27 @@
             <th class="content-4 d-flex justify-content-between text-nowrap">Mobile No <span class="mx-1">:</span></th>
             <td class="content-4">{{ $transaction->mobile_number }}</td>
         </tr>
+	@elseif($transaction->platform_name === 'add money' && $transaction->platform_provider === 'deposit payment')	
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">NET AMOUNT <span class="mx-1">:</span></th>
+			<td class="content-4">{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</td>
+		</tr> 
+        <tr>
+            <th class="content-4 d-flex justify-content-between text-nowrap">Receive Money <span class="mx-1">:</span></th>
+            <td class="content-4">Card Payment</td>
+        </tr> 
+        <tr>
+            <th class="content-4 d-flex justify-content-between text-nowrap">Card Holder Name <span class="mx-1">:</span></th>
+            <td class="content-4">{{ $transaction->api_request['cardname'] ?? 'N/A' }}</td>
+        </tr> 
+        <tr>
+            <th class="content-4 d-flex justify-content-between text-nowrap">Card Type <span class="mx-1">:</span></th>
+            <td class="content-4">{{ $transaction->api_request['cardtype'] ?? 'N/A' }}</td>
+        </tr> 
+		<tr>
+			<th class="content-4 d-flex justify-content-between text-nowrap">Card Number <span class="mx-1">:</span></th>
+			<td class="content-4">{{ $transaction->api_request['cardnumber'] ?? 'N/A' }}</td>
+		</tr> 
     @endif
     <tr>
         <th class="content-4 d-flex justify-content-between text-nowrap">PAYMENT DATE <span class="mx-1">:</span></th>

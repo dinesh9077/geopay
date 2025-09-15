@@ -394,7 +394,7 @@
 									{{ Helper::decimalsprint($transaction->unit_amount, 2) }} {{ $transaction->unit_currency }}</p>
 								</td>
 							</tr>
-						@elseif ($transaction->platform_name == 'add money') 
+						@elseif ($transaction->platform_name == 'add money' && $transaction->platform_provider === 'onafric mobile collection') 
 							<tr> 
 								<td style="width: 40%;">
 									<p style="margin-top: 0;"><span style="font-weight: 600;">NET AMOUNT</span></p>
@@ -450,6 +450,54 @@
 									{{ $transaction->mobile_number }}</p>
 								</td>
 							</tr> 
+						@elseif ($transaction->platform_name == 'add money' && $transaction->platform_provider === 'deposit payment') 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">NET AMOUNT</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Receive Money</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									Card Payment</p>
+								</td>
+							</tr>  
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Card Holder Name</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->api_request['cardname'] ?? 'N/A' }}</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Card Type </span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+										{{ $transaction->api_request['cardtype'] ?? 'N/A' }}
+									</p>
+								</td>
+							</tr> 
+							<tr> 
+								<td style="width: 40%;">
+									<p style="margin-top: 0;"><span style="font-weight: 600;">Card Number</span></p>
+								</td> 
+								<td>
+									<p style="margin-top: 0;"> <span style="font-weight: 600; padding-right: 10px;">:</span>
+									{{ $transaction->api_request['cardnumber'] ?? 'N/A' }}</p>
+								</td>
+							</tr>
+						 
 						@endif
 
 						<tr> 

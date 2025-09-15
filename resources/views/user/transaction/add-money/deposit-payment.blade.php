@@ -220,7 +220,7 @@
 			});
 			
 			formData['category_name'] = 'add money'; 
-			formData['service_name'] = 'deposit payment';  
+			formData['service_name'] = 'deposit card payment';  
 			console.log(formData);
 			// Encrypt data before sending
 			const encrypted_data = encryptData(JSON.stringify(formData));
