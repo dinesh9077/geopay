@@ -21,6 +21,7 @@
 				'onafric_mobile_setting',
 				'onafric_bank_setting',
 				'onafric_mobile_collection_setting',
+				'guardian_payment_gateway',
 			];
 
 			// Filter only tabs that the user has permission to view
@@ -74,6 +75,10 @@
 					<a class="nav-link {{ $firstTab == 'onafric_bank_setting' ? 'active' : '' }}" id="onafriq-line-tab" data-bs-toggle="tab" href="#line-onafriq-bank" role="tab" aria-controls="line-onafriq" aria-selected="false">Onafric - Transfer To Bank - Pay Service</a>
 				</li> 
 			@endif 
+			
+			<li class="nav-item">
+				<a class="nav-link {{ $firstTab == 'guardian_payment_gateway' ? 'active' : '' }}" id="guardian-line-tab" data-bs-toggle="tab" href="#line-guardian-gateway" role="tab" aria-controls="line-guardian" aria-selected="false">Guardian PG (Add Service)</a>
+			</li> 
 			 
 		</ul>
 		<div class="tab-content mt-3" id="lineTabContent">
@@ -117,6 +122,9 @@
 					@include('admin.setting.partial.onafric-mobile-collection')
 				</div>
 			@endif 
+			<div class="tab-pane fade {{ $firstTab == 'guardian_payment_gateway' ? 'show active' : '' }}" id="line-guardian-gateway" role="tabpanel" aria-labelledby="guardian-line-tab"> 
+				@include('admin.setting.partial.guardian-payment-gateway')
+			</div>
 		</div>
 	</div>
 </div> 
@@ -124,7 +132,7 @@
 
 @push('js')
 <script>
-	var $forms = $('#metaMapForm, #smsPlusForm, #dtonePlusForm, #lightnetPlusForm, #onafricForm, #onafricBankForm');
+	var $forms = $('#metaMapForm, #smsPlusForm, #dtonePlusForm, #lightnetPlusForm, #onafricForm, #onafricBankForm, #guardianPgForm');
 	
 	$('.select2').select2({ 
 		width: "100%"

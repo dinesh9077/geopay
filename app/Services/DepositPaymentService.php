@@ -13,9 +13,9 @@ class DepositPaymentService
 
     public function __construct()
     {
-        $this->endPoint          = config('services.deposit.endpoint', 'https://ggapi.ibanera.com/v1/payment/deposit');
-        $this->merchantSiteKey   = config('services.deposit.merchant_key', 'geo-payments-3d-test-29-sa6x1yyb');
-        $this->merchantSiteSecret= config('services.deposit.merchant_secret', 'a2327435d3763214d30c97edb189866c8283b8486717c667595b569b99aae6b8');
+        $this->baseUrl          = config('setting.guardian_endpoint');
+        $this->merchantSiteKey   = config('setting.guardian_merchant_key');
+        $this->merchantSiteSecret= config('setting.guardian_merchant_secret');
         $this->currency          = config('setting.default_currency', 'USD');
     }
 
@@ -23,7 +23,7 @@ class DepositPaymentService
      * Generate Secure Hash
      */
     protected function generateSecureHash($timestamp, $amount): string
-    { 
+    {  
         $dataToHash = $this->merchantSiteKey . '|' . $timestamp . '|' . $amount . '|' . $this->currency . '|' . $this->merchantSiteSecret;  
         return hash('sha256', $dataToHash);
     }
@@ -35,7 +35,9 @@ class DepositPaymentService
     {
         $timestamp = now()->timestamp * 1000; // milliseconds 
         $secureHash = $this->generateSecureHash($timestamp, $amount);
-
+		
+		$baseUrl = $this->baseUrl.'/v1/payment/deposit';
+		
         $payload = [
             "merchant_site_key" => $this->merchantSiteKey,
             "securehash"        => $secureHash,
@@ -66,7 +68,7 @@ class DepositPaymentService
 	 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
-        ])->post($this->endPoint, $payload);
+        ])->post($baseUrl, $payload);
 
         // Handle Successful Response
 		if ($response->successful()) {
