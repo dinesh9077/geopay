@@ -23,8 +23,8 @@ class DepositPaymentService
      * Generate Secure Hash
      */
     protected function generateSecureHash($timestamp, $amount): string
-    {
-        $dataToHash = $this->merchantSiteKey . '|' . $timestamp . '|' . $amount . '|' . $this->currency . '|' . $this->merchantSiteSecret; 
+    { 
+        $dataToHash = $this->merchantSiteKey . '|' . $timestamp . '|' . $amount . '|' . $this->currency . '|' . $this->merchantSiteSecret;  
         return hash('sha256', $dataToHash);
     }
 
@@ -33,7 +33,7 @@ class DepositPaymentService
      */
     public function deposit($user, array $card, float $amount, string $orderId)
     {
-        $timestamp  = round(microtime(true) * 1000); // milliseconds
+        $timestamp = now()->timestamp * 1000; // milliseconds 
         $secureHash = $this->generateSecureHash($timestamp, $amount);
 
         $payload = [
@@ -63,7 +63,7 @@ class DepositPaymentService
             "ipaddress"         => request()->ip(),
             "browseragent"      => request()->header('User-Agent'),
         ];
-		 
+		dd($payload);
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post($this->endPoint, $payload);
