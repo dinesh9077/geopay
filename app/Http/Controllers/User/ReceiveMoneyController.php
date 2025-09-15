@@ -362,14 +362,73 @@ class ReceiveMoneyController extends Controller
 		];
 
 		$cardData = $request->only(['cardtype', 'cardname', 'cardnumber', 'month', 'year', 'cvv']);
+		
+		do {
+			$orderId = uniqid('order_'); // e.g. order_650c9e3a5f1d1
+		} while (Transaction::where('order_id', $orderId)->exists());
 
+		$amount = $request->amount;
 		$response = $depositService->deposit(
 			$userData,
 			$cardData,
-			$request->amount,
-			uniqid('order_') // dynamic order ID
-		);
+			$amount,
+			$orderId
+		); 
+		 
+		if(!$response['success'])
+		{
+			return $this->errorResponse(
+				data_get($response, 'response.message', 'An error occurred')
+			); 
+		}
+		if(empty($response['response']['payment_url']))
+		{
+			return $this->errorResponse(
+				data_get($response, 'response.message', 'something went wrong.')
+			); 
+		}
 		
+		$comments = "Your payment was authorized. It will be reviewed shortly and the final status (approved/rejected) will be updated. You can check your transaction list for the latest update.";
+		$remitCurrency = config('setting.default_currency', 'USD');
+		
+		// Create transaction record
+		$transaction = Transaction::create([
+			'user_id' => $user->id,
+			'receiver_id' => $user->id,
+			'platform_name' => 'add money',
+			'platform_provider' => $request->service_name,
+			'transaction_type' => 'credit',
+			'country_id' => $user->country_id,
+			'country_code' => $request->country_code,
+			'txn_amount' => $amount,
+			'txn_status' => 'pending',
+			'comments' => $comments,
+			'notes' => null,
+			'unique_identifier' => $orderId,
+			'product_name' => null, 
+			'product_id' => null,
+			'mobile_number' => null,
+			'unit_currency' => $remitCurrency,
+			'unit_amount' => $amount,
+			'unit_rates' => $amount,
+			'rates' => 1,
+			'unit_convert_currency' => $remitCurrency,
+			'unit_convert_amount' => $amount,
+			'unit_convert_exchange' => 1,
+			'beneficiary_request' => null,
+			'api_request' => $response['request'],
+			'api_response' => $response['response'],
+			'order_id' => $orderId,
+			'fees' => 0,
+			'service_charge' => 0,
+			'total_charge' => 0,
+			'api_status' => 'pending',
+			'created_at' => now(),
+			'updated_at' => now(),
+		]);
+
+		// Log the transaction creation
+		Helper::updateLogName($transaction->id, Transaction::class, 'add bank card payment', $user->id); 
 		return $this->successResponse("transaction authorized", ['payment_link' => $response['response']['payment_url']]); 
 	} 
 }

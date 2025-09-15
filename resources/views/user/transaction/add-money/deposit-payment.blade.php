@@ -17,7 +17,7 @@
 						
 						<!-- IMPORTANT: in production, use the gateway JS tokenization and NOT this form submit directly -->
 						<form id="paymentForm" method="post" action="{{ route('deposit.payment-link') }}"> 
-							<div class="mb-3">
+							<div class="mb-3" style="display:none">
 								<label for="cardtype" class="form-label">Card Type <span class="text-danger">*</span></label>
 								<select class="form-select" id="cardtype" name="cardtype" required>
 									<option value="">-- Select Card Type --</option>
@@ -276,8 +276,8 @@
             if (status.toLowerCase() === 'authorised') {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Payment Successful!',
-                    text: 'Your payment has been authorized.',
+                    title: 'Payment Authorized!',
+                    text: 'Your payment was authorized. It will be reviewed shortly and the final status (approved/rejected) will be updated. You can check your transaction list for the latest update.',
                     confirmButtonColor: '#3085d6',
                 });
             } else if (status.toLowerCase() === 'failed') {

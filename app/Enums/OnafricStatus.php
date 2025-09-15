@@ -27,6 +27,8 @@ enum OnafricStatus: string
     case INVALID_MFS_BANK_CODE                    = 'Invalid MFS Africa bank code';
     case INTERNAL_SERVER_ERROR                    = 'Internal server error';
     case REQUESTED_TRASACTION_CANNOT_EXECUTE      = 'The requested transaction cannot be executed';
+    case RECEIVE_PARTNER_CORRIDOR_IS_UNAVAILABLE  = 'Receive partner corridor is unavailable';
+    case INVALID_MSISDN_FORMAT  				  = 'Invalid MSISDN Format';
 
     public function label(): string
     {
