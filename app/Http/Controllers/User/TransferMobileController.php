@@ -568,7 +568,7 @@ class TransferMobileController extends Controller
 	}
 	
 	public function transferToMobileWebhook(Request $request, $uniqueId)
-	{
+	{ 
 		Log::info('Webhook received', ['data' => $request->all()]);
 
 		if (!$request->all()) {
@@ -592,7 +592,7 @@ class TransferMobileController extends Controller
 		
 		// Find the transaction based on thirdPartyTransId
 		$transaction = Transaction::where('order_id', $thirdPartyTransId)->first();
-
+	
 		if (!$transaction) { 
 			return response()->json([
 				'status' => false,
@@ -602,9 +602,9 @@ class TransferMobileController extends Controller
 		}
 
 		try
-		{
+		{ 
 			$txnStatus = OnafricStatus::from($statusMessage)->label();
-
+ 
 			// Handle refund
 			if ($txnStatus === "cancelled and refunded") {
 				$transaction->processAutoRefund($txnStatus, $statusMessage);
@@ -651,7 +651,7 @@ class TransferMobileController extends Controller
 			return response()->json([
 				'status' => false,
 				'error_code' => 'SERVER_ERROR',
-				'message' => 'Internal server error'
+				'message' => Internal server error
 			], 500);
 		}
 	}

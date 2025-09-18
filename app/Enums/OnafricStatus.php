@@ -10,7 +10,7 @@ enum OnafricStatus: string
     case ACCEPTED                                 = 'Accepted';
     case PARTNER_CORRIDOR_NOT_ACTIVE              = 'Partner corridor not active';
     case SUBSCRIBER_NOT_FOUND                     = 'Subscriber not found';
-    case SUBSCRIBER_NOT_AUTHORIZED                = 'Subscriber not authorized to receive amount';
+    case SUBSCRIBER_NOT_AUTHORIZED                = 'Subscriber Not Authorized To Receive Amount';
     case INSUFFICIENT_FUNDS_MERCHANT              = 'Insufficient fund in merchant account';
     case TRANSACTION_NOT_EXECUTED                 = 'Transaction could not be executed';
     case E_WALLET_SYSTEM_ERROR                    = 'E-Wallet System error';
@@ -31,7 +31,7 @@ enum OnafricStatus: string
     case INVALID_MSISDN_FORMAT  				  = 'Invalid MSISDN Format';
 
     public function label(): string
-    {
+    { 
         return match($this) {
             self::SUCCESS => 'paid',
             self::ACCEPTED => 'inprocess', 
