@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('iso'); 
             $table->string('name'); 
             $table->string('nicename'); 
-            $table->string('iso3');
+            $table->string('iso3')->index();
             $table->string('numcode');
             $table->string('isdcode');
-            $table->string('currency_code');
+            $table->string('currency_code')->index();
             $table->string('country_flag'); 
             $table->timestamps();
         });

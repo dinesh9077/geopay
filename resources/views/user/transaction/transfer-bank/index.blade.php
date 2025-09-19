@@ -13,9 +13,9 @@
 			<form id="transferToBankForm" action="{{ route('transfer-to-bank.store') }}" method="post" class="animate__animated animate__fadeIn g-2">
 				<input id="is_password" name="is_password" type="hidden" value="0"> 
 				<div class="mb-1 row">
-					<div class="col-12 mb-3"> 
+					<div class="col-12 mb-3" style="display:none;"> 
 						<label for="country_code" class="form-label">Country <span class="text-danger">*</span></label>
-						<select id="country_code" name="country_code" class="form-control form-control-lg content-3 default-input select3" >
+						<select id="country_code" name="country_code" class="form-control form-control-lg content-3 default-input select3">
 							<option value="">Select Country</option>
 							@foreach($countries as $country) 
 								<option 
@@ -33,19 +33,36 @@
 					
 					<div class="col-12 mb-3"> 
 						<label for="beneficiaryId" class="form-label">Recipient <span class="text-danger">*</span></label>
-						<select id="beneficiaryId" name="beneficiaryId" class="form-control form-control-lg default-input content-3 select3" >
-							<option value="">Select Recipient</option> 
-						</select>
+						<select id="beneficiaryId" name="beneficiaryId" class="form-control form-control-lg default-input content-3 select3">
+							<option value="">Select Recipient</option>  
+							@foreach($beneficiaries as $beneficiary)
+								@php 
+									$dataArr   = $beneficiary->data ?? [];
+									$firstName = $dataArr['receiverfirstname'] ?? ($dataArr['recipient_name'] ?? '');
+									$lastName  = $dataArr['receiverlastname'] ?? ($dataArr['recipient_surname'] ?? '');
+									$bankName  = $dataArr['bankName'] ?? '';
+									$bankName  = $dataArr['bankName'] ?? '';
+									$payoutCurrency  = $dataArr['payoutCurrency'] ?? '';
+									$countryFlag = $beneficiary->country() ? url('country', $beneficiary->country()->country_flag) : '';
+								@endphp
+
+								@if(!empty($firstName))
+									<option value="{{ $beneficiary->id }}" data-flag="{{ $countryFlag ?? '' }}" data-payout-currency="{{ $payoutCurrency }}">
+										{{ $firstName }} {{ $lastName }} ({{ $bankName }})
+									</option>
+								@endif
+							@endforeach
+						</select> 
 					</div>
 					  
-					<div class="col-12 mb-3"> 
+					<div class="col-12 mb-3 showAfterConfirm"  style="display:none"> 
 						<label for="txnAmount" class="form-label">Amount <span class="text-danger">*</span></label>
 						<input id="txnAmount" name="txnAmount" class="form-control form-control-lg content-3 default-input"  placeholder="Enter Amount in {{config('setting.default_currency')}} (eg : 100 or eg : 0.0)" oninput="$(this).val($(this).val().replace(/[^0-9.]/g, ''));"> 
 					</div>
 					  
-					<div class="col-12" id="commissionHtml"></div>
+					<div class="col-12 showAfterConfirm" id="commissionHtml" ></div>
 					  
-					<div class="col-12 mb-3">
+					<div class="col-12 mb-3 showAfterConfirm" style="display:none">
 						<label for="txnAmount" class="form-label">Notes </label>
 						<textarea name="notes" id="notes" class="form-control form-control-lg default-input" placeholder="Account Description"></textarea>
 					</div> 
@@ -122,7 +139,17 @@
 				);
 			}
 		}
+		
+		$('#beneficiaryId').select2({
+			templateResult: formatCountryOption,
+			templateSelection: formatCountryOption,
+			placeholder: "Select Recipient",
+			allowClear: true,
+			width: "100%", 
+		});
 	});
+	
+	
 		
 	function addTransferBankBeneficiary(obj, event)
 	{
@@ -140,7 +167,16 @@
 		} 
 	}
 	
-	$('#transferToBankForm #country_code').on('change', function() 
+	$('#transferToBankForm #beneficiaryId').on('change', function() 
+	{ 
+		const payoutCurrency = $(this).find(':selected').data('payout-currency'); 
+		$('#transferToBankForm').find('#country_code').val(payoutCurrency).change();
+		$('#transferToBankForm').find('#txnAmount').val('');
+		$('#transferToBankForm').find('#commissionHtml').empty();
+		$('#transferToBankForm').find('#notes').val('');
+	});
+	
+	/* $('#transferToBankForm #country_code').on('change', function() 
 	{ 
 		// Retrieve selected country payout data
 		if(!$(this).val())
@@ -194,7 +230,7 @@
 				toastrMsg('error', 'Error loading beneficiary list. Please try again.');
 			}
 		});
-	});
+	}); */
 	  
 	$('#transferToBankForm #beneficiaryId').on('change', function() 
 	{  

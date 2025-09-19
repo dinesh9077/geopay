@@ -43,6 +43,15 @@ class Beneficiary extends Model
 		return $this->belongsTo(User::class, 'user_id');
 	}
 	
+	public function country()
+    {
+        return Country::select('id', 'country_flag')->where('currency_code', $this->data['payoutCurrency'] ?? null)
+                      ->where('iso3', $this->data['payoutCountry'] ?? null)
+                      ->first();
+    }
+	 
+
+	
 	public function getDataArrAttribute()
 	{
 		if (!$this->data) {

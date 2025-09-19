@@ -74,7 +74,7 @@
 				</div>
 			</div> 
 			<div class="modal-footer">
-				<button type="button" class="btn content-3 btn-primary" data-bs-dismiss="modal" onclick="confirmRecipientBeneficiery(this)">Confirm</button>
+				<button type="button" class="btn content-3 btn-primary" data-bs-dismiss="modal">Confirm</button>
 				<button type="button" class="btn content-3 btn-secondary" data-beneficiary-id="{{ $beneficiary->id }}" onclick="editBeneficiary(this, event)">Edit</button>
 				<button type="button" class="btn content-3 btn-danger opacity-75" data-bs-toggle="modal" data-bs-target="#transferMobileDeleteBeneficiary" onclick="return $('#transferMobileDeleteBeneficiary').remove(); ">Delete</button>
 			</div>
@@ -120,11 +120,6 @@
 					$('#confirmBeneficiaryModal').waitMe('hide');
 				});
 			} 
-		}
-		
-		function confirmRecipientBeneficiery()
-		{ 
-			$('#transferToMobileForm').find('.showAfterConfirm').show(); 
 		}
 	</script>
 </div>

@@ -45,12 +45,17 @@ class TransferMobileController extends Controller
 	public function transferToMobileMoney()
 	{   
 		$countries = $this->onafricService->country();  
-		 
-		$beneficiaries = Beneficiary::where('user_id', auth()->user()->id)
-		->where('category_name', "transfer to mobile") 
-		->get(); 
-		 	 
-		return view('user.transaction.transfer-mobile.index', compact('countries', 'beneficiaries'));
+		
+		$beneficiaries = Beneficiary::where('category_name', 'transfer to mobile') 
+		->selectRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.recipient_country')) as recipient_country")
+		->where('user_id', auth()->user()->id)
+		->pluck('recipient_country')
+		->unique()
+		->values()
+		->toArray();
+		
+		$countries = $countries->whereIn('id', $beneficiaries)->values();
+		return view('user.transaction.transfer-mobile.index', compact('countries'));
 	}
 	 
 	public function transferToMobileBeneficiary()
@@ -100,7 +105,17 @@ class TransferMobileController extends Controller
 			$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 			$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
 			$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
-			  
+			/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
+			$beneficiaryData['sender_surname'] = $user->last_name ?? '';
+			$beneficiaryData['sender_placeofbirth'] = $user->date_of_birth ?? '';
+			$beneficiaryData['sender_address'] = $user->address ?? '';
+			$beneficiaryData['sender_city'] = $user->city ?? '';
+			$beneficiaryData['sender_state'] = $user->state ?? '';
+			$beneficiaryData['sender_postalcode'] = $user->zip_code ?? '';
+			$beneficiaryData['sender_email'] = $user->email ?? '';
+			$beneficiaryData['purposeOfTransfer'] = $user->business_activity_occupation ?? '';
+			$beneficiaryData['sourceOfFunds'] = $user->source_of_fund ?? ''; */
+			
 			$recipientCountry = Country::find($request->recipient_country ?? null);
 			$beneficiaryData['payoutCountry'] = $recipientCountry->iso3 ?? '';
 			$beneficiaryData['payoutCurrency'] = $recipientCountry->currency_code ?? '';
@@ -258,7 +273,18 @@ class TransferMobileController extends Controller
 			$beneficiaryData['sender_country_code'] = $user->country->iso ?? '';
 			$beneficiaryData['sender_country_name'] = $user->country->name ?? '';
 			$beneficiaryData['sender_mobile'] = isset($user->formatted_number) ? ltrim($user->formatted_number, '+') : '';
-			  
+			 
+			/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
+			$beneficiaryData['sender_surname'] = $user->last_name ?? '';
+			$beneficiaryData['sender_placeofbirth'] = $user->date_of_birth ?? '';
+			$beneficiaryData['sender_address'] = $user->address ?? '';
+			$beneficiaryData['sender_city'] = $user->city ?? '';
+			$beneficiaryData['sender_state'] = $user->state ?? '';
+			$beneficiaryData['sender_postalcode'] = $user->zip_code ?? '';
+			$beneficiaryData['sender_email'] = $user->email ?? '';
+			$beneficiaryData['purposeOfTransfer'] = $user->business_activity_occupation ?? '';
+			$beneficiaryData['sourceOfFunds'] = $user->source_of_fund ?? '' */;
+			
 			$recipientCountry = Country::find($request->recipient_country ?? null);
 			$beneficiaryData['payoutCountry'] = $recipientCountry->iso3 ?? '';
 			$beneficiaryData['payoutCurrency'] = $recipientCountry->currency_code ?? '';

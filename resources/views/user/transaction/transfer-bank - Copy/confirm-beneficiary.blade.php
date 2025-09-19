@@ -18,34 +18,34 @@
 
 					<!-- Country Name -->
 					<div class="mb-2 col-4">
-						<label class="content-3 mb-1 d-flex justify-content-between">Operator Name <span>:</span></label>
-					</div>
-					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['channel_name'] ?? 'N/A' }}</span>
-					</div>
-
-					<!-- Country Name -->
-					<div class="mb-2 col-4">
 						<label class="content-3 mb-1 d-flex justify-content-between">Country Name <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['recipient_country_name'] ?? 'N/A' }}</span>
+						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['payoutCountryName'] ?? 'N/A' }}</span>
 					</div>
 
 					<!-- Bank Name -->
 					<div class="mb-2 col-4">
-						<label class="content-3 mb-1 d-flex justify-content-between">Country Code <span>:</span></label>
+						<label class="content-3 mb-1 d-flex justify-content-between">Bank Name <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['recipient_country_code'] ?? 'N/A' }}</span>
+						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['bankName'] ?? 'N/A' }}</span>
 					</div>
- 
+
+					<!-- Bank Account Number -->
+					<div class="mb-2 col-4">
+						<label class="content-3 mb-1 d-flex justify-content-between">Bank Account No. <span>:</span></label>
+					</div>
+					<div class="mb-2 col-8">
+						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['bankaccountnumber'] ?? 'N/A' }}</span>
+					</div>
+
 					<!-- Mobile Number -->
 					<div class="mb-2 col-4">
 						<label class="content-3 mb-1 d-flex justify-content-between">Mobile Number <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['mobile_code'] ?? '' }}{{ optional($beneficiary->data)['recipient_mobile'] ?? '' }}</span>
+						<span class="content-3 text-secondary">{{ optional($beneficiary->dataArr)['mobile_code'] ?? '' }}{{ optional($beneficiary->dataArr)['receivercontactnumber'] ?? 'N/A' }}</span>
 					</div>
 
 					<!-- First Name -->
@@ -53,7 +53,7 @@
 						<label class="content-3 mb-1 d-flex justify-content-between">First Name <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['recipient_name'] ?? 'N/A' }}</span>
+						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['receiverfirstname'] ?? 'N/A' }}</span>
 					</div>
 
 					<!-- Last Name -->
@@ -61,7 +61,7 @@
 						<label class="content-3 mb-1 d-flex justify-content-between">Last Name <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['recipient_surname'] ?? 'N/A' }}</span>
+						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['receiverlastname'] ?? 'N/A' }}</span>
 					</div>
 
 					<!-- Receiver Address -->
@@ -69,22 +69,23 @@
 						<label class="content-3 mb-1 d-flex justify-content-between">Receiver Address <span>:</span></label>
 					</div>
 					<div class="mb-2 col-8">
-						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['recipient_address'] ?? 'N/A' }}</span>
+						<span class="content-3 text-secondary">{{ optional($beneficiary->data)['receiveraddress'] ?? 'N/A' }}</span>
 					</div>
 				</div>
 			</div> 
 			<div class="modal-footer">
-				<button type="button" class="btn content-3 btn-primary" data-bs-dismiss="modal" onclick="confirmRecipientBeneficiery(this)">Confirm</button>
+				<button type="button" class="btn content-3 btn-primary" data-bs-dismiss="modal">Confirm</button>
 				<button type="button" class="btn content-3 btn-secondary" data-beneficiary-id="{{ $beneficiary->id }}" onclick="editBeneficiary(this, event)">Edit</button>
-				<button type="button" class="btn content-3 btn-danger opacity-75" data-bs-toggle="modal" data-bs-target="#transferMobileDeleteBeneficiary" onclick="return $('#transferMobileDeleteBeneficiary').remove(); ">Delete</button>
+				<button type="button" class="btn content-3 btn-danger opacity-75" data-bs-toggle="modal" data-bs-target="#transferBankDeleteBeneficiary" onclick="return $('#transferBankDeleteBeneficiary').remove(); ">Delete</button>
 			</div>
 		</div>
 	</div> 
 	<!-- Delete Edit Beneficiary -->
-	<div class="modal fade" id="transferMobileDeleteBeneficiary" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+	<div class="modal fade" id="transferBankDeleteBeneficiary" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
 		<div class="modal-dialog modal-dialog-centered modal-sm">
 			<div class="modal-content">
-				<div class="d-flex justify-content-center align-items-center"> 
+				<div class="d-flex justify-content-center align-items-center">
+				<!-- <img class="in-svg" src="{{ asset('assets/image/icons/setting.svg') }}" alt=""> -->
 					<img src="{{ asset('assets/image/icons/delete-confirmation.gif') }}" width="80" height="80" class="modal-logo p-1 border border-2 border-danger object-fit-cover" style="border-color: #f46a6a !important;">
 				</div>
 					<!-- Modal Header -->
@@ -95,8 +96,8 @@
 					<h6 class="content-2 text-center text-danger mb-2">Are you sure</h6>
 					<h6 class="content-4 text-center text-muted mb-3">You want to delete the beneficiary ?</h6>
 					<div class="text-center d-flex align-items-center gap-2">
-						<button type="button" class="btn content-3 w-100 btn-secondary" data-bs-dismiss="modal" onclick="return $('#transferToMobileForm #beneficiaryId').val('').select2(); ">Cancel</button>
-						<a href="{{ route('transfer-to-mobile.beneficiary-delete', ['id' => $beneficiary->id]) }}" class="btn content-3 w-100 btn-danger opacity-75" >Delete</a>
+						<button type="button" class="btn content-3 w-100 btn-secondary" data-bs-dismiss="modal" onclick="return $('#transferToBankForm #beneficiaryId').val('').select2(); ">Cancel</button>
+						<a href="{{ route('transfer-to-bank.beneficiary-delete', ['id' => $beneficiary->id]) }}" class="btn content-3 w-100 btn-danger opacity-75" >Delete</a>
 					</div> 
 				</div>                                                    
 			</div>
@@ -112,19 +113,14 @@
 				modalOpen = true;
 				closemodal(); 
 				run_waitMe($('#confirmBeneficiaryModal'), 1, 'facebook');
-				$.get("{{ url('transfer-to-mobile/beneficiary-edit') }}/"+beneficiaryId, function(res)
+				$.get("{{ url('transfer-to-bank/beneficiary-edit') }}/"+beneficiaryId, function(res)
 				{
 					const result = decryptData(res.response);
 					$('body').find('#modal-view-render').html(result.view);
-					$('#editTransferMobileBeneficiary').modal('show');  
+					$('#editTransferBankBeneficiary').modal('show');  
 					$('#confirmBeneficiaryModal').waitMe('hide');
 				});
 			} 
-		}
-		
-		function confirmRecipientBeneficiery()
-		{ 
-			$('#transferToMobileForm').find('.showAfterConfirm').show(); 
 		}
 	</script>
 </div>

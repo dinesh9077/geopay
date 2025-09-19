@@ -37,14 +37,17 @@ class TransferBankController extends Controller
     }	
 	
 	public function transferToBank()
-	{   
-		$beneficiaries = Beneficiary::where('user_id', auth()->user()->id)
-		->where('category_name', "transfer to bank") 
-		->get(); 
-		 	 
-		$countries = $this->countries()->values()->toArray();   
+	{ 
+		$beneficiaries = Beneficiary::where('category_name', 'transfer to bank')
+		->selectRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.payoutCountry')) as payoutCountry")
+		->where('user_id', auth()->user()->id)
+		->pluck('payoutCountry')
+		->unique()
+		->values()
+		->toArray();
 		 
-		return view('user.transaction.transfer-bank.index', compact('countries', 'beneficiaries'));
+		$countries = $this->countries()->whereIn('data', $beneficiaries)->values()->toArray();  
+		return view('user.transaction.transfer-bank.index', compact('countries'));
 	}
 	
 	public function countries()
