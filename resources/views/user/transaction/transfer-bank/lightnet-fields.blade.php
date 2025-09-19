@@ -2,12 +2,25 @@
 @foreach ($fieldList as $field) 
 	@php
 		$fieldName = strtolower($field['fieldName']);
+		 
+		if($fieldName === "receiveraddress")
+		{ 
+			$fieldL = 'Recipient Address';
+		}
+		elseif($fieldName === "senderbeneficiaryrelationship")
+		{ 
+			$fieldL = 'Relation With Recipient';
+		}
+		else
+		{	
+			$fieldL = $field['fieldLabel'];
+		} 
 	@endphp
 	 
 	<div class="mb-4 col-md-6">
 		 
 		<label class="content-3 mb-0">
-			{{ $field['fieldLabel'] }}
+			{{ $fieldL }}
 			@if ($field['required'])
 				<span class="text-danger">*</span>
 			@endif
@@ -44,7 +57,7 @@
 			  --}}
 		@elseif ($fieldName == "senderbeneficiaryrelationship") 
 			<select id="{{ $fieldName }}" name="{{ $fieldName }}" class="form-control form-control-lg content-3 select2" @if ($field['required']) required @endif>
-				<option value="" disabled selected>Select {{ $field['fieldLabel'] }}</option> 
+				<option value="" disabled selected>Select Relation With Recipient</option> 
 				@if($catalogue->has('REL'))
 					@foreach($catalogue->get('REL')->data as $row)
 						<option value="{{ $row['data'] }}" {{ $editData && isset($editData[$fieldName]) ? ($row['data'] == $editData[$fieldName] ? 'selected' : '' ) : '' }}>{{ $row['value'] }}</option>
@@ -124,10 +137,20 @@
 	 
 		@else
 			<!-- Generate a text input -->
+			@php
+				if($fieldName === "receiveraddress")
+				{ 
+					$placeholder = '(Apt/Street/Area/Zip code)';
+				}
+				else
+				{	
+					$placeholder = 'Enter '.$field['fieldLabel'];
+				}
+			@endphp
 			<input
 				id="{{ $fieldName }}"
 				name="{{ $fieldName }}"
-				placeholder="Enter {{ $field['fieldLabel'] }}"
+				placeholder="{{ $placeholder }}"
 				type="text"
 				class="form-control form-control-lg content-3"
 				value="{{ $editData && isset($editData[$fieldName]) ? $editData[$fieldName] : '' }}"

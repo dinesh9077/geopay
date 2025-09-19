@@ -209,7 +209,7 @@ class TransferBankController extends Controller
 			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to bank beneficiary');
 			
 			DB::commit(); 
-			return $this->successResponse('The beneficiary was completed successfully.');
+			return $this->successResponse('Beneficiary details have been saved.');
         } 
 		catch (\Throwable $e)
 		{ 
@@ -498,7 +498,7 @@ class TransferBankController extends Controller
 			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to bank beneficiary');
 			
 			DB::commit(); 
-			return $this->successResponse('The beneficiary was updated successfully.');
+			return $this->successResponse('Beneficiary details have been saved.');
         } 
 		catch (\Throwable $e)
 		{ 
@@ -527,7 +527,7 @@ class TransferBankController extends Controller
 			$beneficiary->delete();
 
 			DB::commit(); 
-			return redirect()->back()->withSuccess('The recipient was deleted successfully.');
+			return redirect()->back()->withSuccess('Beneficiary details have been deleted.');
 		} catch (\Throwable $e) {
 			DB::rollBack();  
 			return redirect()->back()->withError($e->getMessage());

@@ -43,7 +43,7 @@
 						
 						<div class="mb-4 col-md-6">
 							<label class="content-3 mb-0">Recipient Address</label>
-							<input id="recipient_address" name="recipient_address" placeholder="Enter Recipient Address" type="text" class="form-control form-control-lg content-3" />
+							<input id="recipient_address" name="recipient_address" placeholder="(Apt/Street/Area/Zip code)" type="text" class="form-control form-control-lg content-3" />
 						</div>
 						
 						<div class="mb-4 col-md-6">

@@ -22,7 +22,7 @@
 
 <div class="mb-4 col-md-6">
 	<label class="content-3 mb-0">Recipient Address</label>
-	<input id="receiveraddress" name="receiveraddress" placeholder="Enter Recipient Address" type="text" class="form-control form-control-lg content-3" value="{{ $editData && isset($editData['receiveraddress']) ? $editData['receiveraddress'] : '' }}" />
+	<input id="receiveraddress" name="receiveraddress" placeholder="(Apt/Street/Area/Zip code)" type="text" class="form-control form-control-lg content-3" value="{{ $editData && isset($editData['receiveraddress']) ? $editData['receiveraddress'] : '' }}" />
 </div> 
   
 <div class="mb-4 col-md-6">

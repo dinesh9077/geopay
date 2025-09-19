@@ -247,7 +247,7 @@
 				Notification::send($user, new AirtimeRefundNotification($user, $txnAmount, $transaction->id, $comments, $transaction->notes, ucfirst($txnStatus)));
 				
 				DB::commit();  
-				return $this->successResponse("Your transaction is being processed. A request has been sent to the sender – please ask them to approve it. You will be notified once the transaction is completed.", ['userBalance' => Helper::decimalsprint($user->balance, 2), 'currencyCode' => config('setting.default_currency')]);
+				return $this->successResponse("Message has been sent to the Payer with instructions to authorize the transaction.", ['userBalance' => Helper::decimalsprint($user->balance, 2), 'currencyCode' => config('setting.default_currency')]);
 			} catch (\Throwable $e) {
 				DB::rollBack();  
 				return $this->errorResponse($e->getMessage()); 

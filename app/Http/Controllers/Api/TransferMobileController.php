@@ -413,7 +413,7 @@
 				Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to mobile beneficiary');
 				
 				DB::commit(); 
-				return $this->successResponse('The beneficiary was completed successfully.');
+				return $this->successResponse('Beneficiary details have been saved.');
 			} 
 			catch (\Throwable $e)
 			{ 
@@ -490,7 +490,7 @@
 				Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to mobile beneficiary');
 				
 				DB::commit(); 
-				return $this->successResponse('The beneficiary was updated successfully.');
+				return $this->successResponse('Beneficiary details have been saved.');
 			} 
 			catch (\Throwable $e)
 			{ 
