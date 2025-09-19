@@ -651,7 +651,7 @@ class TransferMobileController extends Controller
 			return response()->json([
 				'status' => false,
 				'error_code' => 'SERVER_ERROR',
-				'message' => Internal server error
+				'message' => 'Internal server error'
 			], 500);
 		}
 	}
