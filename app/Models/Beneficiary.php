@@ -45,7 +45,7 @@ class Beneficiary extends Model
 	
 	public function country()
     {
-        return Country::select('id', 'country_flag')->where('currency_code', $this->data['payoutCurrency'] ?? null)->where('iso3', $this->data['payoutCountry'] ?? null)->first();
+        return Country::select('id', 'country_flag', 'currency_code as country_code', 'iso3 as payoutCountry')->where('currency_code', $this->data['payoutCurrency'] ?? null)->where('iso3', $this->data['payoutCountry'] ?? null)->first();
     }
 	
 	public function mobileCountry()

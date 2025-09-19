@@ -79,6 +79,8 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
 		//Transaction list
 		Route::post('transaction-list', [TransactionController::class, 'transactionList']); 
 		
+		Route::post('beneficiery-list', [TransactionController::class, 'beneficieryList']); 
+		
 		//Wallet To Wallet 
 		Route::post('wallet-to-wallet', [TransactionController::class, 'walletToWalletStore']); 
 		

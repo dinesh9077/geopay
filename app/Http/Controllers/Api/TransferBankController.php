@@ -44,7 +44,7 @@
 				->unique()
 				->values()
 				->toArray();
- 
+				
 				$availableCountries = $availableCountries->whereIn('data', $beneficiaries)->values(); 
 			} 
 			
@@ -55,17 +55,17 @@
 		{
 			$lightnetCountry = LightnetCountry::with('country')
 			->select(
-				'id',
-				'data',
-				'value',
-				'label', 
-				'service_name',
-				'status',
-				'created_at',
-				'updated_at',
-				'markdown_type',
-				'markdown_charge',
-				DB::raw("'' as iso")
+			'id',
+			'data',
+			'value',
+			'label', 
+			'service_name',
+			'status',
+			'created_at',
+			'updated_at',
+			'markdown_type',
+			'markdown_charge',
+			DB::raw("'' as iso")
 			)
 			->whereNotNull('label')
 			->get()
@@ -79,10 +79,10 @@
 			->whereIn('nicename', $this->onafricService->bankAvailableCountry())
 			->get();
 			
-
+			
 			// Merge both collections
 			$countries = $lightnetCountry->merge($onafricCountry)->sortBy('label')->values();
-			 
+			
 			$countriesWithFlags = $countries->transform(function ($country)  {
 				// Add full flag URL
 				if ($country->country_flag) {
@@ -90,7 +90,7 @@
 				} 
 				return $country;
 			});
-		 
+			
 			return $countriesWithFlags; 
 		}
 		
@@ -102,16 +102,16 @@
 			$payoutCountry = $request->payoutCountry;
 			$categoryName = $request->categoryName;
 			$serviceName = $request->serviceName;
-
+			
 			// Fetch beneficiaries with filters
 			$beneficiaries = Beneficiary::where('user_id', $userId)
-				->where('category_name', $categoryName)
-				->where('service_name', $serviceName)
-				->where('data->payoutCurrency', $payoutCurrency)
-				->where('data->payoutCountry', $payoutCountry)
-				->get(); 
-			 
-
+			->where('category_name', $categoryName)
+			->where('service_name', $serviceName)
+			->where('data->payoutCurrency', $payoutCurrency)
+			->where('data->payoutCountry', $payoutCountry)
+			->get(); 
+			
+			
 			// Return response
 			return $this->successResponse('beneficiary list fetched', $beneficiaries);
 		}
@@ -120,26 +120,26 @@
 		{
 			try {
 				DB::beginTransaction();
-
+				
 				// Fetch the beneficiary
 				$beneficiary = Beneficiary::find($id); 
 				// Check if the beneficiary exists
 				if (!$beneficiary) {
 					throw new \Exception('Beneficiary not found.');
 				}
-
+				
 				// Log ID before deletion
 				Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to bank beneficiary');
-
+				
 				// Delete the beneficiary
 				$beneficiary->delete();
-
+				
 				DB::commit(); 
 				return $this->successResponse('The beneficiary was deleted successfully.'); 
-			} catch (\Throwable $e) {
+				} catch (\Throwable $e) {
 				DB::rollBack();  
 				return $this->errorResponse($e->getMessage()); 
-				}  
+			}  
 		}
 		
 		public function commission(Request $request)
@@ -189,18 +189,18 @@
 			
 			$totalCharges = $platformFees + $serviceCharge;
 			$comissions = [
-				'payoutCurrency' => $beneficiary->dataArr['payoutCurrency'],
-				'payoutCountry' => $beneficiary->dataArr['payoutCountry'],
-				'txnAmount' => $txnAmount,
-				'aggregatorRate' => $aggregatorRate,
-				'aggregatorCurrencyAmount' => $aggregatorCurrencyAmount,
-				'exchangeRate' => $exchangeRate,
-				'payoutCurrencyAmount' => $payoutCurrencyAmount,
-				'remitCurrency' => config('setting.default_currency'),
-				'platformCharge' => $platformFees,
-				'serviceCharge' => $serviceCharge,
-				'totalCharges' => $totalCharges,
-				'netAmount' => ($totalCharges + $txnAmount),
+			'payoutCurrency' => $beneficiary->dataArr['payoutCurrency'],
+			'payoutCountry' => $beneficiary->dataArr['payoutCountry'],
+			'txnAmount' => $txnAmount,
+			'aggregatorRate' => $aggregatorRate,
+			'aggregatorCurrencyAmount' => $aggregatorCurrencyAmount,
+			'exchangeRate' => $exchangeRate,
+			'payoutCurrencyAmount' => $payoutCurrencyAmount,
+			'remitCurrency' => config('setting.default_currency'),
+			'platformCharge' => $platformFees,
+			'serviceCharge' => $serviceCharge,
+			'totalCharges' => $totalCharges,
+			'netAmount' => ($totalCharges + $txnAmount),
 			];
 			return $this->successResponse('comission fetched successfully.', $comissions);
 		}
@@ -208,36 +208,36 @@
 		public function storeTransaction(Request $request)
 		{	
 			$user = Auth::user();
-
+			
 			// Validation rules
 			$validator = Validator::make($request->all(), [
-				'country_code'   => 'required|string|max:10', // Restrict maximum length
-				'beneficiaryId'  => 'required|integer|exists:beneficiaries,id', // Explicit column for clarity
-				'txnAmount'      => 'required|numeric|gt:0', // Transaction amount must be positive 
-				'notes'          => 'nullable|string|max:255', // Restrict notes to 255 characters
+			'country_code'   => 'required|string|max:10', // Restrict maximum length
+			'beneficiaryId'  => 'required|integer|exists:beneficiaries,id', // Explicit column for clarity
+			'txnAmount'      => 'required|numeric|gt:0', // Transaction amount must be positive 
+			'notes'          => 'nullable|string|max:255', // Restrict notes to 255 characters
 			]);
-
+			
 			// Custom validation logic
 			$validator->after(function ($validator) use ($request, $user) {
 				$netAmount = (float) $request->input('netAmount', 0);
 				$aggregatorCurrencyAmount = (float) $request->input('aggregatorCurrencyAmount', 0);
-				  
+				
 				if ($netAmount > $user->balance) {
 					$validator->errors()->add('txnAmount', 'Insufficient balance to complete this transaction.');
 				}
-
+				
 				if (!$request->filled('aggregatorCurrencyAmount')) {
 					$validator->errors()->add('txnAmount', 'The payout currency amount field is required.');
-				} elseif ($aggregatorCurrencyAmount <= 0) {
+					} elseif ($aggregatorCurrencyAmount <= 0) {
 					$validator->errors()->add('txnAmount', 'The payout currency amount must be greater than 0.');
 				}
 			});
-
+			
 			// Return validation response if fails
 			if ($validator->fails()) {
 				return $this->validateResponse($validator->errors());
 			}
-		 
+			
 			try {
 				DB::beginTransaction(); 
 				$request['order_id'] = "GPTB-".$user->id."-".time();
@@ -246,27 +246,27 @@
 				$remitCurrency = config('setting.default_currency');
 				
 				$transactionLimit = $user->is_company == 1 
-					? config('setting.company_pay_monthly_limit') 
-					: ($user->userLimit->daily_pay_limit ?? 0);
-
+				? config('setting.company_pay_monthly_limit') 
+				: ($user->userLimit->daily_pay_limit ?? 0);
+				
 				$transactionAmountQuery = Transaction::whereIn('platform_name', ['international airtime', 'transfer to bank', 'transfer to mobile'])
 				->where('user_id', $user->id); 
 				// Adjust the date filter based on whether the user is a company or an individual
 				if ($user->is_company == 1) {
 					$transactionAmountQuery->whereMonth('created_at', Carbon::now()->month);
-				} else {
+					} else {
 					$transactionAmountQuery->whereDate('created_at', Carbon::today());
 				}
-
+				
 				// Calculate the total transaction amount
 				$transactionAmount = $transactionAmountQuery->sum('txn_amount');
-
+				
 				// Check if the transaction amount exceeds the limit
 				if ($transactionAmount >= $transactionLimit) {
 					$limitType = $user->is_company == 1 ? 'monthly' : 'daily';
 					return $this->errorResponse(
-						"You have reached your {$limitType} transaction limit of {$remitCurrency} {$transactionLimit}. " .
-						"Current total transactions: {$remitCurrency} {$transactionAmount}."
+					"You have reached your {$limitType} transaction limit of {$remitCurrency} {$transactionLimit}. " .
+					"Current total transactions: {$remitCurrency} {$transactionAmount}."
 					);
 				}
 				
@@ -283,7 +283,7 @@
 						$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
 						throw new \Exception($errorMsg);
 					}
-					 
+					
 					if($response['response']['code'] != 0)
 					{
 						$errorMsg = $response['response']['message'] ?? 'An error occurred.';
@@ -296,14 +296,14 @@
 				else
 				{
 					$response = $this->onafricService->sendBankTransaction($request, $beneficiary->data);
-				  
+					
 					if (!$response['success']) {
 						$errorMsg = $response['response']['errors'][0]['message'] ?? 'An error occurred.';
 						throw new \Exception($errorMsg);
 					}
 					
 					$responseCode = $response['response']['details']['transResponse'][0]['status']['code'] ?? 101;
-
+					
 					if ($responseCode != 100) { 
 						$responseMessage = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'Rejected';
 						$errMessage = $responseMessage . ': ' . ($response['response']['details']['transResponse'][0]['status']['messageDetail'] ?? 'An error occurred.');
@@ -311,7 +311,7 @@
 						throw new \Exception($errMessage);
 					}
 					$confirmationId = $request['order_id'];
-					 
+					
 					$onafricStatus  = $response['response']['details']['transResponse'][0]['status']['message'] ?? 'Accepted';
 					$apiStatus = $onafricStatus;
 					$txnStatus = OnafricStatus::from($onafricStatus)->label();
@@ -336,62 +336,62 @@
 				
 				// Concatenate beneficiary name safely
 				$beneficiaryName = trim("$beneficiaryFirstName $beneficiaryLastName"); // Using trim to remove any leading/trailing spaces
-
+				
 				// Build the comment using sprintf for better readability
 				$comments = sprintf(
-					"Your bank transfer of $%s to %s has been successfully completed. Thanks for using GEOPAY for your seamless bank-to-bank transfers.",
-					number_format($netAmount, 2), 
-					$bankName
+				"Your bank transfer of $%s to %s has been successfully completed. Thanks for using GEOPAY for your seamless bank-to-bank transfers.",
+				number_format($netAmount, 2), 
+				$bankName
 				);
 				
 				// Create transaction record
 				$transaction = Transaction::create([
-					'user_id' => $user->id,
-					'receiver_id' => $user->id,
-					'platform_name' => 'transfer to bank',
-					'platform_provider' => $beneficiary->service_name,
-					'transaction_type' => 'debit',
-					'country_id' => $user->country_id,
-					'txn_amount' => $netAmount,
-					'txn_status' => $txnStatus,
-					'comments' => $comments,
-					'notes' => $request->input('notes'),
-					'unique_identifier' => $confirmationId,
-					'product_name' => $bankName, 
-					'product_id' => $bankId,
-					'mobile_number' => $mobileNumber,
-					'unit_currency' => $payoutCurrency,
-					'unit_amount' => $payoutCurrencyAmount,
-					'unit_rates' => $txnAmount,
-					'rates' => $exchangeRate,
-					'unit_convert_currency' => $payoutCurrency,
-					'unit_convert_amount' => $aggregatorCurrencyAmount,
-					'unit_convert_exchange' => $request->aggregatorRate ?? 0,
-					'beneficiary_request' => $beneficiary,
-					'api_request' => $response['request'],
-					'api_response' => $response['response'],
-					'order_id' => $request->order_id,
-					'fees' => $request->platformCharge ?? 0,
-					'service_charge' => $request->serviceCharge ?? 0,
-					'total_charge' => $request->totalCharges ?? 0,
-					'api_status' => $apiStatus,
-					'created_at' => now(),
-					'updated_at' => now(),
+				'user_id' => $user->id,
+				'receiver_id' => $user->id,
+				'platform_name' => 'transfer to bank',
+				'platform_provider' => $beneficiary->service_name,
+				'transaction_type' => 'debit',
+				'country_id' => $user->country_id,
+				'txn_amount' => $netAmount,
+				'txn_status' => $txnStatus,
+				'comments' => $comments,
+				'notes' => $request->input('notes'),
+				'unique_identifier' => $confirmationId,
+				'product_name' => $bankName, 
+				'product_id' => $bankId,
+				'mobile_number' => $mobileNumber,
+				'unit_currency' => $payoutCurrency,
+				'unit_amount' => $payoutCurrencyAmount,
+				'unit_rates' => $txnAmount,
+				'rates' => $exchangeRate,
+				'unit_convert_currency' => $payoutCurrency,
+				'unit_convert_amount' => $aggregatorCurrencyAmount,
+				'unit_convert_exchange' => $request->aggregatorRate ?? 0,
+				'beneficiary_request' => $beneficiary,
+				'api_request' => $response['request'],
+				'api_response' => $response['response'],
+				'order_id' => $request->order_id,
+				'fees' => $request->platformCharge ?? 0,
+				'service_charge' => $request->serviceCharge ?? 0,
+				'total_charge' => $request->totalCharges ?? 0,
+				'api_status' => $apiStatus,
+				'created_at' => now(),
+				'updated_at' => now(),
 				]);
-
+				
 				// Log the transaction creation
 				Helper::updateLogName($transaction->id, Transaction::class, 'transfer to bank transaction', $user->id);
-				 
+				
 				if($beneficiary->service_name === "lightnet")
 				{
 					$commitResponse = $this->liquidNetService->commitTransaction($confirmationId, $remitCurrency);
-
+					
 					if (!$commitResponse['success'] || ($commitResponse['response']['code'] ?? 1) != 0) {
 						// Provide a clear and user-friendly error message
 						$errorMsg = "Your transaction has been accepted but couldn't be committed due to a technical issue. Please visit the transaction list to manually commit the transaction.";
 						throw new \Exception($errorMsg);
 					}
-
+					
 					// Safely fetch the transaction and update it
 					if ($transaction) {
 						$commitTransaction = Transaction::find($transaction->id);
@@ -404,9 +404,9 @@
 						}
 						
 						$updateData = [
-							'api_response_second' => $commitResponse['response'],
-							'txn_status' => $statusLabel,
-							'api_status' => $statusMessage
+						'api_response_second' => $commitResponse['response'],
+						'txn_status' => $statusLabel,
+						'api_status' => $statusMessage
 						];
 						$commitTransaction->update($updateData);
 					}
@@ -418,7 +418,7 @@
 				
 				DB::commit();  
 				return $this->successResponse("We're validation your transaction with our partner. You'll be notified when it's complete.");
-			} catch (\Throwable $e) {
+				} catch (\Throwable $e) {
 				DB::rollBack();  
 				return $this->errorResponse($e->getMessage()); 
 			}  
@@ -429,24 +429,24 @@
 			$serviceName = $request->serviceName; 
 			switch ($serviceName) {
 				case 'lightnet':
-					return $this->successResponse('bank fetched successfully.',
-						$this->liquidNetService->getAgentLists($request)
-					);
+				return $this->successResponse('bank fetched successfully.',
+				$this->liquidNetService->getAgentLists($request)
+				);
 				
 				case 'onafric':
-					return $this->successResponse('bank fetched successfully.',
-						OnafricBank::select(
-							'mfs_bank_code as locationId',
-							'bank_name as locationName',
-							DB::raw("'' as optionalField")
-						)
-						->where('payout_iso', $request->payoutIso)
-						->where('status', 1)
-						->get() 
-					);
+				return $this->successResponse('bank fetched successfully.',
+				OnafricBank::select(
+				'mfs_bank_code as locationId',
+				'bank_name as locationName',
+				DB::raw("'' as optionalField")
+				)
+				->where('payout_iso', $request->payoutIso)
+				->where('status', 1)
+				->get() 
+				);
 				
 				default:
-					return $this->successResponse('bank fetched successfully.', []);
+				return $this->successResponse('bank fetched successfully.', []);
 			}
 		}
 		
@@ -461,13 +461,13 @@
 			if($serviceName == "lightnet")
 			{  
 				return $this->successResponse('fields fetched Successfully.', 
-					$this->getLightnetFieldView($payoutCountry, $payoutCurrency, $locationId)
+				$this->getLightnetFieldView($payoutCountry, $payoutCurrency, $locationId)
 				);
 			}
 			else
 			{
 				return $this->successResponse('fields fetched Successfully.', 
-					$this->getOnafricFieldView()
+				$this->getOnafricFieldView()
 				); 
 			} 
 			
@@ -477,17 +477,17 @@
 		public function getOnafricFieldView()
 		{ 
 			return [
-				["fieldName" => "bankaccountnumber", "fieldLabel" => "Beneficiary Account Number", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "receivercontactnumber", "fieldLabel" => "Recipient Mobile Number", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "receiverfirstname", "fieldLabel" => "Recipient Name", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "receiverlastname", "fieldLabel" => "Recipient Surname", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "receiveraddress", "fieldLabel" => "Recipient Address", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				/* ["fieldName" => "sender_placeofbirth", "fieldLabel" => "Sender Date Of Birth", "required" => true, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+			["fieldName" => "bankaccountnumber", "fieldLabel" => "Beneficiary Account Number", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+			["fieldName" => "receivercontactnumber", "fieldLabel" => "Recipient Mobile Number", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+			["fieldName" => "receiverfirstname", "fieldLabel" => "Recipient Name", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+			["fieldName" => "receiverlastname", "fieldLabel" => "Recipient Surname", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+			["fieldName" => "receiveraddress", "fieldLabel" => "Recipient Address", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+			/* ["fieldName" => "sender_placeofbirth", "fieldLabel" => "Sender Date Of Birth", "required" => true, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
 				["fieldName" => "purposeOfTransfer", "fieldLabel" => "Purpose Of Transfer", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "sourceOfFunds", "fieldLabel" => "Source Of Funds", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []], */
-				["fieldName" => "idNumber", "fieldLabel" => "Document Id Number", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "idType", "fieldLabel" => "Document Id Type", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
-				["fieldName" => "idExpiry", "fieldLabel" => "Document Id Expiry", "required" => false, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []]
+			["fieldName" => "sourceOfFunds", "fieldLabel" => "Source Of Funds", "required" => true, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []], */
+			["fieldName" => "idNumber", "fieldLabel" => "Document Id Number", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+			["fieldName" => "idType", "fieldLabel" => "Document Id Type", "required" => false, "inputType" => "text", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []],
+			["fieldName" => "idExpiry", "fieldLabel" => "Document Id Expiry", "required" => false, "inputType" => "date", "dynamicField" => false, 'minLength' => 1, 'maxLength' => 100, 'options' => []]
 			]; 
 		}
 		
@@ -495,13 +495,13 @@
 		{
 			$timestamp = time();
 			$body = [
-				'agentSessionId' => (string) $timestamp,
-				'locationId' => (string) $locationId,
-				'payoutCountry' => (string) $payoutCountry,
-				'payoutCurrency' => (string) $payoutCurrency,
-				'paymentMode' => 'B',
+			'agentSessionId' => (string) $timestamp,
+			'locationId' => (string) $locationId,
+			'payoutCountry' => (string) $payoutCountry,
+			'payoutCurrency' => (string) $payoutCurrency,
+			'paymentMode' => 'B',
 			];
-
+			
 			// Call the service API
 			$response = $this->liquidNetService->serviceApi('post', '/GetFieldInfo', $timestamp, $body);
 			
@@ -514,13 +514,13 @@
 			if (($response['response']['code'] ?? 1) != 0) {
 				return $this->successResponse('Error loading fields. Please try again.');
 			}
-				
+			
 			// Process bank list  
 			$fieldList = $response['response']['fieldList'] ?? collect(); 
-
+			
 			if ($fieldList) {
 				$fieldList = collect($fieldList)->filter(fn($item) => 
-					!in_array(strtolower($item['fieldName']), ['sendercountry', 'senderfirstname', 'senderlastname', 'sendernationality', 'sendermobile', 'sendergender', 'senderaddress', 'sendercity', 'senderstate', 'senderzipcode', 'senderemail', 'senderidexpiredate', 'senderdateofbirth', 'senderidissuecountry', 'senderidtype', 'senderidtyperemarks', 'senderidnumber', 'senderoccupation', 'senderoccupationremarks', 'sendersourceoffund', 'sendersourceoffundremarks', 'sendersecondaryidtype', 'sendersecondaryidnumber', 'senderidissuedate', 'receivercountry'])
+				!in_array(strtolower($item['fieldName']), ['sendercountry', 'senderfirstname', 'senderlastname', 'sendernationality', 'sendermobile', 'sendergender', 'senderaddress', 'sendercity', 'senderstate', 'senderzipcode', 'senderemail', 'senderidexpiredate', 'senderdateofbirth', 'senderidissuecountry', 'senderidtype', 'senderidtyperemarks', 'senderidnumber', 'senderoccupation', 'senderoccupationremarks', 'sendersourceoffund', 'sendersourceoffundremarks', 'sendersecondaryidtype', 'sendersecondaryidnumber', 'senderidissuedate', 'receivercountry'])
 				); 
 			}
 			
@@ -529,7 +529,7 @@
 			->whereNotNull('data')
 			->get()
 			->keyBy('catalogue_type');
-			 
+			
 			$states = $this->lightnetStates($payoutCountry); 
 			$fieldLists = [];
 			foreach($fieldList as $eky => $field)
@@ -558,7 +558,7 @@
 					$field['options'] = $this->availableCountries()->where('service_name', 'lightnet')->pluck('label', 'data')->toArray() ?? [];
 				}
 				/* elseif (in_array($fieldName, ["receiverstate", "senderstate"]))
-				{
+					{
 					$field['inputType'] = "select";
 					$field['options'] = collect($states)->pluck('value', 'data')->toArray() ?? [];
 				} */
@@ -601,9 +601,9 @@
 		{
 			$timestamp = time();
 			$body =  [
-				'agentSessionId' => (string) $timestamp,
-				'catalogueType' => 'STA',
-				'additionalField1' => (string) $payoutCountry,
+			'agentSessionId' => (string) $timestamp,
+			'catalogueType' => 'STA',
+			'additionalField1' => (string) $payoutCountry,
 			];
 			
 			$response = $this->liquidNetService->serviceApi('post', '/GetCatalogue', $timestamp, $body);
@@ -632,39 +632,39 @@
 		{      
 			$user = Auth::user();
 			if (
-				Beneficiary::where('user_id', $user->id)
-					->where('category_name', 'transfer to bank')
-					->where('data->bankaccountnumber', $request->bankaccountnumber)
-					->where('data->payoutCountry', $request->payoutCountry)
-					->exists()
+			Beneficiary::where('user_id', $user->id)
+			->where('category_name', 'transfer to bank')
+			->where('data->bankaccountnumber', $request->bankaccountnumber)
+			->where('data->payoutCountry', $request->payoutCountry)
+			->exists()
 			) {
 				return $this->errorResponse('The provided bank account number already exists.');
 			}
-
+			
 			if ($request->service_name == "onafric") {
 				$bankaccountnumber = $request->bankaccountnumber;
 				$payoutIso = $request->payoutIso;
 				$bankId = $request->bankId;
-
+				
 				$response = $this->onafricService->getValidateBankRequest($payoutIso, $bankId, $bankaccountnumber);
-
+				
 				if (
-					!isset($response['success']) ||
-					!$response['success'] ||
-					(isset($response['response']['status_code']) && !in_array($response['response']['status_code'], ["Active"]))
+				!isset($response['success']) ||
+				!$response['success'] ||
+				(isset($response['response']['status_code']) && !in_array($response['response']['status_code'], ["Active"]))
 				) {
 					return $this->errorResponse('Provided bank or account number are not active');
 				}
-			} else { 
+				} else { 
 				$payoutCountry = $request->payoutCountry;
 				$senderCountry = $user->country->iso3 ?? '';
 				if ($payoutCountry == $senderCountry) {
 					return $this->errorResponse('Domestic remittance is not allowed. Please select a receiver country different from the sender country.');
 				}
 			}
-
+			
 			try {
-				 
+				
 				DB::beginTransaction();
 				$beneficiaryData = $request->except('_token');
 				
@@ -685,7 +685,7 @@
 				$data['created_at'] = now();
 				$data['updated_at'] = now();
 				$data['data'] = $beneficiaryData;
-				 
+				
 				$beneficiary = Beneficiary::create($data);
 				Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to bank beneficiary');
 				
@@ -704,20 +704,20 @@
 			try {
 				
 				$beneficiary = Beneficiary::find($id);
-
+				
 				$user = Auth::user(); 
 				if (
-					Beneficiary::where('user_id', $user->id)
-						->where('id', '!=', $id)
-						->where('category_name', 'transfer to bank')
-						->where('data->bankaccountnumber', $request->bankaccountnumber)
-						->where('data->payoutCountry', $request->payoutCountry)
-						->exists()
+				Beneficiary::where('user_id', $user->id)
+				->where('id', '!=', $id)
+				->where('category_name', 'transfer to bank')
+				->where('data->bankaccountnumber', $request->bankaccountnumber)
+				->where('data->payoutCountry', $request->payoutCountry)
+				->exists()
 				) {
 					return $this->errorResponse('The provided bank account number already exists.');
 				}
-
-
+				
+				
 				if($request->service_name == "onafric")
 				{
 					$bankaccountnumber = $request->bankaccountnumber; 
@@ -725,24 +725,24 @@
 					$bankId = $request->bankId;
 					// Ensure beneficiary->data is an array
 					$beneficiaryDataArray = is_array($beneficiary->data) ? $beneficiary->data : [];
-		
+					
 					if ($bankaccountnumber !== ($beneficiaryDataArray['bankaccountnumber'] ?? '') ||
-						$bankId !== ($beneficiaryDataArray['bankId'] ?? '') ||
-						$payoutIso !== ($beneficiaryDataArray['payoutIso'] ?? '')) 
+					$bankId !== ($beneficiaryDataArray['bankId'] ?? '') ||
+					$payoutIso !== ($beneficiaryDataArray['payoutIso'] ?? '')) 
 					{
 						$response = $this->onafricService->getValidateBankRequest($payoutIso, $bankId, $bankaccountnumber);
 						
 						if (
-							!isset($response['success']) || 
-							!$response['success'] || 
-							(isset($response['response']['status_code']) && !in_array($response['response']['status_code'], ["Active"]))
+						!isset($response['success']) || 
+						!$response['success'] || 
+						(isset($response['response']['status_code']) && !in_array($response['response']['status_code'], ["Active"]))
 						) {
-							   
+							
 							return $this->errorResponse('Provided bank or account number are not active');
 						}  
 					}
 				}
-			 
+				
 				DB::beginTransaction();
 				$beneficiaryData = $request->except('_token');
 				
@@ -755,7 +755,7 @@
 					/* $beneficiaryData['sender_name'] = $user->first_name ?? '';
 					$beneficiaryData['sender_surname'] = $user->last_name ?? ''; */
 				}
-			
+				
 				$data = []; 
 				$data['category_name'] = $beneficiaryData['category_name'];
 				$data['service_name'] = $beneficiaryData['service_name'];
@@ -763,7 +763,7 @@
 				$data['user_id'] = Auth::id(); 
 				$data['updated_at'] = now(); 
 				$data['data'] = $beneficiaryData;
-				  
+				
 				$beneficiary->update($data);
 				Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to bank beneficiary');
 				

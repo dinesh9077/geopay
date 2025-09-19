@@ -4,7 +4,7 @@
 	use App\Http\Controllers\Controller;
 	use Illuminate\Http\Request;
 	use App\Models\{ 
-		User, Banner, Faq, Setting, Country, Transaction 
+		User, Banner, Faq, Setting, Country, Transaction, Beneficiary 
 	};
 	use Illuminate\Support\Facades\{Http, Storage, Hash, DB, Log, Auth, Notification};
 	use App\Http\Traits\ApiResponseTrait;
@@ -216,5 +216,36 @@
 			];
 			$data['transactionTypes'] = $transactionTypes;
 			return $this->successResponse('transaction fetched successfully.', $data);	
+		}
+		
+		public function beneficieryList(Request $request)
+		{	 
+			if(!in_array($request->type, ["transfer to bank", "transfer to mobile"]))
+			{
+				return $this->errorResponse("You have send type not match"); 
+			}
+			
+			$beneficiaries = Beneficiary::where('user_id', auth()->user()->id)
+				->where('category_name', $request->type)  
+				->get();
+
+			foreach ($beneficiaries as $beneficiary)
+			{  
+				if($request->type === "transfer to mobile")
+				{
+					$beneficiary->country_detail = [
+						'id'   => $beneficiary->mobileCountry()->id ?? '',
+						'country_code'   => $beneficiary->mobileCountry()->id ?? '',
+						'flag' => $beneficiary->mobileCountry()->country_flag 
+									? url('country/' . $beneficiary->mobileCountry()->country_flag) 
+									: ''
+					]; 
+				}
+				else{
+					$beneficiary->country_detail = $beneficiary->country(); 
+				}
+			}
+
+			return $this->successResponse('beneficiary fetched successfully.', $beneficiaries);	
 		}
 	}
