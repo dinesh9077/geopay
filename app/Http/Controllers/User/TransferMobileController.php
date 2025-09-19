@@ -132,7 +132,7 @@ class TransferMobileController extends Controller
 			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to mobile beneficiary');
 			
 			DB::commit(); 
-			return $this->successResponse('The recipient was completed successfully.');
+			return $this->successResponse('Beneficiary details have been saved.');
         } 
 		catch (\Throwable $e)
 		{ 
@@ -300,7 +300,7 @@ class TransferMobileController extends Controller
 			Helper::updateLogName($beneficiary->id, Beneficiary::class, 'transfer to mobile beneficiary');
 			
 			DB::commit(); 
-			return $this->successResponse('The recipient was updated successfully.');
+			return $this->successResponse('Beneficiary details have been saved.');
         } 
 		catch (\Throwable $e)
 		{ 
@@ -560,7 +560,7 @@ class TransferMobileController extends Controller
 			Notification::send($user, new AirtimeRefundNotification($user, $netAmount, $transaction->id, $comments, $transaction->notes, ucfirst($txnStatus)));
 			
 			DB::commit();  
-			return $this->successResponse('Mobile transfer has been successfully processed.', ['userBalance' => Helper::decimalsprint($user->balance, 2), 'currencyCode' => config('setting.default_currency')]);
+			return $this->successResponse("We're validation your transaction with our partner. You'll be notified when it's complete.", ['userBalance' => Helper::decimalsprint($user->balance, 2), 'currencyCode' => config('setting.default_currency')]);
 		} catch (\Throwable $e) {
 			DB::rollBack();  
 			return $this->errorResponse($e->getMessage()); 
