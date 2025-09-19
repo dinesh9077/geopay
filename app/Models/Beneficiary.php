@@ -45,12 +45,13 @@ class Beneficiary extends Model
 	
 	public function country()
     {
-        return Country::select('id', 'country_flag')->where('currency_code', $this->data['payoutCurrency'] ?? null)
-                      ->where('iso3', $this->data['payoutCountry'] ?? null)
-                      ->first();
+        return Country::select('id', 'country_flag')->where('currency_code', $this->data['payoutCurrency'] ?? null)->where('iso3', $this->data['payoutCountry'] ?? null)->first();
     }
-	 
-
+	
+	public function mobileCountry()
+    {
+        return Country::select('id', 'country_flag')->where('id', $this->data['recipient_country'] ?? null)->first();
+    } 
 	
 	public function getDataArrAttribute()
 	{

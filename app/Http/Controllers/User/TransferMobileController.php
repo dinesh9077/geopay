@@ -44,8 +44,7 @@ class TransferMobileController extends Controller
 	
 	public function transferToMobileMoney()
 	{   
-		$countries = $this->onafricService->country();  
-		 
+		$countries = $this->onafricService->country();   
 		$beneficiaries = Beneficiary::where('user_id', auth()->user()->id)
 		->where('category_name', "transfer to mobile") 
 		->get(); 
