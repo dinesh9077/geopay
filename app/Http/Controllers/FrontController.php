@@ -23,6 +23,8 @@ class FrontController extends Controller
 		$status          = strtolower($request->status);
 		$reason          = $request->reason ?? null;
 
+		\Log::info( $request->all());
+
 		// Find transaction by merchant_orderid
 		$transaction = Transaction::where('order_id', $merchantOrderId)->first();
 	 
