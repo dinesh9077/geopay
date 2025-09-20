@@ -73,13 +73,7 @@ class ReceiveMoneyController extends Controller
 			}
 		}
 		
-		$aggregatorRate = $liveExchangeRate->aggregator_rate ?? 0;
-		$aggregatorCurrencyAmount = ($txnAmount * $aggregatorRate);
-		
-		$exchangeRate = $liveExchangeRate->markdown_rate ?? 0;
-		$payoutCurrencyAmount = ($txnAmount * $exchangeRate);
 		$serviceCharge = 0;
-		 
 		$sendFee = 0;
 		$commissionType = config('setting.onafric_collection_commission_type', 'flat'); 
 		$commissionCharge = config('setting.onafric_collection_commission_charge', 0);
@@ -87,7 +81,15 @@ class ReceiveMoneyController extends Controller
 		$platformFees = $commissionType === "flat"
 		? max($commissionCharge, 0) // Ensure flat fee is not negative
 		: max(($txnAmount * $commissionCharge / 100), 0); // Ensure percentage fee is not negative
-						
+		
+		$netAmount = $txnAmount + $platformFees;
+		
+		$aggregatorRate = $liveExchangeRate->aggregator_rate ?? 0;
+		$aggregatorCurrencyAmount = ($netAmount * $aggregatorRate);
+		
+		$exchangeRate = $liveExchangeRate->markdown_rate ?? 0;
+		$payoutCurrencyAmount = ($netAmount * $exchangeRate);
+		  			
 		$comissions = [
 			'payoutCurrency' => $country->currency_code,
 			'payoutCountry' => $country->iso3,
@@ -105,7 +107,7 @@ class ReceiveMoneyController extends Controller
 	}
 	
 	public function storeMobileCollection(Request $request)
-	{  
+	{   
 		$user = Auth::user();
 	  
 		// Validation rules
@@ -265,7 +267,7 @@ class ReceiveMoneyController extends Controller
 	
 	public function storeMobileCollectionCallback(Request $request)
 	{
-		Log::info('Mobile Collection Webhook received', ['data' => $request->all()]);
+		//Log::info('Mobile Collection Webhook received', ['data' => $request->all()]);
 
 		if (empty($request->all())) {
 			return response()->json(['error' => 'Empty request'], 400);
@@ -335,7 +337,11 @@ class ReceiveMoneyController extends Controller
 	// Deposit Payment
 	public function depositPayment()
 	{
-		return view('user.transaction.add-money.deposit-payment');
+		$commissionType = config('setting.guardian_commission_type', 'flat');
+		$commissionCharge = config('setting.guardian_commission_charge', 0);
+		$remitCurrency = config('setting.default_currency', 'USD');
+		
+		return view('user.transaction.add-money.deposit-payment', compact('commissionType', 'commissionCharge', 'remitCurrency'));
 	}
 	
 	public function depositPaymentLink(Request $request, DepositPaymentService $depositService)
@@ -347,7 +353,9 @@ class ReceiveMoneyController extends Controller
 			'month'      => 'required|digits:2|min:1|max:12',
 			'year'       => 'required|digits:4|integer|min:' . date('Y'),
 			'cvv'        => 'required|digits_between:3,4',
-			'amount'     => 'required|numeric|min:1',
+			'amount'     => 'required|numeric|min:1', 
+			'netAmount'     => 'required|numeric|min:1', 
+			'platformCharge'     => 'required|numeric|min:1',
 		]);
 
 		if ($validator->fails()) {
@@ -376,10 +384,11 @@ class ReceiveMoneyController extends Controller
 		} while (Transaction::where('order_id', $orderId)->exists());
 
 		$amount = $request->amount;
+		$netAmount = $request->netAmount;
 		$response = $depositService->deposit(
 			$userData,
 			$cardData,
-			$amount,
+			$netAmount,
 			$orderId
 		); 
 		 
@@ -427,9 +436,9 @@ class ReceiveMoneyController extends Controller
 			'api_request' => $response['request'],
 			'api_response' => $response['response'],
 			'order_id' => $orderId,
-			'fees' => 0,
+			'fees' => $request->platformCharge,
 			'service_charge' => 0,
-			'total_charge' => 0,
+			'total_charge' => $request->platformCharge,
 			'api_status' => 'pending',
 			'created_at' => now(),
 			'updated_at' => now(),

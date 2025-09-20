@@ -81,12 +81,14 @@
 								<label class="form-label">Amount <span class="text-danger">*</span></label>
 								<input type="number" inputmode="numeric" name="amount" id="amount" class="form-control" placeholder="Enter Amount"  required /> 
 							</div>
-							  
+							<input type="hidden" inputmode="numeric" name="netAmount" id="netAmount" class="form-control" /> 
+							<input type="hidden" inputmode="numeric" name="platformCharge" id="platformCharge" class="form-control" /> 
+							
+							<div class="col-12" id="commissionHtml"></div>  
 							<div class="d-flex justify-content-between"> 
 								<button type="submit" class="btn btn-primary">Pay</button>
 							</div>
-						</form>
-						
+						</form> 
 					</div> 
 				</div> 
 			</div>
@@ -100,6 +102,49 @@
 
 @push('js')
 <script>
+	const commissionType = @json($commissionType);
+	const commissionCharge = parseFloat(@json($commissionCharge)); // ✅ ensure numeric
+	const remitCurrency = @json($remitCurrency);
+
+	$('#paymentForm #amount').on('input', function() {  
+		const amount = parseFloat($(this).val()) || 0;
+		let commissionAmount = 0;
+
+		if (commissionType === 'flat') {
+			commissionAmount = commissionCharge; 
+		} else if (commissionType === 'percentage') {
+			commissionAmount = (amount * commissionCharge) / 100;
+		}
+
+		// force numeric safety
+		commissionAmount = parseFloat(commissionAmount) || 0;
+
+		$('#platformCharge').val(commissionAmount.toFixed(2));
+
+		const netAmount = amount + commissionAmount;
+		$('#netAmount').val(netAmount.toFixed(2));
+
+		const commissionDetails = `
+			<div class="w-100 text-start mb-3 p-2 rounded-2 border g-2 removeCommission">
+				<div class="w-100 row m-auto">
+					<div class="col-6 col-md-6">
+						<span class="content-3 mb-0 text-dark fw-semibold text-nowrap">
+							Processing Fee (${remitCurrency})
+							<div class="text-muted fw-normal">${commissionAmount.toFixed(2)}</div>
+						</span>
+					</div>
+					<div class="col-6 col-md-6">
+						<span class="content-3 mb-0 text-dark fw-semibold text-nowrap">
+							Net Amount In ${remitCurrency}
+							<div class="text-muted fw-normal">${netAmount.toFixed(2)}</div>
+						</span>
+					</div> 
+				</div> 
+			</div>`;
+
+		$('#paymentForm #commissionHtml').html(commissionDetails);
+	});
+ 
 	$(function () {
 		const CARD_TYPES = {
 			visa: /^4[0-9]{0,}$/,
@@ -267,34 +312,41 @@
 		});
 	});
    
-     document.addEventListener("DOMContentLoaded", function () {
-        // Get query params from URL
-        const params = new URLSearchParams(window.location.search);
-        const status = params.get('status'); // e.g. Authorized, Failed
+    document.addEventListener("DOMContentLoaded", function () {
+		const params = new URLSearchParams(window.location.search);
+		const status = params.get('status');
 
-        if (status) {
-            if (status.toLowerCase() === 'authorised') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Payment Authorized!',
-                    text: 'Your payment was authorized. It will be reviewed shortly and the final status (approved/rejected) will be updated. You can check your transaction list for the latest update.',
-                    confirmButtonColor: '#3085d6',
-                });
-            } else if (status.toLowerCase() === 'failed') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Payment Failed!',
-                    text: 'Your payment could not be processed. Please try again.',
-                    confirmButtonColor: '#d33',
-                });
-            } else {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Payment Status',
-                    text: 'Payment status: ' + status,
-                });
-            }
-        }
-    });
+		if (status) {
+			let alertOptions = {};
+
+			if (status.toLowerCase() === 'authorised') {
+				alertOptions = {
+					icon: 'success',
+					title: 'Payment Authorized!',
+					text: 'Your payment was authorized. It will be reviewed shortly and the final status (approved/rejected) will be updated. You can check your transaction list for the latest update.',
+					confirmButtonColor: '#3085d6',
+				};
+			} else if (status.toLowerCase() === 'failed') {
+				alertOptions = {
+					icon: 'error',
+					title: 'Payment Failed!',
+					text: 'Your payment could not be processed. Please try again.',
+					confirmButtonColor: '#d33',
+				};
+			} else {
+				alertOptions = {
+					icon: 'info',
+					title: 'Payment Status',
+					text: 'Payment status: ' + status,
+				};
+			}
+
+			Swal.fire(alertOptions).then(() => {
+				// ✅ Remove query string without reload
+				window.history.replaceState({}, document.title, window.location.pathname);
+			});
+		}
+	});
+
 </script>
 @endpush

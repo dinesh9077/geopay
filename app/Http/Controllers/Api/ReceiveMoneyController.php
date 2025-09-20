@@ -68,22 +68,24 @@
 				}
 			}
 			
-			$aggregatorRate = $liveExchangeRate->aggregator_rate ?? 0;
-			$aggregatorCurrencyAmount = ($txnAmount * $aggregatorRate);
-			
-			$exchangeRate = $liveExchangeRate->markdown_rate ?? 0;
-			$payoutCurrencyAmount = ($txnAmount * $exchangeRate);
-			$serviceCharge = 0;
-			 
 			$sendFee = 0;
+			$serviceCharge = 0; 
 			$commissionType = config('setting.onafric_collection_commission_type', 'flat'); 
 			$commissionCharge = config('setting.onafric_collection_commission_charge', 0);
 			
 			$platformFees = $commissionType === "flat"
 			? max($commissionCharge, 0) // Ensure flat fee is not negative
 			: max(($txnAmount * $commissionCharge / 100), 0); // Ensure percentage fee is not negative
-					
 			$totalCharges = $platformFees + $serviceCharge;
+			
+			$netAmount = $totalCharges + $txnAmount;
+			
+			$aggregatorRate = $liveExchangeRate->aggregator_rate ?? 0;
+			$aggregatorCurrencyAmount = ($netAmount * $aggregatorRate);
+			
+			$exchangeRate = $liveExchangeRate->markdown_rate ?? 0;
+			$payoutCurrencyAmount = ($netAmount * $exchangeRate); 
+			
 			$comissions = [
 				'payoutCurrency' => $country->currency_code,
 				'payoutCountry' => $country->iso3,
@@ -97,7 +99,7 @@
 				'serviceCharge' => $serviceCharge,
 				'sendFee' => $sendFee,
 				'totalCharges' => $totalCharges,
-				'netAmount' => ($totalCharges + $txnAmount)
+				'netAmount' => $netAmount
 			];
 			return $this->successResponse('commission fetched.', $comissions);
 		}
@@ -263,7 +265,7 @@
 				'month'      => 'required|digits:2|min:1|max:12',
 				'year'       => 'required|digits:4|integer|min:' . date('Y'),
 				'cvv'        => 'required|digits_between:3,4',
-				'amount'     => 'required|numeric|min:1',
+				'amount'     => 'required|numeric|min:1'
 			]);
 
 			if ($validator->fails()) {
@@ -292,6 +294,7 @@
 			} while (Transaction::where('order_id', $orderId)->exists());
 
 			$amount = $request->amount;
+			//$netAmount = $request->netAmount;
 			$response = $depositService->deposit(
 				$userData,
 				$cardData,
@@ -345,7 +348,7 @@
 				'order_id' => $orderId,
 				'fees' => 0,
 				'service_charge' => 0,
-				'total_charge' => 0,
+				'fees' => 0,
 				'api_status' => 'pending',
 				'created_at' => now(),
 				'updated_at' => now(),
