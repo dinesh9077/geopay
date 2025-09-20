@@ -167,51 +167,7 @@
 		<tr>
 			<th class="content-4 d-flex justify-content-between text-nowrap">DESTINATION AMOUNT <span class="mx-1">:</span></th>
 			<td class="content-4">{{ Helper::decimalsprint($transaction->unit_amount, 2) }} {{ $transaction->unit_currency }}</td>
-		</tr> 
-	@elseif($transaction->platform_name === 'transfer to mobile')
-		<tr>
-            <th class="content-4 d-flex justify-content-between text-nowrap">FROM ACCOUNT <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $userName }} {{ $userNumber }}</td>
-        </tr>
-        <tr>
-            <th class="content-4 d-flex justify-content-between text-nowrap">Transaction Id <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $transaction->unique_identifier ?? 'N/A' }}</td>
-        </tr> 
-        <tr>
-            <th class="content-4 d-flex justify-content-between text-nowrap">Sender Mobile <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $transaction->beneficiary_request['data']['sender_mobile'] ?? 'N/A' }}</td>
-        </tr>
-        <tr>
-			<th class="content-4 d-flex justify-content-between text-nowrap">Counterparty Name <span class="mx-1">:</span></th>
-			<td class="content-4">
-				{{ isset($transaction->beneficiary_request['data']['recipient_name']) && isset($transaction->beneficiary_request['data']['recipient_surname']) ? 
-					$transaction->beneficiary_request['data']['recipient_name'] . ' ' . $transaction->beneficiary_request['data']['recipient_surname'] : 'N/A' }}
-			</td>
-		</tr> 
-        <tr>
-            <th class="content-4 d-flex justify-content-between text-nowrap">Mobile <span class="mx-1">:</span></th>
-            <td class="content-4">{{ $transaction->beneficiary_request['data']['recipient_mobile'] ?? 'N/A' }}</td>
-        </tr> 
-        <tr>
-			<th class="content-4 d-flex justify-content-between text-nowrap">UNIT AMOUNT <span class="mx-1">:</span></th>
-			<td class="content-4">{{ $transaction->unit_rates}}</td>
-		</tr>
-		<tr>
-			<th class="content-4 d-flex justify-content-between text-nowrap">PLATFORM FEES <span class="mx-1">:</span></th>
-			<td class="content-4">{{ $transaction->fees }}</td>
-		</tr> 
-		<tr>
-			<th class="content-4 d-flex justify-content-between text-nowrap">NET AMOUNT <span class="mx-1">:</span></th>
-			<td class="content-4">{{ Helper::decimalsprint($transaction->txn_amount, 2) }} {{ config('setting.default_currency') }}</td>
-		</tr>
-		<tr>
-			<th class="content-4 d-flex justify-content-between text-nowrap">EXCHANGE RATE <span class="mx-1">:</span></th>
-			<td class="content-4">{{ $transaction->rates }}</td>
-		</tr>
-		<tr>
-			<th class="content-4 d-flex justify-content-between text-nowrap">DESTINATION AMOUNT <span class="mx-1">:</span></th>
-			<td class="content-4">{{ Helper::decimalsprint($transaction->unit_amount, 2) }} {{ $transaction->unit_currency }}</td>
-		</tr>
+		</tr>  
 	@elseif($transaction->platform_name === 'add money' && $transaction->platform_provider === 'onafric mobile collection')	
 		<tr>
 			<th class="content-4 d-flex justify-content-between text-nowrap">NET AMOUNT <span class="mx-1">:</span></th>

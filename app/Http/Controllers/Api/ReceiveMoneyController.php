@@ -288,7 +288,7 @@
 			$cardData = $request->only(['cardtype', 'cardname', 'cardnumber', 'month', 'year', 'cvv']);
 			
 			do {
-				$orderId = uniqid('order_'); // e.g. order_650c9e3a5f1d1
+				$orderId = "GPMC-".$user->id."-".time();
 			} while (Transaction::where('order_id', $orderId)->exists());
 
 			$amount = $request->amount;

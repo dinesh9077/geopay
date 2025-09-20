@@ -326,9 +326,19 @@
 					return response()->json(['error' => 'User not found'], 404);
 				}
 			}
-
-			Transaction::where('unique_identifier', $uniqueIdentifier)->update(['txn_status' => $txnStatus]);
-			  
+	
+			$transaction = Transaction::with('user')->where('unique_identifier', $uniqueIdentifier)->first();
+			$transaction->update(['txn_status' => $txnStatus, 'complete_transaction_at' => now(), 'txn_status' => $txnStatus]);
+			
+			if ($transaction->user && !empty($transaction->user->email) && strtolower($txnStatus) === "completed") {
+				try {
+					app(\App\Services\TransactionEmailService::class)
+						->send($transaction->user, $transaction, 'international_airtime');
+				} catch (\Throwable $e) {
+					Log::error("Email sending international_airtime failed: " . $e->getMessage());
+				}
+			} 
+		
 			return response()->json(['error' => 'Transaction not found'], 404);
 		} 
 	}

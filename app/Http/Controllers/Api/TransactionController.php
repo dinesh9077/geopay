@@ -107,6 +107,7 @@
 					'comments' => $toComment,
 					'notes' => $notes,
 					'order_id' => $orderId,
+					'complete_transaction_at' => now(),
 					'created_at' => now(),
 					'updated_at' => now(),
 				]);
@@ -126,6 +127,7 @@
 					'comments' => $fromComment,
 					'notes' => $notes,
 					'order_id' => $orderId,
+					'complete_transaction_at' => now(),
 					'created_at' => now(),
 					'updated_at' => now(),
 				]);
@@ -135,6 +137,18 @@
 				Notification::send($user, new WalletTransactionNotification($user, $toUser, $txnAmount, $fromComment, $notes)); // Sender Notification
 				Notification::send($toUser, new WalletTransactionNotification($user, $toUser, $txnAmount, $toComment, $notes)); // Receiver Notification
 				
+				if ($creditTransaction->user && !empty($user->email)) {
+					try {
+						$creditTransaction->user->send_email = $user->email;
+						$creditTransaction->user->send_full_name = $user->full_name;
+						 
+						app(\App\Services\TransactionEmailService::class)
+							->send($creditTransaction->user, $creditTransaction, 'geopay_to_geopay');
+					} catch (\Throwable $e) {
+						Log::error("Email sending geopay_to_geopay failed: " . $e->getMessage());
+					}
+				}  
+			
 				DB::commit();
 				
 				// Success response

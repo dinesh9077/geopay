@@ -60,6 +60,15 @@ class UpdateOnafricMobileCollectionStatus extends Command
 					$transaction->user->increment('balance', $transaction->txn_amount);
 					$updateData['comments'] = "Payment received successfully. Wallet updated.";
 					$updateData['complete_transaction_at'] = now();
+					 
+					if ($transaction->user && !empty($transaction->user->email)) {
+						try {
+							app(\App\Services\TransactionEmailService::class)
+								->send($transaction->user, $transaction, 'add_funds_mobile');
+						} catch (\Throwable $e) {
+							Log::error("Email sending add_funds_mobile failed: " . $e->getMessage());
+						}
+					}
 				}
 
 				$transaction->update($updateData);

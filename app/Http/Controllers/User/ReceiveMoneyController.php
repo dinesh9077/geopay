@@ -304,13 +304,15 @@ class ReceiveMoneyController extends Controller
 			$updateData['comments'] = "Payment received successfully. Wallet updated.";
 			$updateData['complete_transaction_at'] = now();
 			$updateData['api_response'] = $request->all(); 
-			
-			try {
-				app(\App\Services\TransactionEmailService::class)
-					->send($transaction->user, $transaction, 'add_funds_mobile');
-			} catch (\Throwable $e) {
-				Log::error("Email sending add_funds_mobile failed: " . $e->getMessage()); 
-			}
+			 
+			if ($transaction->user && !empty($transaction->user->email)) {
+				try {
+					app(\App\Services\TransactionEmailService::class)
+						->send($transaction->user, $transaction, 'add_funds_mobile');
+				} catch (\Throwable $e) {
+					Log::error("Email sending add_funds_mobile failed: " . $e->getMessage());
+				}
+			} 
 		}
 
 		$transaction->update($updateData);
@@ -368,9 +370,9 @@ class ReceiveMoneyController extends Controller
 		];
 
 		$cardData = $request->only(['cardtype', 'cardname', 'cardnumber', 'month', 'year', 'cvv']);
-		
+	 
 		do {
-			$orderId = uniqid('order_'); // e.g. order_650c9e3a5f1d1
+			$orderId = "GPMC-".$user->id."-".time();
 		} while (Transaction::where('order_id', $orderId)->exists());
 
 		$amount = $request->amount;

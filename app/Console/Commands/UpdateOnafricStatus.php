@@ -64,6 +64,16 @@ class UpdateOnafricStatus extends Command
 
 				if ($txnStatus === "paid") {
 					$transaction->complete_transaction_at = now();
+					 
+					if ($transaction->user && !empty($transaction->user->email)) {
+						try {
+							$transferType = $transaction->platform_name === "transfer to bank" ? 'transfer_to_bank' : 'transfer_to_mobile';
+							app(\App\Services\TransactionEmailService::class)
+							->send($transaction->user, $transaction, $transferType);
+						} catch (\Throwable $e) {
+							Log::error("Email sending {$transferType} failed: " . $e->getMessage());
+						}
+					}   
 				}
 
 				// Save using Eloquent (fires events and allows change detection)

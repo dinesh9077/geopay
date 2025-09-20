@@ -62,7 +62,15 @@
 					$transaction->api_status = $statusMessage;
 
 					if ($txnStatus === "paid") {
-						$transaction->complete_transaction_at = now();
+						$transaction->complete_transaction_at = now(); 
+						if ($transaction->user && !empty($transaction->user->email)) {
+							try {
+								app(\App\Services\TransactionEmailService::class)
+									->send($transaction->user, $transaction, 'transfer_to_bank');
+							} catch (\Throwable $e) {
+								Log::error("Email sending transfer_to_bank failed: " . $e->getMessage());
+							}
+						}
 					}
 
 					// Save using Eloquent

@@ -24,7 +24,7 @@ class GeopayToGeopayTransaction extends Mailable
 
     public function build()
     {
-        return $this->subject('Funds Added via Mobile Money')
-                    ->view('emails.add_funds_mobile_money');
+        return $this->subject('Funds Transfer via Wallet To wallet')
+                    ->view('emails.transfer_fund_wallet_to_wallet');
     }
 }

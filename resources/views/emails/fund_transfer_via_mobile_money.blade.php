@@ -14,9 +14,9 @@
             Your transfer of 
             <strong>{{ number_format($transaction->txn_amount, 2) }}</strong> 
             to 
-            <strong>{{ isset($transaction->beneficiary_request['data']['receiverfirstname']) && isset($transaction->beneficiary_request['data']['receiverlastname']) ? 
-					$transaction->beneficiary_request['data']['receiverfirstname'] . ' ' . $transaction->beneficiary_request['data']['receiverlastname'] : 'N/A' }}</strong> 
-            ({{ $transaction->beneficiary_request['data']['bankaccountnumber'] ?? 'N/A' }}) 
+            <strong>{{ isset($transaction->beneficiary_request['data']['recipient_name']) && isset($transaction->beneficiary_request['data']['recipient_surname']) ? 
+					$transaction->beneficiary_request['data']['recipient_name'] . ' ' . $transaction->beneficiary_request['data']['recipient_surname'] : 'N/A' }}</strong> 
+            ({{ $transaction->beneficiary_request['data']['recipient_mobile'] ?? 'N/A' }}) 
             was successful.
         </p>
 

@@ -15,6 +15,7 @@ class MobileMoneyTransaction extends Mailable
 
     public $user;
     public $transaction;
+    public $paymentMethod;
 
     public function __construct($user, $transaction)
     {

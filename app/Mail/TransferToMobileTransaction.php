@@ -13,41 +13,17 @@ class TransferToMobileTransaction extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct()
+    public $user;
+    public $transaction;
+
+    public function __construct($user, $transaction)
     {
-        //
+        $this->user = $user;
+        $this->transaction = $transaction; 
     }
 
-    /**
-     * Get the message envelope.
-     */
-    public function envelope(): Envelope
+    public function build()
     {
-        return new Envelope(
-            subject: 'Transfer To Mobile Transaction',
-        );
-    }
-
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
-    {
-        return new Content(
-            view: 'view.name',
-        );
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
-    public function attachments(): array
-    {
-        return [];
+        return $this->subject('Funds transfer via Mobile Money')->view('emails.fund_transfer_via_mobile_money');
     }
 }

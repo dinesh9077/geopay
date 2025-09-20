@@ -24,6 +24,6 @@ class TransferToBankTransaction extends Mailable
 
     public function build()
     {
-        return $this->subject('Funds transfer via Bank')->view('emails.add_funds_mobile_money');
+        return $this->subject('Funds transfer via Bank')->view('emails.fund_transfer_via_bank');
     }
 }
