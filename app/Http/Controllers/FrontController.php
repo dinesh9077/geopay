@@ -37,7 +37,7 @@ class FrontController extends Controller
 		$updateData = [
 			'txn_status' => $status,
 			'api_status' => $status,
-			'notes'      => $reason,
+			'comments'      => $reason,
 		];
 
 		// If payment captured, update wallet too
