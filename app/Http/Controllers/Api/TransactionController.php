@@ -242,7 +242,16 @@
 					]; 
 				}
 				else{
-					$beneficiary->country_detail = $beneficiary->country(); 
+					$country = $beneficiary->country(); // Access the related model, not the query
+
+					if ($country) {
+						$country->country_flag = !empty($country->country_flag) 
+												? url('country/' . $country->country_flag)  
+												: '';
+						$beneficiary->country_detail = $country;
+					} else {
+						$beneficiary->country_detail = null;
+					} 
 				}
 			}
 

@@ -303,7 +303,14 @@ class ReceiveMoneyController extends Controller
 			$transaction->user->increment('balance', $transaction->txn_amount);
 			$updateData['comments'] = "Payment received successfully. Wallet updated.";
 			$updateData['complete_transaction_at'] = now();
-			$updateData['api_response'] = $request->all();
+			$updateData['api_response'] = $request->all(); 
+			
+			try {
+				app(\App\Services\TransactionEmailService::class)
+					->send($transaction->user, $transaction, 'add_funds_mobile');
+			} catch (\Throwable $e) {
+				Log::error("Email sending add_funds_mobile failed: " . $e->getMessage()); 
+			}
 		}
 
 		$transaction->update($updateData);

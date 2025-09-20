@@ -805,6 +805,13 @@ class TransferBankController extends Controller
 			
 			Notification::send($user, new AirtimeRefundNotification($user, $netAmount, $transaction->id, $comments, $transaction->notes, ucfirst($txnStatus)));
 			
+			try {
+				app(\App\Services\TransactionEmailService::class)
+					->send($transaction->user, $transaction, 'transfer_to_bank');
+			} catch (\Throwable $e) {
+				Log::error("Email sending transfer_to_bank failed: " . $e->getMessage()); 
+			}
+			
 			DB::commit();  
 			//return $this->successResponse($successMsg ?? 'TXN Successfully Accepted.');
 			return $this->successResponse("We're validation your transaction with our partner. You'll be notified when it's complete.");
