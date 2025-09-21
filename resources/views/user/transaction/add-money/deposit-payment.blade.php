@@ -144,9 +144,97 @@
 
 		$('#paymentForm #commissionHtml').html(commissionDetails);
 	});
- 
+	 
+		 
 	$(function () {
+		
 		const CARD_TYPES = {
+			visa: /^4[0-9]{0,}$/,                                // Visa
+			mastercard: /^(5[1-5][0-9]{0,}|2[2-7][0-9]{0,})$/,    // Mastercard
+			amex: /^3[47][0-9]{0,}$/,                             // American Express
+			diners: /^3(?:0[0-5]|[68][0-9])[0-9]{0,}$/,           // Diners Club
+			discover: /^6(?:011|5[0-9]{2})[0-9]{0,}$/,            // Discover
+			jcb: /^(?:35[2-8][0-9]{0,})$/,                        // JCB (3528–3589)
+			unionpay: /^62[0-9]{0,}$/,                            // China UnionPay
+			maestro: /^(50|5[6-9]|6[0-9])[0-9]{0,}$/              // Maestro / EFTPOS
+			// Cartes Bancaires = handled by Visa/Mastercard regex
+		};
+
+		const CARD_LABELS = {
+			visa: "Visa",
+			mastercard: "Mastercard",
+			amex: "American Express",
+			diners: "Diners Club",
+			discover: "Discover",
+			jcb: "JCB",
+			unionpay: "China UnionPay",
+			maestro: "Maestro / EFTPOS",
+			unknown: "—"
+		};
+
+		const $form = $("#paymentForm");
+		const $cardNumber = $("#cardnumber");
+		const $cardTypeDisplay = $("#card-type-display");
+		const $cardTypeHidden = $("#cardtype");
+		const $cvv = $("#cvv");
+		const $messages = $("#form-messages");
+
+		// remove maxlength from HTML, handle dynamically
+		$cvv.removeAttr("maxlength");
+
+		// format number (add spaces every 4 digits)
+		function formatCardNumber(val) {
+			return val.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim();
+		}
+
+		// detect card type
+		function detectCardType(num) {
+			const digits = num.replace(/\s+/g, "");
+			for (const [type, pattern] of Object.entries(CARD_TYPES)) {
+				if (pattern.test(digits)) return type;
+			}
+			return "unknown";
+		}
+
+		// Luhn check
+		function luhnCheck(num) {
+			const arr = (num + "").split("").reverse().map(x => parseInt(x, 10));
+			let sum = 0;
+			for (let i = 0; i < arr.length; i++) {
+				let val = arr[i];
+				if (i % 2 === 1) {
+					val *= 2;
+					if (val > 9) val -= 9;
+				}
+				sum += val;
+			}
+			return sum % 10 === 0;
+		}
+
+		// on input card number
+		$cardNumber.on("input", function () {
+			const formatted = formatCardNumber($(this).val());
+			$(this).val(formatted);
+
+			const type = detectCardType(formatted);
+			$cardTypeDisplay.text(CARD_LABELS[type] || "—");
+			$cardTypeHidden.val(type);
+
+			// update CVV max length (Amex uses 4, others use 3)
+			$cvv.attr("maxlength", type === "amex" ? 4 : 3);
+		});
+
+		// utility alert
+		function showAlert(type, html) {
+			$messages.html(`
+				<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+					${html}
+					<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+				</div>
+			`);
+		} 
+		
+		/* const CARD_TYPES = {
 			visa: /^4[0-9]{0,}$/,
 			mastercard: /^(5[1-5]|2[2-7])[0-9]{0,}$/,
 			amex: /^3[47][0-9]{0,}$/,
@@ -214,7 +302,7 @@
 					<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 				</div>
 			`);
-		}
+		} */
 
 		// submit form
 		$form.on("submit", function (e) {
