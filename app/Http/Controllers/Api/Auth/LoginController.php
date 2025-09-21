@@ -68,9 +68,15 @@
 				$user->token = $token;
 				$user->metamap = $user->userKyc()->where('verification_status', 'verified')->exists(); 
 				$user->metamap_status = $user->userKyc->verification_status ?? 'pending'; 
-				$user->default_currency = config('setting.default_currency', 'USD'); 
+				$user->default_currency = config('setting.default_currency', 'USD');
 
-				Helper::loginLog('login', $user, 'App'); 
+				$commissionType = config('setting.guardian_commission_type', 'flat');
+				$commissionCharge = config('setting.guardian_commission_charge', 0);
+
+				$user->card_commission_type = $commissionType;
+				$user->card_commission_charge = $commissionCharge;
+
+			Helper::loginLog('login', $user, 'App'); 
 
 				return $this->successResponse('User logged in successfully.', $user);
 			}
