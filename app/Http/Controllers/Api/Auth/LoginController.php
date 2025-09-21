@@ -76,7 +76,7 @@
 				$user->card_commission_type = $commissionType;
 				$user->card_commission_charge = $commissionCharge;
 
-			Helper::loginLog('login', $user, 'App'); 
+				Helper::loginLog('login', $user, 'App'); 
 
 				return $this->successResponse('User logged in successfully.', $user);
 			}
@@ -112,6 +112,11 @@
 				$user->profile_image = $user->profile_image ? url('storage/profile', $user->profile_image) : url('admin/default-profile.png');
 				$user->load('companyDetail'); 
 				$user->token = $token;
+				$commissionType = config('setting.guardian_commission_type', 'flat');
+				$commissionCharge = config('setting.guardian_commission_charge', 0);
+
+				$user->card_commission_type = $commissionType;
+				$user->card_commission_charge = $commissionCharge;
  
 				return $this->successResponse('User details fetched successfully', $user);
 			}
