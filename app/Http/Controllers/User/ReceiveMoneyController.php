@@ -353,9 +353,9 @@ class ReceiveMoneyController extends Controller
 			'month'      => 'required|digits:2|min:1|max:12',
 			'year'       => 'required|digits:4|integer|min:' . date('Y'),
 			'cvv'        => 'required|digits_between:3,4',
-			'amount'     => 'required|numeric|min:1', 
-			'netAmount'     => 'required|numeric|min:1', 
-			'platformCharge'     => 'required|numeric|min:1',
+			'amount'     => 'required|numeric', 
+			'netAmount'     => 'required|numeric', 
+			'platformCharge'     => 'required|numeric',
 		]);
 
 		if ($validator->fails()) {
