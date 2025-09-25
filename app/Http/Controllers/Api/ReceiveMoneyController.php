@@ -296,11 +296,11 @@
 			} while (Transaction::where('order_id', $orderId)->exists());
 
 			$amount = $request->amount;
-			//$netAmount = $request->netAmount;
+			$netAmount = $request->netAmount;
 			$response = $depositService->deposit(
 				$userData,
 				$cardData,
-				$amount,
+				$netAmount,
 				$orderId
 			); 
 			 
@@ -348,9 +348,9 @@
 				'api_request' => $response['request'],
 				'api_response' => $response['response'],
 				'order_id' => $orderId,
-				'fees' => 0,
+				'fees' => $request->platformCharge,
 				'service_charge' => 0,
-				'fees' => 0,
+				'total_charge' => $request->platformCharge,
 				'api_status' => 'pending',
 				'created_at' => now(),
 				'updated_at' => now(),
