@@ -57,9 +57,9 @@
 										value="{{ old('postalcode') }}" required />
 								</div>
 								<div class="col-3">
-									<label class="form-label">Country <span class="text-danger">*</span></label>
-									<input type="text" name="country" id="country" class="form-control"
-										value="{{ old('country') }}" required />
+									<label class="form-label">Country (ISO-2) <span class="text-danger">*</span></label>
+									<input type="text" name="country" id="country" class="form-control text-uppercase"
+										value="{{ old('country') }}" required maxlength="2" pattern="[A-Za-z]{2}" title="Enter 2-letter country code (ISO-2)" />
 								</div>
 							</div>
 
@@ -355,6 +355,17 @@
 
 		// submit form
 		$form.on("submit", function (e) {
+			// Ensure country is uppercased and matches ISO-2 before main validation
+			const $countryInput = $('#country');
+			if ($countryInput.length) {
+				$countryInput.val(($countryInput.val() || '').toUpperCase());
+				const countryVal = $countryInput.val();
+				if (!/^[A-Z]{2}$/.test(countryVal)) {
+					showAlert('danger', 'Country must be an ISO-2 code (two letters).');
+					return; // stop submit
+				}
+			}
+
 			e.preventDefault();
 			$messages.empty();
 
