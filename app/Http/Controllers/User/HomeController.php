@@ -103,7 +103,7 @@ class HomeController extends Controller
 		}
 		else
 		{
-			$mobileNumber = auth()->user()->formatted_number ?? '';
+			$mobileNumber = json_encode(['mobile_number' => auth()->user()->mobile_number ?? '', 'country_id' => auth()->user()->country_id ?? '']);
 			
 			$banners = Banner::where('status', 1)->orderByDesc('id')->get();
 			return view('user.home', compact('banners', 'mobileNumber'));
