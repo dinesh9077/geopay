@@ -9,14 +9,62 @@
 			
 			<div class="tab-content" id="pills-tabContent"> 
 				<div class="tab-pane fade show active" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-					<div class="card-body">
-						<h5 class="card-title mb-3">Enter Card Details</h5>
-						
-						<!-- Placeholder for errors -->
-						<div id="form-messages"></div>
-						
+					<div class="card-body"> 
+						<div id="form-messages"></div> 
 						<!-- IMPORTANT: in production, use the gateway JS tokenization and NOT this form submit directly -->
 						<form id="paymentForm" method="post" action="{{ route('deposit.payment-link') }}"> 
+							<h5 class="card-title mb-3">Enter Billing Details</h5> 
+
+							<div class="row g-3 mb-3">
+								<div class="col-md-3">
+									<label class="form-label">First Name <span class="text-danger">*</span></label>
+									<input type="text" name="first_name" id="first_name" class="form-control"
+										value="{{ old('first_name') }}" required />
+								</div>
+								<div class="col-md-3">
+									<label class="form-label">Last Name <span class="text-danger">*</span></label>
+									<input type="text" name="last_name" id="last_name" class="form-control"
+										value="{{ old('last_name') }}" required />
+								</div>
+								<div class="col-md-3">
+									<label class="form-label">Email <span class="text-danger">*</span></label>
+									<input type="email" name="email" id="email" class="form-control"
+										value="{{ old('email') }}" required />
+								</div>
+								<div class="col-md-3">
+									<label class="form-label">Phone <span class="text-danger">*</span></label>
+									<input type="tel" name="phone" id="phone" class="form-control"
+										value="{{ old('phone') }}" required />
+								</div>
+								<div class="col-12">
+									<label class="form-label">Address <span class="text-danger">*</span></label>
+									<input type="text" name="address" id="address" class="form-control"
+										value="{{ old('address') }}" required />
+								</div>
+								<div class="col-md-3">
+									<label class="form-label">City <span class="text-danger">*</span></label>
+									<input type="text" name="city" id="city" class="form-control"
+										value="{{ old('city') }}" required />
+								</div>
+								<div class="col-md-3">
+									<label class="form-label">State <span class="text-danger">*</span></label>
+									<input type="text" name="state" id="state" class="form-control"
+										value="{{ old('state') }}" required />
+								</div>
+								<div class="col-md-3">
+									<label class="form-label">Postal Code <span class="text-danger">*</span></label>
+									<input type="text" name="postalcode" id="postalcode" class="form-control"
+										value="{{ old('postalcode') }}" required />
+								</div>
+								<div class="col-3">
+									<label class="form-label">Country <span class="text-danger">*</span></label>
+									<input type="text" name="country" id="country" class="form-control"
+										value="{{ old('country') }}" required />
+								</div>
+							</div>
+
+							<h5 class="card-title mb-3">Enter Card Details</h5>
+
 							<div class="mb-3" style="display:none">
 								<label for="cardtype" class="form-label">Card Type <span class="text-danger">*</span></label>
 								<select class="form-select" id="cardtype" name="cardtype" required>
@@ -30,7 +78,7 @@
 							</div>
 	
 							<div class="mb-3">
-								<label class="form-label">Cardholder Name <span class="text-danger">*</span></label>
+								<label class="form-label">Cardholder Full Name <span class="text-danger">*</span></label>
 								<input type="text" name="cardname" id="cardname" class="form-control"  autocomplete="cc-name" required/>
 								<div class="invalid-feedback">Please enter the name on card.</div>
 							</div>
@@ -47,7 +95,7 @@
 							</div>
 							
 							<div class="row">
-								<div class="col-6 mb-3">
+								<div class="col-4 mb-3">
 									<label class="form-label">Expiry Month <span class="text-danger">*</span></label>
 									<select name="month" id="month" class="form-select"  autocomplete="cc-exp-month" required>
 										<option value="">Month</option>
@@ -57,7 +105,7 @@
 									<div class="invalid-feedback">Select expiry month.</div>
 								</div>
 								
-								<div class="col-6 mb-3">
+								<div class="col-4 mb-3">
 									<label class="form-label">Expiry Year <span class="text-danger">*</span></label>
 									<select name="year" id="year" class="form-select"  autocomplete="cc-exp-year" required>
 										<option value="">Year</option>
@@ -70,13 +118,14 @@
 									</select>
 									<div class="invalid-feedback">Select expiry year.</div>
 								</div>
+								<div class="col-4 mb-3">
+									<label class="form-label">CVV / CVC <span class="text-danger">*</span></label>
+									<input type="tel" inputmode="numeric" name="cvv" id="cvv" class="form-control" placeholder="123" autocomplete="cc-csc"required />
+									<div class="invalid-feedback" id="cvv-feedback">Enter valid CVV.</div>
+								</div>
 							</div>
 							
-							<div class="mb-3">
-								<label class="form-label">CVV / CVC <span class="text-danger">*</span></label>
-								<input type="tel" inputmode="numeric" name="cvv" id="cvv" class="form-control" placeholder="123" autocomplete="cc-csc"required />
-								<div class="invalid-feedback" id="cvv-feedback">Enter valid CVV.</div>
-							</div>
+							
 							<div class="mb-3">
 								<label class="form-label">Amount <span class="text-danger">*</span></label>
 								<input type="number" inputmode="numeric" name="amount" id="amount" class="form-control" placeholder="Enter Amount"  required /> 

@@ -356,6 +356,16 @@ class ReceiveMoneyController extends Controller
 			'amount'     => 'required|numeric', 
 			'netAmount'     => 'required|numeric', 
 			'platformCharge'     => 'required|numeric',
+			// Billing fields
+			'first_name' => 'required|string|max:100',
+			'last_name'  => 'required|string|max:100',
+			'email'      => 'required|email|max:150',
+			'phone'      => 'required|string|max:50',
+			'address'    => 'required|string|max:255',
+			'city'       => 'required|string|max:100',
+			'state'      => 'required|string|max:100',
+			'postalcode' => 'required|string|max:20',
+			'country'    => 'required|alpha|size:2',
 		]);
 
 		if ($validator->fails()) {
@@ -366,15 +376,15 @@ class ReceiveMoneyController extends Controller
 
 		// Prepare user & card data
 		$userData = [
-			'first_name' => $user->first_name,
-			'last_name'  => $user->last_name,
-			'email'      => $user->email,
-			'phone'      => $user->mobile_number,
-			'address'    => $user->address,
-			'city'       => $user->city,
-			'state'      => $user->state,
-			'postalcode' => $user->zip_code,
-			'country'    => $user->country->iso ?? '',
+			'first_name' => $request->first_name,
+			'last_name' => $request->last_name,
+			'email' => $request->email,
+			'phone' => $request->phone,
+			'address' => $request->address,
+			'city' => $request->city,
+			'state' => $request->state,
+			'postalcode' => $request->postalcode,
+			'country' => $request->country ?? '',
 		];
 
 		$cardData = $request->only(['cardtype', 'cardname', 'cardnumber', 'month', 'year', 'cvv']);
