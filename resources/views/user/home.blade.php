@@ -97,7 +97,7 @@
 					<div class="col-lg-4 order-1 order-lg-2">
 						<div class="border text-center d-flex flex-column qr-container p-4 h-100 ms-lg-3">
 							<span class="content-3">To Pay {{ auth()->user()->first_name. ' ' .auth()->user()->last_name}}</span>
-							<span class="content-3 opacity-75">Share your GEOPAY QR Code to receive payments</span> 
+							<span class="content-3 opacity-75">Scan This QR Code</span> 
 							<div class="img-fluid p-2 qr-code">
 							<!-- {!! QrCode::size(300)->generate($mobileNumber) !!} -->
 								{!! QrCode::generate($mobileNumber) !!}
