@@ -120,8 +120,7 @@
 				.done(function (res) {
 					if (res.status === "error") {
 						Swal.fire({
-							icon: 'error',
-							title: 'Error',
+							icon: 'warning', 
 							text: res.message || 'Something went wrong while fetching beneficiary details.',
 							showCancelButton: true,
 							confirmButtonText: 'OK',
