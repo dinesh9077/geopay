@@ -331,15 +331,15 @@ class TransferBankController extends Controller
 
 		// Call the service API
 		$response = $this->liquidNetService->serviceApi('post', '/GetFieldInfo', $timestamp, $body);
-		
+		 
 		// Handle unsuccessful commit response
 		if (!$response['success']) {
-			return $this->successResponse('Error loading fields. Please try again.');
+			return ['status' => 'error' , 'msg' => 'Your bank is not in the list. Please add a new beneficiary.'];
 		}
 		
 		// Handle unsuccessful commit response
 		if (($response['response']['code'] ?? 1) != 0) {
-			return $this->successResponse('Error loading fields. Please try again.');
+			return ['status' => 'error', 'msg' => 'Your bank is not in the list. Please add a new beneficiary.'];
 		}
 			
 		// Process bank list  
@@ -397,6 +397,7 @@ class TransferBankController extends Controller
 	
 	public function transferToBankBeneficiaryEdit($id)
 	{
+		$retry = request('retry') ?? false;
 		$countries = $this->countries()->toArray(); 
 		$beneficiary = Beneficiary::find($id);
 		$edit = $beneficiary->data;
@@ -414,13 +415,23 @@ class TransferBankController extends Controller
 			$response = $this->liquidNetService->serviceApi('post', '/GetAgentList', $timestamp, $body); 
 			$banks = $response['response']['locationDetail'] ?? [];
 			
-			$fieldView = $this->getLightnetFieldView($edit['payoutCountry'], $edit['payoutCurrency'], $edit['bankId'], $edit['mobile_code'] ?? null, $edit); 
+			$fieldView = $this->getLightnetFieldView($edit['payoutCountry'], $edit['payoutCurrency'], $edit['bankId'], $edit['mobile_code'] ?? null, $edit);
+		
+			if ($retry == "true") { 
+				$fieldView = "";
+			}else{ 
+				if(is_array($fieldView) && $fieldView['status'] === "error")
+				{
+					return $this->errorResponse($fieldView['msg']);
+				} 
+			}  
 		}
 		else
 		{
 			$banks = $this->onafricService->getOnafricBank(['payoutIso' => $edit['payoutIso'] ?? '', 'bankId' => $edit['bankId'] ?? '']);
 			$fieldView = $this->getOnafricFieldView($edit['payoutCountry'], $edit['payoutCurrency'], $edit['bankId'], $edit['mobile_code'] ?? null, $edit); 
 		}
+
 		 
 		$view = view('user.transaction.transfer-bank.edit-transfer-bank-beneficiary', compact('countries', 'beneficiary', 'edit', 'banks', 'fieldView'))->render();
 		return $this->successResponse('success', ['view' => $view]);	

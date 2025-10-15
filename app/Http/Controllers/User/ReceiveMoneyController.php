@@ -340,8 +340,8 @@ class ReceiveMoneyController extends Controller
 		$commissionType = config('setting.guardian_commission_type', 'flat');
 		$commissionCharge = config('setting.guardian_commission_charge', 0);
 		$remitCurrency = config('setting.default_currency', 'USD');
-		
-		return view('user.transaction.add-money.deposit-payment', compact('commissionType', 'commissionCharge', 'remitCurrency'));
+		$countries = Country::all();
+		return view('user.transaction.add-money.deposit-payment', compact('commissionType', 'commissionCharge', 'remitCurrency', 'countries'));
 	}
 	
 	public function depositPaymentLink(Request $request, DepositPaymentService $depositService)

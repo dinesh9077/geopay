@@ -104,24 +104,78 @@
 		</div>
 	</div>   
 	<script>
-		function editBeneficiary(obj, event)
-		{ 
+		function editBeneficiary(obj, event, retry = false) {
 			event.preventDefault();
-			var beneficiaryId = $(obj).data('beneficiary-id');
-			if (!modalOpen)
-			{
-				modalOpen = true;
-				closemodal(); 
-				run_waitMe($('#confirmBeneficiaryModal'), 1, 'facebook');
-				$.get("{{ url('transfer-to-bank/beneficiary-edit') }}/"+beneficiaryId, function(res)
-				{
-					const result = decryptData(res.response);
-					$('body').find('#modal-view-render').html(result.view);
-					$('#editTransferBankBeneficiary').modal('show');  
-					$('#confirmBeneficiaryModal').waitMe('hide');
+
+			const beneficiaryId = $(obj).data('beneficiary-id');
+			const $modal = $('#confirmBeneficiaryModal');
+
+			if (modalOpen) return; // prevent double opens
+			modalOpen = true;
+
+			closemodal();
+			run_waitMe($modal, 1, 'facebook');
+
+			$.get("{{ url('transfer-to-bank/beneficiary-edit') }}/" + beneficiaryId + '?retry=' + retry)
+				.done(function (res) {
+					if (res.status === "error") {
+						Swal.fire({
+							icon: 'error',
+							title: 'Error',
+							text: res.message || 'Something went wrong while fetching beneficiary details.',
+							showCancelButton: true,
+							confirmButtonText: 'OK',
+							cancelButtonText: 'Cancel',
+							reverseButtons: true
+						}).then(result => {
+							if (result.isConfirmed && !retry) {
+								editBeneficiary(obj, event, true);
+							}
+						});
+					} else {
+						try {
+							const result = decryptData(res.response);
+							$('#modal-view-render').html(result.view);
+							$('#editTransferBankBeneficiary').modal('show');
+						} catch (e) {
+							Swal.fire({
+								icon: 'error',
+								title: 'Decryption Error',
+								text: 'Unable to process beneficiary data. Please try again.',
+								showCancelButton: true,
+								confirmButtonText: 'OK',
+								cancelButtonText: 'Cancel',
+								reverseButtons: true
+							}).then(result => {
+								if (result.isConfirmed && !retry) {
+									editBeneficiary(obj, event, true);
+								}
+							});
+						}
+					}
+				})
+				.fail(function (xhr, status, error) {
+					Swal.fire({
+						icon: 'error',
+						title: 'Request Failed',
+						text: 'Network or server error: ' + (error || 'Unknown error'),
+						showCancelButton: true,
+						confirmButtonText: 'OK',
+						cancelButtonText: 'Cancel',
+						reverseButtons: true
+					}).then(result => {
+						if (result.isConfirmed && !retry) {
+							editBeneficiary(obj, event, true);
+						}
+					});
+				})
+				.always(function () {
+					modalOpen = false;
+					$modal.waitMe('hide');
 				});
-			} 
 		}
+
+
 		
 		function confirmRecipientBeneficiery()
 		{ 

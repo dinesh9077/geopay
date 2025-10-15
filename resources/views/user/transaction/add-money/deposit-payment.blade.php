@@ -57,9 +57,13 @@
 										value="{{ old('postalcode') }}" required />
 								</div>
 								<div class="col-3">
-									<label class="form-label">Country (ISO-2) <span class="text-danger">*</span></label>
-									<input type="text" name="country" id="country" class="form-control text-uppercase"
-										value="{{ old('country') }}" required maxlength="2" pattern="[A-Za-z]{2}" title="Enter 2-letter country code (ISO-2)" />
+									<label class="form-label">Country (ISO-2) <span class="text-danger">*</span></label> 
+									<select class="form-select select2" id="country" name="country" required>
+										<option value="">Select Country (ISO-2)</option>
+											@foreach($countries as $country)
+												<option value="{{ $country->iso }}">{{ $country->iso }} - {{ $country->nicename }}</option>
+											@endforeach
+									</select> 
 								</div>
 							</div>
 
@@ -155,6 +159,8 @@
 	const commissionCharge = parseFloat(@json($commissionCharge)); // ✅ ensure numeric
 	const remitCurrency = @json($remitCurrency);
 
+	$('.select2').select2();
+	
 	$('#paymentForm #amount').on('input', function() {  
 		const amount = parseFloat($(this).val()) || 0;
 		let commissionAmount = 0;
