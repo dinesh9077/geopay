@@ -6,11 +6,11 @@
         <!-- Filter Row -->
 		@if (config('permission.live_exchange_rate.add'))
         <div class="row g-2"> 
-            <div class=" col-md-3 col-lg-1">
-                <select class="form-control default-input content-3 select2" name="channel" id="channel">  
-					<option value="lightnet">Lightnet</option> 
-					<option value="onafric">Onafric</option> 
-					<option value="onafric mobile collection">onafric mobile collection</option> 
+            <div class=" col-md-3 col-lg-2">
+                <select class="form-control select2" name="channel" id="channel">  
+					<option value="lightnet">Lightnet (Pay Service)</option> 
+					<option value="onafric">Onafric (Pay Service)</option> 
+					<option value="onafric mobile collection">onafric (Add Service)</option> 
                 </select>
             </div> 
 			 

@@ -203,7 +203,7 @@
                         aria-expanded="{{ collect($allTransactions)->contains(fn($item) => request()->routeIs($item['route'])) ? 'true' : 'false' }}"
                         aria-controls="reports">
                         <i class="link-icon" data-feather="credit-card"></i>
-                        <span class="link-title">All Transaction</span>
+                        <span class="link-title">All Transaction (Pay)</span>
                         <i class="link-arrow" data-feather="chevron-down"></i>
                     </a>
                     <div class="collapse {{ collect($allTransactions)->contains(fn($item) => request()->routeIs($item['route'])) ? 'show' : '' }}"

@@ -54,7 +54,8 @@ class TransferMobileController extends Controller
 	 
 	public function transferToMobileBeneficiary()
 	{  
-		$countries = $this->onafricService->country(); 
+		$countries = $this->onafricService->country();
+		 
 		$view = view('user.transaction.transfer-mobile.transfer-mobile-beneficiary', compact('countries'))->render();
 		return $this->successResponse('success', ['view' => $view]);
 	}

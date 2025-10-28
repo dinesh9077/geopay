@@ -36,21 +36,28 @@
 					<a class="nav-link {{ $firstTab == 'metamap_setting' ? 'active' : '' }}" id="metamap-line-tab" data-bs-toggle="tab" href="#line-metamap" role="tab" aria-controls="line-metamap" aria-selected="true">Meta Map</a>
 				</li>
 			@endif
-			@if (config("permission.smtp_mail_setting.view"))
-				<li class="nav-item">
-					<a class="nav-link {{ $firstTab == 'smtp_mail_setting' ? 'active' : '' }}" id="smtpmail-line-tab" data-bs-toggle="tab" href="#line-smtpmail" role="tab" aria-controls="line-smtpmail" aria-selected="false">SMTP Mail</a>
-				</li> 
-			@endif
+			
 			@if (config("permission.smsplus_setting.view"))
 				<li class="nav-item {{ $firstTab == 'smsplus_setting' ? 'active' : '' }}">
 					<a class="nav-link" id="smsplus-line-tab" data-bs-toggle="tab" href="#line-smsplus" role="tab" aria-controls="line-smsplus" aria-selected="false">SMS Plus</a>
 				</li> 
 			@endif
+			
+			@if (config("permission.smtp_mail_setting.view"))
+				<li class="nav-item">
+					<a class="nav-link {{ $firstTab == 'smtp_mail_setting' ? 'active' : '' }}" id="smtpmail-line-tab" data-bs-toggle="tab" href="#line-smtpmail" role="tab" aria-controls="line-smtpmail" aria-selected="false">SMTP Mail</a>
+				</li> 
+			@endif 
+
 			@if (config("permission.onafric_mobile_collection_setting.view"))
 				<li class="nav-item">
 					<a class="nav-link {{ $firstTab == 'onafric_mobile_collection_setting' ? 'active' : '' }}" id="onafriq-line-tab" data-bs-toggle="tab" href="#line-onafriq-mobile-collection" role="tab" aria-controls="line-onafriq" aria-selected="false">Onafric - Mobile Money - Add Service</a>
 				</li> 
 			@endif
+
+			<li class="nav-item">
+				<a class="nav-link {{ $firstTab == 'guardian_payment_gateway' ? 'active' : '' }}" id="guardian-line-tab" data-bs-toggle="tab" href="#line-guardian-gateway" role="tab" aria-controls="line-guardian" aria-selected="false">Guardian PG (Add Service)</a>
+			</li> 
 			
 			@if (config("permission.onafric_mobile_setting.view"))
 				<li class="nav-item">
@@ -74,11 +81,7 @@
 				<li class="nav-item">
 					<a class="nav-link {{ $firstTab == 'onafric_bank_setting' ? 'active' : '' }}" id="onafriq-line-tab" data-bs-toggle="tab" href="#line-onafriq-bank" role="tab" aria-controls="line-onafriq" aria-selected="false">Onafric - Transfer To Bank - Pay Service</a>
 				</li> 
-			@endif 
-			
-			<li class="nav-item">
-				<a class="nav-link {{ $firstTab == 'guardian_payment_gateway' ? 'active' : '' }}" id="guardian-line-tab" data-bs-toggle="tab" href="#line-guardian-gateway" role="tab" aria-controls="line-guardian" aria-selected="false">Guardian PG (Add Service)</a>
-			</li> 
+			@endif   
 			 
 		</ul>
 		<div class="tab-content mt-3" id="lineTabContent">

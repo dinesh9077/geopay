@@ -129,9 +129,23 @@ class TransactionController extends Controller
             $i = $start + 1;
             foreach ($values as $value) {
 
+                $user = $value->user;
+
+                if ($user) {
+                    if ($user->is_company) {
+                        $url = url("admin/companies/edit", $user->id).'?platform_name='. $value->platform_name;
+                    } else {
+                        $url = url("admin/user/edit", $user->id) . '?platform_name=' . $value->platform_name;
+                    }
+
+                    $userName = "<a href='{$url}' target='_blank'>" . e($user->first_name ?? 'N/A') . "</a>";
+                } else {
+                    $userName = 'N/A';
+                }
+
                 $data[] = [
                     'id' => $i,
-                    'user_name' => $value->user->first_name,
+                    'user_name' => $userName,
                     'order_id' => $value->order_id,
                     'transaction_type' => '<span class="text-' . ($value->transaction_type == 'debit' ? 'danger' : 'success') . '">' . e($value->transaction_type) . '</span>', 
 					'txn_amount' => '<span class="text-' . ($value->transaction_type == 'debit' ? 'danger' : 'success') . '">' . Helper::decimalsprint($value->txn_amount, 2) . ' ' . (config('setting.default_currency') ?? '') . '</span>',  

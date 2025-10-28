@@ -46,8 +46,15 @@ class ReportController extends Controller
             if ($request->filled('platform_name')) {
                 $query->where('platform_name', $request->platform_name);
             }
+
             if ($request->filled('user_id')) {
                 $query->where('user_id', $request->user_id);
+			}
+ 
+            if ($request->filled('is_company')) {
+                $query->whereHas('user', function ($q) use ($request) {
+                    $q->where('is_company', $request->is_company);
+                });
 			}
 
             if ($request->filled(['start_date', 'end_date'])) {
@@ -89,10 +96,23 @@ class ReportController extends Controller
             $data = [];
             $i = $start + 1;
             foreach ($values as $value) {
+                $user = $value->user;
+
+                if ($user) {
+                    if ($user->is_company) {
+                        $url = url("admin/companies/edit", $user->id).'?platform_name='. $value->platform_name;
+                    } else {
+                        $url = url("admin/user/edit", $user->id) . '?platform_name=' . $value->platform_name;
+                    }
+
+                    $userName = "<a href='{$url}' target='_blank'>" . e($user->first_name ?? 'N/A') . "</a>";
+                } else {
+                    $userName = 'N/A';
+                }
 
                 $data[] = [
                     'id' => $i,
-                    'user_name' => $value->user->first_name ?? 'N/A',
+                    'user_name' => $userName,
                     'platform_name' => $value->platform_name,
                     'platform_provider' => $value->platform_provider,
                     'order_id' => $value->order_id,

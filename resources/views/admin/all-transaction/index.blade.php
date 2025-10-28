@@ -3,7 +3,7 @@
 @section('header_title', $title)
 @section('content')
     <style>
-        .swal2-image.custom-image-class {
+        .swal2-image.custom-image-class {
             position: absolute;
             top: -10px;
             right: 10px;
@@ -15,7 +15,7 @@
 
             <div class=" col-md-3 col-lg-1">
                 <select id="userDropdown" name="user_id" class="form-control content-3 select2">
-                    <option value="">All</option>
+                    <option value="">All User</option>
                     @foreach ($users as $user)
                         <option value="{{ $user->id }}">
                             {{ $user->first_name }}  {{ $user->last_name }}
@@ -34,7 +34,7 @@
             </div>
             <div class=" col-md-3 col-lg-1">
                 <select class="form-control default-input content-3 select2" name="txn_status" id="txn_status">
-                    <option value="">ALL</option>
+                    <option value="">ALL Status</option>
                     @foreach($txnStatuses as $txnStatus)
 						<option value="{{ $txnStatus }}">{{ $txnStatus }}</option>
 					@endforeach

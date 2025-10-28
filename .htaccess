@@ -17,10 +17,5 @@
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-	
-	# Deny access to the .env file
-    <FilesMatch "\.env$">
-        Order Allow,Deny
-        Deny from all
-    </FilesMatch>
+	 
 </IfModule>

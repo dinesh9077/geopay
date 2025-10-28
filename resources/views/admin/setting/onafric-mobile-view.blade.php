@@ -34,11 +34,18 @@
 											<label class="form-label">Charge</label>
 											<input type="number" class="form-control" name="commission_charge[{{ $onafricCuntry->id }}][]" value="{{ $channel->commission_charge }}" required>
 										</div> 
-										<div class="col-md-4 d-flex align-items-end gap-3">
+										<div class="col-md-2">
+											<label class="form-label">Channel Status</label>
+											<select class="form-control" name="channel_status[{{ $onafricCuntry->id }}][]" required>
+												<option value="1" {{ $channel->status == 1 ? 'selected' : '' }}>Active</option>
+												<option value="0" {{ $channel->status == 0 ? 'selected' : '' }}>In-Active</option>
+											</select>
+										</div>
+										<div class="col-md-2 d-flex align-items-end gap-3">
 											@if($key == 0)
 												<button type="button" class="btn btn-primary" data-country-id="{{ $onafricCuntry->id }}" onclick="addChannel(this, event)">Add Channel</button> 
 											@else
-												<button type="button" class="btn btn-danger " data-country-id="{{ $onafricCuntry->id }}" onclick="removeChannel(this, event)">Remove Channel</button> 
+												{{-- <button type="button" class="btn btn-danger " data-country-id="{{ $onafricCuntry->id }}" onclick="removeChannel(this, event)">Remove Channel</button>  --}}
 											@endif
 										</div>
 									</div>
@@ -67,7 +74,14 @@
 										<label class="form-label">Charge</label>
 										<input type="number" class="form-control" name="commission_charge[{{ $onafricCuntry->id }}][]" value="0" required>
 									</div>
-									<div class="col-md-4 d-flex align-items-end gap-3">
+									<div class="col-md-2">
+										<label class="form-label">Channel Status</label>
+										<select class="form-control" name="channel_status[{{ $onafricCuntry->id }}][]" required>
+											<option value="1">Active</option>
+											<option value="0">In-Active</option>
+										</select>
+									</div>
+									<div class="col-md-2 d-flex align-items-end gap-3">
 										<button type="button" class="btn btn-primary" data-country-id="{{ $onafricCuntry->id }}" onclick="addChannel(this, event)">Add Channel</button> 
 									</div>
 								</div>
@@ -78,9 +92,9 @@
 			@endforeach 
 		</div>
 		@if (config("permission.onafric_mobile_setting.edit"))
-		<div class="d-flex justify-content-end">
-			<button type="submit" class="btn btn-success">Save</button>
-		</div>
+			<div class="d-flex justify-content-end">
+				<button type="submit" class="btn btn-success">Save</button>
+			</div>
 		@endif
 	</form>
 	<script> 
@@ -111,7 +125,14 @@
 						<label class="form-label">Charge</label>
 						<input type="number" class="form-control" name="commission_charge[${countryId}][]" value="0" required>
 					</div>
-					<div class="col-md-4 d-flex align-items-end gap-3">
+					<div class="col-md-2">
+						<label class="form-label">Channel Status</label>
+						<select class="form-control" name="channel_status[${countryId}][]" required>
+							<option value="1">Active</option>
+							<option value="0">In-Active</option>
+						</select>
+					</div>
+					<div class="col-md-2 d-flex align-items-end gap-3">
 						<button type="button" class="btn btn-danger" data-country-id="${countryId}" onclick="removeChannel(this, event)">Remove Channel</button> 
 					</div>
 				</div>

@@ -89,6 +89,14 @@
 								<small class="text-muted">Verification Status</small>
 								<h6>{{ $company->userKyc->verification_status ?? 'N/A' }}</h6>
 							</div>
+
+							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0 px-0"> 
+								<h6>
+									<a style="text-decoration:underline" target="_blank" href="https://dashboard.metamap.com/identity/{{ $company->userKyc->identification_id }}/verification/{{ $company->userKyc->verification_id }}" target="_blank">
+										Meta Verification Link
+									</a>
+								</h6>
+							</div> 
 							
 							<div class="list-group-item d-flex justify-content-between flex-column flex-wrap border-0 px-0">
 								<small class="text-muted">Identification ID</small>
@@ -156,31 +164,132 @@
 		</div>
 	</div>
 	<div class="col-xl-9 col-lg-7 col-md-7">
+		@php
+			$activePlatform = request('platform_name');
+		@endphp
+
 		<ul class="nav nav-tabs" id="infoTabs" role="tablist">
+			{{-- Information Tab --}}
 			<li class="nav-item" role="presentation">
-				<button class="nav-link active" id="information-tab" data-bs-toggle="tab" data-bs-target="#information" type="button" role="tab" aria-controls="information" aria-selected="true"> Information </button>
+				<button 
+					class="nav-link {{ $activePlatform ? '' : 'active' }}" 
+					id="information-tab" 
+					data-bs-toggle="tab" 
+					data-bs-target="#tab-information" 
+					type="button" 
+					role="tab" 
+					aria-controls="tab-information" 
+					aria-selected="{{ $activePlatform ? 'false' : 'true' }}"
+				>
+					Information
+				</button>
 			</li>
+
+			{{-- Add Money --}}
 			<li class="nav-item" role="presentation">
-				<button class="nav-link" id="airtime-tab" data-bs-toggle="tab" data-bs-target="#airtime" data-platform="international airtime" type="button" role="tab" aria-controls="airtime" aria-selected="true"> International Airtime </button>
-			</li> 
-			<li class="nav-item" role="presentation">
-				<button class="nav-link" id="geopay-tab" data-bs-toggle="tab" data-bs-target="#geopay-tab" data-platform="add money" type="button" role="tab" aria-controls="geopay-tab" aria-selected="true">Add Money </button>
+				<button 
+					class="nav-link {{ $activePlatform === 'add money' ? 'active' : '' }}" 
+					id="add-money-tab" 
+					data-bs-toggle="tab" 
+					data-bs-target="#tab-transaction" 
+					data-platform="add money" 
+					type="button" 
+					role="tab" 
+					aria-controls="tab-transaction" 
+					aria-selected="{{ $activePlatform === 'add money' ? 'true' : 'false' }}"
+				>
+					Add Money (Add Service)
+				</button>
 			</li>
+
+			{{-- Transfer to Bank --}}
 			<li class="nav-item" role="presentation">
-				<button class="nav-link" id="geopay-tab" data-bs-toggle="tab" data-bs-target="#geopay-tab" data-platform="geopay to geopay wallet" type="button" role="tab" aria-controls="geopay-tab" aria-selected="true"> Geopay To Geopay Wallet </button>
+				<button 
+					class="nav-link {{ $activePlatform === 'transfer to bank' ? 'active' : '' }}" 
+					id="transfer-to-bank-tab" 
+					data-bs-toggle="tab" 
+					data-bs-target="#tab-transaction" 
+					data-platform="transfer to bank" 
+					type="button" 
+					role="tab"
+					aria-controls="tab-transaction" 
+					aria-selected="{{ $activePlatform === 'transfer to bank' ? 'true' : 'false' }}"
+				>
+					Transfer To Bank (Pay Service)
+				</button>
 			</li>
+
+			{{-- Transfer to Mobile --}}
 			<li class="nav-item" role="presentation">
-				<button class="nav-link" id="admin-transfer-tab" data-bs-toggle="tab" data-bs-target="#admin-transfer-tab" data-platform="admin transfer" type="button" role="tab" aria-controls="admin-transfer-tab" aria-selected="true"> Admin Transfer </button>
+				<button 
+					class="nav-link {{ $activePlatform === 'transfer to mobile' ? 'active' : '' }}" 
+					id="transfer-to-mobile-tab" 
+					data-bs-toggle="tab" 
+					data-bs-target="#tab-transaction" 
+					data-platform="transfer to mobile" 
+					type="button" 
+					role="tab"
+					aria-controls="tab-transaction" 
+					aria-selected="{{ $activePlatform === 'transfer to mobile' ? 'true' : 'false' }}"
+				>
+					Transfer To Mobile (Pay Service)
+				</button>
 			</li>
+
+			{{-- International Airtime --}}
 			<li class="nav-item" role="presentation">
-				<button class="nav-link" id="transfer-to-bank-tab" data-bs-toggle="tab" data-bs-target="#transfer-to-bank-tab" data-platform="transfer to bank" type="button" role="tab" aria-controls="transfer-to-bank-tab" aria-selected="true"> Transfer To Bank </button>
-			</li> 
+				<button 
+					class="nav-link {{ $activePlatform === 'international airtime' ? 'active' : '' }}" 
+					id="airtime-tab" 
+					data-bs-toggle="tab" 
+					data-bs-target="#tab-transaction" 
+					data-platform="international airtime" 
+					type="button" 
+					role="tab" 
+					aria-controls="tab-transaction" 
+					aria-selected="{{ $activePlatform === 'international airtime' ? 'true' : 'false' }}"
+				>
+					International Airtime
+				</button>
+			</li>
+
+			{{-- Geopay to Geopay Wallet --}}
 			<li class="nav-item" role="presentation">
-				<button class="nav-link" id="transfer-to-mobile-tab" data-bs-toggle="tab" data-bs-target="#transfer-to-mobile-tab" data-platform="transfer to mobile" type="button" role="tab" aria-controls="transfer-to-mobile-tab" aria-selected="true"> Transfer To Mobile </button>
-			</li> 
+				<button 
+					class="nav-link {{ $activePlatform === 'geopay to geopay wallet' ? 'active' : '' }}" 
+					id="geopay-wallet-tab" 
+					data-bs-toggle="tab" 
+					data-bs-target="#tab-transaction" 
+					data-platform="geopay to geopay wallet" 
+					type="button" 
+					role="tab" 
+					aria-controls="tab-transaction" 
+					aria-selected="{{ $activePlatform === 'geopay to geopay wallet' ? 'true' : 'false' }}"
+				>
+					Geopay To Geopay Wallet
+				</button>
+			</li>
+
+			{{-- Admin Transfer --}}
+			<li class="nav-item" role="presentation">
+				<button 
+					class="nav-link {{ $activePlatform === 'admin transfer' ? 'active' : '' }}" 
+					id="admin-transfer-tab" 
+					data-bs-toggle="tab" 
+					data-bs-target="#tab-transaction" 
+					data-platform="admin transfer" 
+					type="button" 
+					role="tab" 
+					aria-controls="tab-transaction" 
+					aria-selected="{{ $activePlatform === 'admin transfer' ? 'true' : 'false' }}"
+				>
+					Admin Transfer
+				</button>
+			</li>
 		</ul>
+
 		
-		<div class="card dynemic-tab" id="transaction" style="display:none;">
+		<div class="card dynemic-tab mt-2 " id="transaction" style="display:{{ $activePlatform ? '' : 'none' }}">
 			<div class="card-header">
 				<h5 class="card-title mb-0" id="transactionType">Transaction List</h5>
 			</div>
@@ -250,7 +359,7 @@
 			</div>
 		</div>
 		
-		<div class="card dynemic-tab" id="informations">
+		<div class="card dynemic-tab mt-2" id="informations" style="display:{{ $activePlatform ? 'none' : '' }}">
 			<div class="card-header">
 				<h5 class="card-title mb-0">Information of {{ $company->first_name . ' ' . $company->last_name }}</h5>
 			</div>
@@ -595,7 +704,8 @@
 	}
 	
 	$(document).ready(function() { 
-		var platformName = "";
+		var platformName = @json($activePlatform ?? '');
+
 		var companyId = "{{ $company->id }}";
  
 		// Initialize DataTable
@@ -672,7 +782,7 @@
 		});
 		  
 		// Handle tab clicks
-		$('#airtime-tab, #geopay-tab, #admin-transfer-tab, #transfer-to-bank-tab, #transfer-to-mobile-tab').off('click').on('click', function() {
+		$('#airtime-tab, #geopay-wallet-tab, #add-money-tab, #admin-transfer-tab, #transfer-to-bank-tab, #transfer-to-mobile-tab').off('click').on('click', function() {
 			platformName = $(this).data('platform') || $(this).val(); 
 			$('#transactionType').text(platformName ? platformName.toUpperCase() + ' Transaction' : 'Transaction')
 			transactionTable.draw();

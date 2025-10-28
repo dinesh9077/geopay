@@ -3,7 +3,7 @@
 @section('header_title', 'Transaction Report')
 @section('content')
     <style>
-        .swal2-image.custom-image-class {
+        .swal2-image.custom-image-class {
             position: absolute;
             top: -10px;
             right: 10px;
@@ -12,13 +12,21 @@
     <div class="container-fluid p-0">
         <!-- Filter Row -->
         <div class="row g-2">
+            
+            <div class=" col-md-3 col-lg-2">
+                <select id="is_company" name="is_company" class="form-control content-3 select2">
+                    <option value="">All User/Company</option>
+                    <option value="0">User</option>
+                    <option value="1">Company</option>
+                </select>
+            </div>
 
-            <div class=" col-md-3 col-lg-1">
+            <div class=" col-md-3 col-lg-2">
                 <select id="userDropdown" name="user_id" class="form-control content-3 select2">
-                    <option value="">All</option>
+                    <option value="">All User</option>
                     @foreach ($users as $user)
                         <option value="{{ $user->id }}">
-                            {{ $user->first_name }}  {{ $user->last_name }}
+                            {{ $user->first_name }}  {{ $user->last_name }} {{ $user->is_company == 1 ? '- Company' : '' }}
                         </option>
                     @endforeach
                 </select>
@@ -26,13 +34,13 @@
 
             <div class=" col-md-3 col-lg-2">
                 <select class="form-control default-input content-3 select2" name="platform_name" id="platform_name">
-                    <option value="">ALL</option>
-                    <option value="international airtime">International Airtime</option>
-                    <option value="add money">Add Money</option>
+                    <option value="">All Service</option> 
+                    <option value="add money">Add Money (Add service)</option>
+                    <option value="transfer to bank">transfer to bank  (Pay service)</option>
+                    <option value="transfer to mobile">transfer to mobile  (Pay service)</option>
+                     <option value="international airtime">International Airtime</option>
                     <option value="geopay to geopay wallet">Geopay To Geopay Wallet</option>
-                    <option value="admin transfer">Admin Transfer</option>
-                    <option value="transfer to bank">transfer to bank</option>
-                    <option value="transfer to mobile">transfer to mobile</option>
+                    <option value="admin transfer">Admin Transfer</option> 
                 </select>
             </div>
             <div class=" col-md-3 col-lg-2">
@@ -45,7 +53,7 @@
             </div>
             <div class=" col-md-3 col-lg-1">
                 <select class="form-control default-input content-3 select2" name="txn_status" id="txn_status">
-                    <option value="">ALL</option>
+                    <option value="">All Status</option>
                     @foreach($txnStatuses as $txnStatus)
 						<option value="{{ $txnStatus }}">{{ $txnStatus }}</option>
 					@endforeach
@@ -184,6 +192,7 @@
                         d.txn_status = $('#txn_status').val();
                         d.search = $('#search').val();
                         d.user_id = $('#userDropdown').val();
+                        d.is_company = $('#is_company').val();
                     }
                 },
                 "columns": [{

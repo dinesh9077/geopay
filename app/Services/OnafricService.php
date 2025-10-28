@@ -81,8 +81,14 @@ class OnafricService
 	public function country()
 	{
 		$africanCountries = $this->availableCountry();
-		$countries = Country::with('channels')
-		->whereHas('channels')
+		$countries = Country::with([
+			'channels' => function ($q) {
+				$q->where('status', 1);
+			}
+		])
+		->whereHas('channels', function ($q) {
+			$q->where('status', 1);
+		})
 		->whereIn('nicename', $africanCountries)
 		->get(); 
 		

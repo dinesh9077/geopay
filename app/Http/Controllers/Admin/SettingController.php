@@ -399,7 +399,7 @@
 		public function thirdPartyKeyOnafricMobileUpdate(Request $request)
 		{
 			DB::beginTransaction();
-			
+			 
 			try {
 				$insertData = [];
 				$updateData = [];
@@ -418,6 +418,7 @@
 						$commissionType = $request->input('commission_type')[$countryId][$index] ?? 'flat';
 						$commissionCharge = $request->input('commission_charge')[$countryId][$index] ?? 0;
 						$channelId = $request->input('channel_id')[$countryId][$index] ?? null;
+						$channelStatus = $request->input('channel_status')[$countryId][$index] ?? null;
 
 						// Prepare the channel data
 						$channelData = [
@@ -426,7 +427,7 @@
 							'fees' => $fees,
 							'commission_type' => $commissionType,
 							'commission_charge' => $commissionCharge,
-							'status' => 1,  // Set as active
+							'status' => $channelStatus,  // Set as active
 							'updated_at' => now(),
 						];
 
