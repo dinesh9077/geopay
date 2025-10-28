@@ -79,7 +79,7 @@
 									$lastName = $data['recipient_surname'] ?? ''; 
 									$recipientMobile = ($data['mobile_code'] ?? '').($data['recipient_mobile'] ?? ''); 
 									$countryId  = $data['recipient_country'] ?? '';
-									$countryFlag = $beneficiary->mobileCountry() ? url('country', $beneficiary->mobileCountry()->country_flag) : '';
+									$countryFlag = $beneficiary->mobileCountry() ? url('country', $beneficiary->mobileCountry()->country_flag) : ''; 
 								@endphp
 
 								@if(!empty($firstName) || !empty($lastName))

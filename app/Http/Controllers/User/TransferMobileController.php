@@ -44,11 +44,19 @@ class TransferMobileController extends Controller
 	
 	public function transferToMobileMoney()
 	{   
-		$countries = $this->onafricService->country();   
-		$beneficiaries = Beneficiary::where('user_id', auth()->user()->id)
-		->where('category_name', "transfer to mobile") 
-		->get(); 
-		 	 
+		$countries = $this->onafricService->country();
+		$beneficiaries = Beneficiary::where('user_id', auth()->id())
+			->where('category_name', 'transfer to mobile')
+			->get();
+
+		// Filter the collection (remove if no active OnafricChannel)
+		$beneficiaries = $beneficiaries->reject(function ($beneficiary) {
+			$countryId = $beneficiary->data['recipient_country'] ?? null;
+			return !$countryId || !OnafricChannel::where('country_id', $countryId)
+				->where('status', 1)
+				->exists();
+		})->values();
+		 
 		return view('user.transaction.transfer-mobile.index', compact('countries', 'beneficiaries'));
 	}
 	 
