@@ -177,7 +177,22 @@
 		public function storeTransaction(Request $request)
 		{	
 			$user = Auth::user();
-	  
+
+			$beneficiary = Beneficiary::find($request->beneficiaryId);
+			if ($beneficiary) {
+				if (empty($request->country_code)) {
+					return $this->errorResponse('Service temporarily unavailable for this beneficiary’s country.');
+				}
+
+				$countryId = $beneficiary->data['recipient_country'];
+				$channel = $beneficiary->data['channel_name'];
+				$availChannel = OnafricChannel::where('country_id', $countryId)->where('channel', $channel)->where('status', 1)->exists();
+
+				if (!$availChannel) {
+					return $this->errorResponse('Service temporarily unavailable for this beneficiary’s country.');
+				}
+			}
+			
 			// Validation rules
 			$validator = Validator::make($request->all(), [
 				'country_code'   => 'required|string|max:10', // Restrict maximum length

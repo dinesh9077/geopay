@@ -47,15 +47,7 @@ class TransferMobileController extends Controller
 		$countries = $this->onafricService->country();
 		$beneficiaries = Beneficiary::where('user_id', auth()->id())
 			->where('category_name', 'transfer to mobile')
-			->get();
-
-		// Filter the collection (remove if no active OnafricChannel)
-		$beneficiaries = $beneficiaries->reject(function ($beneficiary) {
-			$countryId = $beneficiary->data['recipient_country'] ?? null;
-			return !$countryId || !OnafricChannel::where('country_id', $countryId)
-				->where('status', 1)
-				->exists();
-		})->values();
+			->get(); 
 		 
 		return view('user.transaction.transfer-mobile.index', compact('countries', 'beneficiaries'));
 	}
@@ -382,7 +374,24 @@ class TransferMobileController extends Controller
 	public function transferToMobileStore(Request $request)
 	{	
 		$user = Auth::user();
-	  
+		$beneficiary = Beneficiary::find($request->beneficiaryId);
+		if ($beneficiary) 
+		{ 
+			if(empty($request->country_code))
+			{
+				return $this->errorResponse('Service temporarily unavailable for this beneficiary’s country.');
+			}
+
+			$countryId = $beneficiary->data['recipient_country'];
+			$channel = $beneficiary->data['channel_name']; 
+			$availChannel = OnafricChannel::where('country_id', $countryId)->where('channel', $channel)->where('status', 1)->exists();
+			 
+			if(!$availChannel)
+			{
+				return $this->errorResponse('Service temporarily unavailable for this beneficiary’s country.');
+			} 
+		}
+
 		// Validation rules
 		$validator = Validator::make($request->all(), [
 			'country_code'   => 'required|string|max:10', // Restrict maximum length
@@ -450,8 +459,7 @@ class TransferMobileController extends Controller
 					"Current total transactions: {$remitCurrency} {$transactionAmount}."
 				);
 			}
-			
-			$beneficiary = Beneficiary::find($request->beneficiaryId);
+			 
 			if (!$beneficiary || empty($beneficiary->data)) {
 				return $this->errorResponse('Something went wrong.');
 			}
