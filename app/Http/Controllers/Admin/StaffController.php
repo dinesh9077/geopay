@@ -13,6 +13,8 @@
 	use Validator, DB, Auth, ImageManager, Hash, Helper;
 	use App\Services\MasterService;
 	use Carbon\Carbon;
+	use Illuminate\Validation\Rules\Password;
+
 	class StaffController extends Controller
 	{
 		use WebResponseTrait;
@@ -467,12 +469,25 @@
 		{  
 			$validator = Validator::make($request->all(), [ 
 				'name' => 'required|string', 
-				'email' => 'required|email|unique:admins,email',
-				'password' => 'required|string',
+				'email' => 'required|email|unique:admins,email', 
 				'mobile' => 'required|string|unique:admins,mobile', 
 				'role_id' => 'required|integer',  
 				'role' => 'required|string',  
-				'status' => 'required|in:1,0',  
+				'status' => 'required|in:1,0', 
+				'password' => [ 
+					'required',
+					Password::min(8)
+						->letters()
+						->mixedCase()
+						->numbers()
+						->symbols()
+				], 
+			], [
+				'password.min' => 'Password must be at least 8 characters.',
+				'password.letters' => 'Password must contain at least one letter.',
+				'password.mixedCase' => 'Password must include both uppercase and lowercase letters.',
+				'password.numbers' => 'Password must include at least one number.',
+				'password.symbols' => 'Password must include at least one special character.',
 			]);
  
 			if ($validator->fails()) {
@@ -552,10 +567,24 @@
 		{ 
 			$validator = Validator::make($request->all(), [ 
 				'name' => 'required|string', 
-				'email' => 'required|email|unique:admins,email,' . $staffId, // Ignore the current admin's email
-				'password' => 'nullable|string', // Nullable since you may not want to update the password
+				'email' => 'required|email|unique:admins,email,' . $staffId, // Ignore the current admin's email 
 				'mobile' => 'required|string|unique:admins,mobile,' . $staffId, // Ignore the current admin's mobile 
-				'status' => 'required|in:1,0',  
+				'status' => 'required|in:1,0', 
+				'password' => [
+					'sometimes',
+					'nullable',
+					Password::min(8)
+						->letters()
+						->mixedCase()
+						->numbers()
+						->symbols()
+				], 
+			], [
+				'password.min' => 'Password must be at least 8 characters.',
+				'password.letters' => 'Password must contain at least one letter.',
+				'password.mixedCase' => 'Password must include both uppercase and lowercase letters.',
+				'password.numbers' => 'Password must include at least one number.',
+				'password.symbols' => 'Password must include at least one special character.',
 			]);
 
 			if ($validator->fails()) {

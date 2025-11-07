@@ -23,6 +23,9 @@
 	Route::middleware(['auth:admin', 'webdecrypt.request'])->as('admin.')->group(function ()
 	{
 		Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+		Route::get('/dashboard/revenue-series', [DashboardController::class, 'revenueSeries'])->name('dashboard.revenue-series');
+		Route::get('/dashboard/add-revenue-series', [DashboardController::class, 'revenueAddSeries'])->name('dashboard.add-revenue-series');               // JSON (top cards)
+		Route::get('/dashboard/transactions-series', [DashboardController::class, 'transactionsSeries'])->name('dashboard.transactions-series'); // JSON (chart)
 		
 		// Permission
 		Route::get('/permission', [PermissionController::class, 'index'])->name('permission.index'); 

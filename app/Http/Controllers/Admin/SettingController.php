@@ -19,8 +19,7 @@
 	use App\Services\OnafricService; 
 	use App\Services\MasterService; 
 	use Validator, DB, Auth, ImageManager, Hash, Helper;
-	use Spatie\Activitylog\Facades\LogActivity;
-	use Spatie\Activitylog\Models\Activity;
+	use Illuminate\Validation\Rules\Password;
 
 	class SettingController extends Controller
 	{
@@ -1071,11 +1070,28 @@
 		public function profileUpdate(Request $request)
 		{
 			$admin = auth()->guard('admin')->user();
-			
+
 			$validator = Validator::make($request->all(), [
-			'name' => 'required|string|max:255', 
-			'email' => 'required|email|unique:admins,email,' . $admin->id, 
-			'mobile' => 'required|string|unique:admins,mobile,' . $admin->id
+				'name' => 'required|string|max:255',
+				'email' => 'required|email|unique:admins,email,' . $admin->id,
+				'mobile' => 'required|string|unique:admins,mobile,' . $admin->id,
+
+				// Only validate password if it's provided
+				'password' => [
+					'sometimes',
+					'nullable',
+					Password::min(8)
+						->letters()
+						->mixedCase()
+						->numbers()
+						->symbols()
+				],
+			], [
+				'password.min' => 'Password must be at least 8 characters.',
+				'password.letters' => 'Password must contain at least one letter.',
+				'password.mixedCase' => 'Password must include both uppercase and lowercase letters.',
+				'password.numbers' => 'Password must include at least one number.',
+				'password.symbols' => 'Password must include at least one special character.',
 			]);
 			
 			if ($validator->fails()) {
