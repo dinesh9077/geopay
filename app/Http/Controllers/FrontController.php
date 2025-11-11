@@ -41,7 +41,7 @@ class FrontController extends Controller
 		];
 
 		// If payment captured, update wallet too
-		if ($transaction->txn_status != "captured" && $status === 'captured') 
+		if ($transaction->txn_status != "authorised" && $status === 'authorised') 
 		{
 			$transaction->user->increment('balance', $transaction->txn_amount);
 

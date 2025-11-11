@@ -343,7 +343,7 @@ class ReceiveMoneyController extends Controller
 		$countries = Country::all();
 		return view('user.transaction.add-money.deposit-payment', compact('commissionType', 'commissionCharge', 'remitCurrency', 'countries'));
 	}
-	
+	 
 	public function depositPaymentLink(Request $request, DepositPaymentService $depositService)
 	{ 
 		$validator = Validator::make($request->all(), [
