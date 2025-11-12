@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
-
+use Log;
 class DepositPaymentService
 {
     protected string $endPoint;
@@ -64,8 +64,10 @@ class DepositPaymentService
             "callbackurl"       => route('deposit.payment-callback'),
             "ipaddress"         => request()->ip(),
             "browseragent"      => request()->header('User-Agent'),
-        ]; 
-	 
+        ];
+
+        Log::info('Payment payload:', $payload);
+
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
         ])->post($baseUrl, $payload);
