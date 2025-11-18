@@ -1,16 +1,19 @@
-<?php 
+<?php
 
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
-use App\Http\Traits\ApiResponseTrait; 
+use App\Http\Traits\ApiResponseTrait;
 use App\Models\Otp;
 use App\Models\User;
+use App\Models\OtpBlock;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Exception;
 
 class SmsService
-{ 
+{
     use ApiResponseTrait;
 
     protected $host;
@@ -18,139 +21,248 @@ class SmsService
     protected $password;
     protected $sender;
 
+    // max OTP send attempts in rolling 24-hour window
+    protected $dailyLimit = 3;
+
     public function __construct()
     {
-        // Fetch environment variables from .env file
         $this->host = config('setting.sms_host');
         $this->username = config('setting.sms_username');
         $this->password = config('setting.sms_password');
         $this->sender = config('setting.sms_sender');
     }
- 
-	/**
-	* Resend OTP to a mobile number
-	*
-	* @param string $destination
-	* @return \Illuminate\Http\JsonResponse
-	*/
-	 
+
+    /**
+     * Normalize mobile number to digits only (keeps country code if present).
+     * Example: "+91 98765-43210" -> "919876543210"
+     */
+    // protected function normalizeNumber(string $number): string
+    // {
+    //     // Remove non-digit characters
+    //     $digits = preg_replace('/\D+/', '', $number);
+
+    //     // Remove leading zeros (optional, kept to avoid duplicates like 0987..)
+    //     $digits = ltrim($digits, '0');
+
+    //     // If empty after sanitization, keep original input fallback
+    //     return $digits ?: $number;
+    // }
+
+    /**
+     * DB-backed check for block/limit (rolling 24-hour window).
+     * Returns [bool $blocked, string|null $message]
+     */
+    protected function isBlockedOrExceedLimit(string $destination)
+    {
+        $normalized = $destination;
+
+        // Check block record
+        $block = OtpBlock::where('email_mobile', $normalized)->first();
+        if ($block && $block->blocked_until && Carbon::now()->lt($block->blocked_until)) {
+            $until = $block->blocked_until->toDateTimeString();
+            return [true, "You have reached the maximum OTP attempts. Try again after {$until}"];
+        }
+
+        // Count OTPs sent in last 24 hours (rolling window)
+        $since = Carbon::now()->subDay();
+        $count = Otp::where('email_mobile', $normalized)
+            ->where('created_at', '>=', $since)
+            ->count();
+
+        if ($count >= $this->dailyLimit) {
+            // create or update block for 24 hours
+            $blockedUntil = Carbon::now()->addDay();
+            if ($block) {
+                $block->update([
+                    'blocked_until' => $blockedUntil,
+                    'attempts' => $count,
+                ]);
+            } else {
+                OtpBlock::create([
+                    'email_mobile' => $normalized,
+                    'blocked_until' => $blockedUntil,
+                    'attempts' => $count,
+                ]);
+            }
+
+            return [true, "You have reached the maximum OTP attempts. You are blocked for 24 hours."];
+        }
+
+        return [false, null];
+    }
+
+    /**
+     * Resend OTP to a mobile number
+     *
+     * @param string $destination
+     * @param bool $isWeb
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function resendOtp($destination, $isWeb = false)
     {
         try {
-            // Check if an OTP already exists for the mobile number
-            $otpRecord = Otp::where('email_mobile', $destination)
-                            ->where('expires_at', '>', Carbon::now())
-                            ->latest()
-                            ->first();
-	 
-            // If OTP exists and is not expired, you can resend the same OTP
+            $normalized = $destination;
+
+            // Block/limit check
+            [$blocked, $blockMessage] = $this->isBlockedOrExceedLimit($normalized);
+            if ($blocked) {
+                $responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
+                return $this->{$responseType}($blockMessage);
+            }
+
+            // Find active OTP (not expired)
+            $otpRecord = Otp::where('email_mobile', $normalized)
+                ->where('expires_at', '>', Carbon::now())
+                ->latest()
+                ->first();
+
             if ($otpRecord) {
                 $otp = $otpRecord->otp;
             } else {
-                // Otherwise, generate a new OTP
+                // Generate new OTP
                 $otp = rand(100000, 999999);
 
-                // Save the new OTP to the database
+                // Save normalized OTP entry
                 Otp::create([
-                    'email_mobile' => $destination,
+                    'email_mobile' => $normalized,
                     'otp' => $otp,
-                    'expires_at' => Carbon::now()->addMinutes(5), // OTP expires after 5 minutes
+                    'expires_at' => Carbon::now()->addMinutes(5),
                     'created_at' => now(),
                 ]);
             }
 
-            // Send the OTP to the user
+            // When resending we set $isSend = true so sendOtp won't duplicate create
             return $this->sendOtp($destination, $otp, $isSend = true, $isWeb);
         } catch (\Throwable $e) {
-            // Log error and return response
-            Log::error('Resend OTP failed: ' . $e->getMessage()); 
-            $responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
-			return $this->{$responseType}('Resend OTP failed: ' . $e->getMessage());
+            Log::error('Resend OTP failed: ' . $e->getMessage(), ['exception' => $e]);
+            $responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
+            return $this->{$responseType}('Resend OTP failed: ' . $e->getMessage());
         }
     }
-	
-    /**
-     * Send OTP to mobile and store in database
-     *
-     * @param string $destination
-     * @param string $otp
-     * @return \Illuminate\Http\JsonResponse
-     */
+ 
     public function sendOtp($destination, $otp, $isSend = false, $isWeb = false)
-    { 
+    {
         try {
-            // Construct the message
+            $normalized = $destination;
+
+            // Double-check block/limit
+            [$blocked, $blockMessage] = $this->isBlockedOrExceedLimit($normalized);
+            if ($blocked) {
+                $responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
+                return $this->{$responseType}($blockMessage);
+            }
+
+            // Construct message
             $message = "Your OTP for login is {$otp}. Please use it to complete your verification. If you didn't request this, please ignore.";
-            
+
             // Send the GET request to the SMS API
-            $response = Http::get($this->host.'/bulksms/bulksms', [
+            $response = Http::get(rtrim($this->host, '/') . '/bulksms/bulksms', [
                 'username' => $this->username,
                 'password' => $this->password,
                 'type' => 0,
                 'dlr' => 1,
-                'destination' => $destination,
+                'destination' => $destination, // send as originally provided to the gateway
                 'source' => $this->sender,
                 'message' => $message,
             ]);
-            
-            // Check if the request was successful
-            if ($response->successful()) 
-            {
-                // Extract response code
-                $responseCode = explode('|', $response->body())[0];
-                
-                // If successful, store OTP in the database
-                if ($responseCode == 1701)
-                {
-					if(!$isSend)
-					{ 
-						Otp::create([
-							'email_mobile' => $destination,
-							'otp' => $otp,
-							'expires_at' => Carbon::now()->addMinutes(5), // OTP expires after 5 minutes
-							'created_at' => now()
-						]);
-					}
-                    $responseType =  $isWeb ? 'webSuccessResponse' : 'successResponse'; 
-					return $this->{$responseType}('OTP sent to your mobile number.', ['mobile_number' => $destination]);
+
+            if ($response->successful()) {
+                // Extract response code (API returns like: 1701|... )
+                $responseBody = (string) $response->body();
+                $responseParts = explode('|', $responseBody);
+                $responseCode = isset($responseParts[0]) ? (int) $responseParts[0] : null;
+
+                if ($responseCode === 1701) {
+                    // Only create DB row if not already created (isSend false)
+                    // Ensure DB entry uses normalized number
+                    if (!$isSend) {
+                        Otp::create([
+                            'email_mobile' => $normalized,
+                            'otp' => $otp,
+                            'expires_at' => Carbon::now()->addMinutes(5),
+                            'created_at' => now(),
+                        ]);
+                    }
+
+                    // success response
+                    $responseType = $isWeb ? 'webSuccessResponse' : 'successResponse';
+                    return $this->{$responseType}('OTP sent to your mobile number.', ['mobile_number' => $destination]);
                 }
-                else
-                {
-                    // Log error with specific API error code
-                    Log::error('SMS API error', [
-                        'destination' => $destination,
-                        'otp' => $otp,
-                        'responseCode' => $responseCode,
-                        'description' => $this->getErrorMessage($responseCode),
-                    ]);
-                    
-                    // Return the API error message
-                    $responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
-					return $this->{$responseType}('Something went wrong!');
-                }
-            } 
-            else 
-            {
-                // Log error for failed request
+
+                // SMS API returned an error code
+                Log::error('SMS API error', [
+                    'destination' => $destination,
+                    'normalized' => $normalized,
+                    'otp' => $otp,
+                    'responseCode' => $responseCode,
+                    'description' => $this->getErrorMessage($responseCode),
+                    'raw_response' => $responseBody,
+                ]);
+
+                $responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
+                return $this->{$responseType}('Something went wrong!');
+            } else {
+                // HTTP call failed (non-2xx)
                 Log::error('SMS sending failed', [
                     'status' => $response->status(),
                     'response' => $response->body(),
                     'destination' => $destination,
+                    'normalized' => $normalized,
                     'otp' => $otp,
                 ]);
-                
-				$responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
-				return $this->{$responseType}('SMS sending failed with status: '.$response->status());
+
+                $responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
+                return $this->{$responseType}('SMS sending failed with status: ' . $response->status());
             }
-        } 
-        catch (\Exception $e)
-        { 
-            Log::error('SMS sending failed due to exception: ' . $e->getMessage());
-			$responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
-			return $this->{$responseType}('SMS sending failed: ' . $e->getMessage());
+        } catch (Exception $e) {
+            Log::error('SMS sending failed due to exception: ' . $e->getMessage(), ['exception' => $e]);
+            $responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
+            return $this->{$responseType}('SMS sending failed: ' . $e->getMessage());
         }
     }
-	 
+
+    /**
+     * Verify the OTP for a given mobile number
+     *
+     * @param string $mobile
+     * @param string $otp
+     * @param bool $isWeb
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function verifyOtp($mobile, $otp, $isWeb = false)
+    {
+        try {
+            $normalized = $mobile;
+
+            // Fetch the OTP record for the given mobile number
+            $otpRecord = Otp::where('email_mobile', $normalized)
+                ->where('otp', $otp)
+                ->first();
+
+            if ($otpRecord && $otpRecord->expires_at > Carbon::now()) {
+                // Delete used OTP
+                $otpRecord->delete();
+
+                // update user if exists (uses formatted_number field in users table)
+                $formatted_number = '+' . ltrim($normalized, '+'); // basic formatting
+                $user = User::where('formatted_number', $formatted_number)->first();
+                if ($user) {
+                    $user->update(['is_mobile_verify' => 1]);
+                }
+
+                $responseType = $isWeb ? 'webSuccessResponse' : 'successResponse';
+                return $this->{$responseType}('OTP verified successfully.');
+            } else {
+                $responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
+                return $this->{$responseType}('Invalid or expired OTP.');
+            }
+        } catch (\Throwable $e) {
+            Log::error('OTP verification failed: ' . $e->getMessage(), ['exception' => $e]);
+            $responseType = $isWeb ? 'webErrorResponse' : 'errorResponse';
+            return $this->{$responseType}('OTP verification failed: ' . $e->getMessage());
+        }
+    }
+
     /**
      * Map response code to error message
      *
@@ -175,47 +287,6 @@ class SmsService
             1028 => 'Spam message.',
         ];
 
-        // Return error message if found, otherwise a default message
         return $errorMessages[$errorCode] ?? 'Unknown error occurred.';
-    }
-	
-	/**
-    * Verify the OTP for a given mobile number
-    *
-    * @param string $mobile
-    * @param string $otp
-    * @return \Illuminate\Http\JsonResponse
-    */
-    public function verifyOtp($mobile, $otp, $isWeb = false)
-    {
-        try {
-            // Fetch the OTP record for the given mobile number
-            $otpRecord = Otp::where('email_mobile', $mobile)
-                            ->where('otp', $otp)
-                            ->first();
-
-            // Check if OTP record exists and is not expired
-            if ($otpRecord && $otpRecord->expires_at > Carbon::now())
-			{ 
-                $otpRecord->delete();   
-				
-				$formatted_number = '+' . ltrim($mobile, '+');	 
-				$user = User::where('formatted_number', $formatted_number)->first();
-				if($user)
-				{
-					$user->update(['is_mobile_verify' => 1]);
-				}
-				$responseType =  $isWeb ? 'webSuccessResponse' : 'successResponse';  	
-                return $this->{$responseType}('OTP verified successfully.'); 
-            } else {
-                $responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
-				return $this->{$responseType}('Invalid or expired OTP.');
-            }
-        } catch (\Throwable $e) {
-            // Log error and return response
-            Log::error('OTP verification failed: ' . $e->getMessage());
-            $responseType =  $isWeb ? 'webErrorResponse' : 'errorResponse'; 
-			return $this->{$responseType}('OTP verification failed: ' . $e->getMessage());
-        }
     }
 }
