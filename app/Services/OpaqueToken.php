@@ -23,7 +23,7 @@ class OpaqueToken
         return "{$token->id}.{$secret}";
     } 
 	
-	public static function validate(?string $bearer): ?AccessToken
+	public static function validate(?string $bearer)
 	{
 		if (!$bearer || !str_contains($bearer, '.')) {
 			request()->attributes->set('auth_error', 'ERR_TOKEN_MISSING');

@@ -97,18 +97,22 @@
                                 aria-labelledby="register-individual-tab"> 
 									<form id="individualRegisterForm" action="{{ route('register.temp-individual') }}" method="post">
 										<div class="row">
-											<div class="col-md-6 mb-3">
+											<div class="col-md-4 mb-3">
 												<label for="first_name" class="required content-3 text-primary">First Name <span class="text-danger">*</span></label>
 												<input id="first_name" name="first_name" type="text" class="form-control form-control-lg bg-light border-light"/>
 											</div>
-											<div class="col-md-6 mb-3">
+											<div class="col-md-4 mb-3">
 												<label for="first_name" class="required content-3 text-primary">Middle Name <span class="text-danger">*</span></label>
 												<input id="middle_name" name="middle_name" type="text" class="form-control form-control-lg bg-light border-light"/>
-											</div> 
+											</div>
+											<div class="col-md-4 mb-3">
+												<label for="last_name" class="required content-3 text-primary">Last Name <span class="text-danger">*</span></label>
+												<input id="last_name" name="last_name" type="text" class="form-control form-control-lg bg-light border-light"/> 
+											</div>
 										</div>
 										
 										<div class="row">
-											{{-- <div class="col-md-6 mb-3">
+											<div class="col-md-6 mb-3">
 												<label for="email" class="required content-3 text-primary">Email <span class="text-danger">*</span></label>
 												<div class="input-group">
 													<input id="email" name="email" type="email" class="form-control form-control-lg bg-light border-light" autocomplete="off"/>
@@ -122,17 +126,15 @@
 														</div>
 													</button>
 												</div> 
-											</div> --}}
-											<div class="col-md-6 mb-3">
-												<label for="last_name" class="required content-3 text-primary">Last Name <span class="text-danger">*</span></label>
-												<input id="last_name" name="last_name" type="text" class="form-control form-control-lg bg-light border-light"/> 
 											</div>
+											
 											<div class="col-md-6 mb-3">
 												<label for="password" class="required content-3 text-primary">Password <span class="text-danger">*</span></label>
 												<input id="password" name="password" type="password" autocomplete="off" class="form-control form-control-lg bg-light border-light" /> 
-											</div>  
+											</div> 
 										</div>
-										<div class="row">  
+										<div class="row">
+											
 											<div class="col-md-6 mb-3">
 												<label for="confirmPassword" class="required content-3 text-primary">Confirm Password <span class="text-danger">*</span></label>
 												<input id="password_confirmation" name="password_confirmation" type="password"
@@ -142,15 +144,11 @@
 												<label for="country" class="required content-3 text-primary">Country <span class="text-danger">*</span></label>
 												<select id="country_id" name="country_id" class="form-control form-control-lg bg-light border-light"> 
 												</select>
-											</div> 
-											<div class="col-md-6 mb-3">
-												<label for="referalcode" class="required content-3 text-primary">Promo Code</label>
-												<input id="referalcode" name="referalcode" type="text" class="form-control form-control-lg bg-light border-light"/> 
-											</div>  
+											</div>
 										</div>
 										
 										<div class="row">
-											{{-- <div class="col-md-6 mb-3">
+											<div class="col-md-6 mb-3">
 												<label for="mobile_number" class="required content-3 text-primary">Mobile Number (Without country code) <span class="text-danger">*</span></label>
 												<div class="input-group">
 													<input id="mobile_number" name="mobile_number" type="text" class="form-control form-control-lg bg-light border-light" autocomplete="off"  oninput="this.value = this.value.replace(/\D/g, '')"/>
@@ -164,7 +162,12 @@
 														</div>
 													</button>
 												</div>
-											</div> --}} 
+											</div>
+											
+											<div class="col-md-6 mb-3">
+												<label for="referalcode" class="required content-3 text-primary">Promo Code</label>
+												<input id="referalcode" name="referalcode" type="text" class="form-control form-control-lg bg-light border-light"/> 
+											</div>  
 										</div> 
 										<div class="mb-3">
 											<div class="d-flex">
@@ -180,18 +183,22 @@
 								<div class="tab-pane fade" id="register-company" role="tabpanel" aria-labelledby="register-company-tab"> 
 									<form class="mt-4" id="companyRegisterForm" action="{{ route('register.temp-company') }}" method="post">
 										<div class="row">
-											<div class="col-md-6 mb-3">
+											<div class="col-md-4 mb-3">
 												<label for="first_name" class="required content-3 text-primary">First Name <span class="text-danger">*</span></label>
 												<input id="first_name" name="first_name" type="text" class="form-control form-control-lg bg-light border-light"/>
 											</div>
-											<div class="col-md-6 mb-3">
+											<div class="col-md-4 mb-3">
 												<label for="first_name" class="required content-3 text-primary">Middle Name <span class="text-danger">*</span></label>
 												<input id="middle_name" name="middle_name" type="text" class="form-control form-control-lg bg-light border-light"/>
-											</div> 
+											</div>
+											<div class="col-md-4 mb-3">
+												<label for="last_name" class="required content-3 text-primary">Last Name <span class="text-danger">*</span></label>
+												<input id="last_name" name="last_name" type="text" class="form-control form-control-lg bg-light border-light"/> 
+											</div>
 										</div>
 									
 										<div class="row">
-											{{-- <div class="col-md-6 mb-3">
+											<div class="col-md-6 mb-3">
 												<label for="email" class="required content-3 text-primary">Email <span class="text-danger">*</span></label>
 												<div class="input-group">
 													<input id="email" name="email" type="email" class="form-control form-control-lg bg-light border-light" autocomplete="off"/>
@@ -205,11 +212,8 @@
 														</div>
 													</button>
 												</div> 
-											</div> --}}
-											<div class="col-md-6 mb-3">
-												<label for="last_name" class="required content-3 text-primary">Last Name <span class="text-danger">*</span></label>
-												<input id="last_name" name="last_name" type="text" class="form-control form-control-lg bg-light border-light"/> 
 											</div>
+											
 											<div class="col-md-6 mb-3">
 												<label for="company_name" class="required content-3 text-primary">Company Name <span class="text-danger">*</span></label>
 												<input id="company_name" name="company_name" type="text" class="form-control form-control-lg bg-light border-light"/> 
@@ -233,7 +237,7 @@
 												<select id="country_id1" name="country_id" class="form-control form-control-lg bg-light border-light"> 
 												</select>
 											</div>
-											{{-- <div class="col-md-6 mb-3">
+											<div class="col-md-6 mb-3">
 												<label for="mobile_number" class="required content-3 text-primary">Mobile Number (Without country code) <span class="text-danger">*</span></label>
 												<div class="input-group">
 													<input id="mobile_number" name="mobile_number" type="text" class="form-control form-control-lg bg-light border-light" autocomplete="off"  oninput="this.value = this.value.replace(/\D/g, '')"/>
@@ -247,7 +251,7 @@
 														</div>
 													</button>
 												</div>
-											</div> --}}
+											</div>
 										</div> 
 										<div class="mb-3">
 											<div class="d-flex">
