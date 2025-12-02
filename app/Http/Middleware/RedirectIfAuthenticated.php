@@ -17,15 +17,17 @@ class RedirectIfAuthenticated
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-        $guards = empty($guards) ? [null] : $guards; 
+        $guards = empty($guards) ? [null] : $guards;
+       
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check())
 			{ 
-				$user = Auth::user();
+				$user = Auth::user(); 
 				if($user->is_kyc_verify == 0 && $user->is_company == 0)
 				{
 					return redirect()->route('metamap.kyc');
 				}
+               
                 return redirect(RouteServiceProvider::HOME);
             }
         }

@@ -95,24 +95,28 @@
 							<div class="tab-content" id="pills-tabContent">
 								<div class="tab-pane fade show active" id="register-individual" role="tabpanel"
                                 aria-labelledby="register-individual-tab"> 
-									<form id="individualRegisterForm" action="{{ route('register.temp-individual') }}" method="post">
+									<form id="individualRegisterForm" action="{{ route('register.individual') }}" method="post">
 										<div class="row">
 											<div class="col-md-6 mb-3">
 												<label for="first_name" class="required content-3 text-primary">First Name <span class="text-danger">*</span></label>
 												<input id="first_name" name="first_name" type="text" class="form-control form-control-lg bg-light border-light"/>
 											</div>
 											<div class="col-md-6 mb-3">
-												<label for="first_name" class="required content-3 text-primary">Middle Name <span class="text-danger">*</span></label>
+												<label for="first_name" class="required content-3 text-primary">Middle Name</label>
 												<input id="middle_name" name="middle_name" type="text" class="form-control form-control-lg bg-light border-light"/>
 											</div> 
 										</div>
 										
-										<div class="row">
-											{{-- <div class="col-md-6 mb-3">
+										<div class="row"> 
+											<div class="col-md-6 mb-3">
+												<label for="last_name" class="required content-3 text-primary">Last Name <span class="text-danger">*</span></label>
+												<input id="last_name" name="last_name" type="text" class="form-control form-control-lg bg-light border-light"/> 
+											</div>
+											<div class="col-md-6 mb-3">
 												<label for="email" class="required content-3 text-primary">Email <span class="text-danger">*</span></label>
 												<div class="input-group">
 													<input id="email" name="email" type="email" class="form-control form-control-lg bg-light border-light" autocomplete="off"/>
-													<input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control form-control-lg bg-light border-light" value="0" >
+													{{-- <input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control form-control-lg bg-light border-light" value="0" >
 													<button type="button" class="input-group-text border-0 btn-secondary text-white content-4" id="emailVerifyText" onclick="verifyOtp('email', event, 'individualRegisterForm')">
 														<span class="before-verify">Verify</span>
 														<div class="spinner-border text-light during-verify" role="status" style="display: none;"></div>
@@ -120,33 +124,29 @@
 															<i class="bi bi-check-lg text-success me-1 content-2"></i>
 															<span class="text-success">Verified</span>
 														</div>
-													</button>
+													</button> --}}
 												</div> 
-											</div> --}}
-											<div class="col-md-6 mb-3">
-												<label for="last_name" class="required content-3 text-primary">Last Name <span class="text-danger">*</span></label>
-												<input id="last_name" name="last_name" type="text" class="form-control form-control-lg bg-light border-light"/> 
 											</div>
 											<div class="col-md-6 mb-3">
 												<label for="password" class="required content-3 text-primary">Password <span class="text-danger">*</span></label>
 												<input id="password" name="password" type="password" autocomplete="off" class="form-control form-control-lg bg-light border-light" /> 
-											</div>  
-										</div>
-										<div class="row">  
+											</div>
 											<div class="col-md-6 mb-3">
 												<label for="confirmPassword" class="required content-3 text-primary">Confirm Password <span class="text-danger">*</span></label>
 												<input id="password_confirmation" name="password_confirmation" type="password"
                                                 class="form-control form-control-lg bg-light border-light" /> 
-											</div>
-											<div class="col-md-6 mb-3">
+											</div>  
+										</div>
+										<div class="row">   
+											{{-- <div class="col-md-6 mb-3">
 												<label for="country" class="required content-3 text-primary">Country <span class="text-danger">*</span></label>
 												<select id="country_id" name="country_id" class="form-control form-control-lg bg-light border-light"> 
 												</select>
-											</div> 
-											<div class="col-md-6 mb-3">
+											</div>  --}}
+											{{-- <div class="col-md-6 mb-3">
 												<label for="referalcode" class="required content-3 text-primary">Promo Code</label>
 												<input id="referalcode" name="referalcode" type="text" class="form-control form-control-lg bg-light border-light"/> 
-											</div>  
+											</div>   --}}
 										</div>
 										
 										<div class="row">
@@ -178,34 +178,19 @@
 									</form>
 								</div>
 								<div class="tab-pane fade" id="register-company" role="tabpanel" aria-labelledby="register-company-tab"> 
-									<form class="mt-4" id="companyRegisterForm" action="{{ route('register.temp-company') }}" method="post">
+									<form class="mt-4" id="companyRegisterForm" action="{{ route('register.company') }}" method="post">
 										<div class="row">
 											<div class="col-md-6 mb-3">
 												<label for="first_name" class="required content-3 text-primary">First Name <span class="text-danger">*</span></label>
 												<input id="first_name" name="first_name" type="text" class="form-control form-control-lg bg-light border-light"/>
 											</div>
 											<div class="col-md-6 mb-3">
-												<label for="first_name" class="required content-3 text-primary">Middle Name <span class="text-danger">*</span></label>
+												<label for="first_name" class="required content-3 text-primary">Middle Name</label>
 												<input id="middle_name" name="middle_name" type="text" class="form-control form-control-lg bg-light border-light"/>
 											</div> 
 										</div>
 									
-										<div class="row">
-											{{-- <div class="col-md-6 mb-3">
-												<label for="email" class="required content-3 text-primary">Email <span class="text-danger">*</span></label>
-												<div class="input-group">
-													<input id="email" name="email" type="email" class="form-control form-control-lg bg-light border-light" autocomplete="off"/>
-													<input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control form-control-lg bg-light border-light" value="0" >
-													<button type="button" class="input-group-text border-0 btn-secondary text-white content-4" id="emailVerifyText" onclick="verifyOtp('email', event, 'companyRegisterForm')">
-														<span class="before-verify">Verify</span>
-														<div class="spinner-border text-light during-verify" role="status" style="display: none;"></div>
-														<div class="after-verified" style="display: none;">
-															<i class="bi bi-check-lg text-success me-1 content-2"></i>
-															<span class="text-success">Verified</span>
-														</div>
-													</button>
-												</div> 
-											</div> --}}
+										<div class="row"> 
 											<div class="col-md-6 mb-3">
 												<label for="last_name" class="required content-3 text-primary">Last Name <span class="text-danger">*</span></label>
 												<input id="last_name" name="last_name" type="text" class="form-control form-control-lg bg-light border-light"/> 
@@ -217,6 +202,21 @@
 										</div>
 										<div class="row">
 											<div class="col-md-6 mb-3">
+												<label for="email" class="required content-3 text-primary">Email <span class="text-danger">*</span></label>
+												<div class="input-group">
+													<input id="email" name="email" type="email" class="form-control form-control-lg bg-light border-light" autocomplete="off"/>
+													{{-- <input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control form-control-lg bg-light border-light" value="0" >
+													<button type="button" class="input-group-text border-0 btn-secondary text-white content-4" id="emailVerifyText" onclick="verifyOtp('email', event, 'companyRegisterForm')">
+														<span class="before-verify">Verify</span>
+														<div class="spinner-border text-light during-verify" role="status" style="display: none;"></div>
+														<div class="after-verified" style="display: none;">
+															<i class="bi bi-check-lg text-success me-1 content-2"></i>
+															<span class="text-success">Verified</span>
+														</div>
+													</button> --}}
+												</div> 
+											</div>
+											<div class="col-md-6 mb-3">
 												<label for="password" class="required content-3 text-primary">Password <span class="text-danger">*</span></label>
 												<input id="password" name="password" type="password" autocomplete="off" class="form-control form-control-lg bg-light border-light" /> 
 											</div> 
@@ -225,14 +225,14 @@
 												<input id="password_confirmation" name="password_confirmation" type="password"
 												class="form-control form-control-lg bg-light border-light" /> 
 											</div> 
-										</div>
-										
-										<div class="row">
-											<div class="col-md-6 mb-3">
+											{{-- <div class="col-md-6 mb-3">
 												<label for="country" class="required content-3 text-primary">Country <span class="text-danger">*</span></label>
 												<select id="country_id1" name="country_id" class="form-control form-control-lg bg-light border-light"> 
 												</select>
-											</div>
+											</div> --}}
+										</div>
+										
+										<div class="row"> 
 											{{-- <div class="col-md-6 mb-3">
 												<label for="mobile_number" class="required content-3 text-primary">Mobile Number (Without country code) <span class="text-danger">*</span></label>
 												<div class="input-group">
@@ -431,10 +431,8 @@
 						$('.error_msg').remove(); 
 						if(res.status === "success")
 						{ 
-							//toastrMsg(res.status, res.message); 
-							//window.location.href = "{{ route('metamap.kyc') }}"; 
-							var result = decryptData(res.response);  
-							$('#register-individual').html(result);
+							toastrMsg(res.status, res.message); 
+							window.location.href = "{{ route('metamap.kyc') }}"; 
 						}
 						else if(res.status == "validation")
 						{  
@@ -530,10 +528,10 @@
 						
 						if(res.status === "success")
 						{ 
-							/* toastrMsg(res.status, res.message); 
-							window.location.href = "{{ route('corporate.kyc') }}";  */
-							var result = decryptData(res.response);  
-							$('#register-company').html(result); 
+							toastrMsg(res.status, res.message); 
+							window.location.href = "{{ route('corporate.kyc') }}";
+							// var result = decryptData(res.response);  
+							// $('#register-company').html(result); 
 						}
 						else if(res.status == "validation")
 						{  

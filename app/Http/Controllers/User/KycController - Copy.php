@@ -115,7 +115,7 @@ class KycController extends Controller
 	public function corporateKyc()
 	{
 		// Fetch the authenticated user and their company details with the related documents
-		$user = Auth::user();
+		$user = Auth::user(); 
 		$companyDetail = $user->companyDetail()->with(['companyDocuments', 'companyDirectors'])->first();
 
 		// Calculate the step number based on the company's step number, defaulting to 1 if not found

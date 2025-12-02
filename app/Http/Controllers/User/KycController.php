@@ -7,27 +7,42 @@ use Illuminate\Http\Request;
 use App\Models\UserKyc;
 use App\Models\User;
 use App\Models\CompanyDetail;
+use App\Models\Country;
 use App\Models\CompanyDocument;
 use App\Models\BusinessType;
 use App\Models\DocumentType;
-use App\Models\CompanyDirector;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
+use App\Models\CompanyDirector; 
 use App\Http\Traits\WebResponseTrait; 
 use Validator, DB, Auth;
-use Helper, ImageManager;
+use ImageManager;
+use App\Enums\BusinessOccupation;
+use App\Enums\SourceOfFunds;
+use App\Enums\IdType;
+use App\Services\{
+	SmsService,
+	EmailService
+};
+
 class KycController extends Controller
 {
 	use WebResponseTrait;
-    public function __construct()
+
+	protected $smsService;
+	protected $emailService; 
+	public function __construct()
     {
         $this->middleware('auth');
+		$this->smsService = new SmsService();
+		$this->emailService = new EmailService();
     }
 	
 	public function metaMapKyc()
 	{
 		$user = Auth::user();
-		 
+
+		if ($user->is_kyc_verify == 1 && $user->is_email_verify == 1 && $user->is_mobile_verify == 1) {
+			return redirect()->route('home');
+		}
 		$metaClientId = config('setting.meta_verification_api_key');
         $metaFlowId = config('setting.meta_verification_flow_id');
         
@@ -109,14 +124,100 @@ class KycController extends Controller
 			DB::rollBack(); 
 			return $this->errorResponse('Something went wrong while processing your request. Please try again later.');
 		}
-	} 
+	}
 	
+	public function userBasicDetails()
+	{
+		$user = Auth::user();
+		if ($user->is_kyc_verify == 1 && $user->is_email_verify == 1 && $user->is_mobile_verify == 1) {
+			return redirect()->route('home');
+		}
+		$countries = Country::select('id', 'name', 'isdcode', 'country_flag')->get();
+
+		$countriesWithFlags = $countries->transform(function ($country) {
+			if ($country->country_flag) {
+				$country->country_flag = asset('country/' . $country->country_flag);
+			}
+			return $country;
+		});
+
+		$user = Auth::user();
+		return view('user.auth.basic-details', compact('countriesWithFlags', 'user'));
+	}
+	
+	public function userBasicDetailsUpdate(Request $request)
+	{ 
+		$validator = Validator::make($request->all(), [
+			'email' => 'required|string|email|max:255',
+			'mobile_number' => 'required|integer',
+			'country_id' => 'required|integer',
+			'id_type' => 'required|in:' . implode(',', array_column(IdType::cases(), 'value')),
+			'id_number' => 'required|string|max:50',
+			'expiry_id_date' => 'required|date',
+			'issue_id_date' => 'required|date',
+
+			'city' => 'required|string|max:100',
+			'state' => 'required|string|max:100',
+			'zip_code' => 'required|string|max:20',
+
+			'date_of_birth' => 'required|date',
+			'gender' => 'required|in:Male,Female,Other',
+			'address' => 'required|string',
+
+			'business_activity_occupation' => 'required|in:' . implode(',', array_column(BusinessOccupation::cases(), 'value')),
+
+			'source_of_fund' => 'required|in:' . implode(',', array_column(SourceOfFunds::cases(), 'value')),
+		]);
+
+		$validator->after(function ($validator) use ($request) {
+			if ($request->input('email') && $request->input('is_email_verify') == 0) {
+				$validator->errors()->add('email', 'Email verification is required before proceeding.');
+			}
+			if ($request->input('mobile_number') && $request->input('is_mobile_verify') == 0) {
+				$validator->errors()->add('mobile_number', 'Mobile verification is required before proceeding.');
+			}
+		});
+
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		}
+
+		try {
+
+			DB::beginTransaction();
+			$user = Auth::user();
+			if (!$user) {
+				return $this->errorResponse('unauthorize user.');
+			}
+			$country = Country::find($request->country_id); 
+			if (!$country) {
+				return $this->errorResponse('The country selection is not found.');
+			}
+
+			$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
+			$userData = $request->except('_token');
+			$userData['formatted_number'] = $formattedNumber;
+
+			$user->update($userData);  
+
+			DB::commit();
+			return $this->successResponse('User registered successfully.', $userData);
+		} catch (\Throwable $e) {
+			DB::rollBack();
+			return $this->errorResponse($e->getMessage());
+		}
+
+	}
+
 	// Corporate / Company Kyc
 	public function corporateKyc()
 	{
 		error_reporting(0);
 		// Fetch the authenticated user and their company details with the related documents
 		$user = Auth::user();
+		if ($user->is_kyc_verify == 1 && $user->is_email_verify == 1 && $user->is_mobile_verify == 1) {
+			return redirect()->route('home');
+		}
 		$companyDetail = $user->companyDetail()->with(['companyDocuments', 'companyDirectors'])->first();
 
 		// Calculate the step number based on the company's step number, defaulting to 1 if not found
@@ -427,5 +528,140 @@ class KycController extends Controller
 			DB::rollBack();
 			return $this->errorResponse($e->getMessage());
 		}
-	}  
+	}
+
+	// Email verification
+	public function sendEmailOtp(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'email' => 'required|string|email'
+		]);
+
+		// Check if the validation fails
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		}
+
+		// // Check if the email already exists in the database
+		// if (User::where('email', $request->email)->exists()) {
+		// 	return $this->errorResponse('The email you provided already exists.');
+		// }
+
+		// Generate a 6-digit OTP
+		$otp = rand(100000, 999999);
+
+		return $this->emailService->sendOtp($request->email, $otp, false, true);
+	}
+
+	public function resendEmailOtp(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'email' => 'required|string|email',
+		]);
+
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		}
+
+		// // Check if the email already exists in the database
+		// if (User::where('email', $request->email)->exists()) {
+		// 	return $this->errorResponse('The email you provided already exists.');
+		// }
+
+		return $this->emailService->resendOtp($request->email, true);
+	}
+
+	public function verifyEmailOtp(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'email' => 'required|string|email',
+			'otp' => 'required|digits:6', // Adjust based on your OTP length
+		]);
+
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		}
+
+		return $this->emailService->verifyOtp($request->email, $request->otp, true);
+	}
+
+	// Mobile Verification
+	public function sendMobileOtp(Request $request)
+	{
+		// Validate the request inputs
+		$validator = Validator::make($request->all(), [
+			'mobile_number' => 'required|numeric', // Mobile number is required and must be numeric
+			'country_id' => 'required|numeric', // Country ID is required and must be numeric
+		]);
+
+		// Return validation errors if validation fails
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		}
+
+		// Retrieve the country based on country_id and check if it exists
+		$country = Country::find($request->country_id);
+
+		if (!$country) {
+			return $this->errorResponse('The country selection is not found.');
+		}
+
+		// Format the mobile number with country code
+		$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
+
+		// Check if the mobile number is already registered
+		// if (User::where('formatted_number', $formattedNumber)->exists()) {
+		// 	return $this->errorResponse('The mobile number you provided already exists.');
+		// }
+
+		// Generate a 6-digit OTP
+		$otp = random_int(100000, 999999);
+
+		// Send the OTP via SMS service
+		return $this->smsService->sendOtp(ltrim($formattedNumber, '+'), $otp, false, true);
+	}
+
+
+	public function resendMobileOtp(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'mobile_number' => 'required|numeric', // Use numeric for mobile validation
+			'country_id' => 'required|numeric', // Use numeric for mobile validation
+		]);
+
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		}
+
+		// Retrieve the country based on country_id and check if it exists
+		$country = Country::find($request->country_id);
+
+		if (!$country) {
+			return $this->errorResponse('The country selection is not found.');
+		}
+
+		// Format the mobile number with country code
+		$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
+
+		// // Check if the mobile number already exists in the database
+		// if (User::where('formatted_number', $formattedNumber)->exists()) {
+		// 	return $this->errorResponse('The mobile number you provided already exists.');
+		// }
+
+		return $this->smsService->resendOtp(ltrim($formattedNumber, '+'), true);
+	}
+
+	public function verifyMobileOtp(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'mobile_number' => 'required|numeric',
+			'otp' => 'required|digits:6', // Adjust based on your OTP length
+		]);
+
+		if ($validator->fails()) {
+			return $this->validateResponse($validator->errors());
+		}
+
+		return $this->smsService->verifyOtp($request->mobile_number, $request->otp, true);
+	}
 }

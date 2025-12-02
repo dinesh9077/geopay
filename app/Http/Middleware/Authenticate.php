@@ -15,8 +15,8 @@
 			if ($request->expectsJson()) {
 				// Return null to bypass redirection
 				return response()->json([
-				'success' => false,
-				'message' => 'Unauthorized. Please check your token and try again.',
+					'success' => false,
+					'message' => 'Unauthorized. Please check your token and try again.',
 				], 401);
 			}
 		}
@@ -32,8 +32,8 @@
 		{
 			// If the request expects JSON, throw an AuthenticationException
 			if ($request->expectsJson()) {
-				throw new AuthenticationException(
-                'Unauthorized. Please check your token and try again.', $guards
+					throw new AuthenticationException(
+					'Unauthorized. Please check your token and try again.', $guards
 				);
 			}
 			

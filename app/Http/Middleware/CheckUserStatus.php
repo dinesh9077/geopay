@@ -21,7 +21,7 @@ class CheckUserStatus
             Auth::logout(); // Logout the user
             return redirect()->route('login')->with('error', 'This user account is inactive. Please reach out to the administrator for further details.');
         }
-		
+        
         return $next($request);
     }
 }

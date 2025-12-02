@@ -41,15 +41,7 @@
 	Route::post('temp-individual/register', [RegisterController::class, 'individualTempRegister'])->name('register.temp-individual')->middleware('webdecrypt.request');
 	Route::post('company/register', [RegisterController::class, 'companyRegister'])->name('register.company')->middleware('webdecrypt.request');
 	Route::post('temp-company/register', [RegisterController::class, 'companyTempRegister'])->name('register.temp-company')->middleware('webdecrypt.request');
-	
-	Route::post('email/send', [RegisterController::class, 'sendEmailOtp'])->name('email.send')->middleware('webdecrypt.request');
-	Route::post('/email/resend', [RegisterController::class, 'resendEmailOtp'])->name('email.resend')->middleware('webdecrypt.request');
-	Route::post('/verify/email-otp', [RegisterController::class, 'verifyEmailOtp'])->name('verify.email-otp')->middleware('webdecrypt.request');
-	
-	Route::post('/mobile/send', [RegisterController::class, 'sendMobileOtp'])->name('mobile.send')->middleware('webdecrypt.request');
-	Route::post('/mobile/resend', [RegisterController::class, 'resendMobileOtp'])->name('mobile.resend')->middleware('webdecrypt.request');
-	Route::post('/verify/mobile-otp', [RegisterController::class, 'verifyMobileOtp'])->name('verify.mobile-otp')->middleware('webdecrypt.request');
-	
+	 
 	// Reset Password
 	Route::get('/password/reset', [ResetPasswordController::class, 'showOtpRequestForm'])->name('password.request');  
 	Route::post('/password/send-otp', [ResetPasswordController::class, 'sendOtp'])->name('password.sendOtp')->middleware('webdecrypt.request');  
@@ -59,14 +51,24 @@
 	 
 	Route::match(['get', 'post'], '/onafric/webhook/{webhookIds}', [TransferMobileController::class, 'transferToMobileWebhook']);
 	Route::match(['get', 'post'], '/mobile-collection-callback', [ReceiveMoneyController::class, 'storeMobileCollectionCallback'])->name('mobile-collection.callback');
-	
+	Route::post('user/basic-details/update', [KycController::class, 'userBasicDetailsUpdate'])->name('user.basic-details.update')
+	->middleware('webdecrypt.request');
+
+	Route::post('email/send', [KycController::class, 'sendEmailOtp'])->name('email.send')->middleware('webdecrypt.request');
+	Route::post('/email/resend', [KycController::class, 'resendEmailOtp'])->name('email.resend')->middleware('webdecrypt.request');
+	Route::post('/verify/email-otp', [KycController::class, 'verifyEmailOtp'])->name('verify.email-otp')->middleware('webdecrypt.request');
+
+	Route::post('/mobile/send', [KycController::class, 'sendMobileOtp'])->name('mobile.send')->middleware('webdecrypt.request');
+	Route::post('/mobile/resend', [KycController::class, 'resendMobileOtp'])->name('mobile.resend')->middleware('webdecrypt.request');
+	Route::post('/verify/mobile-otp', [KycController::class, 'verifyMobileOtp'])->name('verify.mobile-otp')->middleware('webdecrypt.request');
+
 	Route::middleware(['webdecrypt.request', 'kycStatus', 'merchant.access'])->group(function ()
-	{     
+	{ 
 		// Meta Kyc
 		Route::get('/metamap/kyc', [KycController::class, 'metaMapKyc'])->name('metamap.kyc');
 		Route::get('/metamap/kyc-check-status', [KycController::class, 'metaMapKycStatus'])->name('metamap.kyc-check-status');
-		Route::post('/metamap/kyc-finished', [KycController::class, 'metaMapKycFinished'])->name('metamap.kyc-finished');
-		
+		Route::post('/metamap/kyc-finished', [KycController::class, 'metaMapKycFinished'])->name('metamap.kyc-finished');  
+
 		// Company/Corporate Kyc
 		Route::get('/corporate/kyc', [KycController::class, 'corporateKyc'])->name('corporate.kyc'); 
 		Route::get('/corporate/director/{companyDetailId}', [KycController::class, 'getRemainingDirector'])->name('corporate.kyc.director'); 
@@ -74,7 +76,10 @@
 		Route::post('corporate/kyc/step/{step}', [KycController::class, 'corporateKycStep'])->name('corporate.kyc.submit-step');
 		Route::post('corporate/kyc/document-store', [KycController::class, 'corporateKycDocumntStore'])->name('corporate.kyc.document-store');
 		Route::post('corporate/kyc/final', [KycController::class, 'corporateKycFinal'])->name('corporate.kyc.submit-final');
-		 
+
+		Route::get('user/basic-details', [KycController::class, 'userBasicDetails']);
+		
+
 		// Dashboard
 		Route::get('/home', [HomeController::class, 'index'])->name('home');   
 		Route::get('/api-documentation', [HomeController::class, 'apiDocumentation'])->name('api-documentation');
