@@ -48,8 +48,8 @@
 				// Check user status and verification
 				$messages = [
 					'status' => 'This user account is inactive. Please reach out to the administrator for further details.',
-					'is_email_verify' => 'This email was not verified. Please reach out to the administrator for further details.',
-					'is_mobile_verify' => 'This mobile number was not verified. Please reach out to the administrator for further details.'
+					// 'is_email_verify' => 'This email was not verified. Please reach out to the administrator for further details.',
+					// 'is_mobile_verify' => 'This mobile number was not verified. Please reach out to the administrator for further details.'
 				];
 				
 				foreach ($messages as $key => $message) { 
