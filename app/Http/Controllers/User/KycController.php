@@ -609,10 +609,10 @@ class KycController extends Controller
 		// Format the mobile number with country code
 		$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
 
-		// Check if the mobile number is already registered
-		// if (User::where('formatted_number', $formattedNumber)->exists()) {
-		// 	return $this->errorResponse('The mobile number you provided already exists.');
-		// }
+		//Check if the mobile number is already registered
+		if (User::where('formatted_number', $formattedNumber)->exists()) {
+			return $this->errorResponse('The mobile number you provided already exists.');
+		}
 
 		// Generate a 6-digit OTP
 		$otp = random_int(100000, 999999);
@@ -644,9 +644,9 @@ class KycController extends Controller
 		$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
 
 		// // Check if the mobile number already exists in the database
-		// if (User::where('formatted_number', $formattedNumber)->exists()) {
-		// 	return $this->errorResponse('The mobile number you provided already exists.');
-		// }
+		if (User::where('formatted_number', $formattedNumber)->exists()) {
+			return $this->errorResponse('The mobile number you provided already exists.');
+		}
 
 		return $this->smsService->resendOtp(ltrim($formattedNumber, '+'), true);
 	}

@@ -250,9 +250,9 @@ class RegisterController extends Controller
 		}
 		  
 		// Check if the email already exists in the database
-		if (User::where('email', $request->email)->exists()) {
-			return $this->errorResponse('The email you provided already exists.');
-		}
+		// if (User::where('email', $request->email)->exists()) {
+		// 	return $this->errorResponse('The email you provided already exists.');
+		// }
 		
 		// Generate a 6-digit OTP
 		$otp = rand(100000, 999999);
@@ -272,9 +272,9 @@ class RegisterController extends Controller
 		}
 		  
 		// Check if the email already exists in the database
-		if (User::where('email', $request->email)->exists()) {
-			return $this->errorResponse('The email you provided already exists.');
-		}
+		// if (User::where('email', $request->email)->exists()) {
+		// 	return $this->errorResponse('The email you provided already exists.');
+		// }
 		
 		// Generate a 6-digit OTP
 		$otp = rand(100000, 999999);
