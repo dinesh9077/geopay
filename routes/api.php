@@ -27,6 +27,8 @@ Route::middleware(['decrypt.request'])->group(function ()
     // Register Routes
     Route::post('individual-register', [RegisterController::class, 'individualRegister']); 
     Route::post('company-register', [RegisterController::class, 'companyRegister']);
+
+	Route::post('basic-details/update', [RegisterController::class, 'userBasicDetailsUpdate']);
 	
 	// Email Verification Routes
     Route::prefix('email')->group(function () {
