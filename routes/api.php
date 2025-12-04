@@ -27,9 +27,7 @@ Route::middleware(['decrypt.request'])->group(function ()
     // Register Routes
     Route::post('individual-register', [RegisterController::class, 'individualRegister']); 
     Route::post('company-register', [RegisterController::class, 'companyRegister']);
-
-	Route::post('basic-details/update', [RegisterController::class, 'userBasicDetailsUpdate']);
-	
+  
 	// Email Verification Routes
     Route::prefix('email')->group(function () {
         Route::post('/send', [RegisterController::class, 'sendEmailOtp']);
@@ -76,7 +74,9 @@ Route::middleware(['auth:api', 'ensure.token'])->group(function ()
 	
 		Route::post('user-profile-update', [SettingController::class, 'userProfileUpdate']);   
 		Route::post('user-reset-password', [SettingController::class, 'userResetPassword']);   
-		Route::get('common-details', [SettingController::class, 'commonDetails'])->withoutMiddleware(['auth:api', 'ensure.token']);   
+		Route::get('common-details', [SettingController::class, 'commonDetails'])->withoutMiddleware(['auth:api', 'ensure.token']);
+
+		Route::post('basic-details/update', [RegisterController::class, 'userBasicDetailsUpdate']);
 		
 		//Transaction list
 		Route::post('transaction-list', [TransactionController::class, 'transactionList']); 
