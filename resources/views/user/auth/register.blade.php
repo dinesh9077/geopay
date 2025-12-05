@@ -116,7 +116,7 @@
 												<label for="email" class="required content-3 text-primary">Email <span class="text-danger">*</span></label>
 												<div class="input-group">
 													<input id="email" name="email" type="email" class="form-control form-control-lg bg-light border-light" autocomplete="off"/>
-													{{-- <input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control form-control-lg bg-light border-light" value="0" >
+													<input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control form-control-lg bg-light border-light" value="0" >
 													<button type="button" class="input-group-text border-0 btn-secondary text-white content-4" id="emailVerifyText" onclick="verifyOtp('email', event, 'individualRegisterForm')">
 														<span class="before-verify">Verify</span>
 														<div class="spinner-border text-light during-verify" role="status" style="display: none;"></div>
@@ -124,7 +124,7 @@
 															<i class="bi bi-check-lg text-success me-1 content-2"></i>
 															<span class="text-success">Verified</span>
 														</div>
-													</button> --}}
+													</button>
 												</div> 
 											</div>
 											<div class="col-md-6 mb-3">
@@ -205,7 +205,7 @@
 												<label for="email" class="required content-3 text-primary">Email <span class="text-danger">*</span></label>
 												<div class="input-group">
 													<input id="email" name="email" type="email" class="form-control form-control-lg bg-light border-light" autocomplete="off"/>
-													{{-- <input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control form-control-lg bg-light border-light" value="0" >
+													<input id="is_email_verify" name="is_email_verify" type="hidden" class="form-control form-control-lg bg-light border-light" value="0" >
 													<button type="button" class="input-group-text border-0 btn-secondary text-white content-4" id="emailVerifyText" onclick="verifyOtp('email', event, 'companyRegisterForm')">
 														<span class="before-verify">Verify</span>
 														<div class="spinner-border text-light during-verify" role="status" style="display: none;"></div>
@@ -213,7 +213,7 @@
 															<i class="bi bi-check-lg text-success me-1 content-2"></i>
 															<span class="text-success">Verified</span>
 														</div>
-													</button> --}}
+													</button>
 												</div> 
 											</div>
 											<div class="col-md-6 mb-3">

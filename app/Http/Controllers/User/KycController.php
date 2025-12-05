@@ -147,32 +147,24 @@ class KycController extends Controller
 	
 	public function userBasicDetailsUpdate(Request $request)
 	{ 
-		$validator = Validator::make($request->all(), [
-			'email' => 'required|string|email|max:255',
+		$validator = Validator::make($request->all(), [ 
 			'mobile_number' => 'required|integer',
 			'country_id' => 'required|integer',
 			'id_type' => 'required|in:' . implode(',', array_column(IdType::cases(), 'value')),
 			'id_number' => 'required|string|max:50',
 			'expiry_id_date' => 'required|date',
-			'issue_id_date' => 'required|date',
-
+			'issue_id_date' => 'required|date', 
 			'city' => 'required|string|max:100',
 			'state' => 'required|string|max:100',
-			'zip_code' => 'required|string|max:20',
-
+			'zip_code' => 'required|string|max:20', 
 			'date_of_birth' => 'required|date',
 			'gender' => 'required|in:Male,Female,Other',
-			'address' => 'required|string',
-
-			'business_activity_occupation' => 'required|in:' . implode(',', array_column(BusinessOccupation::cases(), 'value')),
-
+			'address' => 'required|string', 
+			'business_activity_occupation' => 'required|in:' . implode(',', array_column(BusinessOccupation::cases(), 'value')), 
 			'source_of_fund' => 'required|in:' . implode(',', array_column(SourceOfFunds::cases(), 'value')),
 		]);
 
-		$validator->after(function ($validator) use ($request) {
-			if ($request->input('email') && $request->input('is_email_verify') == 0) {
-				$validator->errors()->add('email', 'Email verification is required before proceeding.');
-			}
+		$validator->after(function ($validator) use ($request) { 
 			if ($request->input('mobile_number') && $request->input('is_mobile_verify') == 0) {
 				$validator->errors()->add('mobile_number', 'Mobile verification is required before proceeding.');
 			}
@@ -529,62 +521,7 @@ class KycController extends Controller
 			return $this->errorResponse($e->getMessage());
 		}
 	}
-
-	// Email verification
-	public function sendEmailOtp(Request $request)
-	{
-		$validator = Validator::make($request->all(), [
-			'email' => 'required|string|email'
-		]);
-
-		// Check if the validation fails
-		if ($validator->fails()) {
-			return $this->validateResponse($validator->errors());
-		}
-
-		// // Check if the email already exists in the database
-		// if (User::where('email', $request->email)->exists()) {
-		// 	return $this->errorResponse('The email you provided already exists.');
-		// }
-
-		// Generate a 6-digit OTP
-		$otp = rand(100000, 999999);
-
-		return $this->emailService->sendOtp($request->email, $otp, false, true);
-	}
-
-	public function resendEmailOtp(Request $request)
-	{
-		$validator = Validator::make($request->all(), [
-			'email' => 'required|string|email',
-		]);
-
-		if ($validator->fails()) {
-			return $this->validateResponse($validator->errors());
-		}
-
-		// // Check if the email already exists in the database
-		// if (User::where('email', $request->email)->exists()) {
-		// 	return $this->errorResponse('The email you provided already exists.');
-		// }
-
-		return $this->emailService->resendOtp($request->email, true);
-	}
-
-	public function verifyEmailOtp(Request $request)
-	{
-		$validator = Validator::make($request->all(), [
-			'email' => 'required|string|email',
-			'otp' => 'required|digits:6', // Adjust based on your OTP length
-		]);
-
-		if ($validator->fails()) {
-			return $this->validateResponse($validator->errors());
-		}
-
-		return $this->emailService->verifyOtp($request->email, $request->otp, true);
-	}
-
+ 
 	// Mobile Verification
 	public function sendMobileOtp(Request $request)
 	{

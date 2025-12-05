@@ -51,7 +51,7 @@
                         <p style="text-align: center;color: red;">Note: Please fill out all fields.</p>
                         <form id="individualRegisterFinalForm" action="{{ route('user.basic-details.update') }}" method="post">
                             <div class="row">
-								<div class="col-md-6 mb-3">
+								{{-- <div class="col-md-6 mb-3">
 									<label for="email" class="required content-3 text-primary">Email <span class="text-danger">*</span></label>
 									<div class="input-group">
 										<input id="email" name="email" readonly autocomplete="off" type="email" class="form-control form-control-lg bg-light border-light" value="{{ $user->email }}" autocomplete="off"/>
@@ -65,12 +65,12 @@
 											</div>
 										</button>
 									</div> 
-								</div>
-								 <div class="col-md-6 mb-3">
-										<label for="country" class="required content-3 text-primary">Country <span class="text-danger">*</span></label>
-										<select id="country_id" name="country_id" class="form-control form-control-lg bg-light border-light"> 
-										</select>
-									</div> 
+								</div> --}}
+								<div class="col-md-6 mb-3">
+									<label for="country" class="required content-3 text-primary">Country <span class="text-danger">*</span></label>
+									<select id="country_id" name="country_id" class="form-control form-control-lg bg-light border-light"> 
+									</select>
+								</div> 
 								<div class="col-md-6 mb-3">
 									<label for="mobile_number" class="required content-3 text-primary">Mobile Number (Without country code) <span class="text-danger">*</span></label>
 									<div class="input-group">
@@ -125,9 +125,7 @@
                                     <input id="address" name="address" type="text" autocomplete="off"
                                         class="form-control form-control-lg bg-light border-light"  />
                                 </div>
-                            </div>
-
-                            <div class="row">
+                            
                                 <div class="col-md-6 mb-3">
                                     <label for="password" class="required content-3 text-primary">City <span
                                             class="text-danger">*</span></label>
@@ -140,8 +138,7 @@
                                     <input id="state" name="state" type="text" autocomplete="off"
                                         class="form-control form-control-lg bg-light border-light"  />
                                 </div>
-                            </div>
-                            <div class="row">
+                            
 
                                 <div class="col-md-6 mb-3">
                                     <label for="password" class="required content-3 text-primary">Zip Code/Postal Code
@@ -156,9 +153,7 @@
                                         max="{{ date('Y-m-d') }}" autocomplete="off"
                                         class="form-control form-control-lg bg-light border-light"
                                         onclick="this.showPicker()" style="cursor: pointer;"  />
-                                </div>
-                            </div>
-                            <div class="row">
+                                </div> 
 
                                 <div class="col-md-6 mb-3">
                                     <label for="password" class="required content-3 text-primary">Zip Code/Postal Code
@@ -184,8 +179,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                            </div>
-                            <div class="row">
+                            
                                 <div class="col-md-6 mb-3">
                                     <label for="password" class="required content-3 text-primary">Source of Fund <span
                                             class="text-danger">*</span></label>

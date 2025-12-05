@@ -62,7 +62,7 @@ class CheckKycStatus
         }
        
         // 2) If KYC done but both email and mobile not verified -> redirect to basic-details
-        if ($user->is_kyc_verify == 1 && $user->is_email_verify == 0 && $user->is_mobile_verify == 0)
+        if ($user->is_kyc_verify == 1 && $user->is_email_verify == 1 && $user->is_mobile_verify == 0)
         { 
             // avoid redirect loop: allow if we're already on basic-details
             if (!($currentRoute === 'user.basic-details' || $currentPath === 'user/basic-details')) { 

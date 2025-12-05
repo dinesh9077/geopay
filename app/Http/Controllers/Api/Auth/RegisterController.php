@@ -73,14 +73,14 @@ class RegisterController extends Controller
 			'terms.integer' => 'You must agree to the terms and conditions to proceed.'
 		]);
 
-		// $validator->after(function ($validator) use ($request) {
-		// 	if ($request->input('email') && $request->input('is_email_verify') == 0) {
-		// 		$validator->errors()->add('email', 'Email verification is required before proceeding.');
-		// 	}
-		// 	if ($request->input('mobile_number') && $request->input('is_mobile_verify') == 0) {
-		// 		$validator->errors()->add('mobile_number', 'Mobile verification is required before proceeding.');
-		// 	}
-		// });
+		$validator->after(function ($validator) use ($request) {
+			if ($request->input('email') && $request->input('is_email_verify') == 0) {
+				$validator->errors()->add('email', 'Email verification is required before proceeding.');
+			}
+			// if ($request->input('mobile_number') && $request->input('is_mobile_verify') == 0) {
+			// 	$validator->errors()->add('mobile_number', 'Mobile verification is required before proceeding.');
+			// }
+		});
 
 		// Check if the main validator fails
 		if ($validator->fails()) {
@@ -163,14 +163,14 @@ class RegisterController extends Controller
 			'terms.integer' => 'You must agree to the terms and conditions to proceed.'
 		]);
 
-		// $validator->after(function ($validator) use ($request) {
-		// 	if ($request->input('email') && $request->input('is_email_verify') == 0) {
-		// 		$validator->errors()->add('email', 'Email verification is required before proceeding.');
-		// 	}
-		// 	if ($request->input('mobile_number') && $request->input('is_mobile_verify') == 0) {
-		// 		$validator->errors()->add('mobile_number', 'Mobile verification is required before proceeding.');
-		// 	}
-		// });
+		$validator->after(function ($validator) use ($request) {
+			if ($request->input('email') && $request->input('is_email_verify') == 0) {
+				$validator->errors()->add('email', 'Email verification is required before proceeding.');
+			}
+			// if ($request->input('mobile_number') && $request->input('is_mobile_verify') == 0) {
+			// 	$validator->errors()->add('mobile_number', 'Mobile verification is required before proceeding.');
+			// }
+		});
 
 		// Check if the main validator fails
 		if ($validator->fails()) {
@@ -215,32 +215,24 @@ class RegisterController extends Controller
 	
 	public function userBasicDetailsUpdate(Request $request)
 	{ 
-		$validator = Validator::make($request->all(), [
-			'email' => 'required|string|email|max:255',
+		$validator = Validator::make($request->all(), [ 
 			'mobile_number' => 'required|integer',
 			'country_id' => 'required|integer',
 			'id_type' => 'required|in:' . implode(',', array_column(IdType::cases(), 'value')),
 			'id_number' => 'required|string|max:50',
 			'expiry_id_date' => 'required|date',
-			'issue_id_date' => 'required|date',
-
+			'issue_id_date' => 'required|date', 
 			'city' => 'required|string|max:100',
 			'state' => 'required|string|max:100',
-			'zip_code' => 'required|string|max:20',
-
+			'zip_code' => 'required|string|max:20', 
 			'date_of_birth' => 'required|date',
 			'gender' => 'required|in:Male,Female,Other',
-			'address' => 'required|string',
-
-			'business_activity_occupation' => 'required|in:' . implode(',', array_column(BusinessOccupation::cases(), 'value')),
-
+			'address' => 'required|string', 
+			'business_activity_occupation' => 'required|in:' . implode(',', array_column(BusinessOccupation::cases(), 'value')), 
 			'source_of_fund' => 'required|in:' . implode(',', array_column(SourceOfFunds::cases(), 'value')),
 		]);
 
-		$validator->after(function ($validator) use ($request) {
-			if ($request->input('email') && $request->input('is_email_verify') == 0) {
-				$validator->errors()->add('email', 'Email verification is required before proceeding.');
-			}
+		$validator->after(function ($validator) use ($request) { 
 			if ($request->input('mobile_number') && $request->input('is_mobile_verify') == 0) {
 				$validator->errors()->add('mobile_number', 'Mobile verification is required before proceeding.');
 			}
@@ -263,13 +255,13 @@ class RegisterController extends Controller
 			}
 
 			$formattedNumber = '+' . ltrim(($country->isdcode ?? '') . $request->mobile_number, '+');
-			$userData = $request->except('_token');
+			$userData = $request->except(keys: '_token');
 			$userData['formatted_number'] = $formattedNumber;
 
 			$user->update($userData);  
 
 			DB::commit();
-			return $this->successResponse('User registered successfully.', $userData);
+			return $this->successResponse('User registered successfully.', data: $userData);
 		} catch (\Throwable $e) {
 			DB::rollBack();
 			return $this->errorResponse($e->getMessage());

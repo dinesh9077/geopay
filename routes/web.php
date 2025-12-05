@@ -54,9 +54,9 @@
 	Route::post('user/basic-details/update', [KycController::class, 'userBasicDetailsUpdate'])->name('user.basic-details.update')
 	->middleware('webdecrypt.request');
 
-	Route::post('email/send', [KycController::class, 'sendEmailOtp'])->name('email.send')->middleware('webdecrypt.request');
-	Route::post('/email/resend', [KycController::class, 'resendEmailOtp'])->name('email.resend')->middleware('webdecrypt.request');
-	Route::post('/verify/email-otp', [KycController::class, 'verifyEmailOtp'])->name('verify.email-otp')->middleware('webdecrypt.request');
+	Route::post('email/send', [RegisterController::class, 'sendEmailOtp'])->name('email.send')->middleware('webdecrypt.request');
+	Route::post('/email/resend', [RegisterController::class, 'resendEmailOtp'])->name('email.resend')->middleware('webdecrypt.request');
+	Route::post('/verify/email-otp', [RegisterController::class, 'verifyEmailOtp'])->name('verify.email-otp')->middleware('webdecrypt.request');
 
 	Route::post('/mobile/send', [KycController::class, 'sendMobileOtp'])->name('mobile.send')->middleware('webdecrypt.request');
 	Route::post('/mobile/resend', [KycController::class, 'resendMobileOtp'])->name('mobile.resend')->middleware('webdecrypt.request');
