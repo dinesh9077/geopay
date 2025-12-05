@@ -156,16 +156,15 @@
                                 </div> 
 
                                 <div class="col-md-6 mb-3">
-                                    <label for="password" class="required content-3 text-primary">Zip Code/Postal Code
-                                        <span class="text-danger">*</span></label>
-                                    <select name="gender"
-                                        class="form-control form-control-lg bg-light border-light select2"
-                                        id="gender" required>
-                                        <option value="">Select Gender</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <option value="Other">Other</option>
-                                    </select>
+									<label for="password" class="required content-3 text-primary">Gender <span class="text-danger">*</span></label>
+									<select name="gender"
+										class="form-control form-control-lg bg-light border-light select2"
+										id="gender" required>
+										<option value="">Select Gender</option>
+										<option value="Male">Male</option>
+										<option value="Female">Female</option>
+										<option value="Other">Other</option>
+									</select>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="password" class="required content-3 text-primary">Business Activity or

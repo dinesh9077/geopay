@@ -51,7 +51,7 @@
 											You can now continue using our services.
 										</p>
 										<div class="text-center">
-											<a href="{{ route('home') }}" class="btn btn-primary btn-sm">Dashbaord</a>
+											<a href="{{ route('home') }}" class="btn btn-primary btn-sm">Dashboard</a>
 										</div> 
 										{{-- @elseif($userKyc->verification_status == "rejected")
 										<h6 class="fw-semibold text-black text-center mb-4">Your Meta verification was rejected.</h6>

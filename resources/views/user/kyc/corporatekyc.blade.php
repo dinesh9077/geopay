@@ -114,7 +114,7 @@
 											<h6 class="heading-4 mb-2 fw-semibold text-success">KYC Verified</h6>
 											<p class="caption text-muted content-3 mb-4">Thank you for completing your KYC submission! Your documents have been reviewed and approved. You can now continue using our services.</p>
 											<div class="d-flex justify-content-center">
-												<a href="{{ route('home') }}" id="submit-btn" class="btn btn-primary w-fit px-4"> Dashabord </a>
+												<a href="{{ route('home') }}" id="submit-btn" class="btn btn-primary w-fit px-4"> Dashboard </a>
 											</div>
 										</div>
 									</div> 
