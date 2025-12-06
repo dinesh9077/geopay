@@ -55,7 +55,7 @@
 		<div class="row text-start col-lg-8"> 
 			
 			<div class="col-md-6 mb-3">
-				<label for="password" class="form-label content-2 fw-semibold mb-1">Zip Code/Postal Code <span class="text-danger">*</span></label>
+				<label for="password" class="form-label content-2 fw-semibold mb-1">Gender <span class="text-danger">*</span></label>
 				<select name="gender" class="form-control form-control-lg default-input select2" id="gender" required>
 					<option value="">Select Gender</option>
 					<option value="Male" {{ $user->gender === "Male" ? 'selected' : '' }}>Male</option>

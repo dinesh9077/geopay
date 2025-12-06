@@ -3,7 +3,7 @@
 @section('header_title', $title)
 @section('content')
     <style>
-        .swal2-image.custom-image-class {
+        .swal2-image.custom-image-class {
             position: absolute;
             top: -10px;
             right: 10px;
@@ -135,7 +135,7 @@
                             modifier: {
                                 page: 'current'
                             },
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                            columns: [0, 1, 2, 3, 4, 5]
                         }
                     },
                     {
@@ -146,7 +146,7 @@
                             modifier: {
                                 page: 'current'
                             },
-                            columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                            columns: [0, 1, 2, 3, 4, 5]
                         }
                     }
                 ],
